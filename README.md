@@ -6,6 +6,18 @@
 [![Twitter Follow](https://img.shields.io/twitter/follow/KhamisiKibet?style=social)](https://twitter.com/intent/follow?screen_name=KhamisiKibet)
 [![YouTube Video Views](https://img.shields.io/youtube/views/JK-B-CT34EU?style=social)](https://youtu.be/JK-B-CT34EU)
 
+# ⚠️ Important Notice
+
+This repository has been **forked and is now maintained at a new location**:  
+[https://github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets](https://github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets)
+
+The original repository by [KhamisiKibet](https://github.com/KhamisiKibet/QT-PyQt-PySide-Custom-Widgets) is temporarily inaccessible due to 2FA issues. While we attempt recovery, **all new updates, features, and maintenance will happen on the new repository.**
+
+Please **follow or star the new repo** to receive the latest updates.
+
+---
+
+
 ![Custom Widgets Art](https://github.com/KhamisiKibet/docs-QT-PyQt-PySide-Custom-Widgets/blob/main/images/custom_widgets_art.png?raw=true)
 
 # QT-PyQt-PySide-Custom-Widgets
@@ -77,3 +89,4 @@ A list of modern GUI's made using the custom widgets module. [View](https://kham
    [PlOd]: <https://github.com/joemccann/dillinger/tree/master/plugins/onedrive/README.md>
    [PlMe]: <https://github.com/joemccann/dillinger/tree/master/plugins/medium/README.md>
    [PlGa]: <https://github.com/RahulHP/dillinger/blob/master/plugins/googleanalytics/README.md>
+
