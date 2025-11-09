@@ -37,7 +37,7 @@ class CompileStyleSheet():
     ########################################################################
     ## APPLY COMPILED STYLESHEET
     ########################################################################
-    def applyCompiledSass(self, generateIcons: bool = True):
+    def applyCompiledSass(self, generateIcons: bool = True, paintEntireApp: bool = True):
         settings = QSettings()
         
         qcss_folder = os.path.abspath(os.path.join(os.getcwd(), 'Qss/scss'))
@@ -80,52 +80,60 @@ class CompileStyleSheet():
         
         with open(css_path,"r") as css:
             stylesheet = css.read()
-            # self.setStyleSheet(stylesheet)
-            # Create QApplication instance if it doesn't exist
-            app = QApplication.instance() if QApplication.instance() else QApplication([])
+
+        # Create QApplication instance if it doesn't exist
+        app = QApplication.instance() if QApplication.instance() else QApplication([])
+
+        if not paintEntireApp:
+            self.setStyleSheet(stylesheet)
+            palette = self.palette()
+            app.setStyleSheet("")
+            app.setPalette(app.style().standardPalette())
+
+        else:
+            self.setStyleSheet("")
+            self.setPalette(self.style().standardPalette())
             app.setStyleSheet(stylesheet)
             # newly created menus may need re-styling
             for obj in QApplication.instance().allWidgets():
                 if isinstance(obj, QMenu):
                     obj.setStyleSheet(stylesheet)
         
-        # QPalette
-        app = QApplication.instance()
-        # palette = QPalette()
-        palette = app.palette()
+            # palette = QPalette()
+            palette = app.palette()
 
-        # Set the background color
-        try:
-            # pyside2
-            palette.setColor(QPalette.Background, QColor(self.theme.COLOR_BACKGROUND_1))
-        except AttributeError as e:
-            pass
-        try:
-            # pyside6
-            palette.setColor(QPalette.Window, QColor(self.theme.COLOR_BACKGROUND_1))
-        except AttributeError as e:
-            pass
-        
+            # Set the background color
+            try:
+                # pyside2
+                palette.setColor(QPalette.Background, QColor(self.theme.COLOR_BACKGROUND_1))
+            except AttributeError as e:
+                pass
+            try:
+                # pyside6
+                palette.setColor(QPalette.Window, QColor(self.theme.COLOR_BACKGROUND_1))
+            except AttributeError as e:
+                pass
+            
 
-        # Set the text color
-        palette.setColor(QPalette.Text, QColor(self.theme.COLOR_TEXT_1))
+            # Set the text color
+            palette.setColor(QPalette.Text, QColor(self.theme.COLOR_TEXT_1))
 
-        # Set the button color
-        palette.setColor(QPalette.Button, QColor(self.theme.COLOR_BACKGROUND_3))
+            # Set the button color
+            palette.setColor(QPalette.Button, QColor(self.theme.COLOR_BACKGROUND_3))
 
-        # Set the button text color
-        palette.setColor(QPalette.ButtonText, QColor(self.theme.COLOR_TEXT_1))
+            # Set the button text color
+            palette.setColor(QPalette.ButtonText, QColor(self.theme.COLOR_TEXT_1))
 
-        # Set the highlight color
-        palette.setColor(QPalette.Highlight, QColor(self.theme.COLOR_BACKGROUND_6))
+            # Set the highlight color
+            palette.setColor(QPalette.Highlight, QColor(self.theme.COLOR_BACKGROUND_6))
 
-        # Set the highlight text color
-        palette.setColor(QPalette.HighlightedText, QColor(self.theme.COLOR_ACCENT_1))
+            # Set the highlight text color
+            palette.setColor(QPalette.HighlightedText, QColor(self.theme.COLOR_ACCENT_1))
 
-        # Apply the palette to the main window
-        self.setPalette(palette)
+            # Apply the palette to the main window
+            self.setPalette(palette)
 
-        app.setPalette(palette)
+            app.setPalette(palette)
 
         self.update()
 

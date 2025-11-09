@@ -1,31 +1,3 @@
 {
-    "ShowLogs": true,
-    "QMainWindow":[
-		{
-			"tittle":"23-UI"
-		}
-	],
-    "QSettings": [
-        {
-            "ThemeSettings": [
-                {
-                    "CustomTheme": [
-                        {
-                            "Background-color": "#0f1629",
-                            "Text-color": "#ECF0F1",
-                            "Accent-color": "#2196f3",
-                            "Icons-color": "#ECF0F1",
-                            "Theme-name": "Default-theme",
-                            "Default-Theme": true
-                        }                       
-                    ]
-                }
-            ],
-            "AppSettings": {
-                "OrginizationName": "23-UI",
-                "ApplicationName": "spinntv.org",
-                "OrginizationDormain": "spinncode.com"
-            }
-        }
-    ]
+    "ShowLogs": true
 }

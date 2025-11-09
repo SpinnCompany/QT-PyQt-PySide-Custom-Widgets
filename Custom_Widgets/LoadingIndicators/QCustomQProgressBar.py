@@ -3,9 +3,10 @@
 # Edits and improvements made by Khamisi Kibet
 # QT GUI BY SPINN TV(YOUTUBE)
 from math import floor
+import os
 
 from qtpy.QtCore import (QEasingCurve, Qt, QPropertyAnimation, Property,
-                          QParallelAnimationGroup, QSequentialAnimationGroup, QLocale)
+                         QParallelAnimationGroup, QSequentialAnimationGroup, QLocale)
 from qtpy.QtGui import QPainter, QColor, QPalette
 from qtpy.QtWidgets import QProgressBar, QStyleOption, QStyle
 
@@ -14,6 +15,16 @@ from Custom_Widgets.QCustomTheme import QCustomTheme
 
 class QCustomQProgressBar(QProgressBar):
     """ Indeterminate progress bar """
+
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    WIDGET_ICON = os.path.join(script_dir, "components/icons/progress_bar.png")
+    WIDGET_TOOLTIP = "A custom animated progress bar."
+    WIDGET_DOM_XML = """
+    <ui language='c++'>
+        <widget class='QCustomQProgressBar' name='customProgressBar'/>
+    </ui>
+    """
+    WIDGET_MODULE = "Custom_Widgets.QCustomLoadingIndicators"
 
     def __init__(self, parent=None, start=True):
         super().__init__(parent=parent)
@@ -25,8 +36,16 @@ class QCustomQProgressBar(QProgressBar):
         self.shortBarAni = QPropertyAnimation(self, b'shortPos', self)
         self.longBarAni = QPropertyAnimation(self, b'longPos', self)
 
-        self._lightBarColor = QColor()
-        self._darkBarColor = QColor()
+        # Customizable colors – defaults come from theme and palette:
+        # For the normal state, we use the widget's highlight color.
+        self._customBarColor = self.palette().color(QPalette.Highlight)
+        # For error and paused, we pick different defaults based on theme.
+        if self.customTheme.isAppDarkThemed():
+            self._errorColor = QColor(255, 153, 164)
+            self._pausedColor = QColor(252, 225, 0)
+        else:
+            self._errorColor = QColor(196, 43, 28)
+            self._pausedColor = QColor(157, 93, 0)
 
         self._isError = False
 
@@ -52,18 +71,6 @@ class QCustomQProgressBar(QProgressBar):
         if start:
             self.start()
 
-    def setCustomBarColor(self, light, dark):
-        """ set the custom bar color
-
-        Parameters
-        ----------
-        light, dark: str | Qt.GlobalColor | QColor
-            bar color in light/dark theme mode
-        """
-        self._lightBarColor = QColor(light)
-        self._darkBarColor = QColor(dark)
-        self.update()
-
     @Property(float)
     def shortPos(self):
         return self._shortPos
@@ -80,6 +87,46 @@ class QCustomQProgressBar(QProgressBar):
     @longPos.setter
     def longPos(self, p):
         self._longPos = p
+        self.update()
+
+    # Expose "paused" as a property
+    @Property(bool)
+    def paused(self):
+        return self.aniGroup.state() == QParallelAnimationGroup.Paused
+
+    @paused.setter
+    def paused(self, isPaused: bool):
+        self.aniGroup.setPaused(isPaused)
+        self.update()
+
+    # Property for the normal bar color
+    @Property(QColor)
+    def customBarColor(self):
+        return self._customBarColor
+
+    @customBarColor.setter
+    def customBarColor(self, color: QColor):
+        self._customBarColor = color
+        self.update()
+
+    # Property for the error color
+    @Property(QColor)
+    def errorColor(self):
+        return self._errorColor
+
+    @errorColor.setter
+    def errorColor(self, color: QColor):
+        self._errorColor = color
+        self.update()
+
+    # Property for the paused color
+    @Property(QColor)
+    def pausedColor(self):
+        return self._pausedColor
+
+    @pausedColor.setter
+    def pausedColor(self, color: QColor):
+        self._pausedColor = color
         self.update()
 
     def start(self):
@@ -102,7 +149,9 @@ class QCustomQProgressBar(QProgressBar):
         self.update()
 
     def resume(self):
-        self.aniGroup.resume()
+        if self.aniGroup.state() == QParallelAnimationGroup.Paused:
+            self.aniGroup.resume()
+        
         self.update()
 
     def setPaused(self, isPaused: bool):
@@ -129,12 +178,10 @@ class QCustomQProgressBar(QProgressBar):
 
     def barColor(self):
         if self.isError():
-            return QColor(255, 153, 164) if self.customTheme.isAppDarkThemed() else QColor(196, 43, 28)
-
-        if self.isPaused():
-            return QColor(252, 225, 0) if self.customTheme.isAppDarkThemed() else QColor(157, 93, 0)
-
-        return self.palette().color(QPalette.Highlight)
+            return self._errorColor
+        if self.paused:
+            return self._pausedColor
+        return self._customBarColor
 
     def paintEvent(self, e):
         opt = QStyleOption()

@@ -2,41 +2,13 @@
 from qtpy.QtCore import QEasingCurve, QPropertyAnimation, Qt, QEvent, Signal
 from qtpy.QtGui import QColor, QResizeEvent, QPalette, QPaintEvent, QPainter, QMouseEvent
 from qtpy.QtWidgets import (QDialog, QGraphicsDropShadowEffect, QStyleOption, QStyle, QApplication,
-                             QGraphicsOpacityEffect, QWidget)
+                             QGraphicsOpacityEffect, QWidget, QGraphicsBlurEffect)
 
 from Custom_Widgets.components.python.ui_dialog import Ui_Form
 from Custom_Widgets.QCustomTheme import QCustomTheme
+from Custom_Widgets.QCustomComponentLoader import QCustomComponentLoader
 
-class LoadForm(QWidget):
-    def __init__(self, form):
-        super().__init__()
-        # self.ui = Ui_Form()
-        self.ui = form
-        self.ui.setupUi(self)
-
-        # Check the module name where ui is loaded from
-        ui_module_name = form.__module__.split('.')[-1]
-
-        # Replace "ui_" with empty string only at the start
-        if ui_module_name.startswith("ui_"):
-            self.ui_module_name = ui_module_name[len("ui_"):]
-
-        self.applyThemeIcons()
-        
-    def applyThemeIcons(self):
-        self.customTheme = QCustomTheme()
-        self.customTheme.applyIcons(self, ui_file_name=self.ui_module_name)
-
-        self.defaultTheme = self.customTheme.theme
-
-    def paintEvent(self, e: QPaintEvent):
-        super().paintEvent(e)
-        
-        opt = QStyleOption()
-        opt.initFrom(self)
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
-        self.style().drawPrimitive(QStyle.PE_Widget, opt, painter, self)
+from Custom_Widgets.BlurWindow import GlobalBlur
         
 class QCustomQDialog(QDialog, Ui_Form):
     accepted = Signal()
@@ -52,70 +24,85 @@ class QCustomQDialog(QDialog, Ui_Form):
     animationDuration = 500
     
     maskWidget = None
+    hasBlur = False
 
-    def __init__(self, showForm=None, parent=None, addWidget=None, **kwargs):
+    def __init__(
+        self,
+        parent=None,
+        showForm=None,
+        title=None,
+        description=None,
+        padding=0,
+        yesButtonIcon=None,
+        cancelButtonIcon=None,
+        yesButtonText="Yes",
+        cancelButtonText="Cancel",
+        animationDuration=300,
+        showYesButton=True,
+        showCancelButton=True,
+        setModal=False,
+        frameless=False,
+        windowMovable=False,
+        addWidget=None,
+        blurBackground=True
+    ):
+        """Initialize the custom dialog with configurable options."""
         QDialog.__init__(self, parent)  # Initialize QDialog parent class
         Ui_Form.__init__(self)  # Initialize Ui_Form parent class
-        
+
         self.window().installEventFilter(self)
 
         self.setupUi(self)
-        
-        self.mask_widget = MaskWidget(parent)
-        self.mask_widget.hide()
-        self.mask_widget.setParent(self.parent())
-        self.mask_widget.lower()
-        
-        # Customize modal based on kwargs
-        if 'title' in kwargs:
-            self.titleLabel.setText(str(kwargs['title']))
+
+        # Mask widget setup
+        # self.maskWidget = MaskWidget(parent)
+        # self.maskWidget.hide()
+        # self.maskWidget.setParent(self.parent())
+        # self.maskWidget.lower()
+
+        # Set title
+        if title:
+            self.titleLabel.setText(str(title))
         else:
-            # set title to app title
-            # self.setTitle(QApplication.instance().applicationName())
-            self.titleLabel.hide() 
-            
-        if 'description' in kwargs:
-            self.descriptionLabel.setText(str(kwargs['description']))
+            self.titleLabel.hide()
+
+        # Set description
+        if description:
+            self.descriptionLabel.setText(str(description))
         else:
-            self.descriptionLabel.hide()  
-        
-        if 'padding' in kwargs:
-            self.padding = int(kwargs['padding'])
-            
-        if 'yesButtonIcon' in kwargs:
-            self.yesButton.setIcon(kwargs['yesButtonIcon'])
-            
-        if 'cancelButtonIcon' in kwargs:
-            self.cancelButton.setIcon(kwargs['cancelButtonIcon'])
-            
-        if 'yesButtonText' in kwargs:
-            self.yesButton.setText(kwargs['yesButtonText'])
-            
-        if 'cancelButtonText' in kwargs:
-            self.cancelButton.setText(kwargs['cancelButtonText'])
-            
-        if 'animationDuration' in kwargs:
-            self.animationDuration = kwargs['animationDuration']
-        
-        if 'showYesButton' in kwargs:
-            if not kwargs['showYesButton']:
-                self.hideYesButton()
-                
-        if 'showCancelButton' in kwargs:
-            if not kwargs['showCancelButton']:
-                self.hideCancelButton()
-        
-        if 'setModal' in kwargs:
-            if kwargs['setModal']:
-                self.setModal(True)
-            else:
-                self.setModal(False)
-            
-        if 'frameless' in kwargs and kwargs['frameless']:
+            self.descriptionLabel.hide()
+
+        # Set padding
+        self.padding = padding
+
+        # Set button icons and text
+        if yesButtonIcon:
+            self.yesButton.setIcon(yesButtonIcon)
+        self.yesButton.setText(yesButtonText)
+
+        if cancelButtonIcon:
+            self.cancelButton.setIcon(cancelButtonIcon)
+        self.cancelButton.setText(cancelButtonText)
+
+        # Set animation duration
+        self.animationDuration = animationDuration
+
+        # Show or hide buttons
+        if not showYesButton:
+            self.hideYesButton()
+
+        if not showCancelButton:
+            self.hideCancelButton()
+
+        # Set modal behavior
+        self.setModal(setModal)
+
+        # Frameless and movable settings
+        if frameless:
             self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
             self.setAttribute(Qt.WA_TranslucentBackground)
-            
-            if 'windowMovable' in kwargs and kwargs['windowMovable']:
+
+            if windowMovable:
                 self.setMovable(True)
                 self.titleBar.mousePressEvent = self.mousePressEvent
                 self.titleBar.mouseMoveEvent = self.mouseMoveEvent
@@ -123,9 +110,11 @@ class QCustomQDialog(QDialog, Ui_Form):
             else:
                 self.setMovable(False)
 
+
         self.shownForm = None       
         if showForm:
-            self.form = LoadForm(showForm)
+            self.form = QCustomComponentLoader()
+            self.form.loadComponent(formClass = showForm)
             self.verticalLayout_2.addWidget(self.form) 
             try:
                 #older versions
@@ -144,6 +133,8 @@ class QCustomQDialog(QDialog, Ui_Form):
         
         self.yesButton.setFocus()
         self.setShadowEffect()
+
+        self.blurBackground = blurBackground
     
     def addWidget(self, widget, alignment = None):
         if alignment:
@@ -190,22 +181,37 @@ class QCustomQDialog(QDialog, Ui_Form):
         self.cancelButton.hide()
     
     def paintEvent(self, e: QPaintEvent):
-        super().paintEvent(e)
         painter = QPainter(self)
+        if not painter.isActive():
+            return
+
         painter.setRenderHints(QPainter.Antialiasing)
         painter.setPen(Qt.NoPen)
         rect = self.rect().adjusted(1, 1, -1, -1)
         painter.drawRoundedRect(rect, 6, 6)
+
+        # self.adjustSizeToContent()
+        # painter.end()
+        super().paintEvent(e)
+
+        self.adjustSizeToContent()
         
     def showEvent(self, e):
         self.checkAppTheme()
-        if not self.maskWidget:
+        c = 0 if self.isDark() else 255
+        if self.maskWidget is None:
             self.maskWidget = MaskWidget(parent=self.parent())
-            c = 0 if self.isDark() else 255
-            self.maskWidget.setStyleSheet(f'background:rgba({c}, {c}, {c}, .7)')
+            self.maskWidget.lower()
         
-        self.maskWidget.show()
-        """ fade in """
+        if not self.blurBackground:
+            self.maskWidget.setStyleSheet(f'background:rgba({c}, {c}, {c}, .8)')
+        else:
+            self.maskWidget.setStyleSheet(f'background:rgba({c}, {c}, {c}, .1)')
+
+        if self.maskWidget:
+            self.maskWidget.show()
+
+        """ Fade in """
         opacityEffect = QGraphicsOpacityEffect(self)
         self.setGraphicsEffect(opacityEffect)
         opacityAni = QPropertyAnimation(opacityEffect, b'opacity', self)
@@ -215,13 +221,15 @@ class QCustomQDialog(QDialog, Ui_Form):
         opacityAni.setEasingCurve(QEasingCurve.InSine)
         opacityAni.finished.connect(opacityEffect.deleteLater)
         opacityAni.start()
+        
         super().showEvent(e)
+
             
-    
     def hideEvent(self, e):
         super().hideEvent(e)
         try:
             self.maskWidget.hide()
+            self.maskWidget.deleteLater()
         except:
             pass
 
@@ -238,19 +246,41 @@ class QCustomQDialog(QDialog, Ui_Form):
         opacityAni.finished.connect(lambda: QDialog.done(self, code))
         opacityAni.start()
         
-        if self.maskWidget:
-            self.mask_widget.hide()
+        if self.maskWidget is not None:
+            self.maskWidget.hide()
             self.maskWidget.deleteLater()
             self.maskWidget = None
 
     def resizeEvent(self, e):
-        # Calculate the size hint based on the content
-        self.verticalLayout.setContentsMargins(self.margin, self.margin, self.margin, self.margin)
-        content_size = self.layout().sizeHint()
-        self.setMinimumSize(content_size.width() + self.padding, content_size.height() + self.padding)
-        self.adjustSize()
+        self.adjustSizeToContent()
+
+    def adjustSizeToContent(self):
+        # # Calculate the size hint based on the content
+        # self.verticalLayout.setContentsMargins(self.margin, self.margin, self.margin, self.margin)
+        # content_size = self.layout().sizeHint()
+        # self.setMinimumSize(content_size.width() + self.padding, content_size.height() + self.padding)
+        # self.adjustSize()
+
+        # Size maximized to support BG Blur
+        self.adjustToParentSize()
 
         self.checkAppTheme()
+        self.updateBlurEffect()
+
+    def adjustToParentSize(self):
+        """Adjust the dialog to the size and position of the parent."""
+        if self.parent():
+            self.resize(self.parent().size())
+            
+            # Calculate the top-left position to center the dialog on the parent
+            parent_geometry = self.parent().geometry()
+            parent_center_x = parent_geometry.x() + parent_geometry.width() // 2
+            parent_center_y = parent_geometry.y() + parent_geometry.height() // 2
+
+            dialog_x = parent_center_x - self.width() // 2
+            dialog_y = parent_center_y - self.height() // 2
+
+            self.move(dialog_x, dialog_y)  # Move the dialog to the calculated position
 
     def checkAppTheme(self):
         # icons
@@ -261,9 +291,8 @@ class QCustomQDialog(QDialog, Ui_Form):
 
     def eventFilter(self, obj, e: QEvent):
         if obj is self.window():
-            if e.type() == QEvent.Resize:
-                re = QResizeEvent(e)
-                self.resize(re.size())
+            if e.type() in {QEvent.Resize, QEvent.Move}:
+                self.adjustToParentSize()
 
         return super().eventFilter(obj, e)
     
@@ -280,34 +309,46 @@ class QCustomQDialog(QDialog, Ui_Form):
         else:
             # Light background
             return False
+    
+    def updateBlurEffect(self):
+        """Update the GlobalBlur effect to match the MaskWidget size."""
+        if self.blurBackground and self.maskWidget is not None:
+            self.bgBlur = GlobalBlur(HWND=self.winId(), widget=self, mask=self.maskWidget, Dark=self.isDark())
         
 class MaskWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         
         # Make the widget fill the entire main window
-        # self.setWindowFlags(Qt.FramelessWindowHint)
-        # self.setAttribute(Qt.WA_TranslucentBackground)
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_TranslucentBackground)
         self.setGeometry(self.parent().geometry() if parent else QApplication.primaryScreen().geometry())
+        
                 
         self.hide()
         
         if parent:
             parent.installEventFilter(self)
-            # parent.resizeEvent = self.resizeEvent
-            # parent.moveEvent = self.moveEvent
+            parent.resizeEvent = self.resizeEvent
+            parent.moveEvent = self.moveEvent
             
     def resizeEvent(self, event):
-        if self.parent():
-            parent_width = self.parent().width()
-            parent_height = self.parent().height()
-            self.setGeometry(0, 0, parent_width, parent_height)
+        try:
+            if self.parent():
+                parent_width = self.parent().width()
+                parent_height = self.parent().height()
+                self.setGeometry(0, 0, parent_width, parent_height)
+        except:
+            pass
 
     def moveEvent(self, event):
-        if self.parent():
-            parent_width = self.parent().width()
-            parent_height = self.parent().height()
-            self.setGeometry(0, 0, parent_width, parent_height)
+        try:
+            if self.parent():
+                parent_width = self.parent().width()
+                parent_height = self.parent().height()
+                self.setGeometry(0, 0, parent_width, parent_height)
+        except:
+            pass
 
     def eventFilter(self, obj, event):
         if obj == self.parent():
@@ -318,13 +359,15 @@ class MaskWidget(QWidget):
         return super().eventFilter(obj, event)
     
     def paintEvent(self, e: QPaintEvent):
-        super().paintEvent(e)
-        
         opt = QStyleOption()
         opt.initFrom(self)
         painter = QPainter(self)
+        if not painter.isActive():
+            return
         painter.setRenderHint(QPainter.Antialiasing)
         self.style().drawPrimitive(QStyle.PE_Widget, opt, painter, self)
+        painter.end()
+        super().paintEvent(e)
         
     def deleteLater(self):
         try:

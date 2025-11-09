@@ -9,6 +9,7 @@ from qtpy.QtWidgets import QWidget, QGraphicsDropShadowEffect, QStyle, QStyleOpt
 from Custom_Widgets.QCustomTheme import QCustomTheme
 
 from Custom_Widgets.components.python.ui_info import Ui_Form
+from Custom_Widgets.QCustomComponentLoader import QCustomComponentLoader
 
 class LoadForm(QWidget):
     def __init__(self, form):
@@ -130,6 +131,7 @@ class QCustomTipOverlay(QWidget, Ui_Form):
         return super().eventFilter(obj, e)
     
     def paintEvent(self, e: QPaintEvent):
+        self.adjustSizeToContent()
         super().paintEvent(e)
         # Move the widget to the position determined by the animation manager
         # self.move(self.manager.position(self))
@@ -203,7 +205,8 @@ class QCustomTipOverlay(QWidget, Ui_Form):
         self.showForm = form
         # load form
         if self.showForm:
-            self.form = LoadForm(self.showForm)
+            self.form = QCustomComponentLoader()
+            self.form.loadComponent(formClass = self.showForm)
             self.layout().addWidget(self.form) 
         
     def addWidget(self, widget):

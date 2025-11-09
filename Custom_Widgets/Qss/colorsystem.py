@@ -4,6 +4,8 @@ from qtpy.QtCore import *
 import matplotlib.colors as mc
 import colorsys
 
+script_dir = os.path.dirname(os.path.abspath(sys.argv[0])).replace("\\", "/")
+
 settings = QSettings()
 
 def adjust_lightness(color, amount=0.5):
@@ -369,6 +371,7 @@ class CreateColorVariable():
         $BORDER_SELECTION_2: 1px solid $COLOR_ACCENT_2;
         $BORDER_SELECTION_1: 1px solid $COLOR_ACCENT_1;
         $PATH_RESOURCES: '{theme.ICONS}';
+        $RELATIVE_FOLDER: "{script_dir}"
         //===================================================//
         // END //
         //====================================================//

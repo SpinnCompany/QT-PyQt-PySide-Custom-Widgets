@@ -19,24 +19,17 @@ import argparse
 from termcolor import colored  # Install termcolor using: pip install termcolor
 import textwrap
 
-from qtpy.QtCore import Signal
-
-from Custom_Widgets.Qss.SvgToPngIcons import *
-
-
-########################################################################
-## MODULE UPDATED TO USE QTPY
-########################################################################
-from qtpy.QtCore import QUrl
+import qtpy
+from qtpy.QtCore import Signal, QObject
 from qtpy.QtGui import QColor
 
-from . Qss.colorsystem import *
+from Custom_Widgets.QCustomTheme import QCustomTheme
 
-########################################################################
-## WORKER SIGNAL CLASS
-########################################################################
-class ProjectMakerSignals(QObject):
+class ProjectMaker(QObject):
     progress = Signal(int)
+
+    def __init__(self):
+        super().__init__()
 
 def progress(count, status='Done'):
     bar_len = 30
@@ -84,8 +77,10 @@ def create_requirements_file(required_packages, file_path="requirements.txt"):
         for package in required_packages:
             file.write(package + "\n")
 
+project_maker = ProjectMaker()
 
 def create_project():
+    
     # Current Directory
     currentDir = os.getcwd()
     print(colored(textwrap.dedent("""
@@ -108,11 +103,12 @@ def create_project():
         exit()
     
     # Check ui file
-    ui_path = os.path.abspath(os.path.join(os.getcwd(), 'ui/interface.ui'))
+    # Changed to use QCustomQmainWindow instead of QMainWindow
+    ui_path = os.path.abspath(os.path.join(os.getcwd(), 'ui/QCustomQMainWindow.ui'))
     if not os.path.exists(os.path.abspath(os.path.join(os.getcwd(), 'ui'))):
         os.mkdir(os.path.abspath(os.path.join(os.getcwd(), 'ui')))
     if not os.path.exists(ui_path):   
-        shutil.copy(os.path.abspath(os.path.join(os.path.dirname(__file__), 'components/uis/interface.ui')), os.path.join(os.getcwd(),"ui"))  
+        shutil.copy(os.path.abspath(os.path.join(os.path.dirname(__file__), 'components/uis/QCustomQMainWindow.ui')), os.path.join(os.getcwd(),"ui"))  
 
     # App Qt binding/API Name
     print(textwrap.dedent("""
@@ -162,12 +158,11 @@ def create_project():
         if query_yes_no(colored(textwrap.dedent("Your icons color is " + str(iconsColor) + ". Save the color and continue?"), "blue")):
             break
 
-    signals = ProjectMakerSignals()
-    progress_callback = signals.progress
-    signals.progress.connect(progress)
+    progress_callback = project_maker.progress
+    project_maker.progress.connect(progress)
 
     # Create colors
-    normal_color = color_to_hex(iconsColor)
+    normal_color = QCustomTheme.colorToHex(None, iconsColor)
 
     
 
@@ -190,7 +185,7 @@ def create_project():
         if query_yes_no(colored(textwrap.dedent("Your icons color is " + str(qtIconsColor) + ". Save the color and continue?"), "blue")):
             break
     
-    qt_normal_color = color_to_hex(qtIconsColor)
+    qt_normal_color = QCustomTheme.colorToHex(None, qtIconsColor)
     
 
     print(textwrap.dedent(f"""
@@ -209,7 +204,7 @@ def create_project():
         if query_yes_no(colored(textwrap.dedent("Your app background color is " + str(bgColor) + ". Save the color and continue?"), "blue")):
             break
 
-    bgColor = color_to_hex(bgColor)
+    bgColor = QCustomTheme.colorToHex(None, bgColor)
 
     while True:
         txtColor = input(textwrap.dedent("Enter app text color: "))
@@ -222,7 +217,7 @@ def create_project():
         if query_yes_no(colored(textwrap.dedent("Your app text color is " + str(txtColor) + ". Save the color and continue?"), "blue")):
             break
 
-    txtColor = color_to_hex(txtColor)
+    txtColor = QCustomTheme.colorToHex(None, txtColor)
 
     while True:
         accColor = input(textwrap.dedent("Enter app accent color: "))
@@ -235,7 +230,7 @@ def create_project():
         if query_yes_no(colored(textwrap.dedent("Your app accent color is " + str(accColor) + ". Save the color and continue?"), "blue")):
             break
 
-    accColor = color_to_hex(accColor)
+    accColor = QCustomTheme.colorToHex(None, accColor)
 
     # Generate py from ui
     call(["Custom_Widgets", "--convert-ui", "ui", "--qt-library", appQtBinding])
@@ -293,35 +288,49 @@ def create_project():
       
     with open(json_path, 'r+') as f:
         data = json.load(f)
-        # print(data)
+
+        # Update QtBinding
         data["QtBinding"] = appQtBinding
-        if "QMainWindow" in data:
-            for QMainWindow in data["QMainWindow"]:
-                # Set window tittle
-                QMainWindow["tittle"] = appName
+        data["CheckForMissingicons"] = True
+        data["LiveCompileQss"] = True
+
+        # Update QMainWindow title
+        data["QMainWindow"] = {}
+        qmainwindow_settings = data["QMainWindow"]
+        qmainwindow_settings["title"] = appName
 
         ########################################################################
         ## QSETTINGS
         ########################################################################
-        if "QSettings" in data:
-            for settings in data["QSettings"]:
-                appSettings = settings['AppSettings']
-                appSettings["OrginizationName"] = str(appName)
-                appSettings["ApplicationName"] = str(organizationName)
-                appSettings["OrginizationDormain"] = str(domainName)
-                
-                themeSettings = settings['ThemeSettings']
-                for theme_setting in themeSettings:
-                    customThemes = theme_setting['CustomTheme']
-                    for customTheme in customThemes:
-                        customTheme["Background-color"] = str(bgColor)
-                        customTheme["Text-color"] = str(txtColor)
-                        customTheme["Accent-color"] = str(accColor)
-                        customTheme["Icons-color"] = str(normal_color)
+        data["QSettings"] = {
+            "AppSettings": {
+                "OrginizationName": str(appName),
+                "ApplicationName": str(organizationName),
+                "OrginizationDormain": str(domainName)
+            },
+            "ThemeSettings": {
+                "QtDesignerIconsColor": str(qt_normal_color),
+                "CustomThemes": []
+            }
+        }
+        
+        settings = data["QSettings"]
+        themeSettings = settings['ThemeSettings']
+        customThemes = themeSettings['CustomThemes']
 
+        new_theme = {
+            "Background-color": str(bgColor),
+            "Text-color": str(txtColor),
+            "Accent-color": str(accColor),
+            "Icons-color": str(normal_color),
+            "Theme-name": "Default-theme",
+            "Default-Theme": True
+        }
+
+        customThemes.append(new_theme)
 
         f.seek(0)  
-        json.dump(data, f, indent=2)
+        json.dump(data, f, indent=4)
         f.truncate()
 
 
@@ -343,12 +352,19 @@ def create_project():
 
     print(textwrap.dedent("Successfully created README.md"))
 
-    print(textwrap.dedent("Creating the icons (png) files"))
-    print(textwrap.dedent(f"\nGenerating icons for your app. Icons color: {iconsColor}"))
-    NewIconsGenerator.generateIcons(progress_callback, normal_color, "", normal_color.replace("#", ""))
-    print(textwrap.dedent(f"\nGenerating icons for Qt Designer app. Icons color: {qtIconsColor}"))
-    NewIconsGenerator.generateIcons(progress_callback, qt_normal_color, "", "Icons", createQrc = True)
-    print(textwrap.dedent("Icons have been created"))
+    # print(textwrap.dedent("Creating the icons (png) files"))
+    # print(textwrap.dedent(f"\nGenerating icons for your app. Icons color: {iconsColor}"))
+
+    # FIXME: Wont run, but icons will be generated when app is launched
+    # themeEngine = QCustomTheme()
+    # themeEngine.generateIcons(progress_callback, normal_color, "", normal_color.replace("#", ""))
+    # print(textwrap.dedent(f"\nGenerating icons for Qt Designer app. Icons color: {qtIconsColor}"))
+    # themeEngine.generateIcons(progress_callback, qt_normal_color, "", "Icons", createQrc = True)
+    # print(textwrap.dedent("Icons have been created"))
+
+    print("---------------------------------------")
+    print(textwrap.dedent("ALL DONE: Icons will be generated in the background when you first run the app."))
+    print("---------------------------------------")
 
     print(textwrap.dedent("""
 

@@ -4,6 +4,7 @@ from qtpy.QtGui import QPaintEvent, QPainter, QIcon, QPalette, QPixmap
 from qtpy.QtCore import Qt, QPoint, QSize, QEvent, QTimer, QPropertyAnimation, QParallelAnimationGroup, QEasingCurve, QObject, Signal
 from qtpy.QtWidgets import QStyleOption, QWidget, QStyle, QGraphicsOpacityEffect, QApplication
 from Custom_Widgets.components.python.ui_info import Ui_Form
+from Custom_Widgets.QCustomComponentLoader import QCustomComponentLoader
 
 class LoadForm(QWidget):
     def __init__(self, form):
@@ -48,47 +49,16 @@ class QCustomModals:
                 }
             """)
         
-        def __init__(self, **kwargs):
+        def __init__(self, title=None, description=None, closeIcon=None, modalIcon=None, 
+             isClosable=True, parent=None, position=None, animationDuration=None, showForm=None,
+             addWidget=None, duration=None):
+    
             super().__init__()
             self.setupUi(self)
-            
-            # get default icon:
-            self.closeIcon = self.style().standardIcon(QStyle.SP_TitleBarCloseButton).pixmap(QSize(32, 32))
-            self.closeButton.setIcon(self.closeIcon)
-            
-            # Get the info icon from the style
-            self.infoIcon = self.style().standardIcon(QStyle.SP_MessageBoxInformation).pixmap(QSize(32, 32))
-            # Get the success icon from the style
-            self.successIcon = self.style().standardIcon(QStyle.SP_DialogApplyButton).pixmap(QSize(32, 32))
-            # Get the warning icon from the style
-            self.warningIcon = self.style().standardIcon(QStyle.SP_MessageBoxWarning).pixmap(QSize(32, 32))
-            # Get the error icon from the style
-            self.errorIcon = self.style().standardIcon(QStyle.SP_MessageBoxCritical).pixmap(QSize(32, 32))
+            if parent:
+                self.setParent(parent)
 
-            # Customize modal based on kwargs
-            if 'title' in kwargs:
-                self.titlelabel.setText(kwargs['title'])
-                
-            if 'description' in kwargs:
-                self.bodyLabel.setText(kwargs['description'])
-                
-            if 'closeIcon' in kwargs:
-                # Set icon
-                self.closeIcon = QIcon(kwargs['closeIcon'])
-                self.closeButton.setIcon(self.closeIcon)
-                
-            if 'modalIcon' in kwargs:
-                # Set modal icon
-                self.modalIcon = QPixmap(kwargs['modalIcon'])
-                self.iconlabel.setPixmap(self.modalIcon)
-                
-            if "isClosable"  in kwargs:
-                self.isClosable = kwargs['isClosable']
-        
-            if 'parent' in kwargs:
-                self.setParent(kwargs['parent'])
-
-            if not self.parent() is None:
+            if self.parent() is not None:
                 palette = self.parent().palette()
             else:
                 # Get the existing QApplication instance (if it exists)
@@ -98,47 +68,82 @@ class QCustomModals:
                     app = QApplication([])
                 # Get the palette from the application
                 palette = app.palette()
-                
+
             background_color = palette.color(QPalette.Window)
 
             # Calculate the luminance of the background color
             luminance = 0.2126 * background_color.red() + 0.7152 * background_color.green() + 0.0722 * background_color.blue()
 
             # Determine if the background color is dark or light
-            if luminance < 128:
-                # Dark background
-                self.isDark = True
+            self.isDark = luminance < 128
+
+            # get default icon:
+            self.closeIcon = self.style().standardIcon(QStyle.SP_TitleBarCloseButton).pixmap(QSize(32, 32))
+            self.closeButton.setIcon(self.closeIcon)
+
+            # Get the info icon from the style
+            self.infoIcon = self.style().standardIcon(QStyle.SP_MessageBoxInformation).pixmap(QSize(32, 32))
+            # Get the success icon from the style
+            self.successIcon = self.style().standardIcon(QStyle.SP_DialogApplyButton).pixmap(QSize(32, 32))
+            # Get the warning icon from the style
+            self.warningIcon = self.style().standardIcon(QStyle.SP_MessageBoxWarning).pixmap(QSize(32, 32))
+            # Get the error icon from the style
+            self.errorIcon = self.style().standardIcon(QStyle.SP_MessageBoxCritical).pixmap(QSize(32, 32))
+
+            # Customize modal based on arguments
+            self.isClosable = isClosable
+            self.position = position
+
+            if title:
+                self.titlelabel.setText(title)
             else:
-                # Light background
-                self.isDark = False
-        
-            if 'position' in kwargs:
-                self.position = kwargs['position']
-                # self.calculate_position(kwargs['position'])
-                
-            if 'animationDuration' in kwargs:
-                self.animationDuration = kwargs['animationDuration']
-            
-            if 'duration' in kwargs:
-                self.animationDuration = kwargs['duration']
-            
+                self.titlelabel.hide()
+
+            if description:
+                self.bodyLabel.setText(description)
+            else:
+                # hide body
+                self.body.hide()
+
+            if closeIcon:
+                # Set icon
+                self.closeIcon = QIcon(closeIcon)
+                self.closeButton.setIcon(self.closeIcon)
+
+            if not self.isClosable and not title:
+                # hide header
+                self.header.hide()
+
+            if modalIcon:
+                # Set modal icon
+                self.modalIcon = QPixmap(modalIcon)
+                self.iconlabel.setPixmap(self.modalIcon)
+
+            if showForm: 
+                self.form = QCustomComponentLoader()
+                self.form.loadComponent(formClass=showForm)
+                self.layout().addWidget(self.form) 
+                # older versions
+                self.form.form = self.form.ui 
+                self.shownForm = self.form.ui  
+              
+            if addWidget:
+                self.addWidget(addWidget)
+
+            self.animationDuration = animationDuration if animationDuration else duration
+
             self.closeButton.setFixedSize(20, 20)
             self.closeButton.setIconSize(QSize(self.spacing, self.spacing))
             self.closeButton.setCursor(Qt.PointingHandCursor)
             # Connect close button
             self.closeButton.clicked.connect(self.close)
             self.closeButton.setVisible(self.isClosable)
-            
+
             self.opacityEffect = QGraphicsOpacityEffect(self)
-            self.opacityAni = QPropertyAnimation(
-                self.opacityEffect, b'opacity', self)
-            
-            # Set attribute to enable styled background
-            # self.setAttribute(Qt.WA_StyledBackground, True)
-            
+            self.opacityAni = QPropertyAnimation(self.opacityEffect, b'opacity', self)
+
+                        
         def paintEvent(self, e: QPaintEvent):
-            super().paintEvent(e)
-            
             opt = QStyleOption()
             opt.initFrom(self)
             painter = QPainter(self)
@@ -150,6 +155,8 @@ class QCustomModals:
             #
             rect = self.rect().adjusted(1, 1, -1, -1)
             painter.drawRoundedRect(rect, 6, 6)
+
+            super().paintEvent(e)
             
             
         def adjustSizeToContent(self):
@@ -157,7 +164,13 @@ class QCustomModals:
             content_size = self.layout().sizeHint()
             # Add some padding if needed
             padding = 0
-            self.setFixedSize(content_size.width() + padding, content_size.height() + padding)
+            # self.setFixedSize(content_size.width() + padding, content_size.height() + padding)
+            # self.resize(content_size.width() + padding, content_size.height() + padding)
+            # size_hint = self.sizeHint()
+            # self.resize(size_hint.width() + padding, size_hint.height() + padding)
+
+            # Automatically resize to fit content
+            self.adjustSize()
             
             if self.position == 'top-right':
                 x = self.parent().size().width() - self.width() - self.margin
@@ -209,9 +222,9 @@ class QCustomModals:
             self.opacityAni.start()
 
         def eventFilter(self, obj, e: QEvent):
-            if obj is self.parent():
-                if e.type() in [QEvent.Resize, QEvent.WindowStateChange]:
-                    self.adjustSizeToContent()
+            # if obj is self.parent():
+            #     if e.type() in [QEvent.Resize, QEvent.WindowStateChange]:
+            #         self.adjustSizeToContent()
 
             return super().eventFilter(obj, e)
 
@@ -220,19 +233,15 @@ class QCustomModals:
             self.deleteLater()
 
         def showEvent(self, e):
-            super().showEvent(e)
-
             self.adjustSizeToContent()
-            
             if self.animationDuration > 0:
                 QTimer.singleShot(self.animationDuration, self.fadeOut)
 
             if self.position != None:
                 manager = QCustomModalsManager.make(self.position)
                 manager.add(self)
-
-            if self.parent():
-                self.parent().installEventFilter(self)
+            
+            super().showEvent(e)
 
         def setIcon(self, icon):
             self.icon = icon
@@ -252,7 +261,6 @@ class QCustomModals:
                 self.description.hide()
                 return
             self.bodyLabel.setText(description)
-            self.adjustSizeToContent()
         
         def setTitle(self, title):
             self.title = title
@@ -260,7 +268,6 @@ class QCustomModals:
                 self.titlelabel.hide()
                 return
             self.titlelabel.setText(title)
-            self.adjustSizeToContent()
 
         def loadForm(self, form):
             self.showForm = form
@@ -272,7 +279,7 @@ class QCustomModals:
         def addWidget(self, widget):
             self.widget = widget
             if self.widget:
-                self.verticalLayout_2.addWidget(self.widget) 
+                self.layout().addWidget(self.widget) 
 
 
     class InformationModal(BaseModal):
@@ -415,9 +422,7 @@ class QCustomModals:
             if self.modalIcon: self.iconlabel.setPixmap(QPixmap(self.modalIcon))
 
             style = """
-                CustomModal * {
-                    background-color: transparent;
-                }
+                
             """
 
             self.setStyleSheet(style)

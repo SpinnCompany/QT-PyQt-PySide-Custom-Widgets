@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'infozMeqpZ.ui'
+## Form generated from reading UI file 'infoEebOdu.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.1
+## Created by: Qt User Interface Compiler version 6.7.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -15,8 +15,8 @@ from qtpy.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from qtpy.QtWidgets import (QApplication, QFrame, QHBoxLayout, QLabel,
-    QPushButton, QSizePolicy, QVBoxLayout, QWidget)
+from qtpy.QtWidgets import (QApplication, QHBoxLayout, QLabel, QPushButton,
+    QSizePolicy, QVBoxLayout, QWidget)
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -24,28 +24,26 @@ class Ui_Form(object):
             Form.setObjectName(u"Form")
         Form.resize(444, 79)
         self.verticalLayout = QVBoxLayout(Form)
-        self.verticalLayout.setSpacing(0)
+        self.verticalLayout.setSpacing(10)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.verticalLayout.setContentsMargins(5, 5, 5, 5)
-        self.frame = QFrame(Form)
-        self.frame.setObjectName(u"frame")
-        self.frame.setFrameShape(QFrame.StyledPanel)
-        self.frame.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout = QHBoxLayout(self.frame)
+        self.verticalLayout.setContentsMargins(10, 10, 10, 10)
+        self.header = QWidget(Form)
+        self.header.setObjectName(u"header")
+        self.horizontalLayout = QHBoxLayout(self.header)
         self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
-        self.iconlabel = QLabel(self.frame)
+        self.iconlabel = QLabel(self.header)
         self.iconlabel.setObjectName(u"iconlabel")
         self.iconlabel.setMinimumSize(QSize(20, 20))
         self.iconlabel.setMaximumSize(QSize(20, 20))
         self.iconlabel.setScaledContents(True)
 
-        self.horizontalLayout.addWidget(self.iconlabel, 0, Qt.AlignLeft)
+        self.horizontalLayout.addWidget(self.iconlabel, 0, Qt.AlignmentFlag.AlignLeft)
 
-        self.titlelabel = QLabel(self.frame)
+        self.titlelabel = QLabel(self.header)
         self.titlelabel.setObjectName(u"titlelabel")
-        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.titlelabel.sizePolicy().hasHeightForWidth())
@@ -57,38 +55,36 @@ class Ui_Form(object):
 
         self.horizontalLayout.addWidget(self.titlelabel)
 
-        self.closeButton = QPushButton(self.frame)
+        self.closeButton = QPushButton(self.header)
         self.closeButton.setObjectName(u"closeButton")
         self.closeButton.setCursor(QCursor(Qt.PointingHandCursor))
         icon = QIcon(QIcon.fromTheme(u"application-exit"))
         self.closeButton.setIcon(icon)
 
-        self.horizontalLayout.addWidget(self.closeButton, 0, Qt.AlignRight|Qt.AlignTop)
+        self.horizontalLayout.addWidget(self.closeButton, 0, Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTop)
 
 
-        self.verticalLayout.addWidget(self.frame, 0, Qt.AlignTop)
+        self.verticalLayout.addWidget(self.header)
 
-        self.frame_2 = QFrame(Form)
-        self.frame_2.setObjectName(u"frame_2")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        self.body = QWidget(Form)
+        self.body.setObjectName(u"body")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.frame_2.sizePolicy().hasHeightForWidth())
-        self.frame_2.setSizePolicy(sizePolicy1)
-        self.frame_2.setFrameShape(QFrame.StyledPanel)
-        self.frame_2.setFrameShadow(QFrame.Raised)
-        self.verticalLayout_2 = QVBoxLayout(self.frame_2)
+        sizePolicy1.setHeightForWidth(self.body.sizePolicy().hasHeightForWidth())
+        self.body.setSizePolicy(sizePolicy1)
+        self.verticalLayout_2 = QVBoxLayout(self.body)
         self.verticalLayout_2.setSpacing(0)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.bodyLabel = QLabel(self.frame_2)
+        self.bodyLabel = QLabel(self.body)
         self.bodyLabel.setObjectName(u"bodyLabel")
         self.bodyLabel.setWordWrap(True)
 
         self.verticalLayout_2.addWidget(self.bodyLabel)
 
 
-        self.verticalLayout.addWidget(self.frame_2)
+        self.verticalLayout.addWidget(self.body)
 
 
         self.retranslateUi(Form)

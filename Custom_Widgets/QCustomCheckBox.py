@@ -3,17 +3,27 @@
 # YOUTUBE: (SPINN TV) https://www.youtube.com/spinnTv
 # WEBSITE: spinncode.com
 ########################################################################
-from qtpy.QtCore import Qt, QEasingCurve, QPropertyAnimation, QSize, Property, QPoint
+from qtpy.QtCore import Qt, QEasingCurve, QPropertyAnimation, QSize, Property, QPoint, QEnum, QObject
 from qtpy.QtGui import QPalette, QIcon, QPaintEvent, QPainter, QColor
 from qtpy.QtWidgets import QCheckBox, QApplication, QLabel, QStyleOption, QStyle
 
-########################################################################
-## CUSTOM QCheckBox
-########################################################################
+import os
+
 class QCustomCheckBox(QCheckBox):
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    WIDGET_ICON = os.path.join(script_dir, "components/icons/award.png")
+    WIDGET_TOOLTIP = "A custom animated checkbox widget"
+    WIDGET_DOM_XML = """
+    <ui language='c++'>
+        <widget class='QCustomCheckBox' name='customCheckBox'>
+        </widget>
+    </ui>
+    """
+    WIDGET_MODULE="Custom_Widgets.QCustomCheckBox"
+    
     def __init__(self, parent=None):
         super().__init__(parent)
-        
+
         self.setCursor(Qt.PointingHandCursor)
 
         # Check if a QApplication instance already exists
@@ -39,13 +49,14 @@ class QCustomCheckBox(QCheckBox):
         self._activeColor = activeColor
 
         # Animation
-        self.animationEasingCurve = QEasingCurve.OutBounce
-        self.animationDuration = 300
+        self._animationEasingCurve = QEasingCurve.OutBounce
+        self._easing_curve = 0
+        self._animationDuration = 300
 
         self.pos = 0
         self.animation = QPropertyAnimation(self, b"position")
-        self.animation.setEasingCurve(self.animationEasingCurve)
-        self.animation.setDuration(self.animationDuration)
+        self.animation.setEasingCurve(self._animationEasingCurve)
+        self.animation.setDuration(self._animationDuration)
         self.stateChanged.connect(self.setup_animation)
 
         # Create a QLabel to display the text
@@ -57,7 +68,7 @@ class QCustomCheckBox(QCheckBox):
         self.icon = QIcon()
         self._iconSize = QSize(0, 0)  # Default icon size
 
-    @Property(str)
+    @Property(QColor)
     def backgroundColor(self):
         return self.bgColor
     
@@ -65,7 +76,7 @@ class QCustomCheckBox(QCheckBox):
     def backgroundColor(self, color):
         self.bgColor = color
     
-    @Property(str)
+    @Property(QColor)
     def circleColor(self):
         return self._circleColor
     
@@ -73,13 +84,32 @@ class QCustomCheckBox(QCheckBox):
     def circleColor(self, color):
         self._circleColor = color
 
-    @Property(str)
+    @Property(QColor)
     def activeColor(self):
         return self._activeColor
     
     @activeColor.setter
     def activeColor(self, color):
         self._activeColor = color
+
+    @Property(int)
+    def animationDuration(self):
+        return self._animationDuration
+    
+    @animationDuration.setter
+    def animationDuration(self, duration):
+        self._animationDuration = duration
+
+    @Property(QEasingCurve, designable=True)
+    def animationEasingCurve(self):
+        return self._easing_curve
+    
+    @animationEasingCurve.setter
+    def animationEasingCurve(self, curve):
+        # if not isinstance(curve, EasingCurveEnum):
+        #     raise ValueError("Invalid easing curve enum")
+            
+        self._easing_curve = curve
 
     def setIcon(self, icon):
         self.icon = icon
@@ -113,8 +143,8 @@ class QCustomCheckBox(QCheckBox):
             self.animation.setEasingCurve(self.animationEasingCurve)
 
         if "animationDuration" in customValues:
-            self.animationDuration = customValues["animationDuration"]
-            self.animation.setDuration(self.animationDuration)
+            self._animationDuration = customValues["animationDuration"]
+            self.animation.setDuration(self._animationDuration)
 
         self.update()
     
@@ -135,15 +165,18 @@ class QCustomCheckBox(QCheckBox):
         icon_size = self._iconSize.width()
         label_margin = 5  # Adjust the margin between the icon and the label
 
-        label_width = self.width() - (self.height() * 2.1 + icon_size + label_margin)  # Calculate the width of the label area
-        label_height = self.height()  # Use the height of the checkbox for the label height
+        if not self.label.text().strip():
+            self.label.setFixedSize(0, 0)
+        else:
+            label_width = self.width() - (self.height() * 2.1 + icon_size + label_margin)  # Calculate the width of the label area
+            label_height = self.height()  # Use the height of the checkbox for the label height
 
-        self.label.adjustSize()
-        
-        label_x = self.height() * 2.1 + icon_size + label_margin  # Calculate the x position of the label
-        label_y = (self.height() - label_height) / 2  # Center the label vertically within the checkbox area
+            self.label.adjustSize()
+            
+            label_x = self.height() * 2.1 + icon_size + label_margin  # Calculate the x position of the label
+            label_y = (self.height() - label_height) / 2  # Center the label vertically within the checkbox area
 
-        self.label.setGeometry(label_x, label_y, label_width, label_height)
+            self.label.setGeometry(label_x, label_y, label_width, label_height)
         
         self.update()
 
@@ -153,7 +186,7 @@ class QCustomCheckBox(QCheckBox):
         self.label.setText(text)
         self.adjustWidgetSize()
 
-    @Property(float)
+    @Property(float, designable=False)
     def position(self):
         return self.pos
     

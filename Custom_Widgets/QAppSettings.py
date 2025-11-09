@@ -14,7 +14,7 @@ import os
 ########################################################################
 from qtpy.QtCore import QCoreApplication, QSettings
 
-from Custom_Widgets.Qss.SassCompiler import CompileStyleSheet
+from Custom_Widgets.Log import *
 
 ########################################################################
 ## QT APP SETTINGS
@@ -26,31 +26,42 @@ class QAppSettings():
         ## CREATE APP SETTINGS
         ########################################################################
 
-    def updateAppSettings(self, generateIcons: bool = True, reloadJson: bool = True):
+    def updateAppSettings(self, generateIcons: bool = True, reloadJson: bool = True, paintEntireApp: bool = True, QtDesignerMode: bool = False):
+        
+        if not hasattr(self, "themeEngine"):
+            return
 
-        if len(str(self.orginazationName)) > 0:
-            QCoreApplication.setOrganizationName(str(self.orginazationName))
-        if len(str(self.applicationName)) > 0:
-            QCoreApplication.setApplicationName(str(self.applicationName))
-        if len(str(self.orginazationDomain)) > 0:
-            QCoreApplication.setOrganizationDomain(str(self.orginazationDomain))
+        themeEngine = self.themeEngine
+
+        if len(str(themeEngine.orginazationName)) > 0:
+            QCoreApplication.setOrganizationName(str(themeEngine.orginazationName))
+        if len(str(themeEngine.applicationName)) > 0:
+            QCoreApplication.setApplicationName(str(themeEngine.applicationName))
+        if len(str(themeEngine.orginazationDomain)) > 0:
+            QCoreApplication.setOrganizationDomain(str(themeEngine.orginazationDomain))
 
         settings = QSettings()
 
-        if settings.value("THEME") is None:
-            for theme in self.ui.themes:
+        # if theme not set
+        init_theme_set = settings.value("INIT-THEME-SET")
+        if settings.value("THEME") is None or not init_theme_set:
+            for theme in themeEngine.themes:
                 if theme.defaultTheme:
                     # update app theme
-                    settings.setValue("THEME", theme.name)
+                    if (init_theme_set is None or not init_theme_set):
+                        settings.setValue("THEME", theme.name)
+                        settings.setValue("INIT-THEME-SET", True)
+                        print("Initial theme set...", theme.name)
 
+        settings.setValue("THEMES-LIST", themeEngine.themes)
 
         #######################################################################
         # APPLY COMPILED STYLESHEET
         #######################################################################
         if reloadJson:
-            self.reloadJsonStyles(update = True)
+            themeEngine.reloadJsonStyles(update = False)
             
-        CompileStyleSheet.applyCompiledSass(self, generateIcons = generateIcons)
+        themeEngine.applyCompiledSass(generateIcons = generateIcons, paintEntireApp = paintEntireApp)
 
 
 ########################################################################

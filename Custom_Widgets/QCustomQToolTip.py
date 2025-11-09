@@ -529,8 +529,9 @@ class AutoPositionQCustomQToolTipManager(QCustomQToolTipManager):
             
 
 class QCustomQToolTipFilter(QObject):
-    def __init__(self, duration=1500, icon=None, tailPosition="auto"):
-        super().__init__()
+    def __init__(self, parent = None, duration=1500, icon=None, tailPosition="auto"):
+        super().__init__(parent)
+        self.parent = parent
         self.duration = duration
         self.icon = icon
         self.tailPosition = tailPosition
@@ -548,7 +549,7 @@ class QCustomQToolTipFilter(QObject):
     def showCustomToolTip(self, text, target):
         if not text or hasattr(target, "customTooltip") and target.customTooltip is not None:
             return
-        target.customTooltip = QCustomQToolTip(text=text, target=target, duration = self.duration, tailPosition=self.tailPosition)
+        target.customTooltip = QCustomQToolTip(parent = self.parent, text=text, target=target, duration = self.duration, tailPosition=self.tailPosition)
         target.customTooltip.show()
 
 

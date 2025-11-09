@@ -8,12 +8,15 @@ import xml.etree.ElementTree as ET
 from lxml import etree
 import re
 
-from Custom_Widgets.Qss.SvgToPngIcons import *
+import qtpy
 
 from Custom_Widgets.QAppSettings import QAppSettings
+# from Custom_Widgets.QCustomTheme import QCustomTheme
+from Custom_Widgets.Utils import replace_url_prefix, SharedData, is_in_designer, uiToPy
+from Custom_Widgets.Log import *
 
 class FileMonitor(QObject):
-    def __init__(self, files_to_monitor):
+    def __init__(self, files_to_monitor, refresh=False):
         super().__init__()
         file_folder = os.path.join(os.getcwd(), "generated-files")
         if not os.path.exists(file_folder):
@@ -29,29 +32,85 @@ class FileMonitor(QObject):
             os.makedirs(file_folder)
 
         self.files_to_monitor = files_to_monitor
+        self.refresh = refresh
+        self.fileSystemWatchers = []
+        
+        # Create a QFileSystemWatcher for folder monitoring
+        if refresh:
+            self.monitor_folders()
+        else:
+            # Monitor files if no refresh argument
+            self.monitor_files(files_to_monitor)
+
+    def monitor_folders(self):
+        # Monitor the folder for changes (e.g., new .ui files added)
+        folder_to_monitor = os.path.dirname(self.files_to_monitor[0]) if self.files_to_monitor else os.getcwd()
+        self.folder_watcher = QFileSystemWatcher([folder_to_monitor])
+        self.folder_watcher.directoryChanged.connect(self.on_folder_change)
+        
+        # Initially monitor the files already in the folder
+        self.monitor_files(self.files_to_monitor)
+
+    def monitor_files(self, files_to_monitor):
+        # Clear any existing file watchers
+        for watcher in self.fileSystemWatchers:
+            watcher.fileChanged.disconnect(self.on_file_change)
+        self.fileSystemWatchers.clear()
 
         # Create a QFileSystemWatcher for each file
-        self.fileSystemWatchers = [QFileSystemWatcher([file]) for file in self.files_to_monitor]
+        self.fileSystemWatchers = [QFileSystemWatcher([file]) for file in files_to_monitor]
 
         # Connect the fileChanged signal for each watcher
         for watcher in self.fileSystemWatchers:
             watcher.fileChanged.connect(self.on_file_change)
 
-        self.button_info = []
-        self.label_info = []
+        print(f"Monitoring {len(self.files_to_monitor)} files...")
 
     def on_file_change(self, path):
         print(f"File {path} has been changed!")
-        # Find the index of the changed file
-        index = -1
-        for i, watcher in enumerate(self.fileSystemWatchers):
-            if path in watcher.files():
-                index = i
-                break
+        # Handle file modification event
+        self.update_file_list()
+        convert_file(path)
 
-        if index != -1:
-            convert_file(path)
+    def on_folder_change(self, path):
+        # Refresh the list of .ui files to monitor if a folder is updated
+        self.update_file_list()
+
+    def update_file_list(self):
+        # Find all .ui files in the folder
+        folder_path = os.path.dirname(self.files_to_monitor[0]) if self.files_to_monitor else os.getcwd()
+        ui_files = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith(".ui")]
+
+        # Update the list of monitored files if there are new files or missing files
+        new_files = set(ui_files) - set(self.files_to_monitor)
+        removed_files = set(self.files_to_monitor) - set(ui_files)
+
+        if new_files or removed_files:
+            print(f"Updating monitored files: {len(new_files)} new files, {len(removed_files)} removed files")
+            self.files_to_monitor = ui_files
+            self.monitor_files(self.files_to_monitor)
+
+def find_parent_with_class(widget):
+    """
+    Traverse up the XML tree from the given widget until an element with a non-None class attribute is found.
     
+    Parameters:
+        widget (Element): The starting widget (XML element).
+        
+    Returns:
+        Element or None: The found parent element with a non-None class attribute, or None if not found.
+    """
+    current_element = widget
+    while current_element is not None:
+        # Check if the current element has a non-None class attribute
+        if current_element.get('class') is not None:
+            return current_element
+        # Move up to the parent element
+        current_element = current_element.getparent()
+    
+    # Return None if no matching parent is found
+    return None
+
 def convert_file(path):
     # Load the UI file
     tree = etree.parse(path)
@@ -60,14 +119,57 @@ def convert_file(path):
     # Initialize an empty dictionary to store widget names and their icons
     widget_info = {}
     table_items = 0
+    tree_items = 0
 
     # Iterate through each element in the UI file
     for element in root.iter():
+        # Get the widget class and name
+        widget_class = element.attrib.get('class')
+        widget_name = element.attrib.get('name')
+        
+        # Print for debugging
+        # print(f"Widget Class: {widget_class}, Widget Name: {widget_name}")
+
+        if widget_class == 'QComboBox':
+            # Initialize a list to hold combo box items
+            combo_items = []
+
+            # Find all items within the QComboBox
+            for item_element in element.findall("item"):
+                item_data = {}
+
+                # Get the item text
+                text_element = item_element.find("property[@name='text']/string")
+                if text_element is not None:
+                    item_data['name'] = text_element.text
+
+                # Get the item icon
+                icon_element = item_element.find("property[@name='icon']/iconset/normaloff")
+                if icon_element is not None:
+                    icon_path = icon_element.text
+                    qrc_file_path = icon_element.attrib['resource']
+                    qrc_folder = os.path.dirname(qrc_file_path)
+                    item_data['icon'] = replace_url_prefix(icon_path, qrc_folder)
+
+                combo_items.append(item_data)
+
+            # Save the combo box items in the widget_info dictionary
+            widget_info["QComboBox"] = widget_info.get("QComboBox", [])
+            widget_info["QComboBox"].append({"name": widget_name, "items": combo_items})
+
         if 'name' in element.attrib and (element.attrib['name'] == 'icon' or element.attrib['name'] == "windowIcon"):
             widget = element.getparent()  # Get the parent widget
-            widget_class = widget.get('class')  # Get the widget class
-            widget_name = widget.get('name')  # Get the widget name
+            widget_class = widget.get('class')  
+            parent_widget = widget.getparent()
             
+            if widget.get('class') is None:
+                parent_with_class = find_parent_with_class(widget)
+                if parent_with_class is not None:
+                    widget_class = parent_with_class.get('class')  
+                    parent_widget = parent_with_class
+            
+            widget_name = widget.get('name')  
+
             iconset_element = element.find('iconset')
 
             if iconset_element is not None:
@@ -78,14 +180,15 @@ def convert_file(path):
                     qrc_folder = os.path.dirname(qrc_file_path)
                     # Combine with the relative path within the <iconset> tag
                     relative_path = iconset_element.find("normaloff").text
+                    
                     icon_url = replace_url_prefix(relative_path, qrc_folder)
 
                 else:
                     icon_url = generate_relative_path(path, iconset_element.find("normaloff").text)
                 
-                # Check if the widget's parent is a QTabWidget
-                parent_widget = widget.getparent()
-                if parent_widget.tag == 'widget' and parent_widget.get('class') == 'QTabWidget':
+                iconset_element.find("normaloff").text = ""
+
+                if parent_widget.tag == 'widget' and widget_class == 'QWidget' and parent_widget.get('class') == "QTabWidget":
                     # Get the tab name
                     tab_name = parent_widget.get('name')
                     # Add the widget info to the dictionary
@@ -94,7 +197,7 @@ def convert_file(path):
                     else:
                         widget_info[widget_class] = [{"QTabWidget": tab_name, "name": widget_name, "icon": icon_url}]
                 
-                elif parent_widget.tag == 'widget' and parent_widget.get('class') == 'QTableWidget':
+                elif parent_widget.tag == 'widget' and widget_class == 'QTableWidget':
                     table_name = parent_widget.get('name')
                     if table_items > 0:
                         widget_name = "__qtablewidgetitem" + str(table_items)
@@ -110,8 +213,26 @@ def convert_file(path):
                         widget_info[widget_class].append({"QTableWidget": table_name, "name": widget_name, "icon": icon_url})
                     else:
                         widget_info[widget_class] = [{"QTableWidget": table_name, "name": widget_name, "icon": icon_url}]
+                
+                elif parent_widget.tag == 'widget' and widget_class == 'QTreeWidget':
+                    tree_name = parent_widget.get('name')
+                    if tree_items > 0:
+                        widget_name = "qtreewidgetitem" + str(tree_items)
+                    else:
+                        widget_name = "qtreewidgetitem"
 
-                elif parent_widget.tag == 'widget' and parent_widget.get('class') == 'QToolBox':
+                    tree_items += 1
+                    
+                    # Set parent name
+                    widget.set('name', widget_name)
+                    
+                    # Add the widget info to the dictionary
+                    if "QTreeWidget" in widget_info:
+                        widget_info["QTreeWidget"].append({"QTreeWidget": tree_name, "name": widget_name, "icon": icon_url})
+                    else:
+                        widget_info["QTreeWidget"] = [{"QTreeWidget": tree_name, "name": widget_name, "icon": icon_url}]
+
+                elif parent_widget.tag == 'widget' and widget_class == 'QToolBox':
                     # Get the tab name
                     tab_name = parent_widget.get('name')
                     # Add the widget info to the dictionary
@@ -127,6 +248,42 @@ def convert_file(path):
                     else:
                         widget_info[widget_class] = [{"name": widget_name, "icon": icon_url}]
         
+        if widget_class == 'QCustomThemeDarkLightToggle':
+            dark_theme_icon_element = element.find("property[@name='darkThemeIcon']/iconset")
+            light_theme_icon_element = element.find("property[@name='lightThemeIcon']/iconset")
+
+            # Extract resource paths from the property tag for darkThemeIcon
+            dark_theme_icon_url = None
+            if dark_theme_icon_element is not None:
+                resource_path = dark_theme_icon_element.attrib.get('resource')
+                qrc_folder = os.path.dirname(resource_path)
+                if qrc_folder:
+                    relative_path = dark_theme_icon_element.find("normaloff").text
+                    dark_theme_icon_url = replace_url_prefix(relative_path, qrc_folder)
+
+            # Extract resource paths from the property tag for lightThemeIcon
+            light_theme_icon_url = None
+            if light_theme_icon_element is not None:
+                resource_path = light_theme_icon_element.attrib.get('resource')
+                qrc_folder = os.path.dirname(resource_path)
+                if qrc_folder:
+                    relative_path = light_theme_icon_element.find("normaloff").text
+                    light_theme_icon_url = replace_url_prefix(relative_path, qrc_folder)
+
+            # Append dark and light theme icons to the widget_info
+            if widget_class in widget_info:
+                widget_info[widget_class].append({
+                    "name": widget_name,
+                    "darkThemeIcon": dark_theme_icon_url,
+                    "lightThemeIcon": light_theme_icon_url
+                })
+            else:
+                widget_info[widget_class] = [{
+                    "name": widget_name,
+                    "darkThemeIcon": dark_theme_icon_url,
+                    "lightThemeIcon": light_theme_icon_url
+                }]
+
         if 'name' in element.attrib and element.attrib['name'] == 'pixmap':
             widget = element.getparent()  # Get the parent widget
             widget_class = widget.get('class')  # Get the widget class
@@ -164,9 +321,16 @@ def convert_file(path):
         # ("widget", "class", "QPushButton", "QPushButtonThemed"),
         # ("widget", "class", "QLabel", "QLabelThemed"),
     ]
-    replace_attributes_values(path, replacements_list)
 
-    
+    # Create a new file name
+    base_name, extension = os.path.splitext(os.path.basename(path))
+    new_file_name = "new_{}{}".format(base_name, extension)
+    new_file_path = os.path.join(os.getcwd(), "generated-files/ui/"+new_file_name)
+    # print(new_file_name)
+    # Save the modified XML to the new file
+    tree.write(new_file_path, encoding="utf-8", xml_declaration=True)
+
+    replace_attributes_values(path, replacements_list)
 
 def update_json(data, json_file_name):
     # Save the JSON data back to the file
@@ -182,11 +346,6 @@ def generate_relative_path(ui_path, relative_url):
     abs_path = os.path.abspath(os.path.join(ui_dir, relative_url))
     
     return abs_path
-
-def replace_url_prefix(url, new_prefix):
-    pattern = re.compile(r':/[^/]+/')
-    url = pattern.sub( new_prefix + '/', url, 1)
-    return re.sub(r'^\.\./', '', url)
     
 def start_file_listener(file_or_folder, qt_binding="PySide6"):
     if qt_binding is None:
@@ -232,7 +391,7 @@ def start_file_listener(file_or_folder, qt_binding="PySide6"):
     app = QApplication(sys.argv)
 
     # Create a FileMonitor instance with the list of files to monitor
-    file_monitor = FileMonitor(files_to_monitor)
+    file_monitor = FileMonitor(files_to_monitor, refresh=True)
 
     sys.exit(app.exec_())  # Start the application event loop
 
@@ -273,10 +432,29 @@ def replace_attributes_values(ui_file_path, replacements, root=None, tree=None):
     append_custom_widgets(new_file_path, widget_list)
 
     ui_output_py_path = os.path.join(os.getcwd(), "src/ui_"+base_name.replace(".ui", "")+".py")
-    NewIconsGenerator.uiToPy(new_file_path, ui_output_py_path)
+    uiToPy(new_file_path, ui_output_py_path)
+    assign_private_vars_to_instance_in_file(ui_output_py_path)
 
     return root  # Return the root element after modification
 
+def assign_private_vars_to_instance_in_file(py_file_path):
+    # Read the contents of the generated Python file
+    with open(py_file_path, 'r') as file:
+        content = file.read()
+
+    # Find all private variable names with 2 to 3 leading underscores (e.g., __qtreewidgetitem, ___qtreewidgetitem)
+    private_vars = set(re.findall(r'(__+\w+)', content))
+
+    # Replace each private variable instance with `self.<variable_name>` for the first 2 underscores only
+    for var_name in private_vars:
+        # Only replace if there are 2 underscores (i.e., convert __ to self.)
+        if var_name.startswith('__'):
+            new_var_name = 'self.' + var_name[2:]  # Strip only the first two underscores manually
+            content = re.sub(rf'\b{var_name}\b', new_var_name, content)
+
+    # Write the modified content back to the .py file
+    with open(py_file_path, 'w') as file:
+        file.write(content)
 
 def append_custom_widgets(ui_file_path, widget_list):
     # Parse the existing XML file
@@ -404,13 +582,18 @@ class QSsFileMonitor():
 
     def start_qss_file_listener(self):
         if self.liveCompileQss:
-            logInfo(self, "Live monitoring Qss/scss/defaultStyle.scss file for changes")
             default_sass_path = os.path.abspath(os.path.join(os.getcwd(), 'Qss/scss/defaultStyle.scss'))
 
             if os.path.isfile(default_sass_path):
                 # Monitor defaultStyle.scss file for changes
-                self.qss_watcher = QFileSystemWatcher()
-                self.qss_watcher.addPath(default_sass_path)
+                if not hasattr(self, "qss_watcher"):
+                    self.qss_watcher = QFileSystemWatcher()
+                    self.shared_data = SharedData()
+                if self.qss_watcher is None:
+                    self.qss_watcher = QFileSystemWatcher()
+                if not self.shared_data.url_exists(default_sass_path):
+                    self.qss_watcher.addPath(default_sass_path)
+                    self.shared_data.add_file_url(default_sass_path)
 
                 # Monitor JSON style sheets for changes
                 for json_file in self.jsonStyleSheets:
@@ -418,27 +601,31 @@ class QSsFileMonitor():
                     if os.path.isfile(json_file_path):
                         self.qss_watcher.addPath(json_file_path)
 
-                        logInfo(self, f"Live monitoring {json_file} for changes")
+                        logInfo(f"Live monitoring {json_file} for changes")
                     else:
-                        logError(self, f"Error: JSON file {json_file} not found")
+                        logError(f"Error: JSON file {json_file_path} not found")
                 
                 self.qss_watcher.fileChanged.connect(lambda path=default_sass_path: QSsFileMonitor.qss_file_changed(self, path))
+                logInfo("Live monitoring Qss/scss/defaultStyle.scss file for changes")
 
             else:
-                logError(self, "Error: Qss/scss/defaultStyle.scss file not found")
+                logError("Error: Qss/scss/defaultStyle.scss file not found")
 
 
     def qss_file_changed(self, file_path):
-        logInfo(self, f"File changed: {file_path}")
+        if self.liveCompileQss:
+            logInfo(f"File changed: {file_path}")
 
-        # # Check if the file extension is '.json'
-        if file_path.endswith('.json'):
-            # reload jsons
-            # self.reloadJsonStyles(update = True)
-            QAppSettings.updateAppSettings(self, generateIcons = False, reloadJson = True)
+            # # Check if the file extension is '.json'
+            if file_path.endswith('.json'):
+                # reload jsons
+                # self.reloadJsonStyles(update = True)
+                QAppSettings.updateAppSettings(self, generateIcons = False, reloadJson = True)
+            else:
+                # Apply compiled stylesheet
+                QAppSettings.updateAppSettings(self, generateIcons = False, reloadJson = False)
         else:
-            # Apply compiled stylesheet
-            QAppSettings.updateAppSettings(self, generateIcons = False, reloadJson = False)
+            logInfo(f"File changes ignored. Reason: Live compilation disabled")
 
     def stop_qss_file_listener(self):
         if hasattr(self, 'qss_watcher'):
