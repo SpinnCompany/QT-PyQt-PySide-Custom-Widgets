@@ -15,6 +15,8 @@ import shutil
 import json
 from urllib.parse import urlparse
 import argparse
+import subprocess
+import platform
 
 from termcolor import colored  # Install termcolor using: pip install termcolor
 import textwrap
@@ -31,19 +33,47 @@ class ProjectMaker(QObject):
     def __init__(self):
         super().__init__()
 
-def progress(count, status='Done'):
+def print_header(title):
+    """Print formatted header"""
+    print(colored(f"\n{'='*60}", "cyan"))
+    print(colored(f" {title}", "cyan", attrs=['bold']))
+    print(colored(f"{'='*60}", "cyan"))
+
+def print_success(message):
+    """Print success message"""
+    print(colored(f"✓ {message}", "green"))
+
+def print_warning(message):
+    """Print warning message"""
+    print(colored(f"⚠ {message}", "yellow"))
+
+def print_error(message):
+    """Print error message"""
+    print(colored(f"✗ {message}", "red"))
+
+def print_info(message):
+    """Print info message"""
+    print(colored(f"ℹ {message}", "blue"))
+
+def print_command(command, description):
+    """Print command with description"""
+    print(colored(f"  $ {command}", "yellow"))
+    print(colored(f"    # {description}", "white"))
+
+def progress(count, status='Processing'):
+    """Display progress bar"""
     bar_len = 30
     total = 100
     filled_len = int(round(bar_len * count / float(total)))
 
     percents = round(100.0 * count / float(total), 1)
-    bar = '=' * filled_len + '-' * (bar_len - filled_len)
+    bar = '█' * filled_len + '░' * (bar_len - filled_len)
 
-    sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', status))
+    sys.stdout.write(f'[{bar}] {percents}% {status}\r')
     sys.stdout.flush() 
 
-
 def query_yes_no(question, default="yes"):
+    """Ask a yes/no question and return the answer"""
     valid = {"yes": True, "y": True, "ye": True, "no": False, "n": False}
     if default is None:
         prompt = " [y/n] "
@@ -55,360 +85,499 @@ def query_yes_no(question, default="yes"):
         raise ValueError("invalid default answer: '%s'" % default)
 
     while True:
-        sys.stdout.write(question + prompt)
+        sys.stdout.write(colored(question + prompt, "yellow"))
         choice = input().lower()
         if default is not None and choice == "":
             return valid[default]
         elif choice in valid:
             return valid[choice]
         else:
-            sys.stdout.write("Please respond with 'yes' or 'no' " "(or 'y' or 'n').\n")
+            print_warning("Please respond with 'yes' or 'no' (or 'y' or 'n').")
 
 def create_requirements_file(required_packages, file_path="requirements.txt"):
     """
     Create a requirements.txt file with the specified package names and versions.
-
-    Args:
-        required_packages (list): List of required packages with optional versions.
-        file_path (str, optional): Path to the requirements.txt file. Defaults to "requirements.txt".
     """
-    # Write the package names to the requirements.txt file
     with open(file_path, "w") as file:
         for package in required_packages:
             file.write(package + "\n")
+    print_success(f"Created {file_path}")
+
+def is_directory_empty_or_only_logs(directory):
+    """Check if directory is empty or only contains logs folder"""
+    entries = list(os.scandir(directory))
+    for entry in entries:
+        if entry.name != "logs" and (entry.is_file() or entry.is_dir()):
+            return False
+    return True
+
+def get_user_choice_for_non_empty_dir():
+    """Get user choice when directory is not empty"""
+    print_header("DIRECTORY NOT EMPTY")
+    print_warning("The current directory is not empty!")
+    print_info("Contents of current directory:")
+    
+    for entry in os.scandir():
+        if entry.is_file():
+            print(f"  📄 {entry.name}")
+        elif entry.is_dir():
+            print(f"  📁 {entry.name}")
+    
+    print("\nChoose an option:")
+    print("1. Overwrite existing project files (recommended for new projects)")
+    print("2. Exit and choose a different directory")
+    
+    while True:
+        choice = input(colored("Enter your choice (1 or 2): ", "yellow")).strip()
+        if choice == "1":
+            return "overwrite"
+        elif choice == "2":
+            return "exit"
+        else:
+            print_warning("Please enter 1 or 2")
+
+def register_custom_widgets():
+    """Register custom widgets with Qt Designer"""
+    print_header("REGISTERING CUSTOM WIDGETS")
+    print_info("Registering custom widgets with Qt Designer...")
+    
+    try:
+        # Find the site-packages directory
+        result = subprocess.run([sys.executable, "-m", "site", "--user-site"], 
+                              capture_output=True, text=True)
+        site_packages = result.stdout.strip()
+        
+        if site_packages:
+            plugins_path = os.path.join(site_packages, "Custom_Widgets", "Plugins", "registerMyWidget.py")
+            if os.path.exists(plugins_path):
+                print_info("Running widget registration script...")
+                subprocess.run([sys.executable, plugins_path])
+                print_success("Custom widgets registered successfully!")
+            else:
+                print_warning(f"Registration script not found at: {plugins_path}")
+                print_info("You can manually register widgets later using:")
+                print_command("Custom_Widgets --register-widgets", "Register custom widgets with Qt Designer")
+        else:
+            print_warning("Could not find site-packages directory")
+            
+    except Exception as e:
+        print_error(f"Failed to register widgets: {e}")
+        print_info("You can manually register widgets later")
+
+def start_file_monitoring(ui_path="ui", qt_binding="PySide6"):
+    """Start monitoring UI files for changes"""
+    print_header("STARTING FILE MONITORING")
+    print_info("Starting file monitoring service...")
+    
+    try:
+        command = ["Custom_Widgets", "--monitor-ui", ui_path, "--qt-library", qt_binding]
+        print_info(f"Monitoring UI files in: {ui_path}")
+        print_info("File monitor started! Changes to .ui files will be automatically converted.")
+        print_info("Press Ctrl+C to stop monitoring")
+        
+        # Start monitoring in background
+        if platform.system() == "Windows":
+            subprocess.Popen(command, creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
+        else:
+            subprocess.Popen(command, start_new_session=True)
+            
+        return True
+    except Exception as e:
+        print_error(f"Failed to start file monitoring: {e}")
+        return False
+
+def start_qt_designer_with_plugins():
+    """Start Qt Designer with custom widgets plugins"""
+    print_header("STARTING QT DESIGNER")
+    
+    try:
+        # Use the Custom_Widgets CLI command to start Qt Designer with plugins
+        print_info("Starting Qt Designer with custom widgets plugins...")
+        command = ["Custom_Widgets", "--start-designer", "--plugins"]
+        
+        if platform.system() == "Windows":
+            subprocess.Popen(command, creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
+        else:
+            subprocess.Popen(command, start_new_session=True)
+            
+        print_success("Qt Designer started with custom widgets plugins!")
+        return True
+        
+    except Exception as e:
+        print_error(f"Failed to start Qt Designer with plugins: {e}")
+        print_info("Trying alternative method...")
+        
+        # Fallback: Try to find and start Qt Designer directly
+        designer_commands = [
+            "designer",
+            "qt5-designer",
+            "qt6-designer",
+            "pyside6-designer",
+            "pyside2-designer",
+            "pyqt5-designer"
+        ]
+        
+        designer_found = False
+        for cmd in designer_commands:
+            try:
+                print_info(f"Trying to start: {cmd}")
+                if platform.system() == "Windows":
+                    subprocess.Popen(cmd, creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
+                else:
+                    subprocess.Popen(cmd, start_new_session=True)
+                print_success(f"Qt Designer started with: {cmd}")
+                designer_found = True
+                break
+            except (FileNotFoundError, OSError):
+                continue
+        
+        if not designer_found:
+            print_warning("Could not automatically find Qt Designer")
+            print_info("Please start Qt Designer manually using:")
+            print_command("Custom_Widgets --start-designer", "Launch Qt Designer with plugins")
+            print_command("Custom_Widgets --start-designer --no-plugins", "Launch Qt Designer without plugins")
+            print_info("Or install it using your package manager:")
+            if platform.system() == "Windows":
+                print_command("winget install Qt.QtDesigner", "Install Qt Designer on Windows")
+            elif platform.system() == "Darwin":  # macOS
+                print_command("brew install qt", "Install Qt on macOS")
+            else:  # Linux
+                print_command("sudo apt install qttools5-dev-tools", "Install Qt Designer on Ubuntu/Debian")
+        
+        return designer_found
+
+def show_workflow_instructions(appQtBinding):
+    """Show workflow instructions to the user"""
+    print_header("NEXT STEPS - WORKFLOW INSTRUCTIONS")
+    
+    print_info("🎯 RECOMMENDED WORKFLOW:")
+    print("1. Design your interface in Qt Designer (with custom widgets)")
+    print("2. Save .ui files in the 'ui' folder")
+    print("3. Automatically convert .ui to .py when changes occur")
+    print("4. Run your app to see live updates")
+    
+    print_header("AUTOMATED FILE MONITORING")
+    print_info("The file monitor automatically converts .ui files to Python when you save changes.")
+    print("This means you can:")
+    print("  • Design in Qt Designer")
+    print("  • Save your .ui file") 
+    print("  • See changes immediately in your running app")
+    
+    print_command(f"Custom_Widgets --monitor-ui ui --qt-library {appQtBinding}", 
+                 "Monitor UI folder for changes")
+    print_command(f"Custom_Widgets --convert-ui ui/main_window.ui --qt-library {appQtBinding}",
+                 "Convert specific UI file to Python")
+    
+    print_header("QT DESIGNER WITH CUSTOM WIDGETS")
+    print_info("Your custom widgets are now available in Qt Designer!")
+    print("Look for these widget groups in the widget box:")
+    print("  • MainWindow - Custom main windows")
+    print("  • Sidebar - Navigation sidebars") 
+    print("  • Progressbars - Animated progress indicators")
+    print("  • Component Container - Layout containers")
+    
+    print_info("If widgets don't appear in Qt Designer:")
+    print_command("Custom_Widgets --register-widgets", "Re-register widgets with Qt Designer")
+    
+    print_header("QUICK START COMMANDS")
+    print_info("After project setup, you can use these commands anytime:")
+    print_command("python main.py", "Run your application")
+    print_command(f"Custom_Widgets --monitor-ui ui --qt-library {appQtBinding}", "Start UI file monitoring")
+    print_command(f"Custom_Widgets --convert-ui ui --qt-library {appQtBinding}", "Convert all UI files once")
+    print_command("Custom_Widgets --start-designer --plugins", "Launch Qt Designer with custom widgets plugins")
+    print_command("Custom_Widgets --start-designer", "Launch Qt Designer without plugins")
 
 project_maker = ProjectMaker()
 
 def create_project():
+    """Main function to create a new project"""
+    
+    # Print welcome banner
+    print_header("PROJECT MAKER")
+    print(colored("YouTube: https://www.youtube.com/spinnTv", "green"))
+    print(colored("Website: spinncode.com", "green"))
+    print(colored("Email: info@spinncode.com\n", "green"))
     
     # Current Directory
     currentDir = os.getcwd()
-    print(colored(textwrap.dedent("""
-    # PROJECT MAKER
-    # YOUTUBE: (SPINN TV) https://www.youtube.com/spinnTv
-    # WEBSITE: spinncode.com
-    # EMAIL: info@spinncode.com
+    print_info(f"Initializing new project in: {currentDir}")
 
-    # INITIALIZING A NEW PROJECT TO:"""), "green"))
-
-    print(f"Current Folder: {currentDir}")
-
-    # Check if any file or folder other than the logs folder exists
-    if any(entry.is_file() or (entry.is_dir() and entry.name != "logs") for entry in os.scandir()):
-        print(os.scandir(currentDir))
-        print(colored(textwrap.dedent("""
-        ## EXITING BECAUSE THE FOLDER IS NOT EMPTY
-        Please select an empty folder"""), "red"))
-
-        exit()
+    # Check if folder is empty (excluding logs folder)
+    if not is_directory_empty_or_only_logs(currentDir):
+        choice = get_user_choice_for_non_empty_dir()
+        if choice == "exit":
+            print_info("Exiting project creation. Please choose an empty directory.")
+            return
+        else:
+            print_warning("Continuing with project creation. Existing files may be overwritten.")
     
-    # Check ui file
-    # Changed to use QCustomQmainWindow instead of QMainWindow
-    ui_path = os.path.abspath(os.path.join(os.getcwd(), 'ui/QCustomQMainWindow.ui'))
-    if not os.path.exists(os.path.abspath(os.path.join(os.getcwd(), 'ui'))):
-        os.mkdir(os.path.abspath(os.path.join(os.getcwd(), 'ui')))
-    if not os.path.exists(ui_path):   
-        shutil.copy(os.path.abspath(os.path.join(os.path.dirname(__file__), 'components/uis/QCustomQMainWindow.ui')), os.path.join(os.getcwd(),"ui"))  
+    # Create UI directory and copy template if needed
+    ui_dir = os.path.abspath(os.path.join(os.getcwd(), 'ui'))
+    ui_path = os.path.join(ui_dir, 'QCustomQMainWindow.ui')
+    
+    if not os.path.exists(ui_dir):
+        os.makedirs(ui_dir)
+        print_success("Created UI directory")
+    
+    template_ui_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'components/uis/QCustomQMainWindow.ui'))
+    if not os.path.exists(ui_path) and os.path.exists(template_ui_path):   
+        shutil.copy(template_ui_path, ui_path)
+        print_success("Copied UI template file")
 
-    # App Qt binding/API Name
-    print(textwrap.dedent("""
-    #PLEASE ENTER YOUR Qt APP Qt binding/API Name:
-    (Default: PySide6) (Options: PySide6, PySide2, PyQt6, PyQt5)
-    """))
+    # Get Qt binding
+    print_header("QT BINDING SELECTION")
+    print_info("Please enter your Qt binding/API name:")
+    print("Options: PySide6, PySide2, PyQt6, PyQt5")
+    print("Default: PySide6\n")
 
     global appQtBinding
 
     while True:
-        appQtBinding = input(textwrap.dedent("Enter your app Qt binding/API Name: "))
-        if appQtBinding.isspace() or appQtBinding == "":
-            print(colored(textwrap.dedent("Qt App Qt binding/API Name set to PySide6"), "red"))
+        appQtBinding = input(colored("Enter Qt binding/API name: ", "yellow")).strip()
+        if not appQtBinding:
             appQtBinding = "PySide6"
+            print_info(f"Using default Qt binding: {appQtBinding}")
             break
-        if appQtBinding != "PySide6" and appQtBinding != "PySide2" and appQtBinding != "PyQt6" and appQtBinding != "PyQt5":
-            print(colored(textwrap.dedent(appQtBinding+ " is not a valid qt app Qt binding/API Name"), "red"))
+        
+        if appQtBinding not in ["PySide6", "PySide2", "PyQt6", "PyQt5"]:
+            print_error(f"'{appQtBinding}' is not a valid Qt binding")
             continue
-        if query_yes_no(colored(textwrap.dedent("Your Qt App Qt binding/API Name is " + str(appQtBinding) + ".  Continue?"), "blue")):
+            
+        if query_yes_no(f"Use '{appQtBinding}' as Qt binding?"):
             break
 
     # Update Qt Binding
     qtpy.API_NAME = appQtBinding
     os.environ['QT_API'] = appQtBinding.lower()
+    print_success(f"Qt binding set to: {appQtBinding}")
 
-    # Check main file
+    # Copy main.py template if needed
     main_py = os.path.abspath(os.path.join(os.getcwd(), 'main.py'))
-    if not os.path.exists(main_py):   
-        shutil.copy(os.path.abspath(os.path.join(os.path.dirname(__file__), 'components/python/main.py')), os.getcwd())  
-
+    template_main_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'components/python/main.py'))
     
+    if not os.path.exists(main_py) and os.path.exists(template_main_path):   
+        shutil.copy(template_main_path, main_py)
+        print_success("Copied main.py template")
 
-    print(textwrap.dedent("""
-    # PLEASE ENTER YOUR ICONS COLOR BELOW:
-    You can input the color HEX value (e.g., #ffffff)
-    or the color string value (e.g., white).
-    """))
+    # Get icons color
+    print_header("ICONS COLOR")
+    print_info("Enter icons color for your application:")
+    print("You can use HEX values (#ffffff) or color names (white)")
 
     while True:
-        iconsColor = input(textwrap.dedent("Enter icons color: "))
-        if iconsColor.isspace() or iconsColor == "":
-            print(colored(textwrap.dedent("Icons color can not be empty"), "red"))
+        iconsColor = input(colored("Enter icons color: ", "yellow")).strip()
+        if not iconsColor:
+            print_error("Icons color cannot be empty")
             continue
+            
         if not QColor().isValidColor(iconsColor):
-            print(colored(textwrap.dedent(iconsColor+ " is not a valid color"), "red"))
+            print_error(f"'{iconsColor}' is not a valid color")
             continue
-        if query_yes_no(colored(textwrap.dedent("Your icons color is " + str(iconsColor) + ". Save the color and continue?"), "blue")):
+            
+        if query_yes_no(f"Use '{iconsColor}' as icons color?"):
             break
 
-    progress_callback = project_maker.progress
-    project_maker.progress.connect(progress)
-
-    # Create colors
     normal_color = QCustomTheme.colorToHex(None, iconsColor)
 
-    
-
-    print(textwrap.dedent(f"""
-    # NOW ENTER ICONS COLOR FOR QT DESIGNER APP:
-    NOTE: This is for design purposes only. If your Qt Designer app 
-    has a dark theme, enter a light icons color (e.g., "white").
-    If Qt Designer has a light theme, enter a dark icons color (e.g., "black").
-    Default value will be set to {iconsColor}.
-    """))
+    # Get Qt Designer icons color
+    print_header("QT DESIGNER ICONS COLOR")
+    print_info("Enter icons color for Qt Designer:")
+    print("For dark theme use light colors (white), for light theme use dark colors (black)")
 
     while True:
-        qtIconsColor = input(textwrap.dedent("Enter icons color: "))
-        if qtIconsColor.isspace() or qtIconsColor == "":
+        qtIconsColor = input(colored("Enter Qt Designer icons color: ", "yellow")).strip()
+        if not qtIconsColor:
             qtIconsColor = iconsColor
+            print_info(f"Using same color as app icons: {qtIconsColor}")
             break
+            
         if not QColor().isValidColor(qtIconsColor):
-            print(colored(textwrap.dedent(qtIconsColor+ " is not a valid color"), "red"))
+            print_error(f"'{qtIconsColor}' is not a valid color")
             continue
-        if query_yes_no(colored(textwrap.dedent("Your icons color is " + str(qtIconsColor) + ". Save the color and continue?"), "blue")):
+            
+        if query_yes_no(f"Use '{qtIconsColor}' as Qt Designer icons color?"):
             break
     
     qt_normal_color = QCustomTheme.colorToHex(None, qtIconsColor)
-    
 
-    print(textwrap.dedent(f"""
-    # THIS IS FOR YOUR APP THEME:
-    NOTE: Background color, text color, and accent color will be used to create your app stylesheet.
-    """))
+    # Get app theme colors
+    print_header("APP THEME COLORS")
+    print_info("These colors will be used to create your app stylesheet")
 
-    while True:
-        bgColor = input(textwrap.dedent("Enter app background color: "))
-        if bgColor.isspace() or bgColor == "":
-            print(colored(textwrap.dedent("Background color can not be empty"), "red"))
-            continue
-        if not QColor().isValidColor(bgColor):
-            print(colored(textwrap.dedent(bgColor+ " is not a valid color"), "red"))
-            continue
-        if query_yes_no(colored(textwrap.dedent("Your app background color is " + str(bgColor) + ". Save the color and continue?"), "blue")):
-            break
+    colors = {}
+    for color_type in ["background", "text", "accent"]:
+        while True:
+            color = input(colored(f"Enter app {color_type} color: ", "yellow")).strip()
+            if not color:
+                print_error(f"{color_type.capitalize()} color cannot be empty")
+                continue
+                
+            if not QColor().isValidColor(color):
+                print_error(f"'{color}' is not a valid color")
+                continue
+                
+            if query_yes_no(f"Use '{color}' as {color_type} color?"):
+                colors[color_type] = QCustomTheme.colorToHex(None, color)
+                break
 
-    bgColor = QCustomTheme.colorToHex(None, bgColor)
-
-    while True:
-        txtColor = input(textwrap.dedent("Enter app text color: "))
-        if txtColor.isspace() or txtColor == "":
-            print(colored(textwrap.dedent("Text color can not be empty"), "red"))
-            continue
-        if not QColor().isValidColor(txtColor):
-            print(colored(textwrap.dedent(txtColor+ " is not a valid color"), "red"))
-            continue
-        if query_yes_no(colored(textwrap.dedent("Your app text color is " + str(txtColor) + ". Save the color and continue?"), "blue")):
-            break
-
-    txtColor = QCustomTheme.colorToHex(None, txtColor)
-
-    while True:
-        accColor = input(textwrap.dedent("Enter app accent color: "))
-        if accColor.isspace() or accColor == "":
-            print(colored(textwrap.dedent("Accent color can not be empty"), "red"))
-            continue
-        if not QColor().isValidColor(accColor):
-            print(colored(textwrap.dedent(accColor+ " is not a valid color"), "red"))
-            continue
-        if query_yes_no(colored(textwrap.dedent("Your app accent color is " + str(accColor) + ". Save the color and continue?"), "blue")):
-            break
-
-    accColor = QCustomTheme.colorToHex(None, accColor)
-
-    # Generate py from ui
+    # Convert UI files
+    print_info("Converting UI files...")
     call(["Custom_Widgets", "--convert-ui", "ui", "--qt-library", appQtBinding])
+    print_success("UI files converted")
 
-    print(textwrap.dedent("\nCreating the JSON stylesheet file"))
-
-    print(textwrap.dedent(f"""
-    #PLEASE FILL IN THE REQUIRED DATA BELOW:
-    Default value will be set to {os.path.basename(os.getcwd())}
-    """))
+    # Get app name
+    print_header("APPLICATION INFORMATION")
+    default_app_name = os.path.basename(os.getcwd())
+    print_info(f"Enter your application name (default: {default_app_name})")
 
     while True:
-        appName = input(textwrap.dedent("Enter your app name: "))
-        if appName.isspace() or appName == "":
-            appName = os.path.basename(os.getcwd())
+        appName = input(colored("Enter app name: ", "yellow")).strip()
+        if not appName:
+            appName = default_app_name
+            print_info(f"Using directory name as app name: {appName}")
             
-        if query_yes_no(colored(textwrap.dedent("Your app name is " + appName + ". Save the name and continue?"), "blue")):
+        if query_yes_no(f"Use '{appName}' as application name?"):
             break
 
-    print(textwrap.dedent("""
-    THE FOLLOWING VALUES WILL BE USED TO SAVE YOUR APP CONFIGURATIONS SUCH AS
-    APP THEME USING THE QSETTINGS CLASS:
+    # Get organization details
+    print_header("ORGANIZATION DETAILS")
+    print_info("These values are used for QSettings configuration storage")
 
-    The required values are application name, organization name, and domain name.
-    If left empty, your app name will be used. You can change this later
-    from the JSON stylesheet file inside your project.
-    """))
+    default_org = f"{appName} Company"
+    default_domain = f"{appName}.org"
 
-    while True:
-        organizationName = input(textwrap.dedent("Please enter the your organization name (Optional): "))
-        if organizationName.isspace() or organizationName == "":
-            organizationName = appName+" Company"
-            break
-        if query_yes_no(colored(textwrap.dedent("Your organization name is " + organizationName + ". Save the organization name and continue?"), "blue")):
-            break
+    org_name = input(colored(f"Enter organization name (default: {default_org}): ", "yellow")).strip()
+    if not org_name:
+        org_name = default_org
 
-    while True:
-        domainName = input(textwrap.dedent("Please enter the your domain name. Please enter a URL i.e domain.org (Optional): "))
-        if domainName.isspace() or domainName == "":
-            domainName = appName+".org"
-            break
-        # if not QUrl(domainName).isValid():
-        #     print("Invalid URL: %s", domainName, " Domain name must be a URL like domain.org")
-        #     continue
-        if query_yes_no(colored(textwrap.dedent("Your domain name is " + domainName + ". Save the domain name and continue?"), "blue")):
-            break
+    domain_name = input(colored(f"Enter domain name (default: {default_domain}): ", "yellow")).strip()
+    if not domain_name:
+        domain_name = default_domain
 
+    # Create JSON styles directory and file
+    json_dir = os.path.abspath(os.path.join(os.getcwd(), 'json-styles'))
+    json_path = os.path.join(json_dir, 'style.json')
+    
+    if not os.path.exists(json_dir):
+        os.makedirs(json_dir)
+        print_success("Created JSON styles directory")
 
-    # Check json file 
-    json_path = os.path.abspath(os.path.join(os.getcwd(), 'json-styles/style.json'))
-    if not os.path.exists(os.path.abspath(os.path.join(os.getcwd(), 'json-styles'))):
-        os.mkdir(os.path.abspath(os.path.join(os.getcwd(), 'json-styles')))
-    if not os.path.exists(json_path):   
-        shutil.copy(os.path.abspath(os.path.join(os.path.dirname(__file__), 'components/json/style.json')), os.path.join(os.getcwd(), 'json-styles')) 
-      
+    template_json_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'components/json/style.json'))
+    if not os.path.exists(json_path) and os.path.exists(template_json_path):   
+        shutil.copy(template_json_path, json_path)
+        print_success("Copied JSON style template")
+
+    # Update JSON configuration
+    print_info("Updating project configuration...")
     with open(json_path, 'r+') as f:
         data = json.load(f)
 
-        # Update QtBinding
+        # Update basic settings
         data["QtBinding"] = appQtBinding
         data["CheckForMissingicons"] = True
         data["LiveCompileQss"] = True
 
         # Update QMainWindow title
-        data["QMainWindow"] = {}
-        qmainwindow_settings = data["QMainWindow"]
-        qmainwindow_settings["title"] = appName
+        data["QMainWindow"] = {"title": appName}
 
-        ########################################################################
-        ## QSETTINGS
-        ########################################################################
+        # Update QSettings
         data["QSettings"] = {
             "AppSettings": {
-                "OrginizationName": str(appName),
-                "ApplicationName": str(organizationName),
-                "OrginizationDormain": str(domainName)
+                "OrginizationName": org_name,
+                "ApplicationName": appName,
+                "OrginizationDormain": domain_name
             },
             "ThemeSettings": {
-                "QtDesignerIconsColor": str(qt_normal_color),
-                "CustomThemes": []
+                "QtDesignerIconsColor": qt_normal_color,
+                "CustomThemes": [{
+                    "Background-color": colors["background"],
+                    "Text-color": colors["text"],
+                    "Accent-color": colors["accent"],
+                    "Icons-color": normal_color,
+                    "Theme-name": "Default-theme",
+                    "Default-Theme": True
+                }]
             }
         }
-        
-        settings = data["QSettings"]
-        themeSettings = settings['ThemeSettings']
-        customThemes = themeSettings['CustomThemes']
-
-        new_theme = {
-            "Background-color": str(bgColor),
-            "Text-color": str(txtColor),
-            "Accent-color": str(accColor),
-            "Icons-color": str(normal_color),
-            "Theme-name": "Default-theme",
-            "Default-Theme": True
-        }
-
-        customThemes.append(new_theme)
 
         f.seek(0)  
         json.dump(data, f, indent=4)
         f.truncate()
 
+    print_success("Project configuration updated")
 
-    print(textwrap.dedent("JSON stylesheet file created"))
-
-    # Requirements
-    required_packages = [
-        appQtBinding,
-        "QT-PyQt-PySide-Custom-Widgets"
-    ]
+    # Create requirements file
+    required_packages = [appQtBinding, "QT-PyQt-PySide-Custom-Widgets"]
     create_requirements_file(required_packages)
 
-    print(textwrap.dedent("Successfully created requirements.txt"))
-
-    # Check README file 
+    # Copy README if needed
     readme_path = os.path.abspath(os.path.join(os.getcwd(), 'README.md'))
-    if not os.path.exists(readme_path):   
-        shutil.copy(os.path.abspath(os.path.join(os.path.dirname(__file__), 'components/md/README.md')), os.getcwd()) 
+    template_readme_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'components/md/README.md'))
+    
+    if not os.path.exists(readme_path) and os.path.exists(template_readme_path):   
+        shutil.copy(template_readme_path, readme_path)
+        print_success("Created README.md")
 
-    print(textwrap.dedent("Successfully created README.md"))
+    # Register custom widgets
+    register_custom_widgets()
 
-    # print(textwrap.dedent("Creating the icons (png) files"))
-    # print(textwrap.dedent(f"\nGenerating icons for your app. Icons color: {iconsColor}"))
+    # Final summary
+    print_header("PROJECT CREATION COMPLETE")
+    print_success("Your project has been successfully created!")
+    
+    show_workflow_instructions(appQtBinding)
 
-    # FIXME: Wont run, but icons will be generated when app is launched
-    # themeEngine = QCustomTheme()
-    # themeEngine.generateIcons(progress_callback, normal_color, "", normal_color.replace("#", ""))
-    # print(textwrap.dedent(f"\nGenerating icons for Qt Designer app. Icons color: {qtIconsColor}"))
-    # themeEngine.generateIcons(progress_callback, qt_normal_color, "", "Icons", createQrc = True)
-    # print(textwrap.dedent("Icons have been created"))
-
-    print("---------------------------------------")
-    print(textwrap.dedent("ALL DONE: Icons will be generated in the background when you first run the app."))
-    print("---------------------------------------")
-
-    print(textwrap.dedent("""
-
-    CONGRATULATIONS! YOUR PROJECT HAS BEEN CREATED.
-
-    WHAT NEXT??
-
-    1. Open the interface.ui file inside your project folder using Qt designer.
-    This is your main inteface file.
-
-    2. Put your app customization/style inside the JSON style.json file.
-    Read more here on how to use the custom widgets module 
-    https://github.com/KhamisiKibet/Qt-PyQt-PySide-Custom-Widgets
-
-    3. Run the main.py file to view your app. Get more tutorials 
-    here on how to create awsome Qt Apps with python 
-    https://www.youtube.com/spinnTv
-
-    4. Your default app icons are located inside the qss/Icons folder.
-
-    [The following is important only if you decide to use the theme maker]
-
-    5. The default QSASS and qss stylesheet are also inside the qss folder.
-
-    6. Put you own style (CSS or SCSS) inside the qss/defaultStyle.scss file.
-    This style will override the default theme style. 
-
-    7. The qss/_variables.scss contains your theme variables
-
-    """))
-
-    print(colored(textwrap.dedent("You can also leave this window open as you work on your project. To preview your app just click enter. The UI and QRC file will be automatically converted for you!"), "yellow"))
-
-
+    # Post-creation options
+    print_header("GET STARTED NOW!")
+    print_info("Choose your next steps:")
+    
+    post_creation_actions = [
+        ("Start Qt Designer with custom widgets", "Open Qt Designer to design your interface"),
+        ("Start UI file monitoring", "Automatically convert UI files when changes occur"),
+        ("Run the project", "Launch your application to see the result"),
+        ("Show workflow instructions again", "Display workflow and commands"),
+        ("Exit", "Close the project wizard")
+    ]
+    
+    for i, (action, description) in enumerate(post_creation_actions, 1):
+        print(f"{i}. {action}")
+        print(f"   {description}")
+    
     while True:
-        if not query_yes_no(colored(textwrap.dedent("Run the created project or exit the project wizard? Type yes to run the app or no to exit the wizard"), "blue")):
+        try:
+            choice = input(colored("\nEnter your choice (1-5): ", "yellow")).strip()
+            if not choice:
+                continue
+                
+            choice = int(choice)
+            if choice == 1:
+                start_qt_designer_with_plugins()
+            elif choice == 2:
+                if start_file_monitoring("ui", appQtBinding):
+                    print_success("File monitoring started! Your UI changes will be automatically converted.")
+                    print_info("Keep this terminal open to maintain monitoring.")
+            elif choice == 3:
+                print_info("Running your project...")
+                call(["python", "main.py"])
+            elif choice == 4:
+                show_workflow_instructions(appQtBinding)
+            elif choice == 5:
+                print_info("Project creation complete! Happy coding! 🎉")
+                break
+            else:
+                print_warning("Please enter a number between 1 and 5")
+                
+            # After each action, ask if user wants to do something else
+            if choice != 5:
+                if not query_yes_no("\nWould you like to do something else?"):
+                    print_info("Project creation complete! Happy coding! 🎉")
+                    break
+                    
+        except ValueError:
+            print_warning("Please enter a valid number")
+        except KeyboardInterrupt:
+            print_info("\nProject creation complete! Happy coding! 🎉")
             break
-        else:
-            # Generate py from ui
-            call(["Custom_Widgets", "--convert-ui", "ui", "--qt-library", appQtBinding])
 
-            print(textwrap.dedent("""
-            RUNNING YOUR PROJECT
-            """))
-            call(["python", "main.py"])
-
-    exit()
+if __name__ == "__main__":
+    create_project()
