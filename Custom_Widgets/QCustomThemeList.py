@@ -1,5 +1,5 @@
 from qtpy.QtWidgets import QComboBox, QMainWindow
-from qtpy.QtCore import Qt, Signal
+from qtpy.QtCore import Qt, Signal, Property
 
 from Custom_Widgets.QCustomTheme import QCustomTheme
 from Custom_Widgets.QAppSettings import QAppSettings
@@ -9,7 +9,7 @@ import os
 class QCustomThemeList(QComboBox):
     # Icon path for the widget
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    WIDGET_ICON = os.path.join(script_dir, "components/icons/airplay.png")
+    WIDGET_ICON = os.path.join(script_dir, "components/icons/palette.png")
     
     # Tooltip for the widget
     WIDGET_TOOLTIP = "A custom QComboBox for selecting themes"
@@ -18,14 +18,6 @@ class QCustomThemeList(QComboBox):
     WIDGET_DOM_XML = """
     <ui language='c++'>
         <widget class="QCustomThemeList" name="CustomThemeList">
-        <property name="geometry">
-        <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>200</width>
-            <height>30</height>
-        </rect>
-        </property>
         <property name="windowTitle">
         <string>Custom Theme List</string>
         </property>
@@ -43,9 +35,12 @@ class QCustomThemeList(QComboBox):
 
         self.setDuplicatesEnabled(False)
 
+        self._loadPredefinedThemes = False  # Default value
         self.themeEngine = QCustomTheme()
         self._app_themes = self.themeEngine.themes
-        new_theme_names = sorted(set(theme.name for theme in self.themeEngine.themes))
+        
+        # Get initial themes based on loadPredefinedThemes setting
+        new_theme_names = self.get_filtered_themes()
         self.populate_themes(new_theme_names)
 
         self.currentIndexChanged.connect(self.on_theme_changed)
@@ -53,12 +48,37 @@ class QCustomThemeList(QComboBox):
         self.old_theme_names = []
         self.new_theme_names = []
 
+    @Property(bool)
+    def loadPredefinedThemes(self):
+        """Get the loadPredefinedThemes property value"""
+        return self._loadPredefinedThemes
+
+    @loadPredefinedThemes.setter
+    def loadPredefinedThemes(self, value):
+        """Set the loadPredefinedThemes property value and refresh themes"""
+        if self._loadPredefinedThemes != value:
+            self._loadPredefinedThemes = value
+            # Refresh the theme list when this property changes
+            new_theme_names = self.get_filtered_themes()
+            self.populate_themes(new_theme_names)
+
+    def get_filtered_themes(self):
+        """Get themes filtered based on loadPredefinedThemes setting"""
+        if not self._loadPredefinedThemes:
+            # Filter out predefined themes (where theme.predefined is True)
+            filtered_themes = [theme.name for theme in self.themeEngine.themes 
+                            if not theme.predefined]
+            return sorted(filtered_themes)
+        else:
+            # Return all theme names
+            all_theme_names = [theme.name for theme in self.themeEngine.themes]
+            return sorted(all_theme_names)
+
     def populate_themes(self, new_theme_names):
         try:
             self.blockSignals(True)
             self.clear()
             for theme in new_theme_names:
-                # self.remove_item_by_text(theme.name)
                 self.addItem(theme)
                 
                 if theme == self.themeEngine.theme:
@@ -77,14 +97,16 @@ class QCustomThemeList(QComboBox):
         self.themeChanged.emit(selected_theme)  
 
     def check_theme_updates(self):
-        self.adjustSize()
-
+        # Use maximum available size
+        self.setSizeAdjustPolicy(QComboBox.AdjustToContents)
+        
         try:
             self.themeEngine = QCustomTheme()
             self._app_themes = self.themeEngine.themes
 
-            # Extract and sort the names from the existing and new themes
-            self.new_theme_names = sorted(set(theme.name for theme in self.themeEngine.themes))
+            # Get filtered themes based on loadPredefinedThemes setting
+            self.new_theme_names = self.get_filtered_themes()
+            
             # Compare the sorted lists of names
             if self.old_theme_names != self.new_theme_names:
                 self.populate_themes(self.new_theme_names)
@@ -92,6 +114,18 @@ class QCustomThemeList(QComboBox):
                 
         except Exception as e:
             print(f"Error: {e}")
+
+    def showEvent(self, event):
+        """Handle show event to adjust size and refresh themes"""
+        super().showEvent(event)
+        self.adjustSize()
+        self.setSizeAdjustPolicy(QComboBox.AdjustToContents)
+        self.check_theme_updates()
+
+    def resizeEvent(self, event):
+        """Handle resize event to use maximum available size"""
+        super().resizeEvent(event)
+        self.setSizeAdjustPolicy(QComboBox.AdjustToContents)
 
     def paintEvent(self, event):
         super(QCustomThemeList, self).paintEvent(event)

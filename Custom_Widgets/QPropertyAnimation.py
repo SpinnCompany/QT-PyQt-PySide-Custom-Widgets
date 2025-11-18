@@ -6,7 +6,10 @@ from qtpy.QtCore import QEasingCurve, Qt
 ########################################################################
 
 def returnAnimationEasingCurve(easingCurveName):
-    if len(str(easingCurveName)) > 0:
+    if isinstance(easingCurveName, QEasingCurve.Type):
+        return easingCurveName
+
+    if easingCurveName:
         if str(easingCurveName) == "OutQuad":
             return QEasingCurve.OutQuad
         elif str(easingCurveName) == "Linear":
@@ -97,7 +100,10 @@ def returnAnimationEasingCurve(easingCurveName):
 ##
 ########################################################################
 def returnQtDirection(direction):
-    if len(str(direction)) > 0:
+    if isnstance(direction, Qt.Orientation):
+        return direction
+    
+    if direction:
         if str(direction) == "horizontal":
             return Qt.Horizontal
         elif str(direction) == "vertical":

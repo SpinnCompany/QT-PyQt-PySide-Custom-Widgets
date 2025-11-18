@@ -1,7 +1,8 @@
 import sys
 import os
 import importlib.util
-from qtpy.QtWidgets import QApplication, QMainWindow, QWidget, QStyleOption, QStyle, QLabel, QVBoxLayout, QSizePolicy
+from PySide6.QtGui import QResizeEvent
+from qtpy.QtWidgets import QWidget, QStyleOption, QStyle, QLabel, QVBoxLayout, QSizePolicy
 from qtpy.QtGui import QPainter
 from qtpy.QtCore import Property, Qt
 
@@ -13,11 +14,11 @@ class QCustomComponentContainer(QWidget):
     """A custom widget to load and display a UI class defined in an external file."""
 
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    WIDGET_ICON = os.path.join(script_dir, "components/icons/loader.png")
+    WIDGET_ICON = os.path.join(script_dir, "components/icons/view_quilt.png")
     WIDGET_TOOLTIP = "A custom component loader for dynamic UI loading."
     WIDGET_DOM_XML = """
     <ui language='c++'>
-        <widget class="QCustomComponentContainer" name="CustomComponentLoader">
+        <widget class="QCustomComponentContainer" name="QCustomComponentContainer">
         </widget>
     </ui>
     """
@@ -26,11 +27,7 @@ class QCustomComponentContainer(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._layout = QVBoxLayout(self)
-        self._layout.setContentsMargins(0, 0, 0, 0)
-        self._layout.setSpacing(0)
-        self.setLayout(self._layout)
-        # self.setMinimumSize(0, 0)
+        self._layout = None
 
         # Initialize UI class and setup
         self._ui_class = None
@@ -39,9 +36,7 @@ class QCustomComponentContainer(QWidget):
         self.ui = None
 
         self._designer_preview = False
-
         self._is_designer_mode = False
-
         self.form = QCustomComponentLoader()
     
     def showEvent(self, e):
@@ -60,15 +55,13 @@ class QCustomComponentContainer(QWidget):
         self._layout.setContentsMargins(0, 0, 0, 0)
         self._layout.setSpacing(0)
         self.setLayout(self._layout)
-        # self.setMinimumSize(0, 0)
-        
+
         self.form = QCustomComponentLoader()
         self.form.previewComponent = self.previewComponent
         self.form.loadComponent(formClassName=self._form_class, filePath=self._file_path)
 
         self.layout().addWidget(self.form) 
-        # self.setMinimumSize(self.form.sizeHint())
-
+        
         try:
             #older versions
             self.form.form =  self.form.ui 
@@ -124,4 +117,10 @@ class QCustomComponentContainer(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
         self.style().drawPrimitive(QStyle.PE_Widget, opt, painter, self)
+    
+    def resizeEvent(self, event: QResizeEvent) -> None:  
+        # self.adjustSize()
+
+        return super().resizeEvent(event)
+    
 

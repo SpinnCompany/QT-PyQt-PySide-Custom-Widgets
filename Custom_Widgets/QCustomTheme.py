@@ -1110,7 +1110,7 @@ class QCustomTheme(QObject):
             self.generateIcons(progress_callback, self.designerIconsColor, "", "icons", createQrc=True, output_width=24, output_height=24)
 
     # Method to create a new theme dynamically
-    def createNewTheme(self, name, bg_color, txt_color, accent_color, icons_color, createNewIcons=True, defaultTheme=False, other_variables={}):
+    def createNewTheme(self, name, bg_color, txt_color, accent_color, icons_color, createNewIcons=True, defaultTheme=False, other_variables={}, predefined=False):
         # Check if the theme already exists
         existing_theme = next((theme for theme in self._themes if theme.name == name), None)
         
@@ -1123,19 +1123,61 @@ class QCustomTheme(QObject):
             existing_theme.createNewIcons = createNewIcons
             existing_theme.defaultTheme = defaultTheme
             existing_theme.other_variables = other_variables
+            existing_theme.predefined = predefined
             
             # Update dynamic properties as well
             existing_theme.backgroundColor = bg_color
             existing_theme.textColor = txt_color
             existing_theme.accentColor = accent_color
             existing_theme.iconsColor = icons_color
+        
             
         else:
             # Create a new theme
             new_theme = Theme(name, bg_color, txt_color, accent_color, icons_color, createNewIcons, defaultTheme, other_variables)
             new_theme.other_variables = other_variables
+            new_theme.predefined = predefined
             self._themes.append(new_theme)
 
+            # NEW: Ensure theme variable consistency
+            self.ensureThemeVariableConsistency()
+    
+    def copyMissingVariablesFromOtherThemes(self):
+        """Copy missing variables from other themes to ensure all themes have the same variable structure"""
+        if not self._themes:
+            return
+        
+        # Collect all unique variable names from all themes
+        all_variable_names = set()
+        for theme in self._themes:
+            if hasattr(theme, 'other_variables') and theme.other_variables:
+                all_variable_names.update(theme.other_variables.keys())
+        
+        # For each theme, check for missing variables and copy from other themes
+        for target_theme in self._themes:
+            if not hasattr(target_theme, 'other_variables'):
+                target_theme.other_variables = {}
+            
+            # Find missing variables in this theme
+            missing_vars = all_variable_names - set(target_theme.other_variables.keys())
+            
+            if missing_vars:
+                # Try to find values for missing variables from other themes
+                for var_name in missing_vars:
+                    for source_theme in self._themes:
+                        if (source_theme != target_theme and 
+                            hasattr(source_theme, 'other_variables') and 
+                            source_theme.other_variables and 
+                            var_name in source_theme.other_variables):
+                            
+                            # Copy the variable value from source theme
+                            target_theme.other_variables[var_name] = source_theme.other_variables[var_name]
+                            logInfo(f"Copied variable '{var_name}' from theme '{source_theme.name}' to theme '{target_theme.name}'")
+                            break
+
+    def ensureThemeVariableConsistency(self):
+        """Ensure all themes have consistent variable structure by copying missing ones"""
+        self.copyMissingVariablesFromOtherThemes()
 
 def setNewIcon(self, url):
     icon = QIcon(url)
@@ -1211,7 +1253,7 @@ QCustomSidebarButton.iconUrl = None
 QCustomSidebarButton.setNewIcon = setNewIcon
 
 class Theme:
-    def __init__(self, name, bg_color, txt_color, accent_color, icons_color="", createNewIcons=True, defaultTheme=False, other_variables={}):
+    def __init__(self, name, bg_color, txt_color, accent_color, icons_color="", createNewIcons=True, defaultTheme=False, other_variables={}, predefined=False):
         self.name = name
         self.bg_color = bg_color
         self.txt_color = txt_color
@@ -1219,6 +1261,7 @@ class Theme:
         self.icons_color = icons_color
         self.defaultTheme = defaultTheme
         self.other_variables = other_variables
+        self.predefined = predefined
 
         # Properties for dynamic access
         self.backgroundColor = bg_color
@@ -1230,11 +1273,11 @@ class Theme:
 
 class Dark(Theme):
     def __init__(self, defaultTheme=False, other_variables={}):
-        super().__init__("Dark", "#0d1117", "white", "#238636", "white", defaultTheme, other_variables)
+        super().__init__("Dark", "#0d1117", "white", "#238636", "white", defaultTheme, other_variables = other_variables, predefined=True)
 
 class Light(Theme):
     def __init__(self, defaultTheme=False, other_variables={}):
-        super().__init__("Light", "white", "black", "#00bcff", "black", defaultTheme, other_variables)
+        super().__init__("Light", "white", "black", "#00bcff", "black", defaultTheme, other_variables = other_variables, predefined=True)
 
 class NewTheme(Theme):
     def __init__(self, name, bg_color, txt_color, accent_color, icons_color, defaultTheme=False, other_variables={}):

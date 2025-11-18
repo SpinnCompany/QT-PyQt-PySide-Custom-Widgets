@@ -6,7 +6,7 @@ import os
 class QAvatarWidget(QFrame):
     # Custom widget icon
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    WIDGET_ICON = os.path.join(script_dir, "components/icons/user.png")
+    WIDGET_ICON = os.path.join(script_dir, "components/icons/account_circle.png")
 
     WIDGET_TOOLTIP = "A custom avatar widget"
     WIDGET_DOM_XML = """

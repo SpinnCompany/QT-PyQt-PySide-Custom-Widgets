@@ -13,10 +13,11 @@ from Custom_Widgets.QCustomSlideMenu import QCustomSlideMenu
 from Custom_Widgets.JSonStyles import updateJson
 from Custom_Widgets.Log import *
 from Custom_Widgets.Utils import replace_url_prefix, is_in_designer, get_icon_path
+from Custom_Widgets.QPropertyAnimation import returnAnimationEasingCurve
 
 class QCustomSidebar(QCustomSlideMenu):
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    WIDGET_ICON = os.path.join(script_dir, "components/icons/sidebar.png")
+    WIDGET_ICON = os.path.join(script_dir, "components/icons/view_sidebar.png")
     WIDGET_TOOLTIP = "A custom collapsible sidebar widget"
     WIDGET_DOM_XML = """
     <ui language='c++'>
@@ -28,16 +29,32 @@ class QCustomSidebar(QCustomSlideMenu):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        # Style properties
-        self._containerStyleCollapsed = self._collapsedStyle
-        self._containerStyleExpanded = self._expandedStyle
-
         # Shadow properties
         self._shadowColor = QColor(0, 0, 0, 0)
         self._shadowBlurRadius = 0
         self._shadowXOffset = 0
         self._shadowYOffset = 0
 
+        # Add these default values:
+        
+        # Size properties - default values
+        self._defaultWidth = 300
+        self._defaultHeight = "parent"
+        self._collapsedWidth = 50
+        self._collapsedHeight = "parent"
+        self._expandedWidth = 300
+        self._expandedHeight = "parent"
+        
+        # Toggle button properties - default values
+        self._toggleButtonName = ""
+        self._iconCollapsed = ""
+        self._iconExpanded = ""
+        
+        # Animation properties - default values
+        self._animationDuration = 500  # milliseconds
+        self._animationEasingCurve = "OutQuad"
+        
+        # JSON file path
         self._jsonFilePath = "json-styles/style.json"
 
         self.onCollapsed.connect(self.updateProperties)
@@ -45,6 +62,7 @@ class QCustomSidebar(QCustomSlideMenu):
 
         self.onCollapsing.connect(lambda: self.updateProperties(state="collapsing"))
         self.onExpanding.connect(lambda: self.updateProperties(state="expanding"))
+
 
         self.updateProperties()
 
@@ -181,58 +199,9 @@ class QCustomSidebar(QCustomSlideMenu):
     @animationEasingCurve.setter
     def animationEasingCurve(self, curve):
         self._animationEasingCurve = curve
-        self.customizeQCustomSlideMenu(update=False, animationEasingCurve=curve)
+        _curve = returnAnimationEasingCurve(curve)
+        self.customizeQCustomSlideMenu(update=False, animationEasingCurve=_curve)
         
-    # Style properties
-    @Property(str)
-    def containerStyleCollapsed(self):
-        return self._containerStyleCollapsed
-    
-    @containerStyleCollapsed.setter
-    def containerStyleCollapsed(self, style):
-        self._containerStyleCollapsed = style
-        self.customizeQCustomSlideMenu(update=False, collapsedStyle=style)
-        
-    @Property(str)
-    def containerStyleExpanded(self):
-        return self._containerStyleExpanded
-    
-    @containerStyleExpanded.setter
-    def containerStyleExpanded(self, style):
-        self._containerStyleExpanded = style
-        self.customizeQCustomSlideMenu(update=False, expandedStyle=style)
-        
-
-    # Floating menu and auto-hide
-    @Property(bool)
-    def float(self):
-        return self._float
-    
-    @float.setter
-    def float(self, enabled):
-        self._float = enabled
-        self.customizeQCustomSlideMenu(update=False, floatMenu=enabled)
-        
-
-    @Property(str)
-    def floatPosition(self):
-        return self._floatPosition
-    
-    @floatPosition.setter
-    def floatPosition(self, position):
-        self._floatPosition = position
-        self.customizeQCustomSlideMenu(update=False, position=position)
-      
-
-    @Property(bool)
-    def autoHide(self):
-        return self._autoHide
-    
-    @autoHide.setter
-    def autoHide(self, enabled):
-        self._autoHide = enabled
-        self.customizeQCustomSlideMenu(update=False, autoHide=enabled)
-
     # Shadow effect properties
     @Property(QColor)
     def shadowColor(self):
@@ -271,42 +240,11 @@ class QCustomSidebar(QCustomSlideMenu):
         self._shadowYOffset = offset
         self.customizeQCustomSlideMenu(update=False, shadowYOffset=offset)
 
-    # Margin Properties
-    @Property(int)
-    def marginTop(self):
-        return self._marginTop
-
-    @marginTop.setter
-    def marginTop(self, margin):
-        self._marginTop = margin
-        self.customizeQCustomSlideMenu(update=False, marginTop=margin)
-
-    @Property(int)
-    def marginRight(self):
-        return self._marginRight
-
-    @marginRight.setter
-    def marginRight(self, margin):
-        self._marginRight = margin
-        self.customizeQCustomSlideMenu(update=False, marginRight=margin)
-
-    @Property(int)
-    def marginBottom(self):
-        return self._marginBottom
-
-    @marginBottom.setter
-    def marginBottom(self, margin):
-        self._marginBottom = margin
-        self.customizeQCustomSlideMenu(update=False, marginBottom=margin)
-
-    @Property(int)
-    def marginLeft(self):
-        return self._marginLeft
-
-    @marginLeft.setter
-    def marginLeft(self, margin):
-        self._marginLeft = margin
-        self.customizeQCustomSlideMenu(update=False, marginLeft=margin)
+    def showEvent(self, event):
+        super().showEvent(event)
+        if is_in_designer(self):
+            self.expandMenu()
+            self.customizeQCustomSlideMenu(update=False, toggleButtonName=self.toggleButtonName)
 
     def paintEvent(self, e):
         """Handle the paint event to customize the appearance of the widget."""

@@ -88,8 +88,10 @@ def configure_custom_widgets(self, data, update: bool = False):
             # Hide Logs
             self.showCustomWidgetsLogs = False
 
-        if self.showCustomWidgetsLogs:
-            setupLogger(self = self)
+        set_show_custom_widgets_logs(self.showCustomWidgetsLogs)
+
+        # if self.showCustomWidgetsLogs:
+        # setupLogger(self = self)
 
     ## Live QSS compiler
     if "LiveCompileQss" in data:
@@ -720,6 +722,7 @@ def configure_main_window(self, data, update: bool = False):
         # Accessing values
         qmainwindow = data.get("QMainWindow", {})
 
+        self.customSideDrawers = qmainwindow.get("customSideDrawers", "")
         title = qmainwindow.get("tittle", "")
         icon = qmainwindow.get("icon", "")
         frameless = qmainwindow.get("frameless", False)

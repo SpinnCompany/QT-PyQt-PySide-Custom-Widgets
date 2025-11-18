@@ -64,19 +64,19 @@ class FileMonitor(QObject):
         for watcher in self.fileSystemWatchers:
             watcher.fileChanged.connect(self.on_file_change)
 
-        print(f"Monitoring {len(self.files_to_monitor)} files...")
+        logInfo(f"Monitoring {len(self.files_to_monitor)} files...")
 
     def on_file_change(self, path):
-        print(f"File {path} has been changed!")
+        logInfo(f"File {path} has been changed!")
         # Handle file modification event
-        self.update_file_list()
         convert_file(path)
+        self.update_file_list()
 
     def on_folder_change(self, path):
         # Refresh the list of .ui files to monitor if a folder is updated
-        self.update_file_list()
+        self.update_file_list(fresh=True)
 
-    def update_file_list(self):
+    def update_file_list(self, fresh=False):
         # Find all .ui files in the folder
         folder_path = os.path.dirname(self.files_to_monitor[0]) if self.files_to_monitor else os.getcwd()
         ui_files = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith(".ui")]
@@ -85,10 +85,13 @@ class FileMonitor(QObject):
         new_files = set(ui_files) - set(self.files_to_monitor)
         removed_files = set(self.files_to_monitor) - set(ui_files)
 
-        if new_files or removed_files:
-            print(f"Updating monitored files: {len(new_files)} new files, {len(removed_files)} removed files")
-            self.files_to_monitor = ui_files
-            self.monitor_files(self.files_to_monitor)
+        if not (new_files or removed_files) and fresh:
+            return
+        if (new_files or removed_files):
+            logInfo(f"Updating monitored files: {len(new_files)} new files, {len(removed_files)} removed files")
+            
+        self.files_to_monitor = ui_files
+        self.monitor_files(self.files_to_monitor)
 
 def find_parent_with_class(widget):
     """
@@ -127,8 +130,8 @@ def convert_file(path):
         widget_class = element.attrib.get('class')
         widget_name = element.attrib.get('name')
         
-        # Print for debugging
-        # print(f"Widget Class: {widget_class}, Widget Name: {widget_name}")
+        # Log for debugging
+        # logDebug(f"Widget Class: {widget_class}, Widget Name: {widget_name}")
 
         if widget_class == 'QComboBox':
             # Initialize a list to hold combo box items
@@ -326,7 +329,7 @@ def convert_file(path):
     base_name, extension = os.path.splitext(os.path.basename(path))
     new_file_name = "new_{}{}".format(base_name, extension)
     new_file_path = os.path.join(os.getcwd(), "generated-files/ui/"+new_file_name)
-    # print(new_file_name)
+    # logDebug(new_file_name)
     # Save the modified XML to the new file
     tree.write(new_file_path, encoding="utf-8", xml_declaration=True)
 
@@ -351,7 +354,7 @@ def start_file_listener(file_or_folder, qt_binding="PySide6"):
     if qt_binding is None:
         qt_binding = "PySide6"
     if qt_binding not in ["PySide6", "PySide2", "PyQt6", "PyQt5"]:
-        print(colored((str(qt_binding) + " is not a valid Qt binding/API Name"), "red"))
+        logError(f"{qt_binding} is not a valid Qt binding/API Name")
         return
 
     qtpy.API_NAME = qt_binding
@@ -367,24 +370,24 @@ def start_file_listener(file_or_folder, qt_binding="PySide6"):
             raise FileNotFoundError(f"The file {file_or_folder} does not exist.")
 
         files_to_monitor.append(file_or_folder)
-        print(f"Monitoring file: {file_or_folder}")
+        logInfo(f"Monitoring file: {file_or_folder}")
 
     elif os.path.isdir(file_or_folder):
         # If the provided path is a directory, get all .ui files in the folder
         ui_files = [f for f in os.listdir(file_or_folder) if f.lower().endswith(".ui")]
 
         if not ui_files:
-            print("No .ui files found in the specified folder.")
+            logWarning("No .ui files found in the specified folder.")
             return
 
-        print(f"Monitoring files in folder: {file_or_folder}")
-        print(f".ui files found: {', '.join(ui_files)}")
+        logInfo(f"Monitoring files in folder: {file_or_folder}")
+        logInfo(f".ui files found: {', '.join(ui_files)}")
         for ui_file in ui_files:
             file_path = os.path.join(file_or_folder, ui_file)
             files_to_monitor.append(file_path)
 
     else:
-        print("Invalid path. Please provide a valid .ui file or folder.")
+        logError("Invalid path. Please provide a valid .ui file or folder.")
         return
 
     # Create a QApplication instance
@@ -525,7 +528,7 @@ def start_ui_conversion(file_or_folder, qt_binding="PySide6"):
     if qt_binding is None:
         qt_binding = "PySide6"
     if qt_binding not in ["PySide6", "PySide2", "PyQt6", "PyQt5"]:
-        print(colored((str(qt_binding) + " is not a valid Qt binding/API Name"), "red"))
+        logError(f"{qt_binding} is not a valid Qt binding/API Name")
         return
 
     qtpy.API_NAME = qt_binding
@@ -541,24 +544,24 @@ def start_ui_conversion(file_or_folder, qt_binding="PySide6"):
             raise FileNotFoundError(f"The file {file_or_folder} does not exist.")
 
         files_to_convert.append(file_or_folder)
-        print(f"Converting file: {file_or_folder}")
+        logInfo(f"Converting file: {file_or_folder}")
 
     elif os.path.isdir(file_or_folder):
         # If the provided path is a directory, get all .ui files in the folder
         ui_files = [f for f in os.listdir(file_or_folder) if f.lower().endswith(".ui")]
 
         if not ui_files:
-            print("No .ui files found in the specified folder.")
+            logWarning("No .ui files found in the specified folder.")
             return
 
-        print(f"Converting files in folder: {file_or_folder}")
-        print(f".ui files found: {', '.join(ui_files)}")
+        logInfo(f"Converting files in folder: {file_or_folder}")
+        logInfo(f".ui files found: {', '.join(ui_files)}")
         for ui_file in ui_files:
             file_path = os.path.join(file_or_folder, ui_file)
             files_to_convert.append(file_path)
 
     else:
-        print("Invalid path. Please provide a valid .ui file or folder.")
+        logError("Invalid path. Please provide a valid .ui file or folder.")
         return
     
     file_folder = os.path.join(os.getcwd(), "src")
@@ -573,7 +576,7 @@ def start_ui_conversion(file_or_folder, qt_binding="PySide6"):
     
     [convert_file(file) for file in files_to_convert]
 
-    print("Done converting!")
+    logInfo("Done converting!")
 
 
 class QSsFileMonitor():
@@ -633,7 +636,3 @@ class QSsFileMonitor():
             self.qss_watcher.fileChanged.disconnect(QSsFileMonitor.qss_file_changed)
             self.qss_watcher.deleteLater()
             del self.qss_watcher
-
-
-
-    

@@ -12,17 +12,32 @@ from qtpy.QtCore import QSettings
 from Custom_Widgets.Log import *
 
 def get_absolute_path(relative_path):
-    """Convert a relative path to an absolute path based on the __main__ script's directory."""
-    # Get the directory of the __main__ script
-    main_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+    """Convert a relative path to an absolute path based on the script's directory."""
+    import __main__
     
-    # Combine the main directory with the relative path
-    absolute_path = os.path.join(main_dir, relative_path)
+    # Try multiple methods to find the main script directory
+    possible_dirs = []
     
-    # Normalize the path to handle any inconsistencies (e.g., redundant slashes)
-    absolute_path = os.path.normpath(absolute_path)
+    # Method 1: __main__.__file__
+    if hasattr(__main__, '__file__'):
+        possible_dirs.append(os.path.dirname(os.path.abspath(__main__.__file__)))
     
-    return os.path.normpath(absolute_path).replace('\\', '/')
+    # Method 2: sys.argv[0] (your original approach)
+    if sys.argv[0]:
+        possible_dirs.append(os.path.dirname(os.path.abspath(sys.argv[0])))
+    
+    # Method 3: Current working directory
+    possible_dirs.append(os.path.abspath(os.getcwd()))
+    
+    # Use the first valid directory that contains the relative path when joined
+    for main_dir in possible_dirs:
+        test_path = os.path.join(main_dir, relative_path)
+        if os.path.exists(test_path):
+            return os.path.normpath(test_path)
+    
+    # If no existing path found, use the first method and hope for the best
+    main_dir = possible_dirs[0] if possible_dirs else os.path.abspath(os.getcwd())
+    return os.path.normpath(os.path.join(main_dir, relative_path))
 
 def replace_url_prefix(url, new_prefix):
     pattern = re.compile(r':/[^/]+/')

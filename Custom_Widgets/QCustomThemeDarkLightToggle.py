@@ -11,7 +11,7 @@ from Custom_Widgets.Utils import get_icon_path
 class QCustomThemeDarkLightToggle(QPushButton):
     # Icon path for the widget
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    WIDGET_ICON = os.path.join(script_dir, "components/icons/theme_toggle.png")
+    WIDGET_ICON = os.path.join(script_dir, "components/icons/dark_mode.png")
 
     # Tooltip for the widget
     WIDGET_TOOLTIP = "Toggle between Dark and Light themes"

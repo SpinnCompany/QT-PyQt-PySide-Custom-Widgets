@@ -12,7 +12,7 @@ class QCustomSidebarButton(QPushButton):
 
     # Define XML for Qt Designer
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    WIDGET_ICON = os.path.join(script_dir, "components/icons/new_button.png")
+    WIDGET_ICON = os.path.join(script_dir, "components/icons/arrow_forward.png")
     WIDGET_TOOLTIP = "A custom button that interacts with the sidebar"
     WIDGET_DOM_XML = """
     <ui language='c++'>
@@ -199,7 +199,7 @@ class QCustomSidebarButton(QPushButton):
         super().showEvent(e)
         self.connect_to_parent()
         # Adjust size and update the widget
-        self.adjustSize()
+        # self.adjustSize()
         self.update()
 
         try:
@@ -357,6 +357,7 @@ class QCustomSidebarButton(QPushButton):
     def eventFilter(self, obj, event: QEvent):
         if event.type() in (QEvent.MouseButtonPress, QEvent.MouseButtonRelease, QEvent.MouseButtonDblClick, QEvent.MouseMove):
             # Handle the mouse event here
+            
             local_pos = self.mapFromGlobal(event.globalPos())
             if hasattr(self, "_floating_widget") and self._floating_widget and not self._floating_button.rect().contains(local_pos):
                 self._fade_out_floating_button()

@@ -11,7 +11,7 @@ import os
 
 class QCustomCheckBox(QCheckBox):
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    WIDGET_ICON = os.path.join(script_dir, "components/icons/award.png")
+    WIDGET_ICON = os.path.join(script_dir, "components/icons/check_box.png")
     WIDGET_TOOLTIP = "A custom animated checkbox widget"
     WIDGET_DOM_XML = """
     <ui language='c++'>

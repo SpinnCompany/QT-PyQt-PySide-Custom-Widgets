@@ -20,7 +20,7 @@ try:
         QCustomQMainWindow, module=QCustomQMainWindow.WIDGET_MODULE,
         tool_tip=QCustomQMainWindow.WIDGET_TOOLTIP, 
         xml=QCustomQMainWindow.WIDGET_DOM_XML,
-        icon=QCustomQMainWindow.WIDGET_ICON, container=True, group="MainWindow"
+        icon=QCustomQMainWindow.WIDGET_ICON, container=True, group="Main Window"
     )
 except Exception as e:
     logException(e, message="Error registering QCustomQMainWindow")
@@ -128,6 +128,23 @@ try:
     )
 except Exception as e:
     logException(e, message="Error registering QCustomSidebar")
+
+
+# ADD HAMBURGER MENU WIDGETS HERE - RIGHT AFTER SIDEBAR REGISTRATION
+
+from Custom_Widgets.QCustomHamburgerMenu import QCustomHamburgerMenu
+
+# Registering QCustomHamburgerMenu with error handling
+try:
+    logInfo("Registering QCustomHamburgerMenu")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomHamburgerMenu, module=QCustomHamburgerMenu.WIDGET_MODULE,
+        tool_tip=QCustomHamburgerMenu.WIDGET_TOOLTIP, 
+        xml=QCustomHamburgerMenu.WIDGET_DOM_XML,
+        icon=QCustomHamburgerMenu.WIDGET_ICON, container=True, group="Hamburger Menu"
+    )
+except Exception as e:
+    logException(e, message="Error registering QCustomHamburgerMenu")
 
 
 from Custom_Widgets.QCustomHorizontalSeparator import QCustomHorizontalSeparator 

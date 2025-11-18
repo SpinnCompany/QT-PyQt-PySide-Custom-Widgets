@@ -16,6 +16,8 @@ from Custom_Widgets.JSonStyles import loadJsonStyle
 from Custom_Widgets.QCustomTheme import QCustomTheme
 
 from Custom_Widgets.Log import *
+from Custom_Widgets.QCustomComponentLoader import QCustomComponentLoader
+from Custom_Widgets.QCustomHamburgerMenu import QCustomHamburgerMenu
 
 script_dir = os.path.dirname(os.path.abspath(sys.argv[0])).replace("\\", "/")
 
@@ -25,7 +27,6 @@ class QMainWindow(QMainWindow):
 
         self.clickPosition = None  # Initialize clickPosition attribute
         self.normalGeometry = self.geometry()
-
         self.iconsWorker = None
         self.allIconsWorker = None
         
@@ -46,6 +47,8 @@ class QMainWindow(QMainWindow):
         self.themeEngine.sassCompilationProgress = self.sassCompilationProgress
 
         self._win_restored = False
+        self._loaded_side_drawers = set()
+        self._loaded_side_drawer_files = set()
 
     def saveGeometryToSettings(self):
         """Save the current window geometry (position and size) to settings."""
@@ -107,6 +110,9 @@ class QMainWindow(QMainWindow):
                 logException(e, "Error loading theme icons for : "+ str(self.ui))
                 
             self.restyleAllButtonGroups()
+
+        # Also update side drawers if any
+        self.reloadCustomSideDrawersThemeIcons()
 
     # Update restore button icon on maximizing or minimizing window
     def updateRestoreButtonIcon(self):
@@ -213,6 +219,133 @@ class QMainWindow(QMainWindow):
                     btn.setStyleSheet(self.themeEngine.styleVariablesFromTheme(not_active_style))
             
             grp_count += 1  # Move to the next group
+    
+    def loadCustomSideDrawers(self):
+        """Load QCustomHamburgerMenu from customSideDrawers list."""
+        _custom_side_drawers = [f.strip() for f in self.customSideDrawers.split(",") if f.strip()]
+        
+        
+        for drawer_file in _custom_side_drawers:
+            if drawer_file in self._loaded_side_drawer_files:
+                continue
+                
+            try:
+                # Create component loader
+                component_loader = QCustomComponentLoader(self)
+                component_loader.previewComponent = True
+                component_loader.loadComponent(filePath=drawer_file)
+
+                component_loader.setMaximumSize(QSize(0, 0))
+                # remove margins
+                component_loader.layout().setContentsMargins(0, 0, 0, 0)
+                # Add the loader widget to layout
+                self.centralWidget().layout().addWidget(component_loader)
+
+                # Store reference
+                if component_loader.ui:
+                    component_loader.form = component_loader.ui
+                    component_loader.shownForm = component_loader.ui
+                    component_loader.component = component_loader.ui
+                
+                # Search for QCustomHamburgerMenu in the component loader
+                hamburger_menu = self._findHamburgerMenu(component_loader)
+                if hamburger_menu:
+                    self._reparentHamburgerMenu(hamburger_menu)
+                    self._loaded_side_drawers.add(component_loader)
+                else:
+                    logWarning(f"No QCustomHamburgerMenu found in loaded side drawers, file: {drawer_file}, container: {component_loader.objectName()}")
+                
+                self._loaded_side_drawer_files.add(drawer_file)
+                
+                component_loader.hide()
+
+            except Exception as e:
+                logError(f"Failed to load side drawer {drawer_file}: {str(e)}")
+                    
+    def reloadCustomSideDrawersThemeIcons(self):
+        """Reload theme icons for all loaded side drawers."""
+        for drawer in self._loaded_side_drawers:
+            try:
+                # drawer.themeEngine = self.themeEngine
+                drawer.applyThemeIcons()
+            except Exception as e:
+                logError(f"Failed to reload theme icons for side drawer {drawer.objectName()}: {str(e)}")
+                
+    def _findHamburgerMenu(self, root_widget):
+        """
+        Recursively search for QCustomHamburgerMenu widget.
+        Returns the first top-level hamburger menu found.
+        """
+        # Check if root widget itself is a hamburger menu
+        if isinstance(root_widget, QCustomHamburgerMenu):
+            return root_widget
+        
+        # Search through all child widgets recursively
+        def search_children(widget):
+            for child in widget.children():
+                if isinstance(child, QCustomHamburgerMenu):
+                    return child
+                # Recursively search deeper
+                result = search_children(child)
+                if result:
+                    return result
+            return None
+        
+        return search_children(root_widget)
+
+    def getHamburgerMenu(self, name: str) -> QCustomHamburgerMenu:
+        try:
+            # Validate input
+            if not name or not isinstance(name, str):
+                raise ValueError("Hamburger menu name must be a non-empty string")
+            
+            # Search in central widget first
+            hamburger = self.centralWidget().findChild(QCustomHamburgerMenu, name)
+            
+            # If not found, search recursively through all widgets
+            if not hamburger:
+                hamburger = self.findChild(QCustomHamburgerMenu, name)
+            
+            if not hamburger:
+                logWarning(f"Hamburger menu '{name}' not found")
+                return None
+                
+            return hamburger
+            
+        except ValueError as e:
+            logError(f"Invalid hamburger menu name: {e}")
+            raise
+        except Exception as e:
+            logError(f"Unexpected error while finding hamburger menu '{name}': {str(e)}")
+            return None
+    
+    def getHamburgerWidget(self, menu_name: str, widget_name: str) -> QWidget:
+        hamburger = self.getHamburgerMenu(menu_name)
+        if hamburger:
+            return hamburger.getWidget(widget_name)
+        return None
+
+    
+    def _reparentHamburgerMenu(self, hamburger_menu):
+        """
+        Reparent hamburger menu to central widget and remove from any layout.
+        """
+        hamburger_menu.hide()
+        # Store current geometry and properties
+        old_geometry = hamburger_menu.geometry()
+        old_parent = hamburger_menu.parent()
+        # Remove from any existing layout
+        # if old_parent and old_parent.layout():
+        #     old_parent.layout().removeWidget(hamburger_menu)
+        
+        # # Reparent to central widget
+        hamburger_menu.setParent(self.centralWidget())
+        
+        # Restore geometry and ensure it's visible
+        hamburger_menu.setGeometry(old_geometry)
+        hamburger_menu.raise_()
+        hamburger_menu.show()
+    
 
     def showEvent(self, e: QEvent):
         super().showEvent(e)
@@ -224,8 +357,9 @@ class QMainWindow(QMainWindow):
             pass
 
         self.applyBorderRadius()
-
         self.restyleAllButtonGroups()
+        
+        self.loadCustomSideDrawers()
 
 
     def resizeEvent(self, e: QEvent):
@@ -315,7 +449,6 @@ class QMainWindow(QMainWindow):
     def applyDropShadow(self):
         self.centralWidget().setGraphicsEffect(None)
         self.shadow = QGraphicsDropShadowEffect(self)
-        # print(self.shadowColor)
         if self.shadowBlurRadius > 0:
             self.shadow.setColor(QColor(self.shadowColor))
             self.shadow.setBlurRadius(self.shadowBlurRadius)

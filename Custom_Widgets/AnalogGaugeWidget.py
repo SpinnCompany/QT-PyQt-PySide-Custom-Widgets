@@ -28,7 +28,7 @@ from Custom_Widgets.Log import *
 class AnalogGaugeWidget(QWidget):
     # Icon path for the widget
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    WIDGET_ICON = os.path.join(script_dir, "components/icons/watch.png")
+    WIDGET_ICON = os.path.join(script_dir, "components/icons/speed.png")
     
     # Tooltip for the widget
     WIDGET_TOOLTIP = "An analog gauge widget"

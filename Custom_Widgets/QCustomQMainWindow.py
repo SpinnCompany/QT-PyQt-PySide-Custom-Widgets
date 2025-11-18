@@ -15,7 +15,7 @@ import os
 class QCustomQMainWindow(QMainWindow):
     # Icon path for the widget
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    WIDGET_ICON = os.path.join(script_dir, "components/icons/airplay.png")
+    WIDGET_ICON = os.path.join(script_dir, "components/icons/dashboard.png")
     
     # Tooltip for the widget
     WIDGET_TOOLTIP = "A custom QMainWindow"
@@ -64,8 +64,10 @@ class QCustomQMainWindow(QMainWindow):
         self._shadow_blur = 0
         self._shadow_x_offset = 0
         self._shadow_y_offset = 0
+        self._custom_side_drawers = ""
+        
         self.themeEngine = QCustomTheme(self)
-        # self.themeEngine.onThemeChanged.connect(lambda: print("Theme changed"))
+        
         self._app_theme = self.themeEngine.theme
         self._window_radius = 0
 
@@ -442,6 +444,22 @@ class QCustomQMainWindow(QMainWindow):
             radius,
             self = self
         )
+
+    @Property(str)
+    def customSideDrawers(self):
+        return self._custom_side_drawers
+
+    @customSideDrawers.setter
+    def customSideDrawers(self, value: str):        
+        if self._custom_side_drawers != value:
+            self._custom_side_drawers = value
+
+            updateJson(
+                self._json_file,
+                "QMainWindow.customSideDrawers",
+                value,
+                self = self
+            )
 
     def paintEvent(self, event: QPaintEvent):
         opt = QStyleOption()

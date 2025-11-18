@@ -10,13 +10,10 @@ from Custom_Widgets.Utils import SharedData, is_in_designer
 from Custom_Widgets.QAppSettings import QAppSettings as QCustomAppSettings
 from Custom_Widgets.QCustomTheme import QCustomTheme
 
-class Object(object):
-    pass
-
 class QCustomComponent(QWidget):
     # Icon path for the widget in Qt Designer
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    WIDGET_ICON = os.path.join(script_dir, "components/icons/container.png")
+    WIDGET_ICON = os.path.join(script_dir, "components/icons/widgets.png")
 
     # Tooltip for the widget
     WIDGET_TOOLTIP = "A custom component container for nesting widgets."
@@ -24,7 +21,7 @@ class QCustomComponent(QWidget):
     # XML string for Qt Designer integration
     WIDGET_DOM_XML = """
     <ui language='c++'>
-        <widget class="QCustomComponent" name="CustomComponentContainer">
+        <widget class="QCustomComponent" name="CustomComponent">
         </widget>
     </ui>
     """
@@ -95,13 +92,7 @@ class QCustomComponent(QWidget):
         except Exception as e:
             logError(f"Error starting QSS file monitor: {e}")
 
-    def showEvent(self, e):
-        # self.adjustSize()
-        super().showEvent(e)
-        # self.update()
-
     def resizeEvent(self, e):
-        # self.adjustSize()
         super().resizeEvent(e)
 
         if self._json_file:

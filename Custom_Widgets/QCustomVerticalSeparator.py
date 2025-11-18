@@ -7,7 +7,7 @@ import os
 class QCustomVerticalSeparator(QWidget):
     # Meta-information for integration with Qt Designer or other uses
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    WIDGET_ICON = os.path.join(script_dir, "components/icons/line_vertical.png.png")
+    WIDGET_ICON = os.path.join(script_dir, "components/icons/vertical_split.png")
     WIDGET_TOOLTIP = "A custom vertical separator widget"
     WIDGET_DOM_XML = """
     <ui language='c++'>

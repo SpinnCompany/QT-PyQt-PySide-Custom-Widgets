@@ -7,7 +7,7 @@ import os
 class QCustomHorizontalSeparator(QWidget):
     # Meta-information for integration with Qt Designer or other uses
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    WIDGET_ICON = os.path.join(script_dir, "components/icons/toolbar_separator_vertical.png")
+    WIDGET_ICON = os.path.join(script_dir, "components/icons/horizontal_rule.png")
     WIDGET_TOOLTIP = "A custom horizontal separator widget"
     WIDGET_DOM_XML = """
     <ui language='c++'>
