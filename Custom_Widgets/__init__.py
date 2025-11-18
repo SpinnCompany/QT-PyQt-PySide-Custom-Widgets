@@ -25,7 +25,7 @@ class QMainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.clickPosition = None  # Initialize clickPosition attribute
+        self.clickPosition = None  
         self.normalGeometry = self.geometry()
         self.iconsWorker = None
         self.allIconsWorker = None
@@ -49,6 +49,8 @@ class QMainWindow(QMainWindow):
         self._win_restored = False
         self._loaded_side_drawers = set()
         self._loaded_side_drawer_files = set()
+
+        self.customSideDrawers = ""
 
     def saveGeometryToSettings(self):
         """Save the current window geometry (position and size) to settings."""

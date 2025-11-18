@@ -77,6 +77,7 @@ def applyJsonStyle(self, update: bool = False):
     configure_custom_stacked_widget(self, data, update)
     configure_custom_progress_indicator(self, data, update)
     configure_custom_check_box(self, data, update)
+    configure_hamburger_menu(self, data, update) 
 
 def configure_custom_widgets(self, data, update: bool = False):
     ## Show logs
@@ -753,6 +754,13 @@ def configure_main_window(self, data, update: bool = False):
         move_window = navigation.get("moveWindow", "")
         title_bar = navigation.get("tittleBar", "")
 
+        # Add customSideDrawers support
+        if "customSideDrawers" in qmainwindow:
+            self.customSideDrawers = qmainwindow.get("customSideDrawers", "")
+            # Load hamburger menus if customSideDrawers is set
+            if self.customSideDrawers and hasattr(self, 'loadCustomSideDrawers'):
+                self.loadCustomSideDrawers()
+
         if title:
             # Set window title
             self.setWindowTitle(title)
@@ -1201,6 +1209,71 @@ def configure_custom_check_box(self, data, update: bool = False):
                         if not is_in_designer(self):
                             # Raise an exception if the widget doesn't exist
                             raise Exception(f"Error: '{checkBox}' widget does not exist")
+                        
+def configure_hamburger_menu(self, data, update: bool = False):
+    """Configure QCustomHamburgerMenu widgets from JSON"""
+    if "QCustomHamburgerMenu" not in data:
+        return
+
+    for menu_config in data["QCustomHamburgerMenu"]:
+        if "name" in menu_config and len(str(menu_config["name"])) > 0:
+            menu_widget = get_widget_from_path(self, str(menu_config["name"]))
+            if menu_widget:
+                if not menu_widget.metaObject().className() == "QCustomHamburgerMenu":
+                    if not is_in_designer(self):
+                        raise Exception(f"Error: {menu_config['name']} is not a QCustomHamburgerMenu widget")
+                    else:
+                        continue
+
+                # Position configuration
+                if "position" in menu_config:
+                    menu_widget.position = str(menu_config["position"])
+
+                # Size configuration
+                if "menuWidth" in menu_config:
+                    menu_widget.menuWidth = int(menu_config["menuWidth"])
+                if "menuHeight" in menu_config:
+                    menu_widget.menuHeight = int(menu_config["menuHeight"])
+
+                # Animation configuration
+                if "animationDuration" in menu_config:
+                    menu_widget.animationDuration = int(menu_config["animationDuration"])
+                if "animationEasingCurve" in menu_config:
+                    menu_widget.animationEasingCurve = str(menu_config["animationEasingCurve"])
+
+                # Appearance configuration
+                if "backgroundColor" in menu_config:
+                    menu_widget.backgroundColor = QColor(self.themeEngine.getThemeVariableValue(str(menu_config["backgroundColor"])))
+                if "shadowColor" in menu_config:
+                    menu_widget.shadowColor = QColor(self.themeEngine.getThemeVariableValue(str(menu_config["shadowColor"])))
+                if "shadowBlurRadius" in menu_config:
+                    menu_widget.shadowBlurRadius = int(menu_config["shadowBlurRadius"])
+                if "cornerRadius" in menu_config:
+                    menu_widget.cornerRadius = int(menu_config["cornerRadius"])
+                if "overlayColor" in menu_config:
+                    menu_widget.overlayColor = QColor(self.themeEngine.getThemeVariableValue(str(menu_config["overlayColor"])))
+
+                # Behavior configuration
+                if "autoHide" in menu_config:
+                    menu_widget.autoHide = bool(menu_config["autoHide"])
+                if "sizeWrap" in menu_config:
+                    menu_widget.sizeWrap = bool(menu_config["sizeWrap"])
+                if "center" in menu_config:
+                    menu_widget.center = bool(menu_config["center"])
+                if "margin" in menu_config:
+                    menu_widget.margin = int(menu_config["margin"])
+
+                # Button configuration
+                if "toggleButtonName" in menu_config:
+                    menu_widget.toggleButtonName = str(menu_config["toggleButtonName"])
+                if "showButtonName" in menu_config:
+                    menu_widget.showButtonName = str(menu_config["showButtonName"])
+                if "hideButtonName" in menu_config:
+                    menu_widget.hideButtonName = str(menu_config["hideButtonName"])
+
+            else:
+                if not is_in_designer(self):
+                    logWarning(f"Hamburger menu widget '{menu_config['name']}' not found")
 
 def updateJson(file_path, key_path, value, self=None):
     if self:
