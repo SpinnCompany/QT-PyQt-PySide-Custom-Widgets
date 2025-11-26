@@ -1,6 +1,6 @@
 import os
 from qtpy.QtCore import Qt, QPropertyAnimation, QSize, QEvent, Property, QEasingCurve, QRect, QPoint
-from qtpy.QtWidgets import (QMdiSubWindow, QWidget, QGraphicsDropShadowEffect, 
+from qtpy.QtWidgets import (QMdiSubWindow, QWidget, QGraphicsDropShadowEffect, QGraphicsBlurEffect,
                               QVBoxLayout, QHBoxLayout, QPushButton, QStyleOption, 
                               QStyle, QLabel, QSizePolicy, QApplication)
 from qtpy.QtGui import QPainter, QColor, QPaintEvent, QShowEvent
@@ -11,6 +11,8 @@ from Custom_Widgets.Utils import replace_url_prefix, is_in_designer, get_icon_pa
 # Import the animation easing curve function
 from Custom_Widgets.QPropertyAnimation import returnAnimationEasingCurve
 
+# Import the AcrylicEffect class
+from Custom_Widgets.AcrylicEffect import AcrylicEffect
 
 class QCustomHamburgerMenu(QWidget):
     """
@@ -56,7 +58,7 @@ class QCustomHamburgerMenu(QWidget):
         self._shadowBlurRadius = 30
         self._cornerRadius = 0
         self._autoHide = False
-        self._overlayColor = QColor(0, 0, 0, 64)
+        self._overlayColor = QColor(0, 0, 0, 0)
         self._toggleButtonName = ""
         self._showButtonName = ""
         self._hideButtonName = ""
@@ -69,9 +71,16 @@ class QCustomHamburgerMenu(QWidget):
         self._center = False
         self._margin = 0 
         
-        # Window configuration
-        self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
-        self.setAttribute(Qt.WA_TranslucentBackground)
+        # NEW: Acrylic effect properties
+        self._acrylicEnabled = False
+        self._acrylicBlurRadius = 5
+        self._acrylicTintColor = QColor(255, 255, 255, 0)
+        self._acrylicLuminosityColor = QColor(255, 255, 255, 0)
+        self._acrylicNoiseOpacity = 0.03
+        
+        # Initialize animation
+        self.animation = QPropertyAnimation(self, b"geometry")
+        self.animation.finished.connect(self._onAnimationFinished)
         
         # Create overlay
         self.overlay = QHamburgerMenuOverlay(self)
@@ -79,18 +88,23 @@ class QCustomHamburgerMenu(QWidget):
         # Apply initial shadow effect
         self._updateShadowEffect()
         
-        # Initialize animation
-        self.animation = QPropertyAnimation(self, b"geometry")
-        self.animation.finished.connect(self._onAnimationFinished)
-        
         # Install event filter on parent when available
         if parent:
             parent.installEventFilter(self)
 
         # Initialize in designer if needed
+        # Window configuration - only set popup flag when NOT in designer
         if not is_in_designer(self):
+            self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint | Qt.Popup)
+            self.setAttribute(Qt.WA_TranslucentBackground)
             self.hide()
             self.hideMenu(duration=100)
+        else:
+            # In designer, behave like a normal widget
+            self.setWindowFlags(self.windowFlags() & ~Qt.Popup)
+            self.setAttribute(Qt.WA_TranslucentBackground, False)
+
+        self.blurBackground = True        
     
     def _updateShadowEffect(self):
         """Update the shadow effect without CSS."""
@@ -104,6 +118,48 @@ class QCustomHamburgerMenu(QWidget):
         self.shadow.setColor(self._shadowColor)
         self.shadow.setOffset(0, 0)
         self.setGraphicsEffect(self.shadow)
+    
+    # NEW: Acrylic effect property getters and setters
+    @Property(bool)
+    def acrylicEnabled(self):
+        return self._acrylicEnabled
+    
+    @acrylicEnabled.setter
+    def acrylicEnabled(self, value):
+        self._acrylicEnabled = bool(value)
+    
+    @Property(int)
+    def acrylicBlurRadius(self):
+        return self._acrylicBlurRadius
+    
+    @acrylicBlurRadius.setter
+    def acrylicBlurRadius(self, value):
+        self._acrylicBlurRadius = max(1, value)
+
+    
+    @Property(QColor)
+    def acrylicTintColor(self):
+        return self._acrylicTintColor
+    
+    @acrylicTintColor.setter
+    def acrylicTintColor(self, value):
+        self._acrylicTintColor = value
+    
+    @Property(QColor)
+    def acrylicLuminosityColor(self):
+        return self._acrylicLuminosityColor
+    
+    @acrylicLuminosityColor.setter
+    def acrylicLuminosityColor(self, value):
+        self._acrylicLuminosityColor = value
+    
+    @Property(float)
+    def acrylicNoiseOpacity(self):
+        return self._acrylicNoiseOpacity
+    
+    @acrylicNoiseOpacity.setter
+    def acrylicNoiseOpacity(self, value):
+        self._acrylicNoiseOpacity = max(0.0, min(1.0, value))
     
     def _stringToPosition(self, position_str):
         """Convert string position to normalized format."""
@@ -600,6 +656,7 @@ class QCustomHamburgerMenu(QWidget):
         # Adjust size to content when shown if sizeWrap is enabled
         if self._sizeWrap:
             self.adjustSizeToContent()
+
         return super().showEvent(event)
     
     def eventFilter(self, obj, event):
@@ -621,6 +678,10 @@ class QHamburgerMenuOverlay(QWidget):
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.hide()
         
+        # NEW: Acrylic effect
+        self.acrylicEffect = None
+        self._acrylicEnabled = False
+
     def setParent(self, parent):
         """Set the parent widget and install event filter."""
         super().setParent(parent)
@@ -636,25 +697,57 @@ class QHamburgerMenuOverlay(QWidget):
                 background-color: rgba({color.red()}, {color.green()}, {color.blue()}, {color.alpha()});
             """)
             self.update()
+    
+    def updateAcrylicEffect(self):
+        """Update or create the acrylic effect based on parent menu settings."""
+        if not self.hamburgerMenu or is_in_designer(self):
+            return
+            
+        # Remove existing acrylic effect
+        if self.acrylicEffect:
+            self.acrylicEffect = None
+        
+        # Create new acrylic effect if enabled
+        if self.hamburgerMenu._acrylicEnabled:
+            self.acrylicEffect = AcrylicEffect(
+                widget=self,
+                blurRadius=self.hamburgerMenu._acrylicBlurRadius,
+                tintColor=self.hamburgerMenu._acrylicTintColor,
+                luminosityColor=self.hamburgerMenu._acrylicLuminosityColor,
+                noiseOpacity=self.hamburgerMenu._acrylicNoiseOpacity
+            )
+            
+            # Apply the acrylic effect
+            self.acrylicEffect.applyToWidget()
+        
+        self._acrylicEnabled = self.hamburgerMenu._acrylicEnabled
 
     def eventFilter(self, obj, event):
         """Handle parent resize events to adjust overlay size."""
         if obj == self.parent() and event.type() in [QEvent.Resize, QEvent.LayoutRequest]:
             if self.parent():
                 self.setGeometry(0, 0, self.parent().width(), self.parent().height())
+                # Update acrylic background when resized
+                # if self.acrylicEffect and self._acrylicEnabled:
+                #     self.acrylicEffect.grabFromScreen(self.parent().rect())
         return super().eventFilter(obj, event)
     
     def paintEvent(self, event):
         """Paint the overlay with proper styling."""
+        opt = QStyleOption()
+        opt.initFrom(self)
         painter = QPainter(self)
+        if not painter.isActive():
+            return
         painter.setRenderHint(QPainter.Antialiasing)
+        self.style().drawPrimitive(QStyle.PE_Widget, opt, painter, self)
         
-        # Use the overlay color
-        if self.hamburgerMenu:
+        # Only apply regular overlay color if acrylic is disabled
+        if not self._acrylicEnabled and self.hamburgerMenu:
             color = self.hamburgerMenu.overlayColor
             painter.fillRect(self.rect(), color)
-        
-        painter.end()
+
+        super().paintEvent(event)
     
     def mousePressEvent(self, event):
         """Close the hamburger menu when overlay is clicked."""
@@ -664,7 +757,19 @@ class QHamburgerMenuOverlay(QWidget):
     def showEvent(self, event):
         """Setup when overlay is shown."""
         self.updateOverlayColor()
+        self.updateAcrylicEffect()  
+        
         if self.parent():
             self.setGeometry(0, 0, self.parent().width(), self.parent().height())
+            
+            # Grab screen for acrylic effect if enabled
+            if self.acrylicEffect and self._acrylicEnabled:
+                self.acrylicEffect.grabFromScreen(self.parent().rect())
         
         return super().showEvent(event)
+    
+    def resizeEvent(self, event):
+        self.updateAcrylicEffect()  
+
+        return super().resizeEvent(event)
+    

@@ -41,6 +41,8 @@ class QCustomComponent(QWidget):
         self.win = self.themeEngine.getMainWindow()  
         self.shared_data = SharedData()
 
+        self._qss_file_monitor = QSsFileMonitor.instance()
+
         # Start the file monitor
         self.startFileMonitor()
 
@@ -87,10 +89,28 @@ class QCustomComponent(QWidget):
     def startFileMonitor(self):
         try:
             if not self.qss_watcher:
-                QSsFileMonitor.start_qss_file_listener(self)
+                self._qss_file_monitor.start_qss_file_listener(self.themeEngine)
                 logInfo("QSS file monitor started")
         except Exception as e:
             logError(f"Error starting QSS file monitor: {e}")
+    
+    # Add cleanup method
+    def closeEvent(self, event):
+        """Clean up file watchers when window is closed"""
+        if hasattr(self, '_qss_file_monitor') and self._qss_file_monitor:
+            try:
+                self._qss_file_monitor.stop_qss_file_listener(self)
+            except:
+                pass
+        super().closeEvent(event)
+
+    # Alternative: use destructor
+    def __del__(self):
+        if hasattr(self, '_qss_file_monitor') and self._qss_file_monitor:
+            try:
+                self._qss_file_monitor.stop_qss_file_listener(self)
+            except:
+                pass
 
     def resizeEvent(self, e):
         super().resizeEvent(e)

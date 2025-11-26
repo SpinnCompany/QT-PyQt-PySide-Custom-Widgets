@@ -6,7 +6,7 @@ from Custom_Widgets.QAppSettings import QAppSettings as QCustomAppSettings
 from Custom_Widgets.JSonStyles import updateJson
 from Custom_Widgets.QCustomTheme import QCustomTheme
 from Custom_Widgets.FileMonitor import QSsFileMonitor
-from Custom_Widgets.Utils import is_in_designer
+from Custom_Widgets.Utils import is_in_designer, SharedData
 from Custom_Widgets.Log import *
 from Custom_Widgets import *
 
@@ -67,12 +67,17 @@ class QCustomQMainWindow(QMainWindow):
         self._custom_side_drawers = ""
         
         self.themeEngine = QCustomTheme(self)
-        
+        self.shared_data = SharedData()
+
         self._app_theme = self.themeEngine.theme
         self._window_radius = 0
 
         self.showCustomWidgetsLogs = True  
         self.checkForMissingicons = False 
+
+        self._qss_file_monitor = QSsFileMonitor.instance()
+        self.qss_watcher = None
+        self.liveCompileQss = False
 
         loadJsonStyle(
             self, 
@@ -156,15 +161,32 @@ class QCustomQMainWindow(QMainWindow):
                 
                 self.appTheme = self.themeEngine.theme
 
-                # check file watcher
-                if not hasattr(self, 'qss_watcher'):
-                    try:
-                        QSsFileMonitor.start_qss_file_listener(self)
-                    except Exception as e:
-                        logError("Failed to start live file listener: "+str(e))
+                try:
+                    if not self.qss_watcher:
+                        self._qss_file_monitor.start_qss_file_listener(self.themeEngine)
+
+                except Exception as e:
+                    logError("Failed to start live file listener: "+str(e))
 
             except Exception as e:
                 logError(str(e))
+    # Add cleanup method
+    def closeEvent(self, event):
+        """Clean up file watchers when window is closed"""
+        if hasattr(self, '_qss_file_monitor') and self._qss_file_monitor:
+            try:
+                self._qss_file_monitor.stop_qss_file_listener()
+            except:
+                pass
+        super().closeEvent(event)
+
+    # Alternative: use destructor
+    def __del__(self):
+        if hasattr(self, '_qss_file_monitor') and self._qss_file_monitor:
+            try:
+                self._qss_file_monitor.stop_qss_file_listener()
+            except:
+                pass
 
     @Property(bool)
     def paintQtDesignerUI(self):

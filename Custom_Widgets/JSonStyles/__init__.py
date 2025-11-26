@@ -757,9 +757,7 @@ def configure_main_window(self, data, update: bool = False):
         # Add customSideDrawers support
         if "customSideDrawers" in qmainwindow:
             self.customSideDrawers = qmainwindow.get("customSideDrawers", "")
-            # Load hamburger menus if customSideDrawers is set
-            if self.customSideDrawers and hasattr(self, 'loadCustomSideDrawers'):
-                self.loadCustomSideDrawers()
+
 
         if title:
             # Set window title
@@ -1351,7 +1349,6 @@ def get_widget_from_path(self, path: str):
     :return: The widget if found, None otherwise.
     """
     if not hasattr(self, "ui"):
-        print(self)
         return None
     # Start from self.ui
     current_attr = self.ui

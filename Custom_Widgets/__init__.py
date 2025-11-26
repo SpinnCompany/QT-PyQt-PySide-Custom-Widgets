@@ -14,10 +14,12 @@ import re
 
 from Custom_Widgets.JSonStyles import loadJsonStyle
 from Custom_Widgets.QCustomTheme import QCustomTheme
+from Custom_Widgets.Utils import is_in_designer, SharedData
 
 from Custom_Widgets.Log import *
 from Custom_Widgets.QCustomComponentLoader import QCustomComponentLoader
 from Custom_Widgets.QCustomHamburgerMenu import QCustomHamburgerMenu
+from Custom_Widgets.FileMonitor import QSsFileMonitor
 
 script_dir = os.path.dirname(os.path.abspath(sys.argv[0])).replace("\\", "/")
 
@@ -46,11 +48,20 @@ class QMainWindow(QMainWindow):
 
         self.themeEngine.sassCompilationProgress = self.sassCompilationProgress
 
+        self.shared_data = SharedData()
+        self.qss_watcher = None
+
         self._win_restored = False
         self._loaded_side_drawers = set()
         self._loaded_side_drawer_files = set()
+        self._custom_side_drawers = ""
 
         self.customSideDrawers = ""
+
+        self._qss_file_monitor = QSsFileMonitor.instance()
+        self.qss_watcher = None
+        self.liveCompileQss = False
+        self._qss_file_monitor.start_qss_file_listener(self.themeEngine)
 
     def saveGeometryToSettings(self):
         """Save the current window geometry (position and size) to settings."""
@@ -226,6 +237,8 @@ class QMainWindow(QMainWindow):
         """Load QCustomHamburgerMenu from customSideDrawers list."""
         _custom_side_drawers = [f.strip() for f in self.customSideDrawers.split(",") if f.strip()]
         
+        if is_in_designer(self):
+            return
         
         for drawer_file in _custom_side_drawers:
             if drawer_file in self._loaded_side_drawer_files:

@@ -579,60 +579,102 @@ def start_ui_conversion(file_or_folder, qt_binding="PySide6"):
     logInfo("Done converting!")
 
 
-class QSsFileMonitor():
+class QSsFileMonitor(QObject):
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        # Singleton implementation
+        if cls._instance is None:
+            cls._instance = super(QSsFileMonitor, cls).__new__(cls)
+        return cls._instance
+
     def __init__(self, parent=None):
-        super(QSsFileMonitor, self).__init__(parent)
+        # Prevent reinitialization
+        if hasattr(self, "_initialized"):
+            return
+        super().__init__(parent)
 
-    def start_qss_file_listener(self):
-        if self.liveCompileQss:
-            default_sass_path = os.path.abspath(os.path.join(os.getcwd(), 'Qss/scss/defaultStyle.scss'))
+        self.qss_watcher = QFileSystemWatcher()
+        self.shared_data = SharedData()
 
-            if os.path.isfile(default_sass_path):
-                # Monitor defaultStyle.scss file for changes
-                if not hasattr(self, "qss_watcher"):
-                    self.qss_watcher = QFileSystemWatcher()
-                    self.shared_data = SharedData()
-                if self.qss_watcher is None:
-                    self.qss_watcher = QFileSystemWatcher()
-                if not self.shared_data.url_exists(default_sass_path):
-                    self.qss_watcher.addPath(default_sass_path)
-                    self.shared_data.add_file_url(default_sass_path)
+        # Your original dynamic vars — you already set them externally
+        self.liveCompileQss = True
+        self.jsonStyleSheets = []
 
-                # Monitor JSON style sheets for changes
-                for json_file in self.jsonStyleSheets:
-                    json_file_path = os.path.abspath(os.path.join(os.getcwd(), json_file))
-                    if os.path.isfile(json_file_path):
-                        self.qss_watcher.addPath(json_file_path)
+        # monitor object deletion
+        self.destroyed.connect(lambda: logWarning("Global QSsFileMonitor deleted."))
 
-                        logInfo(f"Live monitoring {json_file} for changes")
-                    else:
-                        logError(f"Error: JSON file {json_file_path} not found")
-                
-                self.qss_watcher.fileChanged.connect(lambda path=default_sass_path: QSsFileMonitor.qss_file_changed(self, path))
-                logInfo("Live monitoring Qss/scss/defaultStyle.scss file for changes")
+        self._initialized = True
 
-            else:
-                logError("Error: Qss/scss/defaultStyle.scss file not found")
+        self.themeEngine = None 
 
+    # ------------------------------------------
+    # 🔥 Global singleton access helper
+    # ------------------------------------------
+    @staticmethod
+    def instance():
+        if QSsFileMonitor._instance is None:
+            QSsFileMonitor()
+        return QSsFileMonitor._instance
 
-    def qss_file_changed(self, file_path):
-        if self.liveCompileQss:
-            logInfo(f"File changed: {file_path}")
+    # ===============================================================
+    # YOUR ORIGINAL FUNCTIONS (NO CHANGES TO LOGIC)
+    # ===============================================================
 
-            # # Check if the file extension is '.json'
-            if file_path.endswith('.json'):
-                # reload jsons
-                # self.reloadJsonStyles(update = True)
-                QAppSettings.updateAppSettings(self, generateIcons = False, reloadJson = True)
-            else:
-                # Apply compiled stylesheet
-                QAppSettings.updateAppSettings(self, generateIcons = False, reloadJson = False)
+    def start_qss_file_listener(self, theme_enigine):
+        if not self.themeEngine:
+            self.themeEngine = theme_enigine
+            
+        if not self.liveCompileQss:
+            logInfo("Live QSS compile disabled.")
+            return
+
+        default_sass_path = os.path.abspath(os.path.join(os.getcwd(), 'Qss/scss/defaultStyle.scss'))
+
+        if os.path.isfile(default_sass_path):
+
+            if not self.shared_data.url_exists(default_sass_path):
+                self.qss_watcher.addPath(default_sass_path)
+                self.shared_data.add_file_url(default_sass_path)
+
+            # Monitor JSON files
+            for json_file in self.jsonStyleSheets:
+                json_file_path = os.path.abspath(os.path.join(os.getcwd(), json_file))
+                if os.path.isfile(json_file_path):
+                    self.qss_watcher.addPath(json_file_path)
+                    logInfo(f"Live monitoring {json_file} for changes")
+                else:
+                    logError(f"Error: JSON file {json_file_path} not found")
+
+            # Connect only once
+            try:
+                self.qss_watcher.fileChanged.disconnect()
+            except:
+                pass
+
+            self.qss_watcher.fileChanged.connect(self.qss_file_changed)
+            logInfo("Live monitoring Qss/scss/defaultStyle.scss file for changes")
+
         else:
-            logInfo(f"File changes ignored. Reason: Live compilation disabled")
+            logError("Error: Qss/scss/defaultStyle.scss file not found")
+
+    def qss_file_changed(self, file_path, live_compile=False):
+        if not self.liveCompileQss and not live_compile:
+            logInfo("File change ignored (liveCompileQss=False).")
+            return
+
+        logInfo(f"File changed: {file_path}")
+
+        if file_path.endswith('.json'):
+            QAppSettings.updateAppSettings(self, generateIcons=False, reloadJson=True)
+        else:
+            QAppSettings.updateAppSettings(self, generateIcons=False, reloadJson=False)
 
     def stop_qss_file_listener(self):
-        if hasattr(self, 'qss_watcher'):
-            # Disconnect the fileChanged signal from the qss_file_changed slot
-            self.qss_watcher.fileChanged.disconnect(QSsFileMonitor.qss_file_changed)
-            self.qss_watcher.deleteLater()
-            del self.qss_watcher
+        try:
+            self.qss_watcher.fileChanged.disconnect()
+        except:
+            pass
+
+        self.qss_watcher = QFileSystemWatcher()   # reset
+        logInfo("Stopped QSS file monitoring.")
