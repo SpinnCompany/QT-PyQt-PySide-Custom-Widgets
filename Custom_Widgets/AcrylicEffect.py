@@ -13,6 +13,7 @@ from qtpy.QtGui import QBrush, QColor, QImage, QPainter, QPixmap, QPainterPath
 from qtpy.QtWidgets import QLabel, QApplication, QWidget
 from scipy.ndimage.filters import gaussian_filter
 
+from Custom_Widgets.Log import *
 
 class GaussianBlurUtils:
     """Utility class for Gaussian blur operations"""
@@ -412,7 +413,7 @@ class AcrylicBrush:
             self.setImage(grabbed_pixmap)
             
         except Exception as e:
-            print(f"Screen grab failed: {e}")
+            logError(f"Screen grab failed: {e}")
             # Fallback to a solid color if screen grab fails
             fallback_pixmap = QPixmap(rect.size())
             fallback_pixmap.fill(QColor(240, 240, 240))
@@ -437,7 +438,7 @@ class AcrylicBrush:
 
             self.device.update()
         except Exception as e:
-            print(f"Image processing failed: {e}")
+            logError(f"Image processing failed: {e}")
             # Use original image as fallback if blur fails
             self.image = self.originalImage
             self.device.update()

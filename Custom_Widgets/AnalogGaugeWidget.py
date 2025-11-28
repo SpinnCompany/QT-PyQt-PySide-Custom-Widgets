@@ -139,7 +139,6 @@ class AnalogGaugeWidget(QWidget):
     @needleColor.setter
     def needleColor(self, color: QColor):
         self._needle_color = color
-        print(color)
         self.update()
 
     def setNeedleColor(self, color: QColor):

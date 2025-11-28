@@ -190,12 +190,12 @@ def configure_settings(self, data, update: bool = False):
                             if os.path.isfile(font_path_abs):
                                 font_id = QFontDatabase.addApplicationFont(font_path_abs)
                                 if font_id == -1:
-                                    print(f"Error loading font: {font_name} from {font_path}")
+                                    logError(f"Error loading font: {font_name} from {font_path}")
                                 else:
                                     # Set the font name to the font loaded
                                     self._fontName = QFontDatabase.applicationFontFamilies(font_id)[0]
                             else:
-                                print(f"Font file does not exist: {font_path}")
+                                logError(f"Font file does not exist: {font_path}")
                 
                 # Set the default font
                 if "DefaultFont" in fonts_data:
@@ -1360,7 +1360,7 @@ def get_widget_from_path(self, path: str):
             current_attr = getattr(current_attr, attr)
         else:
             # If any part of the path doesn't exist, return None
-            print(f"Widget '{attr}' in path '{path}' not found.")
+            logError(f"Widget '{attr}' in path '{path}' not found.")
             return None
     
     # Return the final widget

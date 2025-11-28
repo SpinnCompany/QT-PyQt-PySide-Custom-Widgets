@@ -271,6 +271,9 @@ class QCustomSlideMenu(QWidget):
         if "buttonName" in values:
             buttonName = values["buttonName"]
             
+            if not buttonName.strip():
+                return
+            
             # Attempt to get the button object by name
             toggleButton = self.getButtonByName(buttonName)
 
@@ -293,7 +296,7 @@ class QCustomSlideMenu(QWidget):
                 # Activate the menu functionality for the button
                 self.activateMenuButton(self._toggleButton)
             else:
-                print(f"Button with name '{buttonName}' not found.")
+                logCritical(f"Button with name '{buttonName}' not found.")
 
         if self._toggleButton:
             if "iconWhenMenuIsCollapsed" in values and len(str(values["iconWhenMenuIsCollapsed"])) > 0:

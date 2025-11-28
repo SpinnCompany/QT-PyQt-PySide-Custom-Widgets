@@ -316,6 +316,7 @@ class QCustomTheme(QObject):
 
                                     if not os.path.exists(abs_icon_url):
                                         logError(f"Failed to process widget '{widget_name}' in JSON file '{jsonFile}': Error: Missing file - {abs_icon_url}")
+                                        continue
 
                                     if widget_class == "QCustomThemeDarkLightToggle":
                                         light_icon_url = widget_info.get("lightThemeIcon", "")
@@ -360,13 +361,11 @@ class QCustomTheme(QObject):
 
                                 except Exception as e:
                                     logError(f"Failed to process widget '{widget_name}' in JSON file '{jsonFile}': {e}")
-                                    logging.debug(traceback.format_exc())
+
                     except Exception as e:
                         logError(f"Error processing JSON file '{jsonFile}': {e}")
-                        logging.debug(traceback.format_exc())
         except Exception as e:
             logCritical(f"Critical error in applyIcons: {e}")
-            logging.debug(traceback.format_exc())
                                                 
     
     def getMainWindow(self):
