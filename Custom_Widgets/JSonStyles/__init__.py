@@ -78,6 +78,7 @@ def applyJsonStyle(self, update: bool = False):
     configure_custom_progress_indicator(self, data, update)
     configure_custom_check_box(self, data, update)
     configure_hamburger_menu(self, data, update) 
+    configure_qr_generator(self, data, update)
 
 def configure_custom_widgets(self, data, update: bool = False):
     ## Show logs
@@ -1272,6 +1273,76 @@ def configure_hamburger_menu(self, data, update: bool = False):
             else:
                 if not is_in_designer(self):
                     logWarning(f"Hamburger menu widget '{menu_config['name']}' not found")
+
+def configure_qr_generator(self, data, update: bool = False):
+    """Configure QCustomQRGenerator widgets from JSON"""
+    if "QCustomQRGenerator" not in data:
+        return
+
+    for qr_config in data["QCustomQRGenerator"]:
+        if "name" in qr_config and len(str(qr_config["name"])) > 0:
+            qr_widget = get_widget_from_path(self, str(qr_config["name"]))
+            if qr_widget:
+                if not qr_widget.metaObject().className() == "QCustomQRGenerator":
+                    if not is_in_designer(self):
+                        raise Exception(f"Error: {qr_config['name']} is not a QCustomQRGenerator widget")
+                    else:
+                        continue
+
+                # Basic QR properties
+                if "data" in qr_config:
+                    qr_widget.data = str(qr_config["data"])
+                if "version" in qr_config:
+                    qr_widget.version = int(qr_config["version"])
+                if "errorCorrection" in qr_config:
+                    qr_widget.errorCorrection = str(qr_config["errorCorrection"])
+                if "boxSize" in qr_config:
+                    qr_widget.boxSize = int(qr_config["boxSize"])
+                if "border" in qr_config:
+                    qr_widget.border = int(qr_config["border"])
+
+                # Color properties
+                if "fillColor" in qr_config:
+                    qr_widget.fillColor = QColor(self.themeEngine.getThemeVariableValue(str(qr_config["fillColor"])))
+                if "backgroundColor" in qr_config:
+                    qr_widget.backgroundColor = QColor(self.themeEngine.getThemeVariableValue(str(qr_config["backgroundColor"])))
+                if "gradientStartColor" in qr_config:
+                    qr_widget.gradientStartColor = QColor(self.themeEngine.getThemeVariableValue(str(qr_config["gradientStartColor"])))
+                if "gradientEndColor" in qr_config:
+                    qr_widget.gradientEndColor = QColor(self.themeEngine.getThemeVariableValue(str(qr_config["gradientEndColor"])))
+
+                # Advanced styling properties
+                if "moduleDrawer" in qr_config:
+                    qr_widget.moduleDrawer = str(qr_config["moduleDrawer"])
+                if "colorMask" in qr_config:
+                    qr_widget.colorMask = str(qr_config["colorMask"])
+                if "sizeRatio" in qr_config:
+                    qr_widget.sizeRatio = float(qr_config["sizeRatio"])
+                if "embedImage" in qr_config:
+                    qr_widget.embedImage = bool(qr_config["embedImage"])
+                if "cacheEnabled" in qr_config:
+                    qr_widget.cacheEnabled = bool(qr_config["cacheEnabled"])
+
+                # Embedded image configuration
+                if "embeddedImagePath" in qr_config and qr_config["embeddedImagePath"]:
+                    embedded_image_path = str(qr_config["embeddedImagePath"])
+                    # Handle relative paths by joining with current working directory
+                    if not os.path.isabs(embedded_image_path):
+                        embedded_image_path = os.path.join(os.getcwd(), embedded_image_path)
+                    
+                    if os.path.isfile(embedded_image_path):
+                        qr_widget.embeddedImageIcon = QIcon(embedded_image_path)
+                        qr_widget.embedImage = True
+                    else:
+                        logWarning(f"Embedded image file not found: {embedded_image_path}")
+
+                # Generate QR code after configuration
+                qr_widget.generateQRCode()
+
+            else:
+                if not is_in_designer(self):
+                    logWarning(f"QR Generator widget '{qr_config['name']}' not found")
+
 
 def updateJson(file_path, key_path, value, self=None):
     if self:
