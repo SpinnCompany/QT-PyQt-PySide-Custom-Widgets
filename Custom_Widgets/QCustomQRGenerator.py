@@ -28,7 +28,7 @@ class QCustomQRGenerator(QWidget):
     """
     
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    WIDGET_ICON = os.path.join(script_dir, "components/icons/qrcode.png")
+    WIDGET_ICON = os.path.join(script_dir, "components/icons/qr_code_scanner.png")
     WIDGET_TOOLTIP = "A customizable QR code generator widget"
     WIDGET_DOM_XML = """
     <ui language='c++'>

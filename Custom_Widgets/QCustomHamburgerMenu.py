@@ -486,6 +486,10 @@ class QCustomHamburgerMenu(QWidget):
             return
         
         self._menuHidden = False
+
+        # Re-create overlay if deleted
+        if self.overlay is None:
+            self.overlay = QHamburgerMenuOverlay(self)
         
         # Adjust size to content if sizeWrap is enabled
         if self._sizeWrap:
@@ -503,6 +507,7 @@ class QCustomHamburgerMenu(QWidget):
         
         # Set initial position
         self.setGeometry(start_geometry)
+        self.overlay.updateAcrylicEffect()
         self.show()
         
         # Show and position overlay FIRST (so it's at the bottom)
@@ -558,6 +563,12 @@ class QCustomHamburgerMenu(QWidget):
         if self._menuHidden:
             self.hide()
             self.overlay.hide()
+
+            # Delete overlay on hide
+            if self.overlay is not None:
+                self.overlay.hide()
+                self.overlay.deleteLater()
+                self.overlay = None
             
         self._updatePosition()
 
@@ -665,6 +676,7 @@ class QCustomHamburgerMenu(QWidget):
             self._updatePosition()
             if self.overlay:
                 self.overlay.setGeometry(0, 0, self.parent().width(), self.parent().height())
+                
         return super().eventFilter(obj, event)
 
 
@@ -707,20 +719,23 @@ class QHamburgerMenuOverlay(QWidget):
         if self.acrylicEffect:
             self.acrylicEffect = None
         
-        # Create new acrylic effect if enabled
-        if self.hamburgerMenu._acrylicEnabled:
-            self.acrylicEffect = AcrylicEffect(
-                widget=self,
-                blurRadius=self.hamburgerMenu._acrylicBlurRadius,
-                tintColor=self.hamburgerMenu._acrylicTintColor,
-                luminosityColor=self.hamburgerMenu._acrylicLuminosityColor,
-                noiseOpacity=self.hamburgerMenu._acrylicNoiseOpacity
-            )
+        try:
+            # Create new acrylic effect if enabled
+            if self.hamburgerMenu._acrylicEnabled:
+                self.acrylicEffect = AcrylicEffect(
+                    widget=self,
+                    blurRadius=self.hamburgerMenu._acrylicBlurRadius,
+                    tintColor=self.hamburgerMenu._acrylicTintColor,
+                    luminosityColor=self.hamburgerMenu._acrylicLuminosityColor,
+                    noiseOpacity=self.hamburgerMenu._acrylicNoiseOpacity
+                )
+                
+                # Apply the acrylic effect
+                self.acrylicEffect.applyToWidget()
             
-            # Apply the acrylic effect
-            self.acrylicEffect.applyToWidget()
-        
-        self._acrylicEnabled = self.hamburgerMenu._acrylicEnabled
+            self._acrylicEnabled = self.hamburgerMenu._acrylicEnabled
+        except:
+            pass
 
     def eventFilter(self, obj, event):
         """Handle parent resize events to adjust overlay size."""
@@ -757,7 +772,7 @@ class QHamburgerMenuOverlay(QWidget):
     def showEvent(self, event):
         """Setup when overlay is shown."""
         self.updateOverlayColor()
-        self.updateAcrylicEffect()  
+        # self.updateAcrylicEffect()  
         
         if self.parent():
             self.setGeometry(0, 0, self.parent().width(), self.parent().height())
@@ -769,7 +784,7 @@ class QHamburgerMenuOverlay(QWidget):
         return super().showEvent(event)
     
     def resizeEvent(self, event):
-        self.updateAcrylicEffect()  
+        # self.updateAcrylicEffect()  
 
         return super().resizeEvent(event)
     
