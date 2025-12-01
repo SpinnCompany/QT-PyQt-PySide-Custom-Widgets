@@ -40,7 +40,10 @@ setup(
         "lxml",
         "setuptools",
         "kids-cache",
-        "perlin_noise"
+        "perlin_noise",
+        "colorthief",
+        "scipy",
+        "PIL"
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
