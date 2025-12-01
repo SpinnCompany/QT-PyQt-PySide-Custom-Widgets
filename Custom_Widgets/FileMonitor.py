@@ -176,6 +176,8 @@ def convert_file(path):
             iconset_element = element.find('iconset')
 
             if iconset_element is not None:
+                icon_url = None
+                
                 if 'resource' in iconset_element.attrib:
                     # Extract the QRC file path from the 'resource' attribute
                     qrc_file_path = iconset_element.attrib['resource']
@@ -183,12 +185,29 @@ def convert_file(path):
                     qrc_folder = os.path.dirname(qrc_file_path)
                     # Combine with the relative path within the <iconset> tag
                     relative_path = iconset_element.find("normaloff").text
-                    
                     icon_url = replace_url_prefix(relative_path, qrc_folder)
-
                 else:
-                    icon_url = generate_relative_path(path, iconset_element.find("normaloff").text)
+                    # Handle case without resource attribute - use consistent relative path logic
+                    relative_path = iconset_element.find("normaloff").text
+                    if relative_path.startswith(':/'):
+                        # QRC resource path - extract meaningful part
+                        resource_parts = relative_path.split('/')
+                        if len(resource_parts) > 2:
+                            # Reconstruct path without the resource prefix
+                            icon_url = os.path.join(*resource_parts[2:])
+                        else:
+                            icon_url = relative_path
+                    else:
+                        # Regular file path - make relative to project
+                        ui_dir = os.path.dirname(path)
+                        abs_path = os.path.abspath(os.path.join(ui_dir, relative_path))
+                        project_root = os.getcwd()
+                        try:
+                            icon_url = os.path.relpath(abs_path, project_root)
+                        except ValueError:
+                            icon_url = abs_path
                 
+                # Clear the original icon text
                 iconset_element.find("normaloff").text = ""
 
                 if parent_widget.tag == 'widget' and widget_class == 'QWidget' and parent_widget.get('class') == "QTabWidget":
@@ -258,20 +277,56 @@ def convert_file(path):
             # Extract resource paths from the property tag for darkThemeIcon
             dark_theme_icon_url = None
             if dark_theme_icon_element is not None:
-                resource_path = dark_theme_icon_element.attrib.get('resource')
-                qrc_folder = os.path.dirname(resource_path)
-                if qrc_folder:
+                if 'resource' in dark_theme_icon_element.attrib:
+                    resource_path = dark_theme_icon_element.attrib.get('resource')
+                    qrc_folder = os.path.dirname(resource_path)
+                    if qrc_folder:
+                        relative_path = dark_theme_icon_element.find("normaloff").text
+                        dark_theme_icon_url = replace_url_prefix(relative_path, qrc_folder)
+                else:
+                    # Handle without resource attribute
                     relative_path = dark_theme_icon_element.find("normaloff").text
-                    dark_theme_icon_url = replace_url_prefix(relative_path, qrc_folder)
+                    if relative_path.startswith(':/'):
+                        resource_parts = relative_path.split('/')
+                        if len(resource_parts) > 2:
+                            dark_theme_icon_url = os.path.join(*resource_parts[2:])
+                        else:
+                            dark_theme_icon_url = relative_path
+                    else:
+                        ui_dir = os.path.dirname(path)
+                        abs_path = os.path.abspath(os.path.join(ui_dir, relative_path))
+                        project_root = os.getcwd()
+                        try:
+                            dark_theme_icon_url = os.path.relpath(abs_path, project_root)
+                        except ValueError:
+                            dark_theme_icon_url = abs_path
 
             # Extract resource paths from the property tag for lightThemeIcon
             light_theme_icon_url = None
             if light_theme_icon_element is not None:
-                resource_path = light_theme_icon_element.attrib.get('resource')
-                qrc_folder = os.path.dirname(resource_path)
-                if qrc_folder:
+                if 'resource' in light_theme_icon_element.attrib:
+                    resource_path = light_theme_icon_element.attrib.get('resource')
+                    qrc_folder = os.path.dirname(resource_path)
+                    if qrc_folder:
+                        relative_path = light_theme_icon_element.find("normaloff").text
+                        light_theme_icon_url = replace_url_prefix(relative_path, qrc_folder)
+                else:
+                    # Handle without resource attribute
                     relative_path = light_theme_icon_element.find("normaloff").text
-                    light_theme_icon_url = replace_url_prefix(relative_path, qrc_folder)
+                    if relative_path.startswith(':/'):
+                        resource_parts = relative_path.split('/')
+                        if len(resource_parts) > 2:
+                            light_theme_icon_url = os.path.join(*resource_parts[2:])
+                        else:
+                            light_theme_icon_url = relative_path
+                    else:
+                        ui_dir = os.path.dirname(path)
+                        abs_path = os.path.abspath(os.path.join(ui_dir, relative_path))
+                        project_root = os.getcwd()
+                        try:
+                            light_theme_icon_url = os.path.relpath(abs_path, project_root)
+                        except ValueError:
+                            light_theme_icon_url = abs_path
 
             # Append dark and light theme icons to the widget_info
             if widget_class in widget_info:
@@ -295,6 +350,8 @@ def convert_file(path):
             pixmap_element = element.find('pixmap')
             
             if pixmap_element is not None:
+                pixmap_url = None
+                
                 if 'resource' in pixmap_element.attrib:
                     # Extract the QRC file path from the 'resource' attribute
                     qrc_file_path = pixmap_element.attrib['resource']
@@ -304,7 +361,22 @@ def convert_file(path):
                     relative_path = pixmap_element.text
                     pixmap_url = replace_url_prefix(relative_path, qrc_folder)
                 else:
-                    pixmap_url = generate_relative_path(path, pixmap_element.text)
+                    # Handle without resource attribute
+                    relative_path = pixmap_element.text
+                    if relative_path.startswith(':/'):
+                        resource_parts = relative_path.split('/')
+                        if len(resource_parts) > 2:
+                            pixmap_url = os.path.join(*resource_parts[2:])
+                        else:
+                            pixmap_url = relative_path
+                    else:
+                        ui_dir = os.path.dirname(path)
+                        abs_path = os.path.abspath(os.path.join(ui_dir, relative_path))
+                        project_root = os.getcwd()
+                        try:
+                            pixmap_url = os.path.relpath(abs_path, project_root)
+                        except ValueError:
+                            pixmap_url = abs_path
 
                 # Add the widget info to the dictionary
                 if widget_class in widget_info:
@@ -334,7 +406,7 @@ def convert_file(path):
     tree.write(new_file_path, encoding="utf-8", xml_declaration=True)
 
     replace_attributes_values(path, replacements_list)
-
+    
 def update_json(data, json_file_name):
     # Save the JSON data back to the file
     json_path = os.path.join(os.getcwd(), "generated-files/json/"+json_file_name)
@@ -595,6 +667,7 @@ class QSsFileMonitor(QObject):
         super().__init__(parent)
 
         self.qss_watcher = QFileSystemWatcher()
+        self.qss_watcher.connected = False
         self.shared_data = SharedData()
 
         # Your original dynamic vars — you already set them externally
@@ -647,12 +720,14 @@ class QSsFileMonitor(QObject):
                     logError(f"Error: JSON file {json_file_path} not found")
 
             # Connect only once
-            try:
-                self.qss_watcher.fileChanged.disconnect()
-            except:
-                pass
+            if self.qss_watcher.connected:
+                try:
+                    self.qss_watcher.fileChanged.disconnect()
+                except:
+                    pass
 
             self.qss_watcher.fileChanged.connect(self.qss_file_changed)
+            self.qss_watcher.connected = True
             logInfo("Live monitoring Qss/scss/defaultStyle.scss file for changes")
 
         else:

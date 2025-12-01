@@ -2,6 +2,8 @@
 import platform
 import ctypes
 
+from Custom_Widgets.Log import *
+
 if platform.system() == 'Darwin':
     import objc
     from AppKit import *
@@ -19,7 +21,7 @@ if platform.system() == 'Darwin':
             TitleBar: Whether to adjust the title bar to appear transparent (default: True).
         """
         if not widget.isWindow():
-            print("Blur effect can only be applied to top-level windows.")
+            logCritical("Blur effect can only be applied to top-level windows.")
             return
         
         if widget.hasBlur:

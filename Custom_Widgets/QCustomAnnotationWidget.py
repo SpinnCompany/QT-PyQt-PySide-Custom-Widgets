@@ -8,6 +8,8 @@ import json
 import shutil
 from pathlib import Path
 
+from Custom_Widgets.Log import *
+
 class Canvas(QLabel):
 
     # Define a signal to emit the drawn shape
@@ -112,7 +114,7 @@ class Canvas(QLabel):
                 json.dump(annotation_data, f, indent=4)
         except Exception as e:
             # print(annotation_data)
-            print(e)
+            logError(e)
         
 
         return True
@@ -373,7 +375,7 @@ class Canvas(QLabel):
                         if len(points) > 1:
                             painter.drawPolyline(QPolygonF(points))
                     except Exception as e:
-                        print("Coords:", coords, " - ", e)
+                        logError(f"Coords: {coords}. {e}")
 
             elif shape == "bezier":
                 valid_coords = [point for point in coords if point is not None]

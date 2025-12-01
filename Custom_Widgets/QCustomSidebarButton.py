@@ -6,6 +6,7 @@ import os
 # Import your custom sidebar and utility functions
 from Custom_Widgets.QCustomSidebar import QCustomSidebar 
 from Custom_Widgets.Utils import replace_url_prefix, is_in_designer, get_icon_path
+from Custom_Widgets.Log import *
 
 class QCustomSidebarButton(QPushButton):
     clicked = Signal()
@@ -119,7 +120,6 @@ class QCustomSidebarButton(QPushButton):
         super().paintEvent(event) 
 
     def setText(self, text):
-        # print(text)
         """Override setText to store the raw text and apply the prefix spaces."""
         if text == "**clear":
             super().setText("")
@@ -210,7 +210,7 @@ class QCustomSidebarButton(QPushButton):
                 if self.labelHidden:
                     self.showButtonLabel()
         except Exception as e:
-            print(e)
+            logException(e)
 
     def enterEvent(self, event: QEnterEvent):
         """Show the button label when the button is hovered, even if the sidebar is collapsed."""

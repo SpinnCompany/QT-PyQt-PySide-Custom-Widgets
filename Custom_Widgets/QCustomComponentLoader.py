@@ -8,6 +8,7 @@ from qtpy.QtCore import Property, Qt
 
 from Custom_Widgets.QCustomTheme import QCustomTheme
 from Custom_Widgets.Utils import get_absolute_path, is_in_designer
+from Custom_Widgets.Log import *
 
 class QCustomComponentLoader(QWidget):
     """A custom widget to load and display a UI class defined in an external file."""
@@ -69,8 +70,8 @@ class QCustomComponentLoader(QWidget):
 
         except Exception as e:
             self.ui_module_name = ""
-            print(f"Error determining UI module name: {e}")
-            print(traceback.format_exc())  # Prints the traceback for more context
+            logError(f"Error determining UI module name: {e}")
+            logException(traceback.format_exc())
 
         try:
             if self._file_path:
@@ -81,9 +82,9 @@ class QCustomComponentLoader(QWidget):
             self.currentTheme = self.themeEngine.theme
 
         except Exception as e:
-            print(f"Error loading theme icons for: {self} (Module: {self.ui_module_name})")
-            print(f"Error: {e}")
-            print(traceback.format_exc())  # Prints the traceback for more context
+            logError(f"Error loading theme icons for: {self} (Module: {self.ui_module_name})")
+            logError(f"Error: {e}")
+            logException(traceback.format_exc())  
 
         finally:
             self._applying_icon = False
@@ -127,7 +128,7 @@ class QCustomComponentLoader(QWidget):
                 self.ui = self._form_class()  # Instantiate the class
                 self.ui.setupUi(self)
             except Exception as e:
-                print(f"Error loading form class: {e}")
+                logError(f"Error loading form class: {e}")
                 if is_in_designer(self):
                     self._show_error_label(f"Error loading class: {e}")
                 return
@@ -139,7 +140,7 @@ class QCustomComponentLoader(QWidget):
             
             # Check if file exists
             if not os.path.isfile(filePath):
-                print(f"File not found: {filePath}")
+                logError(f"File not found: {filePath}")
                 if is_in_designer(self):
                     self._show_error_label(f"File not found: {os.path.basename(filePath)}")
                 return
@@ -156,12 +157,12 @@ class QCustomComponentLoader(QWidget):
                     self.ui = self._form_class()  # Instantiate the class
                     self.ui.setupUi(self)
                 except Exception as e:
-                    print(f"Error instantiating UI class: {e}")
+                    logError(f"Error instantiating UI class: {e}")
                     if is_in_designer(self):
                         self._show_error_label(f"Error creating UI: {e}")
                     return
             else:
-                print("Failed to load the UI class from the specified file.")
+                logError("Failed to load the UI class from the specified file.")
                 if is_in_designer(self):
                     self._show_error_label("No valid UI class found in file")
                 return
@@ -274,7 +275,7 @@ class QCustomComponentLoader(QWidget):
         """Dynamically import a class from a specified Python file."""
         # Ensure the file exists
         if not os.path.isfile(file_path):
-            print(f"The specified file does not exist: {file_path}")
+            logError(f"The specified file does not exist: {file_path}")
             return None
 
         try:
@@ -286,25 +287,25 @@ class QCustomComponentLoader(QWidget):
             # Automatically detect the class from the loaded module
             ui_classes = [cls for name, cls in module.__dict__.items() if isinstance(cls, type)]
 
-            if class_name is not None:
+            if class_name and class_name.strip():
                 # If class_name is provided, attempt to find it
                 ui_class = next((cls for cls in ui_classes if cls.__name__ == class_name), None)
-                if ui_class:
+                if ui_class.strip():
                     return ui_class
                 else:
-                    print(f"No class named '{class_name}' found in the specified file.")
+                    logError(f"No class named '{class_name}' found in the specified file.")
                     
             # If class_name is not provided, check for a class that follows naming conventions (e.g., starts with 'Ui_')
             ui_class = next((cls for cls in ui_classes if cls.__name__.startswith("Ui_")), None)
 
             if ui_class is None:
-                print("No valid UI class found in the specified file.")
+                logError("No valid UI class found in the specified file.")
                 return None
 
             return ui_class
             
         except Exception as e:
-            print(f"Error importing from file {file_path}: {e}")
+            logError(f"Error importing from file {file_path}: {e}")
             return None
 
     @Property(str)
