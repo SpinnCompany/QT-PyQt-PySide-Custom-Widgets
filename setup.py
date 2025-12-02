@@ -16,7 +16,7 @@ setup(
         'Custom_Widgets.Qss',
     ],
     include_package_data=True,
-    version='2.0.5',
+    version='2.0.7',
     license="GNU General Public License v3.0",
     description='A comprehensive library of custom Qt widgets, animations, and UI components for PySide and PyQt desktop applications.',
     long_description=README,
@@ -43,10 +43,9 @@ setup(
         "perlin_noise",
         "colorthief",
         "scipy",
-        "PIL",
+        "Pillow",
         "rich",
-        "colorthief",
-        "scipy"
+        "qrcode >= 8.0",
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
