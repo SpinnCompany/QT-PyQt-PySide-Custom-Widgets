@@ -43,7 +43,10 @@ setup(
         "perlin_noise",
         "colorthief",
         "scipy",
-        "PIL"
+        "PIL",
+        "rich",
+        "colorthief",
+        "scipy"
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
