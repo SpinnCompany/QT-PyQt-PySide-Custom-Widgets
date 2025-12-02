@@ -284,7 +284,7 @@ try:
         QCustomQRGenerator, module=QCustomQRGenerator.WIDGET_MODULE,
         tool_tip=QCustomQRGenerator.WIDGET_TOOLTIP, 
         xml=QCustomQRGenerator.WIDGET_DOM_XML,
-        icon=QCustomQRGenerator.WIDGET_ICON, container=True, group="QR Generator"
+        icon=QCustomQRGenerator.WIDGET_ICON, container=False, group="QR Generator"
     )
 except Exception as e:
     logException(e, message="Error registering QCustomQRGenerator")
