@@ -9,6 +9,7 @@ from qtpy.QtGui import QPainter, QColor, QPaintEvent, QPixmap, QIcon, QPalette
 # Import your custom utilities
 from Custom_Widgets.Log import *
 from Custom_Widgets.Utils import is_in_designer
+from Custom_Widgets.QCustomTheme import QCustomTheme
 
 # Import advanced QR code features
 from qrcode.image.styledpil import StyledPilImage
@@ -73,6 +74,12 @@ class QCustomQRGenerator(QWidget):
         self._fillColor = app_palette.color(QPalette.Text)
         self._backgroundColor = app_palette.color(QPalette.Window)
         
+        # Track if colors are from palette (for theme change detection)
+        self._fillColorFromPalette = True
+        self._backgroundColorFromPalette = True
+        self._gradientStartColorFromPalette = True
+        self._gradientEndColorFromPalette = True
+        
         # Advanced styling properties - use accent colors from palette
         self._moduleDrawer = "square"
         self._colorMask = "solid"
@@ -89,9 +96,16 @@ class QCustomQRGenerator(QWidget):
         self._currentQRPixmap = None
         self._cacheEnabled = True
         self._lastSettingsHash = ""
+
+        self.themeEngine = QCustomTheme()
+        self.defaultTheme = self.themeEngine.theme
+        self.defaultIconsColor = self.themeEngine.iconsColor
+        # self.themeEngine.onThemeChanged.connect(self.refreshQRCode)
+        self.themeEngine.onThemeChangeComplete.connect(self.refreshQRCode)
         
         # Widget setup
         self.setMinimumSize(100, 100)
+        self.refreshQRCode()
         
         # Generate QR code immediately for both designer and runtime
         self.generateQRCode()
@@ -405,24 +419,33 @@ class QCustomQRGenerator(QWidget):
         super().resizeEvent(event)
         self.resizeQR()
 
-    # def updateColorsFromPalette(self):
-    #     """Update colors from current application palette."""
-    #     app_palette = QApplication.palette()
+    def refreshQRCode(self):
+        """Refresh QR code when theme changes, only if colors are from palette."""
+        logInfo("Theme changed detected in QCustomQRGenerator")
         
-    #     # Only update if colors haven't been manually set (or use some flag to track manual changes)
-    #     self._fillColor = app_palette.color(QPalette.Text)
-    #     self._backgroundColor = app_palette.color(QPalette.Window)
-    #     self._gradientStartColor = app_palette.color(QPalette.Highlight)
-    #     self._gradientEndColor = self._getComplementaryColor(self._gradientStartColor)
+        # Get current palette
+        current_palette = QApplication.palette()
         
-    #     self.generateQRCode()
-
-    # def changeEvent(self, event):
-    #     """Handle palette changes."""
-    #     if event.type() == event.PaletteChange:
-    #         self.updateColorsFromPalette()
-    #     super().changeEvent(event)
-           
+        # Update colors only if they were originally from palette
+        if self._fillColorFromPalette:
+            self._fillColor = current_palette.color(QPalette.Text)
+            logInfo(f"Updated fill color from palette: {self._fillColor.name()}")
+        
+        if self._backgroundColorFromPalette:
+            self._backgroundColor = current_palette.color(QPalette.Window)
+            logInfo(f"Updated background color from palette: {self._backgroundColor.name()}")
+        
+        if self._gradientStartColorFromPalette:
+            self._gradientStartColor = current_palette.color(QPalette.Highlight)
+            logInfo(f"Updated gradient start color from palette: {self._gradientStartColor.name()}")
+        
+        if self._gradientEndColorFromPalette:
+            # Recalculate complementary color based on new gradient start
+            self._gradientEndColor = self._getComplementaryColor(self._gradientStartColor)
+            logInfo(f"Updated gradient end color from palette: {self._gradientEndColor.name()}")
+        
+        # Regenerate QR code with new colors
+        self.generateQRCode()
 
     def saveQRCode(self, file_path=None):
         """Save the generated QR code to file."""
@@ -561,6 +584,8 @@ class QCustomQRGenerator(QWidget):
     @fillColor.setter
     def fillColor(self, value):
         self._fillColor = value
+        # If user sets a custom color, mark it as not from palette
+        self._fillColorFromPalette = False
         self.generateQRCode()
     
     @Property(QColor)
@@ -570,6 +595,8 @@ class QCustomQRGenerator(QWidget):
     @backgroundColor.setter
     def backgroundColor(self, value):
         self._backgroundColor = value
+        # If user sets a custom color, mark it as not from palette
+        self._backgroundColorFromPalette = False
         self.generateQRCode()
     
     @Property(bool)
@@ -610,6 +637,8 @@ class QCustomQRGenerator(QWidget):
     @gradientStartColor.setter
     def gradientStartColor(self, value):
         self._gradientStartColor = value
+        # If user sets a custom color, mark it as not from palette
+        self._gradientStartColorFromPalette = False
         self.generateQRCode()
     
     @Property(QColor)
@@ -619,6 +648,8 @@ class QCustomQRGenerator(QWidget):
     @gradientEndColor.setter
     def gradientEndColor(self, value):
         self._gradientEndColor = value
+        # If user sets a custom color, mark it as not from palette
+        self._gradientEndColorFromPalette = False
         self.generateQRCode()
     
     @Property(float)

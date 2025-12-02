@@ -48,6 +48,7 @@ script_dir = os.path.dirname(os.path.abspath(sys.argv[0])).replace("\\", "/") + 
 class QCustomTheme(QObject):
     _instance = None  # Class-level variable to hold the singleton instance
     onThemeChanged = Signal()  # Define a class-level signal
+    onThemeChangeComplete = Signal()
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -923,7 +924,7 @@ class QCustomTheme(QObject):
             # ALL THEME ICONS
             self.allIconsWorker = Worker(self.makeAllIcons)
             self.allIconsWorker.signals.result.connect(WorkerResponse.print_output)
-            self.allIconsWorker.signals.finished.connect(lambda: logInfo("all icons have been checked and missing icons generated!"))
+            self.allIconsWorker.signals.finished.connect(lambda: self._themeChangeComplete())
             self.allIconsWorker.signals.progress.connect(self.sassCompilationProgress)
 
             
@@ -932,6 +933,10 @@ class QCustomTheme(QObject):
                 self.customWidgetsThreadpool.start(self.iconsWorker)
             else:
                 self.customWidgetsThreadpool.start(self.allIconsWorker)
+
+    def _themeChangeComplete(self):
+        self.onThemeChangeComplete.emit()
+        logInfo("all icons have been checked and missing icons generated!")
 
     def getAllFolders(self, base_folder):
         all_folders = []
