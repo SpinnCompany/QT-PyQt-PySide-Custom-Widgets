@@ -289,3 +289,26 @@ try:
 except Exception as e:
     logException(e, message="Error registering QCustomQRGenerator")
     
+    
+try:
+    from Custom_Widgets.QCustomCharts.QCustomLineSeries import QCustomLineSeries
+    
+    logInfo("Registering QCustomLineSeries")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomLineSeries, 
+        module=QCustomLineSeries.WIDGET_MODULE,
+        tool_tip=QCustomLineSeries.WIDGET_TOOLTIP, 
+        xml=QCustomLineSeries.WIDGET_DOM_XML,
+        icon=QCustomLineSeries.WIDGET_ICON, 
+        container=False, 
+        group="Charts"
+    )
+    logInfo("QCustomLineSeries registered successfully")
+    
+except ImportError as e:
+    logError(f"Failed to import QCustomLineSeries: {e}")
+except Exception as e:
+    logException(e, message="Error registering QCustomLineSeries")
+
+
+logInfo("✓ All chart widgets registered successfully!")

@@ -82,6 +82,8 @@ class QCustomTheme(QObject):
             self.designerIconsColor = "#000"
             self.themesRead = False
 
+            self._isThemeDark = False 
+
     def initializeThemeVars(self):
         """Initialize all theme variables"""
 
@@ -259,6 +261,24 @@ class QCustomTheme(QObject):
     @Property(str)
     def iconsColor(self):
         return self.currentTheme.iconsColor
+    
+    @Property(bool)
+    def isThemeDark(self):
+        # Create QApplication instance if it doesn't exist
+        app = QApplication.instance() if QApplication.instance() else QApplication([])
+        palette = app.palette()
+
+        background_color = palette.color(QPalette.Window)
+        
+        # Calculate luminance using the YIQ color space formula
+        luminance = (0.299 * background_color.red() + 0.587 * background_color.green() + 0.114 * background_color.blue()) / 255
+
+        if luminance < 0.5:
+            self._isThemeDark =  True  
+        else:
+            self._isThemeDark = False 
+        
+        return self._isThemeDark
 
     def applyIcons(self, widget_container, folder=None, ui_file_name=None):
         try:
@@ -787,7 +807,7 @@ class QCustomTheme(QObject):
         # if font loaded
         if font_id == -1:
             print("Failed to load Product Sans font")
-            return
+            return 
 
     def applyCompiledSass(self, generateIcons: bool = True, paintEntireApp: bool = True):
         if not self.themesRead:
@@ -902,9 +922,9 @@ class QCustomTheme(QObject):
         luminance = (0.299 * background_color.red() + 0.587 * background_color.green() + 0.114 * background_color.blue()) / 255
         
         if luminance < 0.5:
-            self.isThemeDark =  True  # Dark theme
+            self._isThemeDark =  True  # Dark theme
         else:
-            self.isThemeDark = False  # Light theme
+            self._isThemeDark = False  # Light theme
             
         
         if generateIcons:
@@ -1054,7 +1074,8 @@ class QCustomTheme(QObject):
 
             settings = QSettings()
 
-            logInfo(("DONE: Current icons color ", settings.value("ICONS-COLOR")))        
+            logInfo(("DONE: Current icons color ", settings.value("ICONS-COLOR")))   
+            self._themeChangeComplete()     
 
     def generateAllIcons(self, progress_callback = None):
         if is_in_designer(self):

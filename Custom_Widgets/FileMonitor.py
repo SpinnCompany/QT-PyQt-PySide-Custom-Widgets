@@ -720,11 +720,11 @@ class QSsFileMonitor(QObject):
                     logError(f"Error: JSON file {json_file_path} not found")
 
             # Connect only once
-            if self.qss_watcher.connected:
-                try:
+            try:
+                if self.qss_watcher.connected:
                     self.qss_watcher.fileChanged.disconnect()
-                except:
-                    pass
+            except:
+                pass
 
             self.qss_watcher.fileChanged.connect(self.qss_file_changed)
             self.qss_watcher.connected = True
