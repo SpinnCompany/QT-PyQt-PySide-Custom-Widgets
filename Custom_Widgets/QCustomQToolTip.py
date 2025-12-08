@@ -1,7 +1,7 @@
 # coding:utf-8
-from qtpy.QtCore import Qt, QPoint, QObject, QPointF, QTimer, QPropertyAnimation, QEvent, QSize, Signal, QRect
+from qtpy.QtCore import Qt, QPoint, QObject, QPointF, QTimer, QPropertyAnimation, QEvent, QSize, Signal, QAbstractAnimation, QRect
 from qtpy.QtGui import QPainter, QColor, QPainterPath, QIcon, QPolygonF, QPixmap, QPaintEvent, QPalette, QCursor
-from qtpy.QtWidgets import QWidget, QGraphicsDropShadowEffect, QStyle, QStyleOption, QApplication
+from qtpy.QtWidgets import QWidget, QGraphicsDropShadowEffect, QGraphicsOpacityEffect, QStyle, QStyleOption, QApplication
 
 from Custom_Widgets.components.python.ui_tooltip import Ui_Form
 
@@ -27,15 +27,22 @@ class QCustomQToolTip(QWidget, Ui_Form):
         self.setText(self.text)
         self.setIcon(self.icon)
         
-        self.opacityAni = QPropertyAnimation(self, b'windowOpacity', self)
+        # Track if we're currently closing to prevent recursive calls
+        self._is_closing = False
+        self._is_showing = False
+        self._auto_close_timer = None
         
+        # Will create opacity effect and animation in showEvent
+        self.opacity_effect = None
+        self.opacityAni = None
+
         self.setAutoFillBackground(True)
         self.setBackgroundRole(QPalette.ToolTipBase)
         self.setForegroundRole(QPalette.ToolTipText)
 
         self.setShadowEffect()
         self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint | Qt.Popup | Qt.Tool)
-        self.setAttribute(Qt.WA_TranslucentBackground) 
+        self.setAttribute(Qt.WA_TranslucentBackground)
 
     def handleThemeChanged(self):
         pass
@@ -50,53 +57,155 @@ class QCustomQToolTip(QWidget, Ui_Form):
         self.setGraphicsEffect(self.effect)
     
     def _fadeOut(self):
-        """ fade out """
+        """ fade out using widget-level opacity """
+        if self._is_closing or not self.opacity_effect:
+            return
+            
+        self._is_closing = True
+        
+        # Cancel any pending auto-close timer
+        if self._auto_close_timer and self._auto_close_timer.isActive():
+            self._auto_close_timer.stop()
+        
+        # Stop any running animation
+        if self.opacityAni and self.opacityAni.state() == QPropertyAnimation.Running:
+            self.opacityAni.stop()
+        
+        # Disconnect any existing connections
+        try:
+            if self.opacityAni:
+                self.opacityAni.finished.disconnect()
+        except:
+            pass
+        
+        # Start fade out animation
         self.opacityAni.setDuration(500)
-        self.opacityAni.setStartValue(1)
-        self.opacityAni.setEndValue(0)
-        self.opacityAni.finished.connect(self.close)
+        try:
+            self.opacityAni.setStartValue(self.opacity_effect.opacity())
+        except:
+            self.opacityAni.setStartValue(1)
+            # Create new opacity effect and animation
+            self.opacity_effect = QGraphicsOpacityEffect(self)
+            self.opacity_effect.setOpacity(1)  # Start opaque
+            self.setGraphicsEffect(self.opacity_effect)
+            
+            # Create property animation on the opacity effect
+            self.opacityAni = QPropertyAnimation(self.opacity_effect, b'opacity', self)
+
+        self.opacityAni.setEndValue(0.0)
+        self.opacityAni.finished.connect(self._onFadeOutFinished)
         self.opacityAni.start()
 
+    def _onFadeOutFinished(self):
+        """ Called when fade out animation finishes """
+        self._is_closing = False
+        self._is_showing = False
+        self.onClosed.emit()
+        self.close()
+        if hasattr(self.target, 'customTooltip'):
+            self.target.customTooltip = None
+
     def enterEvent(self, event):
-        # self._fadeOut()
         self.adjustSizeToContent()
 
     def showEvent(self, e):
+        if self._is_showing:
+            return
+            
+        self._is_showing = True
+        self._is_closing = False
+        
+        # Clean up any existing animations/effects
+        self._cleanupEffects()
+        
+        # Create new opacity effect and animation
+        self.opacity_effect = QGraphicsOpacityEffect(self)
+        self.opacity_effect.setOpacity(0.0)  # Start transparent
+        self.setGraphicsEffect(self.opacity_effect)
+        
+        # Create property animation on the opacity effect
+        self.opacityAni = QPropertyAnimation(self.opacity_effect, b'opacity', self)
+        
         super().showEvent(e)
         self.adjustSizeToContent()
         self.raise_()
         
-        if self.duration >= 0:
-            QTimer.singleShot(self.duration, self._fadeOut)
-        
+        # Start fade in animation
         self.opacityAni.setDuration(500)
-        self.opacityAni.setStartValue(0)
-        self.opacityAni.setEndValue(1)
+        self.opacityAni.setStartValue(0.0)
+        self.opacityAni.setEndValue(1.0)
+        self.opacityAni.finished.connect(self._onFadeInFinished)
         self.opacityAni.start()
+        
+        # Setup timer for auto-close if duration is specified
+        if self.duration >= 0:
+            self._auto_close_timer = QTimer()
+            self._auto_close_timer.setSingleShot(True)
+            self._auto_close_timer.timeout.connect(self._fadeOut)
+            self._auto_close_timer.start(self.duration)
+    
+    def _onFadeInFinished(self):
+        """ Called when fade in animation finishes """
+        self._is_showing = False
 
     def closeEvent(self, e):
-        super().closeEvent(e)
-        self.target.customTooltip = None
-        self.onClosed.emit()
+        # If we're already closing via animation, accept the event
+        if self._is_closing:
+            e.accept()
+            return
+            
+        # Otherwise, start fade out and ignore the event
+        self._fadeOut()
+        e.ignore()
+
+    def _cleanupEffects(self):
+        """ Clean up opacity effect and animation """
+        # Stop and delete animation
+        if self.opacityAni:
+            try:
+                if self.opacityAni.state() == QPropertyAnimation.Running:
+                    self.opacityAni.stop()
+                self.opacityAni.deleteLater()
+            except:
+                pass
+            self.opacityAni = None
+        
+        # Remove and delete opacity effect
+        if self.opacity_effect:
+            try:
+                self.setGraphicsEffect(None)
+                self.opacity_effect.deleteLater()
+            except:
+                pass
+            self.opacity_effect = None
+        
+        # Stop auto-close timer
+        if self._auto_close_timer:
+            try:
+                if self._auto_close_timer.isActive():
+                    self._auto_close_timer.stop()
+                self._auto_close_timer.deleteLater()
+            except:
+                pass
+            self._auto_close_timer = None
 
     def eventFilter(self, obj, e: QEvent):
-        # if self.parent() and obj is self.parent().window():
         if e.type() in [QEvent.Resize, QEvent.WindowStateChange, QEvent.Move, QEvent.Paint]:
             self.adjustSizeToContent()
 
         return super().eventFilter(obj, e)
     
     def paintEvent(self, e: QPaintEvent):
+        # Don't paint if we're closing
+        if self._is_closing:
+            return
+            
         super().paintEvent(e)
 
         self.painter = QPainter(self)
         self.painter.setRenderHints(QPainter.Antialiasing)
         self.painter.setPen(Qt.NoPen)
 
-        # opt = QStyleOption()
-        # opt.initFrom(self)
-        # self.style().drawPrimitive(QStyle.PE_Widget, opt, self.painter, self)
-        
         # Set the brush color to the parent's background color if a parent is set
         if self.parent():
             self.painter.setBrush(self.parent().palette().window())
@@ -551,7 +660,3 @@ class QCustomQToolTipFilter(QObject):
             return
         target.customTooltip = QCustomQToolTip(parent = self.parent, text=text, target=target, duration = self.duration, tailPosition=self.tailPosition)
         target.customTooltip.show()
-
-
-
-

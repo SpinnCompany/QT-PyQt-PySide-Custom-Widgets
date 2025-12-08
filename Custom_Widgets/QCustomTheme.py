@@ -279,6 +279,10 @@ class QCustomTheme(QObject):
             self._isThemeDark = False 
         
         return self._isThemeDark
+    
+    def getPalette(self):
+        app = QApplication.instance() if QApplication.instance() else QApplication([])
+        return app.palette()
 
     def applyIcons(self, widget_container, folder=None, ui_file_name=None):
         try:

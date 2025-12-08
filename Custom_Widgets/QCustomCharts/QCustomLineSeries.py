@@ -1,4 +1,3 @@
-# QCustomLineSeries.py (updated with theme support)
 import os
 import enum
 from typing import List, Tuple, Dict, Any, Optional
@@ -14,15 +13,17 @@ from qtpy.QtGui import (
     QColor, QFont, QPainter, QPen, QBrush, QLinearGradient,
     QGradient, QIcon, QPalette, QCursor, QPixmap, QFontMetrics,
     QPainterPath, QPolygonF, QRadialGradient, QConicalGradient,
-    QKeySequence, QPaintEvent
+    QKeySequence, QPaintEvent, QPainterPathStroker
 )
 from qtpy.QtCharts import (
     QChart, QChartView, QLineSeries, QValueAxis, QDateTimeAxis,
-    QCategoryAxis, QScatterSeries
+    QCategoryAxis, QScatterSeries, QAreaSeries
 )
 
 from Custom_Widgets.QCustomTheme import QCustomTheme
 from Custom_Widgets.Log import logInfo, logWarning, logError
+from Custom_Widgets.QCustomTipOverlay import QCustomTipOverlay 
+
 
 class QCustomLineSeries(QWidget):
     """
@@ -77,12 +78,20 @@ class QCustomLineSeries(QWidget):
     THEME_QT_DARK = "Qt Dark"
     THEME_QT_BROWN_SAND = "Qt Brown Sand"
     
+    # Legend position constants
+    LEGEND_TOP = "Top"
+    LEGEND_BOTTOM = "Bottom"
+    LEGEND_LEFT = "Left"
+    LEGEND_RIGHT = "Right"
+    LEGEND_FLOATING = "Floating"
+    
     # Signals
     dataPointClicked = Signal(float, float, str)  # x, y, series_name
     dataPointHovered = Signal(float, float, str)  # x, y, series_name
     seriesAdded = Signal(str)
     seriesRemoved = Signal(str)
     chartExportComplete = Signal(str, bool)  # filename, success
+    legendPositionChanged = Signal(str)  # New signal for legend position changes
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -99,24 +108,27 @@ class QCustomLineSeries(QWidget):
         self._animationDuration = 1000
         self._antialiasing = True
         self._showGrid = True
-        self._showMinorGrid = False
         self._autoScale = True
         self._showDataPoints = True
         self._fillArea = False
         self._enableShadow = False
-        self._showCrosshair = False
+        self._showCrosshair = True  # Default to enabled
         self._highlightSize = 8
         self._shadowBlur = 15
         self._fillOpacity = 0.3
-        self._crosshairColor = QColor(255, 255, 255, 180)
         self._gridColor = QColor(200, 200, 200, 100)
 
         # Theme property
-        self._chartTheme = self.THEME_APP_THEME  # Default to App Theme
+        self._chartTheme = self.THEME_APP_THEME
         
         # Marker size properties
         self._markerSize = 8.0
         self._seriesMarkerSizes = {}
+        
+        # Legend properties
+        self._legendPosition = self.LEGEND_BOTTOM  # Default position
+        self._legendFontSize = 8  # Default legend font size
+        self._legendBackgroundVisible = False  # Default no background
         
         # Axis properties
         self._xAxisTitle = "X Axis"
@@ -144,12 +156,33 @@ class QCustomLineSeries(QWidget):
         self.chart_view.setChart(self.chart)
         self.chart_view.setRenderHint(QPainter.Antialiasing, self._antialiasing)
 
+        # Crosshair lines
+        self._verticalLine = QLineSeries()
+        self._horizontalLine = QLineSeries()
+        self._crosshairVisible = False
+        self._currentMousePoint = QPointF(0, 0)
+        self._crosshairPen = QPen()
+        self._crosshairPen.setWidthF(1.0)
+        self._crosshairPen.setStyle(Qt.DotLine)
+
+        # Tooltip overlay
+        self._hoverTipOverlay = None
+        self._hoverTimer = QTimer()
+        self._hoverTimer.setSingleShot(True)
+        self._hoverTimer.timeout.connect(self._showHoverTooltip)
+        self._hoverDelay = 500  # ms delay before showing tooltip
+        self._lastHoverPoint = None
+        self._lastHoverSeries = None
+
         # Toolbar
         self.toolbar = QWidget()
         self.toolbar.setObjectName("toolbar")
         
         # Theme selector in toolbar
         self.theme_combo = None
+        
+        # Legend controls
+        self.legend_position_combo = None
         
         # Status bar (footer)
         self.status_bar = QLabel("Ready")
@@ -176,11 +209,101 @@ class QCustomLineSeries(QWidget):
         # Setup chart with theme
         self._setupChart()
         
+        # Setup crosshair lines
+        self._setupCrosshair()
+        
         # Apply theme
         self._applyTheme()
 
         # Setup interactions
         self._setupInteractions()
+
+    def _setupCrosshair(self):
+        """Setup crosshair lines with initial positions"""
+        # Configure crosshair lines - set names with underscore to hide from legend
+        self._verticalLine.setName("__vertical_crosshair")
+        self._horizontalLine.setName("__horizontal_crosshair")
+        
+        # Hide from legend by not setting a visible name
+        # Alternatively, we can explicitly hide them from legend
+        self._verticalLine.setObjectName("__vertical_crosshair")
+        self._horizontalLine.setObjectName("__horizontal_crosshair")
+        
+        # Set initial empty data
+        self._verticalLine.append(0, 0)
+        self._verticalLine.append(0, 1)
+        
+        self._horizontalLine.append(0, 0)
+        self._horizontalLine.append(1, 0)
+        
+        # Apply crosshair pen - color will be set by theme
+        self._verticalLine.setPen(self._crosshairPen)
+        self._horizontalLine.setPen(self._crosshairPen)
+        
+        # Add to chart
+        self.chart.addSeries(self._verticalLine)
+        self.chart.addSeries(self._horizontalLine)
+        
+        # Attach to axes
+        for axis in self.chart.axes():
+            if axis.orientation() == Qt.Horizontal:
+                self._verticalLine.attachAxis(axis)
+                self._horizontalLine.attachAxis(axis)
+            elif axis.orientation() == Qt.Vertical:
+                self._verticalLine.attachAxis(axis)
+                self._horizontalLine.attachAxis(axis)
+        
+        # Initially hide crosshair
+        self._verticalLine.setVisible(False)
+        self._horizontalLine.setVisible(False)
+
+    def _updateCrosshair(self, point: QPointF, state: bool):
+        """Update crosshair position based on mouse point"""
+        if state and point:
+            # Store the current mouse point
+            self._currentMousePoint = point
+            self._crosshairVisible = True
+            
+            # Get axis ranges
+            x_min, x_max = self._getAxisRange(Qt.Horizontal)
+            y_min, y_max = self._getAxisRange(Qt.Vertical)
+            
+            if x_min is not None and x_max is not None and y_min is not None and y_max is not None:
+                # Update vertical line (x = point.x(), y from min to max)
+                self._verticalLine.clear()
+                self._verticalLine.append(point.x(), y_min)
+                self._verticalLine.append(point.x(), y_max)
+                
+                # Update horizontal line (y = point.y(), x from min to max)
+                self._horizontalLine.clear()
+                self._horizontalLine.append(x_min, point.y())
+                self._horizontalLine.append(x_max, point.y())
+                
+                # Show crosshair
+                self._verticalLine.setVisible(True)
+                self._horizontalLine.setVisible(True)
+                
+                # Update status bar with coordinates
+                self.status_bar.setText(f"Mouse: x={point.x():.2f}, y={point.y():.2f}")
+        else:
+            # Hide crosshair when mouse leaves
+            self._verticalLine.setVisible(False)
+            self._horizontalLine.setVisible(False)
+            self._crosshairVisible = False
+            
+            # Reset status bar
+            visible_count = sum(1 for v in self._seriesVisible.values() if v)
+            total_points = sum(len(data) for data in self._seriesData.values())
+            self.status_bar.setText(f"<b>{visible_count}</b> series | <b>{total_points}</b> total points | Theme: <b>{self._chartTheme}</b> | Legend: <b>{self._legendPosition}</b>")
+
+        self._hideCrosshairFromLegend()
+
+    def _getAxisRange(self, orientation: Qt.Orientation):
+        """Get the current axis range for specified orientation"""
+        for axis in self.chart.axes():
+            if axis.orientation() == orientation:
+                return axis.min(), axis.max()
+        return None, None
 
     def _initSampleData(self):
         """Initialize with creative sample data"""
@@ -249,6 +372,36 @@ class QCustomLineSeries(QWidget):
         self.theme_combo.setMaximumWidth(150)
         self.theme_combo.setToolTip("Select chart theme")
 
+        # Legend position selector
+        self.legend_position_combo = QComboBox()
+        self.legend_position_combo.addItems([
+            self.LEGEND_TOP,
+            self.LEGEND_BOTTOM,
+            self.LEGEND_LEFT,
+            self.LEGEND_RIGHT,
+            self.LEGEND_FLOATING
+        ])
+        self.legend_position_combo.setCurrentText(self._legendPosition)
+        self.legend_position_combo.currentTextChanged.connect(self._onLegendPositionChanged)
+        self.legend_position_combo.setMaximumWidth(100)
+        self.legend_position_combo.setToolTip("Legend position")
+
+        # Crosshair toggle button
+        self.crosshair_btn = QToolButton()
+        self.crosshair_btn.setText("Crosshair")
+        self.crosshair_btn.setCheckable(True)
+        self.crosshair_btn.setChecked(self._showCrosshair)
+        self.crosshair_btn.toggled.connect(lambda checked: setattr(self, "showCrosshair", checked))
+        self.crosshair_btn.setToolTip("Toggle crosshair lines")
+
+        # Tooltip toggle button
+        self.tooltip_btn = QToolButton()
+        self.tooltip_btn.setText("Tooltips")
+        self.tooltip_btn.setCheckable(True)
+        self.tooltip_btn.setChecked(True)
+        self.tooltip_btn.toggled.connect(self._onTooltipToggled)
+        self.tooltip_btn.setToolTip("Toggle point tooltips")
+
         # Tool buttons
         self.zoom_in_btn = QToolButton()
         self.zoom_in_btn.setText("Zoom In")
@@ -297,8 +450,13 @@ class QCustomLineSeries(QWidget):
         toolbar_layout.addWidget(self.zoom_out_btn)
         toolbar_layout.addWidget(self.reset_view_btn)
         toolbar_layout.addStretch()
+        toolbar_layout.addWidget(self.crosshair_btn)
+        toolbar_layout.addWidget(self.tooltip_btn)
         toolbar_layout.addWidget(self.grid_btn)
         toolbar_layout.addWidget(self.legend_btn)
+        toolbar_layout.addWidget(QLabel("Legend Pos:"))
+        toolbar_layout.addWidget(self.legend_position_combo)
+        toolbar_layout.addWidget(QLabel("L.Marker:"))
         toolbar_layout.addStretch()
         toolbar_layout.addWidget(self.theme_combo)
         toolbar_layout.addStretch()
@@ -319,13 +477,13 @@ class QCustomLineSeries(QWidget):
     def _applyTheme(self):
         """Apply the selected theme to the chart"""
         try:
-            # Clear any existing theme
-            if self._appTheme.isThemeDark:
-                self.chart.setTheme(QChart.ChartThemeDark)
-            else:
-                self.chart.setTheme(QChart.ChartThemeLight)
-
             if self._chartTheme == self.THEME_APP_THEME:
+                # Clear any existing theme
+                if self._appTheme.isThemeDark:
+                    self.chart.setTheme(QChart.ChartThemeDark)
+                else:
+                    self.chart.setTheme(QChart.ChartThemeLight)
+
                 # Use application palette
                 app = QApplication.instance()
                 if app:
@@ -343,41 +501,12 @@ class QCustomLineSeries(QWidget):
                     title_font.setBold(True)
                     self.chart.setTitleFont(title_font)
                     
-                    # Set axis colors
-                    for axis in self.chart.axes():
-                        # Axis line and tick colors
-                        axis.setLinePenColor(palette.color(QPalette.Text))
-                        axis.setLabelsColor(palette.color(QPalette.Text))
-                        axis.setTitleBrush(QBrush(palette.color(QPalette.Text)))
-                        
-                        # Grid lines (slightly lighter than text)
-                        grid_color = palette.color(QPalette.Text)
-                        grid_color.setAlpha(80)
-                        axis.setGridLineColor(grid_color)
-                        
-                        # Minor grid lines (even lighter)
-                        minor_grid_color = palette.color(QPalette.Text)
-                        minor_grid_color.setAlpha(40)
-                        if hasattr(axis, 'setMinorGridLineColor'):
-                            axis.setMinorGridLineColor(minor_grid_color)
-                        
-                        # Set grid visibility based on property
-                        axis.setGridLineVisible(self._showGrid)
-                        if hasattr(axis, 'setMinorGridLineVisible'):
-                            axis.setMinorGridLineVisible(self._showMinorGrid)
-                    
-                    # Legend colors
-                    legend = self.chart.legend()
-                    if legend:
-                        legend.setLabelColor(palette.color(QPalette.Text))
-                        legend.setBackgroundVisible(False)
-                        
             elif self._chartTheme == self.THEME_LIGHT:
                 self.chart.setTheme(QChart.ChartThemeLight)
             elif self._chartTheme == self.THEME_DARK:
                 self.chart.setTheme(QChart.ChartThemeDark)
             elif self._chartTheme == self.THEME_BLUE_NCS:
-                self.chart.setTheme(QChart.ChartThemeBlueNcs)
+                self.chart.setTheme(QChart.ChartThemeBlueNcs)   
             elif self._chartTheme == self.THEME_BLUE_ICY:
                 self.chart.setTheme(QChart.ChartThemeBlueIcy)
             elif self._chartTheme == self.THEME_HIGH_CONTRAST:
@@ -389,46 +518,99 @@ class QCustomLineSeries(QWidget):
             elif self._chartTheme == self.THEME_QT_BROWN_SAND:
                 self.chart.setTheme(QChart.ChartThemeBrownSand)
             
-            # For custom themes or App Theme, we need to manually update grid colors
-            if self._chartTheme != self.THEME_APP_THEME:
-                # Apply grid visibility settings
-                for axis in self.chart.axes():
-                    axis.setGridLineVisible(self._showGrid)
-                    if hasattr(axis, 'setMinorGridLineVisible'):
-                        axis.setMinorGridLineVisible(self._showMinorGrid)
-            
             # Update the view
             self.chart_view.update()
+            self._updateCrosshairColor()
             
         except Exception as e:
             print(f"Error applying theme: {e}")
+
+    def _hideCrosshairFromLegend(self):
+        """Hide crosshair series from the legend"""
+        legend = self.chart.legend()
+        if legend:
+            # Get all marker items
+            markers = legend.markers()
+            for marker in markers:
+                series = marker.series()
+                if series and series.name() in ["__vertical_crosshair", "__horizontal_crosshair"]:
+                    marker.setVisible(False)
+                   
+                   
+    def _updateCrosshairColor(self):
+        """Update crosshair color based on current theme"""
+        if self._chartTheme == self.THEME_APP_THEME:
+            # For App Theme, use the application's text color
+            app = QApplication.instance()
+            if app:
+                palette = app.palette()
+                text_color = palette.color(QPalette.Text)
+                # Add some transparency
+                crosshair_color = QColor(text_color)
+                crosshair_color.setAlpha(200)
+                self._crosshairPen.setColor(crosshair_color)
+        else:
+            # For predefined themes, determine text color based on theme
+            if self._chartTheme in [self.THEME_DARK, self.THEME_QT_DARK]:
+                # Dark themes - use light crosshair
+                crosshair_color = QColor(255, 255, 255, 200)
+            else:
+                # Light themes - use dark crosshair
+                crosshair_color = QColor(0, 0, 0, 200)
+
+            self._crosshairPen.setColor(crosshair_color)
         
+        # Update crosshair pen for both lines
+        if self._verticalLine and self._horizontalLine:
+            self._verticalLine.setPen(self._crosshairPen)
+            self._horizontalLine.setPen(self._crosshairPen)
 
     def _setupChart(self):
         """Setup the chart with current data and settings"""
         try:
-            # Clear existing series
-            self.chart.removeAllSeries()
+            # Clear existing series except crosshair
+            series_to_remove = []
+            for series in self.chart.series():
+                if series.name() not in ["__vertical_crosshair", "__horizontal_crosshair"]:
+                    series_to_remove.append(series)
+            
+            for series in series_to_remove:
+                self.chart.removeSeries(series)
 
-            # Clear axes
+            # Clear axes (but keep them for crosshair)
+            axes_to_remove = []
             for axis in self.chart.axes():
+                if axis not in self._verticalLine.attachedAxes() and axis not in self._horizontalLine.attachedAxes():
+                    axes_to_remove.append(axis)
+            
+            for axis in axes_to_remove:
                 self.chart.removeAxis(axis)
 
             # Set chart title
             self.chart.setTitle(self._chartTitle)
 
-            # Create axes
-            axis_x = QValueAxis()
-            axis_y = QValueAxis()
+            # Create axes if they don't exist
+            axis_x = None
+            axis_y = None
             
-            axis_x.setTitleText(self._xAxisTitle)
-            axis_y.setTitleText(self._yAxisTitle)
-            axis_x.setGridLineVisible(self._showGrid)
-            axis_y.setGridLineVisible(self._showGrid)
-
-            # Add axes to chart
-            self.chart.addAxis(axis_x, Qt.AlignBottom)
-            self.chart.addAxis(axis_y, Qt.AlignLeft)
+            # Check if axes already exist from crosshair
+            for axis in self.chart.axes():
+                if axis.orientation() == Qt.Horizontal:
+                    axis_x = axis
+                elif axis.orientation() == Qt.Vertical:
+                    axis_y = axis
+            
+            if axis_x is None:
+                axis_x = QValueAxis()
+                axis_x.setTitleText(self._xAxisTitle)
+                axis_x.setGridLineVisible(self._showGrid)
+                self.chart.addAxis(axis_x, Qt.AlignBottom)
+            
+            if axis_y is None:
+                axis_y = QValueAxis()
+                axis_y.setTitleText(self._yAxisTitle)
+                axis_y.setGridLineVisible(self._showGrid)
+                self.chart.addAxis(axis_y, Qt.AlignLeft)
 
             all_x = []
             all_y = []
@@ -510,7 +692,29 @@ class QCustomLineSeries(QWidget):
             legend = self.chart.legend()
             legend.setVisible(self._showLegend)
             if self._showLegend:
-                legend.setAlignment(Qt.AlignBottom)
+                # Set legend alignment based on position
+                if self._legendPosition == self.LEGEND_TOP:
+                    legend.setAlignment(Qt.AlignTop)
+                elif self._legendPosition == self.LEGEND_BOTTOM:
+                    legend.setAlignment(Qt.AlignBottom)
+                elif self._legendPosition == self.LEGEND_LEFT:
+                    legend.setAlignment(Qt.AlignLeft)
+                elif self._legendPosition == self.LEGEND_RIGHT:
+                    legend.setAlignment(Qt.AlignRight)
+                elif self._legendPosition == self.LEGEND_FLOATING:
+                    legend.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+                    # For floating, position it at top-right
+                    legend.detachFromChart()
+                    legend.setGeometry(QRect(10, 10, 150, 100))
+                    legend.update()
+                
+                # Apply font size
+                font = legend.font()
+                font.setPointSize(self._legendFontSize)
+                legend.setFont(font)
+                
+                # Apply background and border
+                legend.setBackgroundVisible(self._legendBackgroundVisible)
 
             # Set axis ranges
             if all_x and all_y:
@@ -540,10 +744,13 @@ class QCustomLineSeries(QWidget):
             # Apply theme after setting up chart
             self._applyTheme()
 
+            # Hide crosshair from legend
+            self._hideCrosshairFromLegend()
+
             # Update status
             visible_count = sum(1 for v in self._seriesVisible.values() if v)
             total_points = sum(len(data) for data in self._seriesData.values())
-            self.status_bar.setText(f"<b>{visible_count}</b> series | <b>{total_points}</b> total points | Theme: <b>{self._chartTheme}</b>")
+            self.status_bar.setText(f"<b>{visible_count}</b> series | <b>{total_points}</b> total points | Theme: <b>{self._chartTheme}</b> | Legend: <b>{self._legendPosition}</b>")
 
         except Exception as e:
             print(f"Error setting up chart: {e}")
@@ -554,14 +761,152 @@ class QCustomLineSeries(QWidget):
         self.chart_view.setMouseTracking(True)
         self.setFocusPolicy(Qt.StrongFocus)
         self.chart_view.setRubberBand(QChartView.RectangleRubberBand)
+        
+        # Connect all series hovered signals
+        self._connectSeriesHoverSignals()
+        
+        # Install event filter for mouse leave events
+        self.chart_view.viewport().installEventFilter(self)
+
+    def _connectSeriesHoverSignals(self):
+        """Connect hover signals for all series"""
+        for series in self.chart.series():
+            if isinstance(series, (QLineSeries, QScatterSeries)):
+                # Only connect if it's not a crosshair series
+                if series.name() not in ["__vertical_crosshair", "__horizontal_crosshair"]:
+                    series.hovered.connect(self._onSeriesHovered)
+
+    def _onSeriesHovered(self, point: QPointF, state: bool):
+        """Handle series hover events to show crosshair and tooltip"""
+        # Update crosshair
+        self._updateCrosshair(point, state)
+        
+        # Handle tooltip
+        if state and point:
+            # Store hover information
+            self._lastHoverPoint = point
+            
+            # Find which series was hovered
+            for series in self.chart.series():
+                if isinstance(series, (QLineSeries, QScatterSeries)) and series.name() not in ["__vertical_crosshair", "__horizontal_crosshair"]:
+                    # Check if point is close to any data point in this series
+                    for series_name, data in self._seriesData.items():
+                        for data_point in data:
+                            dx = abs(data_point[0] - point.x())
+                            dy = abs(data_point[1] - point.y())
+                            if dx < 1.0 and dy < 1.0:  # Tolerance threshold
+                                self._lastHoverSeries = series_name
+                                
+                                # Emit signal
+                                self.dataPointHovered.emit(point.x(), point.y(), series_name)
+                                
+                                # Start timer to show tooltip
+                                if self.tooltip_btn.isChecked():
+                                    self._hoverTimer.start(self._hoverDelay)
+                                return
+        else:
+            # Mouse left the point, hide tooltip
+            self._hideHoverTooltip()
+            self._hoverTimer.stop()
+
+    def _showHoverTooltip(self):
+        """Show custom tooltip for hovered point"""
+        if not self._lastHoverPoint or not self._lastHoverSeries:
+            return
+            
+        # Hide existing tooltip
+        self._hideHoverTooltip()
+        
+        # Get series information
+        series_name = self._lastHoverSeries
+        color = self._seriesColors.get(series_name, QColor("#00bcff"))
+        
+        # Create tooltip content
+        title = f"Data Point - {series_name}"
+        description = f"X: {self._lastHoverPoint.x():.2f}\nY: {self._lastHoverPoint.y():.2f}"
+        
+        # Create icon from series color
+        icon_pixmap = QPixmap(24, 24)
+        icon_pixmap.fill(Qt.transparent)
+        painter = QPainter(icon_pixmap)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setBrush(QBrush(color))
+        painter.setPen(Qt.NoPen)
+        painter.drawEllipse(0, 0, 24, 24)
+        painter.end()
+        icon = QIcon(icon_pixmap)
+        
+        # Convert chart point to global screen coordinates
+        chart_pos = self.chart.mapToPosition(self._lastHoverPoint)
+        view_pos = self.chart_view.mapFromScene(chart_pos)
+        global_pos = self.chart_view.mapToGlobal(view_pos)
+
+        global_mouse_pos = QCursor.pos()                     # Global screen coordinates
+        local_mouse_pos = self.mapFromGlobal(global_mouse_pos) 
+        
+        # Create tooltip overlay with QPoint target
+        self._hoverTipOverlay = QCustomTipOverlay(
+            parent=self,
+            title=title,
+            description=description,
+            icon=icon,
+            target=local_mouse_pos,
+            duration=5000,  
+            tailPosition="auto",
+            isClosable=False,
+            deleteOnClose=True,
+            toolFlag=True
+        )
+        
+        # Connect closed signal
+        self._hoverTipOverlay.closed.connect(self._onTooltipClosed)
+        
+        # Show tooltip
+        self._hoverTipOverlay.setAttribute(Qt.WA_TransparentForMouseEvents, True)
+
+        self._hoverTipOverlay.show()
+
+    def _hideHoverTooltip(self):
+        """Hide the hover tooltip"""
+        if self._hoverTipOverlay:
+            self._hoverTipOverlay.close()
+            self._hoverTipOverlay = None
+
+    def _onTooltipClosed(self):
+        """Handle tooltip closed signal"""
+        self._hoverTipOverlay = None
+
+    def _onTooltipToggled(self, checked: bool):
+        """Handle tooltip toggle button"""
+        if not checked:
+            self._hideHoverTooltip()
+            self._hoverTimer.stop()
+
+    def eventFilter(self, obj, event):
+        """Filter events to handle mouse leave"""
+        if obj == self.chart_view.viewport():
+            if event.type() == QEvent.Leave:
+                # Mouse left the chart view, hide tooltip and crosshair
+                self._hideHoverTooltip()
+                self._hoverTimer.stop()
+                self._updateCrosshair(None, False)
+                return True
+        
+        return super().eventFilter(obj, event)
 
     def _zoomIn(self):
         """Zoom in chart"""
         self.chart.zoomIn()
+        # Update crosshair if visible
+        if self._crosshairVisible:
+            self._updateCrosshair(self._currentMousePoint, True)
 
     def _zoomOut(self):
         """Zoom out chart"""
         self.chart.zoomOut()
+        # Update crosshair if visible
+        if self._crosshairVisible:
+            self._updateCrosshair(self._currentMousePoint, True)
 
     def _resetView(self):
         """Reset chart view"""
@@ -607,9 +952,118 @@ class QCustomLineSeries(QWidget):
         """Handle marker size spinbox change"""
         self.markerSize = float(self.marker_size_spin.value())
 
+    def _onLegendPositionChanged(self, position):
+        """Handle legend position selection change"""
+        self.legendPosition = position
+
     def _onThemeChanged(self, theme):
         """Handle theme selection change"""
         self.chartTheme = theme
+
+    # ============ CROSSHAIR PROPERTIES AND METHODS ============
+
+    @Property(bool)
+    def showCrosshair(self):
+        return self._showCrosshair
+
+    @showCrosshair.setter
+    def showCrosshair(self, value):
+        self._showCrosshair = bool(value)
+        if hasattr(self, 'crosshair_btn'):
+            self.crosshair_btn.setChecked(value)
+        
+        if not self._showCrosshair:
+            self._verticalLine.setVisible(False)
+            self._horizontalLine.setVisible(False)
+        elif self._crosshairVisible:
+            self._verticalLine.setVisible(True)
+            self._horizontalLine.setVisible(True)
+
+    @Property(QColor)
+    def crosshairColor(self):
+        return self._crosshairPen.color()
+
+    @crosshairColor.setter
+    def crosshairColor(self, value):
+        self._crosshairPen.setColor(value)
+        if self._verticalLine and self._horizontalLine:
+            self._verticalLine.setPen(self._crosshairPen)
+            self._horizontalLine.setPen(self._crosshairPen)
+
+    @Property(float)
+    def crosshairWidth(self):
+        return self._crosshairPen.widthF()
+
+    @crosshairWidth.setter
+    def crosshairWidth(self, value):
+        self._crosshairPen.setWidthF(float(value))
+        if self._verticalLine and self._horizontalLine:
+            self._verticalLine.setPen(self._crosshairPen)
+            self._horizontalLine.setPen(self._crosshairPen)
+
+    def setCrosshairStyle(self, style: Qt.PenStyle):
+        """Set crosshair line style"""
+        self._crosshairPen.setStyle(style)
+        if self._verticalLine and self._horizontalLine:
+            self._verticalLine.setPen(self._crosshairPen)
+            self._horizontalLine.setPen(self._crosshairPen)
+
+    def showCrosshairAt(self, x: float, y: float):
+        """Manually show crosshair at specific coordinates"""
+        point = QPointF(x, y)
+        self._updateCrosshair(point, True)
+
+    def hideCrosshair(self):
+        """Manually hide crosshair"""
+        self._updateCrosshair(None, False)
+
+    # ============ TOOLTIP PROPERTIES AND METHODS ============
+
+    @Property(bool)
+    def showTooltips(self):
+        """Get whether tooltips are enabled"""
+        return self.tooltip_btn.isChecked() if hasattr(self, 'tooltip_btn') else True
+
+    @showTooltips.setter
+    def showTooltips(self, value):
+        """Set tooltips enabled"""
+        if hasattr(self, 'tooltip_btn'):
+            self.tooltip_btn.setChecked(bool(value))
+        if not value:
+            self._hideHoverTooltip()
+            self._hoverTimer.stop()
+
+    @Property(int)
+    def tooltipDelay(self):
+        """Get tooltip display delay in milliseconds"""
+        return self._hoverDelay
+
+    @tooltipDelay.setter
+    def tooltipDelay(self, value):
+        """Set tooltip display delay in milliseconds"""
+        self._hoverDelay = max(0, int(value))
+
+    @Property(int)
+    def tooltipDuration(self):
+        """Get tooltip display duration in milliseconds"""
+        # This is handled by QCustomTipOverlay, but we can expose it if needed
+        return 3000  # Default value
+
+    @tooltipDuration.setter
+    def tooltipDuration(self, value):
+        """Set tooltip display duration in milliseconds"""
+        # This would need to be applied when creating new tooltips
+        pass
+
+    def showTooltipAt(self, x: float, y: float, series_name: str, title: str = None, description: str = None):
+        """Manually show tooltip at specific coordinates"""
+        self._lastHoverPoint = QPointF(x, y)
+        self._lastHoverSeries = series_name
+        self._showHoverTooltip()
+
+    def hideTooltip(self):
+        """Manually hide tooltip"""
+        self._hideHoverTooltip()
 
     # ============ PUBLIC API METHODS ============
 
@@ -633,6 +1087,7 @@ class QCustomLineSeries(QWidget):
             self._seriesMarkerSizes[name] = float(marker_size)
         
         self._setupChart()
+        self._connectSeriesHoverSignals()
         self.seriesAdded.emit(name)
 
     def removeSeries(self, name: str):
@@ -700,6 +1155,54 @@ class QCustomLineSeries(QWidget):
         """Get marker size for a specific series"""
         return self._seriesMarkerSizes.get(name, self._markerSize)
 
+    # ============ LEGEND CUSTOMIZATION METHODS ============
+
+    def setLegendBackgroundVisible(self, visible: bool):
+        """Set legend background visibility"""
+        self._legendBackgroundVisible = visible
+        legend = self.chart.legend()
+        if legend:
+            legend.setBackgroundVisible(visible)
+        self.chart_view.update()
+
+    def setLegendFontSize(self, size: int):
+        """Set legend font size"""
+        self._legendFontSize = size
+        legend = self.chart.legend()
+        if legend:
+            font = legend.font()
+            font.setPointSize(size)
+            legend.setFont(font)
+        self.chart_view.update()
+
+    def getLegendFontSize(self) -> int:
+        """Get legend font size"""
+        return self._legendFontSize
+
+    def getAvailableLegendPositions(self) -> List[str]:
+        """Get list of available legend positions"""
+        return [
+            self.LEGEND_TOP,
+            self.LEGEND_BOTTOM,
+            self.LEGEND_LEFT,
+            self.LEGEND_RIGHT,
+            self.LEGEND_FLOATING
+        ]
+
+    def setLegendAlignment(self, alignment: Qt.Alignment):
+        """Directly set legend alignment"""
+        legend = self.chart.legend()
+        if legend:
+            legend.setAlignment(alignment)
+            self.chart_view.update()
+
+    def getLegendAlignment(self) -> Qt.Alignment:
+        """Get current legend alignment"""
+        legend = self.chart.legend()
+        if legend:
+            return legend.alignment()
+        return Qt.AlignBottom
+
     # ============ PROPERTIES ============
 
     @Property(str)
@@ -718,7 +1221,44 @@ class QCustomLineSeries(QWidget):
             # Update status bar
             visible_count = sum(1 for v in self._seriesVisible.values() if v)
             total_points = sum(len(data) for data in self._seriesData.values())
-            self.status_bar.setText(f"<b>{visible_count}</b> series | <b>{total_points}</b> total points | Theme: <b>{self._chartTheme}</b>")
+            self.status_bar.setText(f"<b>{visible_count}</b> series | <b>{total_points}</b> total points | Theme: <b>{self._chartTheme}</b> | Legend: <b>{self._legendPosition}</b>")
+
+    @Property(str)
+    def legendPosition(self):
+        """Get the current legend position"""
+        return self._legendPosition
+
+    @legendPosition.setter
+    def legendPosition(self, value):
+        """Set the legend position"""
+        if value != self._legendPosition and value in self.getAvailableLegendPositions():
+            self._legendPosition = str(value)
+            if hasattr(self, 'legend_position_combo') and self.legend_position_combo:
+                self.legend_position_combo.setCurrentText(value)
+            
+            # Update legend position
+            legend = self.chart.legend()
+            if legend:
+                if value == self.LEGEND_TOP:
+                    legend.setAlignment(Qt.AlignTop)
+                elif value == self.LEGEND_BOTTOM:
+                    legend.setAlignment(Qt.AlignBottom)
+                elif value == self.LEGEND_LEFT:
+                    legend.setAlignment(Qt.AlignLeft)
+                elif value == self.LEGEND_RIGHT:
+                    legend.setAlignment(Qt.AlignRight)
+                elif value == self.LEGEND_FLOATING:
+                    legend.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+                    legend.detachFromChart()
+                    legend.setGeometry(QRect(10, 10, 150, 100))
+                
+                legend.update()
+            
+            self.chart_view.update()
+            self.legendPositionChanged.emit(value)
+            
+            # Update status bar
+            self.status_bar.setText(f"Legend position changed to: <b>{value}</b>")
 
     @Property(str)
     def chartTitle(self):
@@ -755,19 +1295,6 @@ class QCustomLineSeries(QWidget):
             axis.setGridLineVisible(value)
 
     @Property(bool)
-    def showMinorGrid(self):
-        """Get whether minor grid is visible"""
-        return self._showMinorGrid
-
-    @showMinorGrid.setter
-    def showMinorGrid(self, value):
-        """Set minor grid visibility"""
-        self._showMinorGrid = bool(value)
-        for axis in self.chart.axes():
-            if hasattr(axis, 'setMinorGridLineVisible'):
-                axis.setMinorGridLineVisible(value)
-
-    @Property(bool)
     def animationEnabled(self):
         return self._animationEnabled
 
@@ -779,6 +1306,25 @@ class QCustomLineSeries(QWidget):
         else:
             self.chart.setAnimationOptions(QChart.NoAnimation)
 
+    @Property(int)
+    def animationDuration(self):
+        return self._animationDuration
+
+    @animationDuration.setter
+    def animationDuration(self, value):
+        self._animationDuration = int(value)
+        if self._animationEnabled:
+            self.chart.setAnimationDuration(self._animationDuration)
+
+    @Property(bool)
+    def antialiasing(self):
+        return self._antialiasing
+
+    @antialiasing.setter
+    def antialiasing(self, value):
+        self._antialiasing = bool(value)
+        self.chart_view.setRenderHint(QPainter.Antialiasing, self._antialiasing)
+
     @Property(bool)
     def showDataPoints(self):
         return self._showDataPoints
@@ -787,6 +1333,62 @@ class QCustomLineSeries(QWidget):
     def showDataPoints(self, value):
         self._showDataPoints = bool(value)
         self._setupChart()
+
+    @Property(bool)
+    def fillArea(self):
+        return self._fillArea
+
+    @fillArea.setter
+    def fillArea(self, value):
+        self._fillArea = bool(value)
+        self._setupChart()
+
+    @Property(bool)
+    def enableShadow(self):
+        return self._enableShadow
+
+    @enableShadow.setter
+    def enableShadow(self, value):
+        self._enableShadow = bool(value)
+        self._setupChart()
+
+    @Property(int)
+    def highlightSize(self):
+        return self._highlightSize
+
+    @highlightSize.setter
+    def highlightSize(self, value):
+        self._highlightSize = int(value)
+        self._setupChart()
+
+    @Property(int)
+    def shadowBlur(self):
+        return self._shadowBlur
+
+    @shadowBlur.setter
+    def shadowBlur(self, value):
+        self._shadowBlur = int(value)
+        self._setupChart()
+
+    @Property(float)
+    def fillOpacity(self):
+        return self._fillOpacity
+
+    @fillOpacity.setter
+    def fillOpacity(self, value):
+        self._fillOpacity = float(value)
+        self._setupChart()
+
+    @Property(QColor)
+    def gridColor(self):
+        return self._gridColor
+
+    @gridColor.setter
+    def gridColor(self, value):
+        self._gridColor = value
+        for axis in self.chart.axes():
+            axis.setGridLineColor(self._gridColor)
+        self.chart_view.update()
 
     @Property(bool)
     def autoScale(self):
@@ -896,6 +1498,32 @@ class QCustomLineSeries(QWidget):
         
         self._setupChart()
 
+    @Property(int)
+    def legendFontSize(self):
+        return self._legendFontSize
+
+    @legendFontSize.setter
+    def legendFontSize(self, value):
+        self._legendFontSize = int(value)
+        legend = self.chart.legend()
+        if legend:
+            font = legend.font()
+            font.setPointSize(self._legendFontSize)
+            legend.setFont(font)
+        self.chart_view.update()
+
+    @Property(bool)
+    def legendBackgroundVisible(self):
+        return self._legendBackgroundVisible
+
+    @legendBackgroundVisible.setter
+    def legendBackgroundVisible(self, value):
+        self._legendBackgroundVisible = bool(value)
+        legend = self.chart.legend()
+        if legend:
+            legend.setBackgroundVisible(self._legendBackgroundVisible)
+        self.chart_view.update()
+
     # ============ THEME-RELATED METHODS ============
 
     def getAvailableThemes(self) -> List[str]:
@@ -918,23 +1546,33 @@ class QCustomLineSeries(QWidget):
             self.chart.setBackgroundBrush(QBrush(palette.color(QPalette.Window)))
             self.chart.setPlotAreaBackgroundBrush(QBrush(palette.color(QPalette.Base)))
             
+            text_color = palette.color(QPalette.Text)
+            
             for axis in self.chart.axes():
-                axis.setLinePenColor(palette.color(QPalette.Text))
-                axis.setLabelsColor(palette.color(QPalette.Text))
-                axis.setTitleBrush(QBrush(palette.color(QPalette.Text)))
+                axis.setLinePenColor(text_color)
+                axis.setLabelsColor(text_color)
+                axis.setTitleBrush(QBrush(text_color))
                 
-                grid_color = palette.color(QPalette.Text)
+                grid_color = text_color
                 grid_color.setAlpha(80)
                 axis.setGridLineColor(grid_color)
                 
                 if hasattr(axis, 'setMinorGridLineColor'):
-                    minor_grid_color = palette.color(QPalette.Text)
+                    minor_grid_color = text_color
                     minor_grid_color.setAlpha(40)
                     axis.setMinorGridLineColor(minor_grid_color)
             
             legend = self.chart.legend()
             if legend:
-                legend.setLabelColor(palette.color(QPalette.Text))
+                legend.setLabelColor(text_color)
+            
+            # Update crosshair color to match text color
+            crosshair_color = QColor(text_color)
+            crosshair_color.setAlpha(180)
+            self._crosshairPen.setColor(crosshair_color)
+            if self._verticalLine and self._horizontalLine:
+                self._verticalLine.setPen(self._crosshairPen)
+                self._horizontalLine.setPen(self._crosshairPen)
             
             self.chart_view.update()
 

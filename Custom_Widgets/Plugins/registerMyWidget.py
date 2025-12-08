@@ -291,24 +291,43 @@ except Exception as e:
     
     
 try:
-    from Custom_Widgets.QCustomCharts.QCustomLineSeries import QCustomLineSeries
+    from Custom_Widgets.QCustomCharts import QCustomLineChart
     
-    logInfo("Registering QCustomLineSeries")
+    logInfo("Registering QCustomLineChart")
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QCustomLineSeries, 
-        module=QCustomLineSeries.WIDGET_MODULE,
-        tool_tip=QCustomLineSeries.WIDGET_TOOLTIP, 
-        xml=QCustomLineSeries.WIDGET_DOM_XML,
-        icon=QCustomLineSeries.WIDGET_ICON, 
+        QCustomLineChart, 
+        module=QCustomLineChart.WIDGET_MODULE,
+        tool_tip=QCustomLineChart.WIDGET_TOOLTIP, 
+        xml=QCustomLineChart.WIDGET_DOM_XML,
+        icon=QCustomLineChart.WIDGET_ICON, 
         container=False, 
         group="Charts"
     )
-    logInfo("QCustomLineSeries registered successfully")
+    logInfo("QCustomLineChart registered successfully")
     
 except ImportError as e:
-    logError(f"Failed to import QCustomLineSeries: {e}")
+    logError(f"Failed to import QCustomLineChart: {e}")
 except Exception as e:
-    logException(e, message="Error registering QCustomLineSeries")
+    logException(e, message="Error registering QCustomLineChart")
 
+try:
+    from Custom_Widgets.QCustomCharts import QCustomBarChart
+    
+    logInfo("Registering QCustomBarChart")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomBarChart, 
+        module=QCustomBarChart.WIDGET_MODULE,
+        tool_tip=QCustomBarChart.WIDGET_TOOLTIP, 
+        xml=QCustomBarChart.WIDGET_DOM_XML,
+        icon=QCustomBarChart.WIDGET_ICON, 
+        container=False, 
+        group="Charts"
+    )
+    logInfo("QCustomBarChart registered successfully")
+    
+except ImportError as e:
+    logError(f"Failed to import QCustomBarChart: {e}")
+except Exception as e:
+    logException(e, message="Error registering QCustomBarChart")
 
 logInfo("✓ All chart widgets registered successfully!")
