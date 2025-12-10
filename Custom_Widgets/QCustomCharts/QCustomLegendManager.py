@@ -5,20 +5,14 @@ from qtpy.QtWidgets import QApplication
 from qtpy.QtGui import QFont, QColor, QBrush, QPen
 from qtpy.QtCharts import QChart, QLegend
 
+from .QCustomChartConstants import QCustomChartConstants
 
-class QCustomLegendManager(QObject):
+
+class QCustomLegendManager(QObject, QCustomChartConstants):
     """
     Manager for chart legend customization and positioning.
     Handles legend appearance, position, and interactive features.
     """
-    
-    # Legend position constants
-    LEGEND_TOP = "Top"
-    LEGEND_BOTTOM = "Bottom"
-    LEGEND_LEFT = "Left"
-    LEGEND_RIGHT = "Right"
-    LEGEND_FLOATING = "Floating"
-    
     # Signals
     positionChanged = Signal(str)  # New position
     visibilityChanged = Signal(bool)  # Visible/invisible
@@ -31,7 +25,7 @@ class QCustomLegendManager(QObject):
         # Legend properties
         self._chart = chart
         self._legend = chart.legend() if chart else None
-        self._position = self.LEGEND_BOTTOM
+        self._position = self.LEGEND_BOTTOM  # Use the imported constant
         self._visible = True
         self._backgroundVisible = False
         self._fontSize = 8
@@ -422,7 +416,7 @@ class QCustomLegendManager(QObject):
     
     def resetToDefaults(self):
         """Reset legend to default settings"""
-        self._position = self.LEGEND_BOTTOM
+        self._position = self.LEGEND_BOTTOM  # Use the imported constant
         self._visible = True
         self._backgroundVisible = False
         self._fontSize = 8

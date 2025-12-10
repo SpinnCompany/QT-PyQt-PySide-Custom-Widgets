@@ -5,10 +5,7 @@ from qtpy.QtGui import QColor, QPen, QPainter, QPalette, QBrush
 from qtpy.QtCharts import QChart, QBarSeries, QBarSet, QBarCategoryAxis, QValueAxis
 
 from .QCustomChartBase import QCustomChartBase
-from .QCustomChartDataManager import QCustomChartDataManager
-from .QCustomChartConstants import QCustomChartConstants
 from Custom_Widgets.Utils import is_in_designer
-
 
 class QCustomBarChart(QCustomChartBase):
     """
@@ -25,15 +22,15 @@ class QCustomBarChart(QCustomChartBase):
             <property name='geometry'>
                 <rect>
                     <x>0</x>
-                    <y>0</y>
-                    <width>600</width>
-                    <height>400</height>
+<y>0</y>
+<width>600</width>
+<height>400</height>
                 </rect>
             </property>
         </widget>
     </ui>
     """
-    WIDGET_MODULE = "Custom_Widgets.QCustomCharts.QCustomBarChart"
+    WIDGET_MODULE = "Custom_Widgets.QCustomBarChart"
     
     # Additional signals for bar chart
     barClicked = Signal(str, float, str)  # category, value, series_name
@@ -77,7 +74,8 @@ class QCustomBarChart(QCustomChartBase):
         self._bar_spacing = 0.3  # Spacing between bars in same category
         self._show_labels = True
         self._labels_angle = 0
-        self._labels_position = "Center"  # "Center", "InsideBase", "InsideEnd", "OutsideEnd"
+        # Use constants from QCustomChartConstants
+        self._labels_position = self.BAR_LABELS_CENTER
         self._show_legend = True
         self._stacked = False
         self._grouped = True
@@ -85,17 +83,8 @@ class QCustomBarChart(QCustomChartBase):
         self._value_labels_format = "{:.1f}"
         self._grid_color = QColor(200, 200, 200, 100)
         
-        # Colors
-        self._default_bar_colors = [
-            QColor(255, 100, 100, 200),    # Red
-            QColor(100, 200, 100, 200),    # Green
-            QColor(100, 150, 255, 200),    # Blue
-            QColor(200, 100, 200, 200),    # Purple
-            QColor(255, 150, 50, 200),     # Orange
-            QColor(50, 200, 200, 200),     # Cyan
-            QColor(200, 200, 50, 200),     # Yellow
-            QColor(150, 100, 255, 200),    # Violet
-        ]
+        # Use constants from QCustomChartConstants
+        self._default_bar_colors = self.DEFAULT_BAR_COLORS
         
         # Crosshair properties
         self._crosshair_color = QColor(0, 0, 0, 180)
@@ -679,7 +668,8 @@ class QCustomBarChart(QCustomChartBase):
     
     def setLabelsPosition(self, position: str):
         """Set position of value labels"""
-        valid_positions = ["Center", "InsideBase", "InsideEnd", "OutsideEnd"]
+        valid_positions = [self.BAR_LABELS_CENTER, self.BAR_LABELS_INSIDE_BASE, 
+                          self.BAR_LABELS_INSIDE_END, self.BAR_LABELS_OUTSIDE_END]
         if position in valid_positions:
             self._labels_position = position
             self.updateChart()

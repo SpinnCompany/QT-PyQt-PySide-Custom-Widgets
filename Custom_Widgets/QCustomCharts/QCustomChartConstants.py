@@ -59,3 +59,49 @@ class QCustomChartConstants:
         QColor(200, 200, 50),     # Yellow
         QColor(150, 100, 255),    # Violet
     ]
+    
+    # Pie chart constants
+    LABELS_POSITION_OUTSIDE = "outside"
+    LABELS_POSITION_INSIDE = "inside"
+    LABELS_POSITION_INSIDE_TANGENTIAL = "inside_tangential"
+    LABELS_POSITION_CALLOUT = "callout"
+    
+    GRADIENT_RADIAL = "radial"
+    GRADIENT_CONICAL = "conical"
+    
+    ORIENTATION_RIGHT = "right"
+    ORIENTATION_TOP = "top"
+    ORIENTATION_LEFT = "left"
+    ORIENTATION_BOTTOM = "bottom"
+    
+    # Pie chart default slice colors (move from QCustomPieChart._getSliceColor)
+    DEFAULT_PIE_SLICE_COLORS = [
+        QColor(255, 100, 100),    # Red
+        QColor(100, 200, 100),    # Green
+        QColor(100, 150, 255),    # Blue
+        QColor(200, 100, 200),    # Purple
+        QColor(255, 150, 50),     # Orange
+        QColor(50, 200, 200),     # Cyan
+        QColor(200, 200, 50),     # Yellow
+        QColor(150, 100, 255),    # Violet
+        QColor(100, 200, 150),    # Teal
+        QColor(255, 100, 150),    # Pink
+    ]
+    
+    # Bar chart constants
+    BAR_LABELS_CENTER = "Center"
+    BAR_LABELS_INSIDE_BASE = "InsideBase"
+    BAR_LABELS_INSIDE_END = "InsideEnd"
+    BAR_LABELS_OUTSIDE_END = "OutsideEnd"
+    
+    # Bar chart default colors with transparency
+    DEFAULT_BAR_COLORS = [
+        QColor(255, 100, 100, 200),    # Red with transparency
+        QColor(100, 200, 100, 200),    # Green with transparency
+        QColor(100, 150, 255, 200),    # Blue with transparency
+        QColor(200, 100, 200, 200),    # Purple with transparency
+        QColor(255, 150, 50, 200),     # Orange with transparency
+        QColor(50, 200, 200, 200),     # Cyan with transparency
+        QColor(200, 200, 50, 200),     # Yellow with transparency
+        QColor(150, 100, 255, 200),    # Violet with transparency
+    ]

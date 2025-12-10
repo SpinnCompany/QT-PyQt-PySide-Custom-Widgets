@@ -3,8 +3,9 @@ from typing import List, Tuple, Optional, Dict, Any
 from qtpy.QtCore import Qt, QPointF, Signal, Property, QRect, QTimer
 from qtpy.QtGui import QColor, QPen, QPainter, QPalette, QBrush, QLinearGradient, QRadialGradient
 from qtpy.QtCharts import QChart, QPieSeries, QPieSlice, QChartView
+from qtpy.QtWidgets import QGraphicsLayout
 
-from .QCustomChartBase import QCustomChartBase
+from .QCustomChartBase import QCustomChartBase # This already includes QCustomChartConstants
 from Custom_Widgets.Utils import is_in_designer
 
 
@@ -12,8 +13,7 @@ class QCustomPieChart(QCustomChartBase):
     """
     Pie chart implementation using the modular architecture.
     Qt Designer compatible with property exposure.
-    """
-    
+    """    
     # Designer registration constants
     WIDGET_ICON = "components/icons/pie_chart.png"
     WIDGET_TOOLTIP = "Customizable pie chart with exploded slices and gradient filling"
@@ -42,13 +42,6 @@ class QCustomPieChart(QCustomChartBase):
     chartExportComplete = Signal(str, bool)  # filename, success
     legendPositionChanged = Signal(str)  # New signal for legend position changes
     
-    # Constants for semicircle orientation
-    ORIENTATION_NORTH = "north"      # Semi-circle facing up (180 degrees)
-    ORIENTATION_SOUTH = "south"      # Semi-circle facing down (0 degrees)
-    ORIENTATION_EAST = "east"        # Semi-circle facing right (90 degrees)
-    ORIENTATION_WEST = "west"        # Semi-circle facing left (270 degrees)
-    ORIENTATION_CUSTOM = "custom"    # Custom rotation angle
-    
     def __init__(self, parent=None):
         super().__init__(parent)
         
@@ -67,7 +60,7 @@ class QCustomPieChart(QCustomChartBase):
         self._animation_duration = 1000
         self._antialiasing = True
         self._show_labels = True
-        self._labels_position = "outside"  # "outside", "inside", "callout"
+        self._labels_position = self.LABELS_POSITION_OUTSIDE  # Use constant
         self._show_percentages = True
         self._show_values = True
         self._exploded_slices = []  # List of exploded slice names
@@ -76,16 +69,19 @@ class QCustomPieChart(QCustomChartBase):
         self._start_angle = 0.0  # Starting angle in degrees
         self._end_angle = 360.0  # Ending angle in degrees (for partial pie)
         self._gradient_fill = True
-        self._gradient_type = "radial"  # "radial", "conical"
+        self._gradient_type = self.GRADIENT_RADIAL  # Use constant
         self._border_width = 2.0
-        self._border_color = QColor(255, 255, 255)
+        self._border_color = QColor(255, 255, 255, 100)
         self._explode_on_hover = True
         self._hover_explosion_distance = 0.15  # Slightly more than normal explosion
         
-        # Semicircle properties
-        self._semicircle_enabled = False  # Whether to display as semicircle
-        self._semicircle_orientation = self.ORIENTATION_NORTH  # Default orientation
-        self._semicircle_rotation = 0.0  # Custom rotation angle in degrees (0-360)
+        # New property for legend marker border
+        self._legend_marker_border_width = 1.0  # Constant 1px border for legend markers
+        
+        # New properties for semicircle/half pie
+        self._semicircle_enabled = False  # Whether to show as semicircle
+        self._pie_angular_span = 180.0  # Angular span in degrees (180 = half pie)
+        self._semicircle_orientation = self.ORIENTATION_RIGHT  # Use constant
         
         # Tooltip properties
         self._tooltip_delay = 500
@@ -115,11 +111,14 @@ class QCustomPieChart(QCustomChartBase):
         self._pie_slices_cache = {}  # Cache for pie slices
         self._pie_labels = {}  # Store original label data for pie charts
         self._slice_colors = {}  # Store colors for each slice
+        self._slice_names = {}  # Store slice names separately from labels
+        self._legend_labels = {}  # Store legend labels separately
         
         # Hover state tracking
         self._hovered_slice = None
         self._hover_exploded = False
         self._hover_brush_backup = {}  # Store original brushes for hovered slices
+        self._hover_original_color = {}  # Store original colors for hovered slices
         
         # Signal connections tracking
         self._slice_connections = {}  # Track slice signal connections
@@ -127,6 +126,7 @@ class QCustomPieChart(QCustomChartBase):
         # Add dummy data if in designer mode
         self._addDummyDataForDesigner()
 
+    
     def _addDummyDataForDesigner(self):
         """Add dummy data when running in Qt Designer"""
         if is_in_designer(self):
@@ -267,6 +267,7 @@ class QCustomPieChart(QCustomChartBase):
         self._pie_series_cache.clear()
         self._pie_slices_cache.clear()
         self._hover_brush_backup.clear()  # Clear hover brush backups
+        self._hover_original_color.clear()  # Clear hover color backups
         self._slice_connections.clear()  # Clear connection tracking
         
         # Create series from stored pie data
@@ -301,7 +302,7 @@ class QCustomPieChart(QCustomChartBase):
         # Set antialiasing
         self._chart_view.setRenderHint(QPainter.Antialiasing, self._antialiasing)
         
-        # Update legend - DO NOT update legend text based on label visibility
+        # Update legend - Configure for labels only
         self._updateLegendSettings()
         
         # Force a chart update to ensure all visual changes are applied
@@ -318,16 +319,32 @@ class QCustomPieChart(QCustomChartBase):
             if self._hole_size > 0:
                 pie_series.setHoleSize(self._hole_size)
             
-            # Set start and end angles for partial pie
+            # Set start and end angles based on semicircle settings
+            start_angle = self._start_angle
+            end_angle = self._end_angle
+            
             if self._semicircle_enabled:
-                # Calculate angles based on orientation for semicircle
-                start_angle, end_angle = self._getSemicircleAngles()
+                # Calculate start and end angles based on orientation
+                if self._semicircle_orientation == self.ORIENTATION_RIGHT:
+                    start_angle = 0
+                    end_angle = self._pie_angular_span
+                elif self._semicircle_orientation == self.ORIENTATION_LEFT:
+                    start_angle = 180
+                    end_angle = 180 + self._pie_angular_span
+                elif self._semicircle_orientation == self.ORIENTATION_BOTTOM:
+                    start_angle = 90
+                    end_angle = 90 + self._pie_angular_span
+                elif self._semicircle_orientation == self.ORIENTATION_TOP:
+                    start_angle = -90
+                    end_angle = -90 + self._pie_angular_span
+                
                 pie_series.setPieStartAngle(start_angle)
                 pie_series.setPieEndAngle(end_angle)
-            elif self._start_angle != 0 or self._end_angle != 360:
-                # Use custom start/end angles
-                pie_series.setPieStartAngle(self._start_angle)
-                pie_series.setPieEndAngle(self._end_angle)
+            else:
+                # Use the user-defined start and end angles
+                if self._start_angle != 0 or self._end_angle != 360:
+                    pie_series.setPieStartAngle(self._start_angle)
+                    pie_series.setPieEndAngle(self._end_angle)
             
             # Add slices
             total_value = sum(value for _, value in data)
@@ -338,44 +355,53 @@ class QCustomPieChart(QCustomChartBase):
                     
                 percentage = (value / total_value * 100) if total_value > 0 else 0
                 
-                # Create slice
-                slice_obj = QPieSlice(slice_name, value)
+                # Create slice with just the value (not the name)
+                slice_obj = QPieSlice("", value)  # Empty label for slice
                 
-                # IMPORTANT: Always keep label visible for the legend
-                slice_obj.setLabelVisible(True)
+                # Store the slice name separately
+                self._slice_names[f"{name}_{slice_name}"] = slice_name
                 
-                # Set label format based on user preferences
+                # FIX: Determine if any visual labels should be shown
+                should_show_visual_labels = False
                 label_parts = []
+                
                 if self._show_labels:
                     # Only show visual labels if labels are enabled
                     if self._show_percentages:
                         label_parts.append(f"{percentage:.1f}%")
+                        should_show_visual_labels = True
                     if self._show_values:
                         label_parts.append(f"{value:.1f}")
+                        should_show_visual_labels = True
                 
-                if label_parts:
+                # FIX: Set label visibility based on whether we have any visual content
+                if should_show_visual_labels:
                     # Show data label (percentage/value) if any parts are available
+                    slice_obj.setLabelVisible(True)
                     slice_obj.setLabel(" | ".join(label_parts))
                 else:
-                    # If no visual labels, use slice name for the label
-                    # This ensures the legend still shows the slice name
-                    slice_obj.setLabel(slice_name)
+                    # If no visual labels, hide the label completely
+                    slice_obj.setLabelVisible(False)
                 
-                # Set label position
-                if self._labels_position == "inside":
-                    slice_obj.setLabelPosition(QPieSlice.LabelInsideHorizontal)
-                elif self._labels_position == "callout":
-                    slice_obj.setLabelPosition(QPieSlice.LabelOutside)
-                    slice_obj.setLabelArmLengthFactor(0.1)
-                else:  # outside (default)
-                    slice_obj.setLabelPosition(QPieSlice.LabelOutside)
+                # Set label position only if labels are visible
+                if should_show_visual_labels:
+                    if self._labels_position == self.LABELS_POSITION_INSIDE:
+                        slice_obj.setLabelPosition(QPieSlice.LabelInsideHorizontal)
+                    elif self._labels_position == self.LABELS_POSITION_INSIDE_TANGENTIAL:
+                        slice_obj.setLabelPosition(QPieSlice.LabelInsideTangential)
+                        slice_obj.setLabelArmLengthFactor(0.1)
+                    elif self._labels_position == self.LABELS_POSITION_CALLOUT:
+                        slice_obj.setLabelPosition(QPieSlice.LabelOutside)
+                        slice_obj.setLabelArmLengthFactor(0.1)
+                    else:  # outside (default)
+                        slice_obj.setLabelPosition(QPieSlice.LabelOutside)
                 
                 # Get color for this slice
                 color_key = f"{name}_{slice_name}"
                 if color_key in self._slice_colors:
                     color = self._slice_colors[color_key]
                 else:
-                    # Generate color based on slice index
+                    # Generate color based on slice index using constants
                     color = self._getSliceColor(idx)
                     # Store it for future reference
                     self._slice_colors[color_key] = color
@@ -387,7 +413,7 @@ class QCustomPieChart(QCustomChartBase):
                 else:
                     slice_obj.setBrush(QBrush(color))
                 
-                # Set border
+                # Set border - FIXED: Use properties properly
                 pen = QPen(self._border_color)
                 pen.setWidthF(self._border_width)
                 slice_obj.setPen(pen)
@@ -433,72 +459,49 @@ class QCustomPieChart(QCustomChartBase):
 
     def _createGradient(self, base_color: QColor) -> QBrush:
         """Create a gradient brush for pie slice fill"""
-        if self._gradient_type == "conical":
-            gradient = QRadialGradient()  # Qt doesn't have QConicalGradient for charts
-            gradient.setCenter(0.5, 0.5)
-            gradient.setFocalPoint(0.5, 0.5)
-            gradient.setRadius(0.5)
+        if self._gradient_type == self.GRADIENT_CONICAL:
+            # Use a linear gradient as a substitute for conical
+            gradient = QLinearGradient(0, 0, 1, 1)
+            gradient.setCoordinateMode(QLinearGradient.ObjectBoundingMode)
+            
+            # Create a multi-color gradient for conical effect
+            color1 = base_color.lighter(150)
+            color2 = base_color.lighter(120)
+            color3 = base_color
+            color4 = base_color.darker(120)
+            color5 = base_color.darker(150)
+            
+            gradient.setColorAt(0.0, color1)
+            gradient.setColorAt(0.25, color2)
+            gradient.setColorAt(0.5, color3)
+            gradient.setColorAt(0.75, color4)
+            gradient.setColorAt(1.0, color5)
         else:  # radial (default)
-            gradient = QRadialGradient()
-            gradient.setCenter(0.5, 0.5)
-            gradient.setFocalPoint(0.5, 0.5)
-            gradient.setRadius(0.5)
-        
-        # Create gradient colors
-        light_color = QColor(base_color)
-        dark_color = QColor(base_color)
-        
-        # Adjust colors for gradient effect
-        light_color = light_color.lighter(120)
-        dark_color = dark_color.darker(120)
-        
-        gradient.setColorAt(0, light_color)
-        gradient.setColorAt(1, dark_color)
+            gradient = QRadialGradient(0.5, 0.5, 0.5)
+            gradient.setCoordinateMode(QRadialGradient.ObjectBoundingMode)
+            
+            # Create gradient colors with more contrast
+            light_color = QColor(base_color)
+            dark_color = QColor(base_color)
+            
+            # Adjust colors for gradient effect - increase the contrast
+            light_color = light_color.lighter(160)
+            dark_color = dark_color.darker(160)
+            
+            # Add an intermediate color for smoother gradient
+            mid_color = base_color.lighter(130)
+            
+            gradient.setColorAt(0.0, light_color)
+            gradient.setColorAt(0.5, mid_color)
+            gradient.setColorAt(1.0, dark_color)
         
         return QBrush(gradient)
 
     def _getSliceColor(self, index: int) -> QColor:
         """Get a color for a slice based on index"""
-        colors = [
-            QColor(255, 100, 100),    # Red
-            QColor(100, 200, 100),    # Green
-            QColor(100, 150, 255),    # Blue
-            QColor(200, 100, 200),    # Purple
-            QColor(255, 150, 50),     # Orange
-            QColor(50, 200, 200),     # Cyan
-            QColor(200, 200, 50),     # Yellow
-            QColor(150, 100, 255),    # Violet
-            QColor(100, 200, 150),    # Teal
-            QColor(255, 100, 150),    # Pink
-        ]
-        
+        # Use the constants from QCustomChartConstants
+        colors = self.DEFAULT_PIE_SLICE_COLORS
         return colors[index % len(colors)]
-
-    def _getSemicircleAngles(self) -> Tuple[float, float]:
-        """
-        Calculate start and end angles for semicircle based on orientation.
-        Returns (start_angle, end_angle) tuple.
-        """
-        if self._semicircle_orientation == self.ORIENTATION_NORTH:
-            # Facing up: 180 to 360 degrees
-            return 180.0, 360.0
-        elif self._semicircle_orientation == self.ORIENTATION_SOUTH:
-            # Facing down: 0 to 180 degrees
-            return 0.0, 180.0
-        elif self._semicircle_orientation == self.ORIENTATION_EAST:
-            # Facing right: 90 to 270 degrees
-            return 90.0, 270.0
-        elif self._semicircle_orientation == self.ORIENTATION_WEST:
-            # Facing left: 270 to 450 degrees (wraps around)
-            return 270.0, 450.0
-        elif self._semicircle_orientation == self.ORIENTATION_CUSTOM:
-            # Custom rotation: start at rotation angle, go 180 degrees
-            start = self._semicircle_rotation
-            end = start + 180.0
-            return start % 360, end % 360
-        else:
-            # Default to north orientation
-            return 180.0, 360.0
 
     def _findSliceAtPoint(self, point: QPointF) -> Optional[str]:
         """
@@ -552,16 +555,36 @@ class QCustomPieChart(QCustomChartBase):
             if slice_key not in self._hover_brush_backup:
                 self._hover_brush_backup[slice_key] = slice_obj.brush()
             
-            # Highlight the slice
-            original_color = slice_obj.brush().color()
-            highlight_color = original_color.lighter(130)
+            # FIX: Store the original base color (not from brush which might be invalid for gradients)
+            color_key = self._findColorKeyForSlice(slice_name)
+            if color_key and color_key not in self._hover_original_color:
+                if color_key in self._slice_colors:
+                    self._hover_original_color[color_key] = self._slice_colors[color_key]
+                else:
+                    # Fallback to slice's color property if available
+                    self._hover_original_color[color_key] = slice_obj.color()
             
-            # Apply highlighting
-            if self._gradient_fill:
-                highlight_gradient = self._createGradient(highlight_color)
-                slice_obj.setBrush(highlight_gradient)
+            # Highlight the slice - FIX: Get base color properly
+            original_color = None
+            if color_key in self._slice_colors:
+                original_color = self._slice_colors[color_key]
+            elif color_key in self._hover_original_color:
+                original_color = self._hover_original_color[color_key]
             else:
-                slice_obj.setBrush(QBrush(highlight_color))
+                original_color = slice_obj.color()  # Fallback
+            
+            if original_color.isValid():
+                highlight_color = original_color.lighter(130)
+                
+                # Apply highlighting
+                if self._gradient_fill:
+                    highlight_gradient = self._createGradient(highlight_color)
+                    slice_obj.setBrush(highlight_gradient)
+                else:
+                    slice_obj.setBrush(QBrush(highlight_color))
+                
+                # Also update the slice's color property for consistency
+                slice_obj.setColor(highlight_color)
             
             # Explode on hover if enabled and slice is not already exploded
             if slice_name not in self._exploded_slices:
@@ -585,6 +608,12 @@ class QCustomPieChart(QCustomChartBase):
                 # Restore original brush
                 slice_obj.setBrush(self._hover_brush_backup[slice_key])
                 
+                # Restore original color
+                color_key = self._findColorKeyForSlice(slice_name)
+                if color_key and color_key in self._hover_original_color:
+                    original_color = self._hover_original_color[color_key]
+                    slice_obj.setColor(original_color)
+                
                 # Unexplode on hover exit if we exploded it
                 if self._hover_exploded and slice_name not in self._exploded_slices:
                     slice_obj.setExploded(False)
@@ -594,7 +623,10 @@ class QCustomPieChart(QCustomChartBase):
                     self._chart.update()
                 
                 # Remove from backup
-                del self._hover_brush_backup[slice_key]
+                if slice_key in self._hover_brush_backup:
+                    del self._hover_brush_backup[slice_key]
+                if color_key and color_key in self._hover_original_color:
+                    del self._hover_original_color[color_key]
 
     def _onSliceClicked(self, slice_name: str, value: float):
         """Handle slice click events"""
@@ -627,7 +659,7 @@ class QCustomPieChart(QCustomChartBase):
         return -1
 
     def _updateLegendSettings(self):
-        """Update legend settings"""
+        """Update legend settings - ensure legend shows only slice names"""
         legend = self._chart.legend()
         if legend:
             legend.setVisible(self._show_legend)
@@ -639,6 +671,51 @@ class QCustomPieChart(QCustomChartBase):
             # Set legend position
             if self._legend_manager:
                 self._legend_manager.setPosition(self.getLegendPosition())
+            
+            # FIX: Update legend markers to show only slice names
+            self._updateLegendMarkers()
+            
+            legend.update()
+    
+    def _updateLegendMarkers(self):
+        """Update legend markers to show only slice names with fixed border width"""
+        legend = self._chart.legend()
+        if not legend:
+            return
+        
+        # Get all legend markers
+        markers = legend.markers()
+        for marker in markers:
+            try:
+                # Get the slice associated with this marker
+                slice_obj = marker.slice()
+                if slice_obj:
+                    # Find the slice name for this slice object
+                    slice_name = self._getSliceNameForSliceObject(slice_obj)
+                    if slice_name:
+                        # Set the legend label to just the slice name
+                        marker.setLabel(slice_name)
+                    
+                    # FIX: Set constant border width for legend markers (1px)
+                    # Get the current pen
+                    current_pen = marker.pen()
+                    if current_pen:
+                        # Create a new pen with constant border width
+                        fixed_pen = QPen(current_pen)
+                        fixed_pen.setWidthF(self._legend_marker_border_width)  # Always 1px
+                        marker.setPen(fixed_pen)
+            except Exception as e:
+                print(f"Error updating legend marker: {e}")
+                continue
+    
+    def _getSliceNameForSliceObject(self, slice_obj: QPieSlice) -> Optional[str]:
+        """Get the slice name for a given slice object"""
+        # Search through all pie slices to find which slice name this object belongs to
+        for series_name, slices_dict in self._pie_slices_cache.items():
+            for slice_name, obj in slices_dict.items():
+                if obj == slice_obj:
+                    return slice_name
+        return None
 
     def _cleanupHoverState(self):
         """Clean up hover state before updating chart"""
@@ -652,6 +729,7 @@ class QCustomPieChart(QCustomChartBase):
         
         self._hovered_slice = None
         self._hover_brush_backup.clear()
+        self._hover_original_color.clear()
 
     # ============ PUBLIC API ============
     
@@ -673,6 +751,10 @@ class QCustomPieChart(QCustomChartBase):
         
         # Store the pie data
         self._pie_labels[name] = data.copy()
+        
+        # Store slice names
+        for slice_name, _ in data:
+            self._slice_names[f"{name}_{slice_name}"] = slice_name
         
         # Store colors for each slice
         for idx, (slice_name, _) in enumerate(data):
@@ -706,10 +788,11 @@ class QCustomPieChart(QCustomChartBase):
         if success:
             # Remove from pie labels cache
             if name in self._pie_labels:
-                # Remove slice colors
+                # Remove slice names and colors
                 for slice_name in self.getSliceNames(name):
-                    color_key = f"{name}_{slice_name}"
-                    self._slice_colors.pop(color_key, None)
+                    key = f"{name}_{slice_name}"
+                    self._slice_names.pop(key, None)
+                    self._slice_colors.pop(key, None)
                 
                 del self._pie_labels[name]
             
@@ -735,16 +818,18 @@ class QCustomPieChart(QCustomChartBase):
         old_slices = set(self.getSliceNames(name))
         new_slices = {slice_name for slice_name, _ in data}
         
-        # Update colors for new slices
+        # Update slice names and colors for new slices
         for idx, (slice_name, _) in enumerate(data):
-            color_key = f"{name}_{slice_name}"
-            if color_key not in self._slice_colors:
-                self._slice_colors[color_key] = self._getSliceColor(idx)
+            key = f"{name}_{slice_name}"
+            self._slice_names[key] = slice_name
+            if key not in self._slice_colors:
+                self._slice_colors[key] = self._getSliceColor(idx)
         
-        # Remove colors for deleted slices
+        # Remove names and colors for deleted slices
         for slice_name in old_slices - new_slices:
-            color_key = f"{name}_{slice_name}"
-            self._slice_colors.pop(color_key, None)
+            key = f"{name}_{slice_name}"
+            self._slice_names.pop(key, None)
+            self._slice_colors.pop(key, None)
         
         self._pie_labels[name] = data.copy()
         
@@ -766,11 +851,12 @@ class QCustomPieChart(QCustomChartBase):
         current_data = self._pie_labels.get(series_name, [])
         current_data.append((slice_name, value))
         
-        # Assign a color to the new slice
-        color_key = f"{series_name}_{slice_name}"
-        if color_key not in self._slice_colors:
+        # Store slice name and assign a color
+        key = f"{series_name}_{slice_name}"
+        self._slice_names[key] = slice_name
+        if key not in self._slice_colors:
             color_idx = len(current_data) - 1
-            self._slice_colors[color_key] = self._getSliceColor(color_idx)
+            self._slice_colors[key] = self._getSliceColor(color_idx)
         
         return self.updateSeriesData(series_name, current_data)
     
@@ -787,9 +873,10 @@ class QCustomPieChart(QCustomChartBase):
         if slice_name in self._exploded_slices:
             self._exploded_slices.remove(slice_name)
         
-        # Remove color
-        color_key = f"{series_name}_{slice_name}"
-        self._slice_colors.pop(color_key, None)
+        # Remove name and color
+        key = f"{series_name}_{slice_name}"
+        self._slice_names.pop(key, None)
+        self._slice_colors.pop(key, None)
         
         return self.updateSeriesData(series_name, new_data)
     
@@ -915,6 +1002,37 @@ class QCustomPieChart(QCustomChartBase):
         """Get the ending angle in degrees"""
         return self._end_angle
     
+    # New methods for semicircle/half pie functionality
+    def setSemicircleEnabled(self, enabled: bool):
+        """Enable or disable semicircle/half pie display"""
+        self._semicircle_enabled = enabled
+        self.updateChart()
+    
+    def isSemicircleEnabled(self) -> bool:
+        """Check if semicircle mode is enabled"""
+        return self._semicircle_enabled
+    
+    def setPieAngularSpan(self, span: float):
+        """Set the angular span of the pie in degrees"""
+        # Limit to reasonable values
+        self._pie_angular_span = max(0.1, min(360.0, span))
+        self.updateChart()
+    
+    def getPieAngularSpan(self) -> float:
+        """Get the angular span of the pie in degrees"""
+        return self._pie_angular_span
+    
+    def setSemicircleOrientation(self, orientation: str):
+        """Set the orientation of the semicircle"""
+        if orientation in [self.ORIENTATION_RIGHT, self.ORIENTATION_TOP, 
+                          self.ORIENTATION_LEFT, self.ORIENTATION_BOTTOM]:
+            self._semicircle_orientation = orientation
+            self.updateChart()
+    
+    def getSemicircleOrientation(self) -> str:
+        """Get the orientation of the semicircle"""
+        return self._semicircle_orientation
+    
     def setLabelsVisible(self, visible: bool):
         """Set labels visibility"""
         self._show_labels = visible
@@ -926,7 +1044,8 @@ class QCustomPieChart(QCustomChartBase):
     
     def setLabelsPosition(self, position: str):
         """Set labels position: 'outside', 'inside', or 'callout'"""
-        if position in ["outside", "inside", "callout"]:
+        if position in [self.LABELS_POSITION_OUTSIDE, self.LABELS_POSITION_INSIDE, 
+                       self.LABELS_POSITION_CALLOUT, self.LABELS_POSITION_INSIDE_TANGENTIAL]:
             self._labels_position = position
             self.updateChart()
     
@@ -963,7 +1082,7 @@ class QCustomPieChart(QCustomChartBase):
     
     def setGradientType(self, gradient_type: str):
         """Set gradient type: 'radial' or 'conical'"""
-        if gradient_type in ["radial", "conical"]:
+        if gradient_type in [self.GRADIENT_RADIAL, self.GRADIENT_CONICAL]:
             self._gradient_type = gradient_type
             self.updateChart()
     
@@ -989,63 +1108,15 @@ class QCustomPieChart(QCustomChartBase):
         """Get border color"""
         return self._border_color
     
-    # New methods for semicircle functionality
-    def setSemicircleEnabled(self, enabled: bool):
-        """Enable or disable semicircle display"""
-        self._semicircle_enabled = enabled
+    # New method for legend marker border width
+    def setLegendMarkerBorderWidth(self, width: float):
+        """Set the border width for legend markers"""
+        self._legend_marker_border_width = max(0.0, width)
         self.updateChart()
     
-    def isSemicircleEnabled(self) -> bool:
-        """Check if semicircle is enabled"""
-        return self._semicircle_enabled
-    
-    def setSemicircleOrientation(self, orientation: str):
-        """Set semicircle orientation"""
-        if orientation in [self.ORIENTATION_NORTH, self.ORIENTATION_SOUTH, 
-                          self.ORIENTATION_EAST, self.ORIENTATION_WEST, 
-                          self.ORIENTATION_CUSTOM]:
-            self._semicircle_orientation = orientation
-            self.updateChart()
-    
-    def getSemicircleOrientation(self) -> str:
-        """Get semicircle orientation"""
-        return self._semicircle_orientation
-    
-    def setSemicircleRotation(self, angle: float):
-        """Set custom rotation angle for semicircle (0-360 degrees)"""
-        self._semicircle_rotation = angle % 360
-        # Set orientation to custom when rotation is set
-        self._semicircle_orientation = self.ORIENTATION_CUSTOM
-        self.updateChart()
-    
-    def getSemicircleRotation(self) -> float:
-        """Get custom rotation angle for semicircle"""
-        return self._semicircle_rotation
-    
-    def setSemicircleAngle(self, angle: float):
-        """Alias for setSemicircleRotation for backward compatibility"""
-        self.setSemicircleRotation(angle)
-    
-    def getSemicircleAngle(self) -> float:
-        """Alias for getSemicircleRotation for backward compatibility"""
-        return self.getSemicircleRotation()
-    
-    # Convenience methods for preset orientations
-    def setSemicircleNorth(self):
-        """Set semicircle facing north (up)"""
-        self.setSemicircleOrientation(self.ORIENTATION_NORTH)
-    
-    def setSemicircleSouth(self):
-        """Set semicircle facing south (down)"""
-        self.setSemicircleOrientation(self.ORIENTATION_SOUTH)
-    
-    def setSemicircleEast(self):
-        """Set semicircle facing east (right)"""
-        self.setSemicircleOrientation(self.ORIENTATION_EAST)
-    
-    def setSemicircleWest(self):
-        """Set semicircle facing west (left)"""
-        self.setSemicircleOrientation(self.ORIENTATION_WEST)
+    def getLegendMarkerBorderWidth(self) -> float:
+        """Get the border width for legend markers"""
+        return self._legend_marker_border_width
     
     # New methods for explode on hover
     def setExplodeOnHover(self, enabled: bool):
@@ -1098,8 +1169,10 @@ class QCustomPieChart(QCustomChartBase):
         self._pie_series_cache.clear()
         self._pie_slices_cache.clear()
         self._slice_colors.clear()
+        self._slice_names.clear()
         self._exploded_slices.clear()
         self._hover_brush_backup.clear()
+        self._hover_original_color.clear()
         self._slice_connections.clear()
         
         # Reset hover state
@@ -1317,7 +1390,8 @@ class QCustomPieChart(QCustomChartBase):
     @labelsPosition.setter
     def labelsPosition(self, value: str):
         """Set labels position"""
-        if value in ["outside", "inside", "callout"]:
+        if value in [self.LABELS_POSITION_OUTSIDE, self.LABELS_POSITION_INSIDE, 
+                    self.LABELS_POSITION_INSIDE_TANGENTIAL, self.LABELS_POSITION_CALLOUT]:
             self._labels_position = value
             self.updateChart()
     
@@ -1387,6 +1461,42 @@ class QCustomPieChart(QCustomChartBase):
         self._end_angle = value % 360
         self.updateChart()
     
+    # New properties for semicircle/half pie
+    @Property(bool)
+    def semicircleEnabled(self):
+        """Get semicircle enabled state"""
+        return self._semicircle_enabled
+    
+    @semicircleEnabled.setter
+    def semicircleEnabled(self, value: bool):
+        """Set semicircle enabled state"""
+        self._semicircle_enabled = value
+        self.updateChart()
+    
+    @Property(float)
+    def pieAngularSpan(self):
+        """Get pie angular span"""
+        return self._pie_angular_span
+    
+    @pieAngularSpan.setter
+    def pieAngularSpan(self, value: float):
+        """Set pie angular span"""
+        self._pie_angular_span = max(0.1, min(360.0, value))
+        self.updateChart()
+    
+    @Property(str)
+    def semicircleOrientation(self):
+        """Get semicircle orientation"""
+        return self._semicircle_orientation
+    
+    @semicircleOrientation.setter
+    def semicircleOrientation(self, value: str):
+        """Set semicircle orientation"""
+        if value in [self.ORIENTATION_RIGHT, self.ORIENTATION_TOP, 
+                    self.ORIENTATION_LEFT, self.ORIENTATION_BOTTOM]:
+            self._semicircle_orientation = value
+            self.updateChart()
+    
     @Property(bool)
     def gradientFill(self):
         """Get gradient fill state"""
@@ -1406,7 +1516,7 @@ class QCustomPieChart(QCustomChartBase):
     @gradientType.setter
     def gradientType(self, value: str):
         """Set gradient type"""
-        if value in ["radial", "conical"]:
+        if value in [self.GRADIENT_RADIAL, self.GRADIENT_CONICAL]:
             self._gradient_type = value
             self.updateChart()
     
@@ -1430,6 +1540,18 @@ class QCustomPieChart(QCustomChartBase):
     def borderColor(self, value: QColor):
         """Set border color"""
         self._border_color = value
+        self.updateChart()
+    
+    # NEW: Property for legend marker border width
+    @Property(float)
+    def legendMarkerBorderWidth(self):
+        """Get legend marker border width"""
+        return self._legend_marker_border_width
+    
+    @legendMarkerBorderWidth.setter
+    def legendMarkerBorderWidth(self, value: float):
+        """Set legend marker border width"""
+        self._legend_marker_border_width = max(0.0, value)
         self.updateChart()
     
     @Property(bool)
@@ -1553,41 +1675,3 @@ class QCustomPieChart(QCustomChartBase):
     def compactMode(self, value: bool):
         """Set compact mode state"""
         self.setCompactMode(value)
-    
-    # New properties for semicircle functionality
-    @Property(bool)
-    def semicircleEnabled(self):
-        """Get semicircle enabled state"""
-        return self._semicircle_enabled
-    
-    @semicircleEnabled.setter
-    def semicircleEnabled(self, value: bool):
-        """Set semicircle enabled state"""
-        self._semicircle_enabled = value
-        self.updateChart()
-    
-    @Property(str)
-    def semicircleOrientation(self):
-        """Get semicircle orientation"""
-        return self._semicircle_orientation
-    
-    @semicircleOrientation.setter
-    def semicircleOrientation(self, value: str):
-        """Set semicircle orientation"""
-        if value in [self.ORIENTATION_NORTH, self.ORIENTATION_SOUTH, 
-                    self.ORIENTATION_EAST, self.ORIENTATION_WEST, 
-                    self.ORIENTATION_CUSTOM]:
-            self._semicircle_orientation = value
-            self.updateChart()
-    
-    @Property(float)
-    def semicircleRotation(self):
-        """Get semicircle rotation angle"""
-        return self._semicircle_rotation
-    
-    @semicircleRotation.setter
-    def semicircleRotation(self, value: float):
-        """Set semicircle rotation angle"""
-        self._semicircle_rotation = value % 360
-        self._semicircle_orientation = self.ORIENTATION_CUSTOM
-        self.updateChart()

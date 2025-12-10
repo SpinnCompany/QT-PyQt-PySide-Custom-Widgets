@@ -5,28 +5,18 @@ from qtpy.QtWidgets import QApplication
 from qtpy.QtGui import QColor, QPalette, QBrush, QLinearGradient, QPen
 from qtpy.QtCharts import QChart
 
+from .QCustomChartConstants import QCustomChartConstants
 from Custom_Widgets.QCustomTheme import QCustomTheme
 from Custom_Widgets.Log import logInfo, logWarning, logError
 
+from .QCustomChartConstants import QCustomChartConstants
 
-class QCustomChartThemeManager(QObject):
+class QCustomChartThemeManager(QObject, QCustomChartConstants):
     """
     Centralized theme manager for chart components.
     Handles theme switching, palette management, and theme-aware styling.
     Integrates with QCustomTheme from Custom_Widgets module.
     """
-    
-    # Theme constants
-    THEME_APP_THEME = "App Theme"
-    THEME_LIGHT = "Light"
-    THEME_DARK = "Dark"
-    THEME_BLUE_NCS = "Blue NCS"
-    THEME_BLUE_ICY = "Blue Icy"
-    THEME_HIGH_CONTRAST = "High Contrast"
-    THEME_QT_LIGHT = "Qt Light"
-    THEME_QT_DARK = "Qt Dark"
-    THEME_QT_BROWN_SAND = "Qt Brown Sand"
-    
     # Signals
     themeChanged = Signal(str)  # New theme name
     themeApplied = Signal(str)  # Theme name after application
@@ -37,7 +27,7 @@ class QCustomChartThemeManager(QObject):
         super().__init__(parent)
         
         # Theme properties
-        self._currentTheme = self.THEME_APP_THEME
+        self._currentTheme = self.THEME_APP_THEME  # Use imported constant
         self._customPalette = None
         self._themeCache = {}
         
