@@ -330,4 +330,44 @@ except ImportError as e:
 except Exception as e:
     logException(e, message="Error registering QCustomBarChart")
 
+try:
+    from Custom_Widgets.QCustomCharts import QCustomAreaChart
+    
+    logInfo("Registering QCustomAreaChart")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomAreaChart, 
+        module=QCustomAreaChart.WIDGET_MODULE,
+        tool_tip=QCustomAreaChart.WIDGET_TOOLTIP, 
+        xml=QCustomAreaChart.WIDGET_DOM_XML,
+        icon=QCustomAreaChart.WIDGET_ICON, 
+        container=False, 
+        group="Charts"
+    )
+    logInfo("QCustomAreaChart registered successfully")
+    
+except ImportError as e:
+    logError(f"Failed to import QCustomAreaChart: {e}")
+except Exception as e:
+    logException(e, message="Error registering QCustomAreaChart")
+
+try:
+    from Custom_Widgets.QCustomCharts import QCustomPieChart
+    
+    logInfo("Registering QCustomPieChart")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomPieChart, 
+        module=QCustomPieChart.WIDGET_MODULE,
+        tool_tip=QCustomPieChart.WIDGET_TOOLTIP, 
+        xml=QCustomPieChart.WIDGET_DOM_XML,
+        icon=QCustomPieChart.WIDGET_ICON, 
+        container=False, 
+        group="Charts"
+    )
+    logInfo("QCustomPieChart registered successfully")
+    
+except ImportError as e:
+    logError(f"Failed to import QCustomPieChart: {e}")
+except Exception as e:
+    logException(e, message="Error registering QCustomPieChart")
+
 logInfo("✓ All chart widgets registered successfully!")

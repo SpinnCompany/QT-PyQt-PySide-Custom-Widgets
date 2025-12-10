@@ -15,6 +15,8 @@ from .QCustomQLineSeries import QCustomQLineSeries
 from .QCustomLineChart import QCustomLineChart
 from .QCustomBarChart import QCustomBarChart
 from .QCustomAreaChart import QCustomAreaChart
+from .QCustomPieChart import QCustomPieChart
+
 
 # Expose constants for convenience
 LINE_SOLID = QCustomChartConstants.LINE_SOLID
@@ -69,6 +71,7 @@ __all__ = [
     'QCustomLineChart',
     'QCustomBarChart',
     'QCustomAreaChart', 
+    'QCustomPieChart',
     
     # Constants
     'LINE_SOLID',

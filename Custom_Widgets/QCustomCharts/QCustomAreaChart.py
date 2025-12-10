@@ -2,11 +2,9 @@
 from typing import List, Tuple, Optional, Dict, Any
 from qtpy.QtCore import Qt, QPointF, Signal, Property, QRect
 from qtpy.QtGui import QColor, QPen, QPainter, QPalette, QBrush, QLinearGradient
-from qtpy.QtCharts import QChart, QLineSeries, QAreaSeries, QValueAxis
+from qtpy.QtCharts import QChart, QLineSeries, QAreaSeries, QValueAxis, QScatterSeries
 
 from .QCustomChartBase import QCustomChartBase
-from .QCustomChartDataManager import QCustomChartDataManager
-from .QCustomQLineSeries import QCustomQLineSeries
 from Custom_Widgets.Utils import is_in_designer
 
 
@@ -25,10 +23,10 @@ class QCustomAreaChart(QCustomChartBase):
             <property name='geometry'>
                 <rect>
                     <x>0</x>
-<y>0</y>
-<width>600</width>
-<height>400</height>
-</rect>
+                    <y>0</y>
+                    <width>600</width>
+                    <height>400</height>
+                </rect>
             </property>
         </widget>
     </ui>
@@ -45,9 +43,6 @@ class QCustomAreaChart(QCustomChartBase):
     
     def __init__(self, parent=None):
         super().__init__(parent)
-        
-        # Line series factory
-        self._line_series_factory = QCustomQLineSeries(self)
         
         # Chart configuration
         self._chart.setTitle("Area Chart")
@@ -116,14 +111,22 @@ class QCustomAreaChart(QCustomChartBase):
         self._exporter.exportComplete.connect(self.chartExportComplete)
         self._legend_manager.positionChanged.connect(self.legendPositionChanged)
         
+        # Initialize data storage for area series
+        self._area_series_cache = {}  # Cache for area series to prevent deletion
+        self._upper_series_cache = {}  # Cache for upper series
+        self._lower_series_cache = {}  # Cache for lower series
+        
         # Add dummy data if in designer mode
         self._addDummyDataForDesigner()
 
     def _addDummyDataForDesigner(self):
         """Add dummy data when running in Qt Designer"""
         if is_in_designer(self):
+            # Clear any existing data first
+            self.clearAllData()
+            
             # Generate dummy data
-            self._data_manager.addDummyData(num_series=3, num_points=20)
+            self._data_manager.addDummyData(num_series=3, num_points=10)
             
             # Update the chart display
             self.updateChart()
@@ -236,17 +239,34 @@ class QCustomAreaChart(QCustomChartBase):
         closest_series, closest_point = self._findClosestDataPoint(QPointF(x, y))
         if closest_series and closest_point:
             self.dataPointHovered.emit(closest_point[0], closest_point[1], closest_series)
-        
 
     def updateChart(self):
         """Update the chart display based on current data"""
-        # Store a reference to old series to prevent premature garbage collection
-        old_series = []
+        # Clear existing series (except crosshair)
+        series_to_remove = []
         for series in self._chart.series():
             if series.name() not in ["__vertical_crosshair", "__horizontal_crosshair"]:
-                old_series.append(series)
+                series_to_remove.append(series)
         
-        # Create new series from data manager
+        for series in series_to_remove:
+            try:
+                # Detach from axes first
+                for axis in self._chart.axes():
+                    try:
+                        series.detachAxis(axis)
+                    except:
+                        pass
+                # Remove from chart
+                self._chart.removeSeries(series)
+            except:
+                pass  # Series might already be deleted
+        
+        # Clear the caches
+        self._area_series_cache.clear()
+        self._upper_series_cache.clear()
+        self._lower_series_cache.clear()
+        
+        # Create series from data manager
         series_data = self._data_manager.getVisibleSeriesData()
         
         # Track bounds for auto-scaling
@@ -258,24 +278,25 @@ class QCustomAreaChart(QCustomChartBase):
             stacked_data = self._prepareStackedData(series_data)
             series_data = stacked_data
         
-        # Create all new series first
-        new_series = []
+        # Create all area series first
+        area_series_list = []
+        marker_series_list = []
+        
         for series_name, data_points in series_data.items():
             if not data_points:
                 continue
             
             # Create area series
             area_series = self._createAreaSeries(series_name, data_points)
-            new_series.append(area_series)
+            if area_series:
+                area_series_list.append(area_series)
             
             # Add markers if enabled
             marker_style = self._data_manager.getSeriesMarkerStyle(series_name)
             if marker_style != self.MARKER_NONE and self._show_data_points:
-                try:
-                    marker_series = self._createMarkerSeries(series_name, data_points)
-                    new_series.append(marker_series)
-                except RuntimeError as e:
-                    print(f"Error creating markers for {series_name}: {e}")
+                marker_series = self._createMarkerSeries(series_name, data_points)
+                if marker_series:
+                    marker_series_list.append(marker_series)
             
             # Update bounds
             x_vals = [p[0] for p in data_points]
@@ -283,33 +304,22 @@ class QCustomAreaChart(QCustomChartBase):
             all_x.extend(x_vals)
             all_y.extend(y_vals)
         
-        # Now remove old series (except crosshair)
-        for series in old_series:
+        # Add all series to chart at once
+        for area_series in area_series_list:
             try:
-                # Detach from axes first
-                for axis in self._chart.axes():
-                    try:
-                        series.detachAxis(axis)
-                    except RuntimeError:
-                        pass
-                
-                # Remove from chart
-                self._chart.removeSeries(series)
-            except RuntimeError:
-                pass  # C++ object already deleted
+                self._chart.addSeries(area_series)
+                area_series.attachAxis(self._axis_x)
+                area_series.attachAxis(self._axis_y)
+            except Exception as e:
+                print(f"Error adding area series {area_series.name()} to chart: {e}")
         
-        # Clear the old series list to help with garbage collection
-        old_series.clear()
-        
-        # Add all new series to chart
-        for series in new_series:
+        for marker_series in marker_series_list:
             try:
-                self._chart.addSeries(series)
-                # Attach to axes
-                series.attachAxis(self._axis_x)
-                series.attachAxis(self._axis_y)
-            except RuntimeError as e:
-                print(f"Error adding series to chart: {e}")
+                self._chart.addSeries(marker_series)
+                marker_series.attachAxis(self._axis_x)
+                marker_series.attachAxis(self._axis_y)
+            except Exception as e:
+                print(f"Error adding marker series {marker_series.name()} to chart: {e}")
         
         # Auto-scale if data exists
         if all_x and all_y and self._auto_scale:
@@ -320,14 +330,21 @@ class QCustomAreaChart(QCustomChartBase):
             x_range = x_max - x_min
             y_range = y_max - y_min
             
-            self._axis_x.setRange(
-                x_min - x_range * margin,
-                x_max + x_range * margin
-            )
-            self._axis_y.setRange(
-                y_min - y_range * margin,
-                y_max + y_range * margin
-            )
+            if x_range > 0:
+                self._axis_x.setRange(
+                    x_min - x_range * margin,
+                    x_max + x_range * margin
+                )
+            else:
+                self._axis_x.setRange(x_min - 1, x_max + 1)
+                
+            if y_range > 0:
+                self._axis_y.setRange(
+                    y_min - y_range * margin,
+                    y_max + y_range * margin
+                )
+            else:
+                self._axis_y.setRange(y_min - 1, y_max + 1)
         
         # Set axis titles
         self._axis_x.setTitleText(self._x_axis_title)
@@ -354,7 +371,7 @@ class QCustomAreaChart(QCustomChartBase):
         
         # Update legend
         self._updateLegendSettings()
-    
+
     def _prepareStackedData(self, series_data: Dict[str, List[Tuple[float, float]]]) -> Dict[str, List[Tuple[float, float]]]:
         """Prepare data for stacked area chart"""
         if not series_data:
@@ -390,68 +407,80 @@ class QCustomAreaChart(QCustomChartBase):
             stacked_series[series_name] = sorted_data
         
         return stacked_series
-    
-    def _createAreaSeries(self, name: str, data: List[Tuple[float, float]]) -> QAreaSeries:
+
+    def _createAreaSeries(self, name: str, data: List[Tuple[float, float]]) -> Optional[QAreaSeries]:
         """Create a styled area series"""
-        # Get series properties
-        color = self._data_manager.getSeriesColor(name)
-        line_width = self._data_manager.getSeriesLineWidth(name)
-        line_style = self._data_manager.getSeriesLineStyle(name)
-        
-        # Create upper series
-        upper_series = QLineSeries()
-        upper_series.setName(f"{name}_upper")
-        
-        # Add data points to upper series
-        for x, y in data:
-            upper_series.append(x, y)
-        
-        # Create lower series (baseline)
-        lower_series = QLineSeries()
-        lower_series.setName(f"{name}_lower")
-        
-        # Add baseline points
-        for x, y in data:
-            lower_series.append(x, self._baseline_value)
-        
-        # Create area series
-        area_series = QAreaSeries(upper_series, lower_series)
-        area_series.setName(name)
-        
-        # Apply line styling to the border
-        pen = QPen(color)
-        pen.setWidthF(line_width)
-        
-        # Set line style
-        if line_style == self.LINE_DASH:
-            pen.setStyle(Qt.DashLine)
-        elif line_style == self.LINE_DOT:
-            pen.setStyle(Qt.DotLine)
-        elif line_style == self.LINE_DASH_DOT:
-            pen.setStyle(Qt.DashDotLine)
-        elif line_style == self.LINE_DASH_DOT_DOT:
-            pen.setStyle(Qt.DashDotDotLine)
-        elif line_style == self.LINE_NONE:
-            pen.setStyle(Qt.NoPen)
-        else:
-            pen.setStyle(Qt.SolidLine)
-        
-        area_series.setPen(pen)
-        
-        # Apply fill color with opacity
-        fill_color = QColor(color)
-        fill_color.setAlpha(int(255 * self._fill_opacity))
-        
-        if self._gradient_fill:
-            # Create gradient fill
-            gradient = self._createGradient(color)
-            area_series.setBrush(gradient)
-        else:
-            # Use solid fill
-            area_series.setBrush(QBrush(fill_color))
-        
-        return area_series
-    
+        try:
+            # Get series properties
+            color = self._data_manager.getSeriesColor(name)
+            line_width = self._data_manager.getSeriesLineWidth(name)
+            line_style = self._data_manager.getSeriesLineStyle(name)
+            
+            # Create upper series
+            upper_series = QLineSeries()
+            upper_series.setName(f"{name}_upper")
+            
+            # Add data points to upper series
+            for x, y in data:
+                upper_series.append(x, y)
+            
+            # Create lower series (baseline)
+            lower_series = QLineSeries()
+            lower_series.setName(f"{name}_lower")
+            
+            # Add baseline points
+            for x, y in data:
+                lower_series.append(x, self._baseline_value)
+            
+            # Store references to prevent deletion
+            self._upper_series_cache[name] = upper_series
+            self._lower_series_cache[name] = lower_series
+            
+            # Create area series
+            area_series = QAreaSeries(upper_series, lower_series)
+            area_series.setName(name)
+            
+            # Apply line styling to the border
+            pen = QPen(color)
+            pen.setWidthF(line_width)
+            
+            # Set line style
+            if line_style == self.LINE_DASH:
+                pen.setStyle(Qt.DashLine)
+            elif line_style == self.LINE_DOT:
+                pen.setStyle(Qt.DotLine)
+            elif line_style == self.LINE_DASH_DOT:
+                pen.setStyle(Qt.DashDotLine)
+            elif line_style == self.LINE_DASH_DOT_DOT:
+                pen.setStyle(Qt.DashDotDotLine)
+            elif line_style == self.LINE_NONE:
+                pen.setStyle(Qt.NoPen)
+            else:
+                pen.setStyle(Qt.SolidLine)
+            
+            area_series.setPen(pen)
+            
+            # Apply fill color with opacity
+            fill_color = QColor(color)
+            fill_color.setAlpha(int(255 * self._fill_opacity))
+            
+            if self._gradient_fill:
+                # Create gradient fill
+                gradient = self._createGradient(color)
+                area_series.setBrush(gradient)
+            else:
+                # Use solid fill
+                area_series.setBrush(QBrush(fill_color))
+            
+            # Store in cache
+            self._area_series_cache[name] = area_series
+            
+            return area_series
+            
+        except Exception as e:
+            print(f"Error creating area series for {name}: {e}")
+            return None
+
     def _createGradient(self, base_color: QColor) -> QBrush:
         """Create a gradient brush for area fill"""
         gradient = QLinearGradient()
@@ -477,41 +506,45 @@ class QCustomAreaChart(QCustomChartBase):
         gradient.setColorAt(1, end_color)
         
         return QBrush(gradient)
-    
-    def _createMarkerSeries(self, name: str, data: List[Tuple[float, float]]) -> QLineSeries:
-        """Create a marker series (overrides base method to use line series for markers)"""
-        # Get series properties
-        color = self._data_manager.getSeriesColor(name)
-        marker_size = self._data_manager.getSeriesMarkerSize(name)
-        marker_style = self._data_manager.getSeriesMarkerStyle(name)
-        
-        # For area chart, we'll use scatter series for markers
-        from qtpy.QtCharts import QScatterSeries
-        series = QScatterSeries()
-        series.setName(f"{name}_markers")
-        series.setColor(color)
-        series.setMarkerSize(marker_size)
-        
-        # Set marker shape
-        if marker_style == self.MARKER_RECTANGLE:
-            series.setMarkerShape(QScatterSeries.MarkerShapeRectangle)
-        elif marker_style == self.MARKER_ROTATED_RECTANGLE:
-            series.setMarkerShape(QScatterSeries.MarkerShapeRotatedRectangle)
-        elif marker_style == self.MARKER_TRIANGLE:
-            series.setMarkerShape(QScatterSeries.MarkerShapeTriangle)
-        elif marker_style == self.MARKER_STAR:
-            series.setMarkerShape(QScatterSeries.MarkerShapeStar)
-        elif marker_style == self.MARKER_PENTAGON:
-            series.setMarkerShape(QScatterSeries.MarkerShapePentagon)
-        else:
-            series.setMarkerShape(QScatterSeries.MarkerShapeCircle)
-        
-        # Add data points
-        for x, y in data:
-            series.append(x, y)
-        
-        return series
-    
+
+    def _createMarkerSeries(self, name: str, data: List[Tuple[float, float]]) -> Optional[QScatterSeries]:
+        """Create a marker series for area chart"""
+        try:
+            # Get series properties
+            color = self._data_manager.getSeriesColor(name)
+            marker_size = self._data_manager.getSeriesMarkerSize(name)
+            marker_style = self._data_manager.getSeriesMarkerStyle(name)
+            
+            # Create scatter series
+            series = QScatterSeries()
+            series.setName(f"{name}_markers")
+            series.setColor(color)
+            series.setMarkerSize(marker_size)
+            
+            # Set marker shape
+            if marker_style == self.MARKER_RECTANGLE:
+                series.setMarkerShape(QScatterSeries.MarkerShapeRectangle)
+            elif marker_style == self.MARKER_ROTATED_RECTANGLE:
+                series.setMarkerShape(QScatterSeries.MarkerShapeRotatedRectangle)
+            elif marker_style == self.MARKER_TRIANGLE:
+                series.setMarkerShape(QScatterSeries.MarkerShapeTriangle)
+            elif marker_style == self.MARKER_STAR:
+                series.setMarkerShape(QScatterSeries.MarkerShapeStar)
+            elif marker_style == self.MARKER_PENTAGON:
+                series.setMarkerShape(QScatterSeries.MarkerShapePentagon)
+            else:
+                series.setMarkerShape(QScatterSeries.MarkerShapeCircle)
+            
+            # Add data points
+            for x, y in data:
+                series.append(x, y)
+            
+            return series
+            
+        except Exception as e:
+            print(f"Error creating marker series for {name}: {e}")
+            return None
+
     def _findClosestDataPoint(self, point: QPointF) -> Tuple[Optional[str], Optional[Tuple[float, float]]]:
         """
         Find the closest data point to the given chart coordinates.
@@ -541,7 +574,7 @@ class QCustomAreaChart(QCustomChartBase):
             return closest_series, closest_point
         
         return None, None
-    
+
     def _isPointInChartBounds(self, point: QPointF) -> bool:
         """Check if point is within chart bounds"""
         try:
@@ -551,7 +584,7 @@ class QCustomAreaChart(QCustomChartBase):
             return (x_min <= point.x() <= x_max) and (y_min <= point.y() <= y_max)
         except:
             return False
-    
+
     def _updateLegendSettings(self):
         """Update legend settings"""
         legend = self._chart.legend()
@@ -569,7 +602,7 @@ class QCustomAreaChart(QCustomChartBase):
                  line_style: str = "solid",
                  line_width: float = 2.0,
                  marker_style: str = "none",
-                 marker_size: float = 8.0,
+                 marker_size: float = None,
                  **kwargs) -> bool:
         """
         Add an area series to the chart.
@@ -601,6 +634,10 @@ class QCustomAreaChart(QCustomChartBase):
         """Remove a series from the chart"""
         success = self._data_manager.removeSeries(name)
         if success:
+            # Remove from caches
+            self._area_series_cache.pop(name, None)
+            self._upper_series_cache.pop(name, None)
+            self._lower_series_cache.pop(name, None)
             self.updateChart()
         return success
     
@@ -778,7 +815,7 @@ class QCustomAreaChart(QCustomChartBase):
     
     def hasCustomMarkerSize(self, series_name: str) -> bool:
         """Check if series has custom marker size"""
-        return series_name in self._data_manager._seriesMarkerSizes
+        return self._data_manager.getSeriesMarkerSize(series_name) != self._data_manager.getDefaultMarkerSize()
     
     def setAllMarkersSize(self, size: float):
         """Set marker size for all series"""
@@ -797,11 +834,13 @@ class QCustomAreaChart(QCustomChartBase):
     
     def isValidLineStyle(self, style: str) -> bool:
         """Check if line style is valid"""
-        return self._line_series_factory.isValidLineStyle(style)
+        return style in [self.LINE_SOLID, self.LINE_DASH, self.LINE_DOT, 
+                        self.LINE_DASH_DOT, self.LINE_DASH_DOT_DOT, self.LINE_NONE]
     
     def isValidMarkerStyle(self, style: str) -> bool:
         """Check if marker style is valid"""
-        return self._line_series_factory.isValidMarkerStyle(style)
+        return style in [self.MARKER_CIRCLE, self.MARKER_RECTANGLE, self.MARKER_ROTATED_RECTANGLE,
+                        self.MARKER_TRIANGLE, self.MARKER_STAR, self.MARKER_PENTAGON, self.MARKER_NONE]
     
     # ============ CROSSHAIR METHODS ============
     
@@ -831,8 +870,7 @@ class QCustomAreaChart(QCustomChartBase):
     
     def showTooltipAt(self, x: float, y: float, series_name: str, title: str = None, description: str = None):
         """Manually show tooltip at specific coordinates"""
-        # This would need to be implemented in the tooltip manager
-        pass
+        self._tooltip_manager.show(x, y, series_name, title, description)
     
     def hideTooltip(self):
         """Manually hide tooltip"""
