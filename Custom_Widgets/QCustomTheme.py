@@ -665,6 +665,7 @@ class QCustomTheme(QObject):
 
 
         self.PATH_RESOURCES = theme.ICONS
+        self.RELATIVE_FOLDER = script_dir
 
          # Add other variables from the theme
         other_vars_scss = ""

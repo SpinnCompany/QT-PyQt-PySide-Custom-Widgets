@@ -100,7 +100,7 @@ def returnAnimationEasingCurve(easingCurveName):
 ##
 ########################################################################
 def returnQtDirection(direction):
-    if isnstance(direction, Qt.Orientation):
+    if isinstance(direction, Qt.Orientation):
         return direction
     
     if direction:

@@ -308,7 +308,13 @@ class QCustomSidebarButton(QPushButton):
         """Fade in the floating button."""
         if self._floating_widget and not self._fading_out:
             # fade animation
-            self._opacityAni = QPropertyAnimation(self._floating_widget, b'windowOpacity', self._floating_widget)
+            # Create opacity effect and animation
+            self._opacityEffect = QGraphicsOpacityEffect(self)
+            self._opacityEffect.setOpacity(0.0)  # start transparent
+            self.setGraphicsEffect(self._opacityEffect)
+            
+            self._opacityAni = QPropertyAnimation(self._opacityEffect, b"opacity", self)
+            self._opacityAni.setEasingCurve(QEasingCurve.OutCubic)
             self._opacityAni.setDuration(500)
             self._opacityAni.setStartValue(0)
             self._opacityAni.setEndValue(1)
@@ -322,7 +328,13 @@ class QCustomSidebarButton(QPushButton):
         if self._floating_widget:
             self._fading_out = True
             # fade animation
-            self._opacityAni = QPropertyAnimation(self._floating_widget, b'windowOpacity', self._floating_widget)
+            # Create opacity effect and animation
+            self._opacityEffect = QGraphicsOpacityEffect(self)
+            self._opacityEffect.setOpacity(0.0)  # start transparent
+            self.setGraphicsEffect(self._opacityEffect)
+            
+            self._opacityAni = QPropertyAnimation(self._opacityEffect, b"opacity", self)
+            self._opacityAni.setEasingCurve(QEasingCurve.OutCubic)
             self._opacityAni.setDuration(500)
             self._opacityAni.setStartValue(1)
             self._opacityAni.setEndValue(0)

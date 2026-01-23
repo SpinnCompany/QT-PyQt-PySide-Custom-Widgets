@@ -128,10 +128,16 @@ class QCustomComponentLoader(QWidget):
                 self.ui = self._form_class()  # Instantiate the class
                 self.ui.setupUi(self)
             except Exception as e:
-                logError(f"Error loading form class: {e}")
-                if is_in_designer(self):
-                    self._show_error_label(f"Error loading class: {e}")
-                return
+                # maybe formclass has already been instantiated
+                try:
+                    self.ui = formClass  # Use the provided instance directly
+                    self.ui.setupUi(self)
+                except Exception as e:
+                    logError(f"Error setting up UI: {e}")
+                
+                    if is_in_designer(self):
+                        self._show_error_label(f"Error loading class: {e}")
+                    return
 
         # If filePath is provided, handle accordingly
         elif filePath is not None:

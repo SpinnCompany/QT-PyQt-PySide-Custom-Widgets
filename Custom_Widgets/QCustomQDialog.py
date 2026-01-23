@@ -1,15 +1,18 @@
 # coding:utf-8
-from qtpy.QtCore import QEasingCurve, QPropertyAnimation, Qt, QEvent, Signal
+from qtpy.QtCore import QEasingCurve, QPropertyAnimation, Qt, QEvent, Signal, QRect
 from qtpy.QtGui import QColor, QResizeEvent, QPalette, QPaintEvent, QPainter, QMouseEvent
 from qtpy.QtWidgets import (QDialog, QGraphicsDropShadowEffect, QStyleOption, QStyle, QApplication,
-                             QGraphicsOpacityEffect, QWidget, QGraphicsBlurEffect)
+                             QGraphicsOpacityEffect, QWidget, QGraphicsBlurEffect, QLabel)
 
+from Custom_Widgets.Utils import is_in_designer
 from Custom_Widgets.components.python.ui_dialog import Ui_Form
 from Custom_Widgets.QCustomTheme import QCustomTheme
 from Custom_Widgets.QCustomComponentLoader import QCustomComponentLoader
 
-from Custom_Widgets.BlurWindow import GlobalBlur
-        
+# from Custom_Widgets.BlurWindow import GlobalBlur Deprecated due to OS security policies
+from Custom_Widgets.AcrylicEffect import AcrylicEffect
+from Custom_Widgets.Log import *
+
 class QCustomQDialog(QDialog, Ui_Form):
     accepted = Signal()
     rejected = Signal()
@@ -44,7 +47,8 @@ class QCustomQDialog(QDialog, Ui_Form):
         frameless=False,
         windowMovable=False,
         addWidget=None,
-        blurBackground=True
+        blurBackground=True,
+        position="center"  # Added position parameter
     ):
         """Initialize the custom dialog with configurable options."""
         QDialog.__init__(self, parent)  # Initialize QDialog parent class
@@ -55,10 +59,11 @@ class QCustomQDialog(QDialog, Ui_Form):
         self.setupUi(self)
 
         # Mask widget setup
-        # self.maskWidget = MaskWidget(parent)
-        # self.maskWidget.hide()
-        # self.maskWidget.setParent(self.parent())
-        # self.maskWidget.lower()
+        self.maskWidget = None
+        self.acrylicEffect = None
+        
+        # Store position
+        self.position = position.lower() if position else "center"
 
         # Set title
         if title:
@@ -115,7 +120,9 @@ class QCustomQDialog(QDialog, Ui_Form):
         if showForm:
             self.form = QCustomComponentLoader()
             self.form.loadComponent(formClass = showForm)
-            self.verticalLayout_2.addWidget(self.form) 
+            # self.form.setObjectName("showForm")
+            self.verticalLayout_2.addWidget(self.form, alignment=self._getQtAlignmentFromPosition()) 
+
             try:
                 #older versions
                 self.form.form =  self.form.ui 
@@ -134,8 +141,27 @@ class QCustomQDialog(QDialog, Ui_Form):
         self.yesButton.setFocus()
         self.setShadowEffect()
 
-        self.blurBackground = blurBackground
-    
+        self.blurBackground = blurBackground           
+     
+    def _getQtAlignmentFromPosition(self):
+        """Convert position string to Qt alignment flags."""
+        position = self.position.lower()
+        
+        # Map position strings to Qt alignment flags
+        alignments = {
+            "center": Qt.AlignCenter,
+            "top": Qt.AlignTop | Qt.AlignHCenter,
+            "bottom": Qt.AlignBottom | Qt.AlignHCenter,
+            "left": Qt.AlignLeft | Qt.AlignVCenter,
+            "right": Qt.AlignRight | Qt.AlignVCenter,
+            "top-left": Qt.AlignTop | Qt.AlignLeft,
+            "top-right": Qt.AlignTop | Qt.AlignRight,
+            "bottom-left": Qt.AlignBottom | Qt.AlignLeft,
+            "bottom-right": Qt.AlignBottom | Qt.AlignRight,
+        }
+        
+        return alignments.get(position, Qt.AlignCenter)
+
     def addWidget(self, widget, alignment = None):
         if alignment:
             self.verticalLayout_2.addWidget(widget, alignment=alignment) 
@@ -156,6 +182,7 @@ class QCustomQDialog(QDialog, Ui_Form):
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.LeftButton:
             self.offset = event.pos()
+            
 
     def mouseMoveEvent(self, event: QMouseEvent):
         if hasattr(self, 'offset'):
@@ -200,16 +227,16 @@ class QCustomQDialog(QDialog, Ui_Form):
         self.checkAppTheme()
         c = 0 if self.isDark() else 255
         if self.maskWidget is None:
-            self.maskWidget = MaskWidget(parent=self.parent())
-            self.maskWidget.lower()
+            self.maskWidget = MaskWidget(parent=self.parent(), dialog=self)
+            # self.maskWidget.lower()
+            self.maskWidget.updateAcrylicEffect()
         
         if not self.blurBackground:
             self.maskWidget.setStyleSheet(f'background:rgba({c}, {c}, {c}, .8)')
-        else:
-            self.maskWidget.setStyleSheet(f'background:rgba({c}, {c}, {c}, .1)')
-
-        if self.maskWidget:
-            self.maskWidget.show()
+        # else:
+        #     self.maskWidget.setStyleSheet(f'background:rgba({c}, {c}, {c}, .1)')
+        
+        self.maskWidget.show()
 
         """ Fade in """
         opacityEffect = QGraphicsOpacityEffect(self)
@@ -230,6 +257,8 @@ class QCustomQDialog(QDialog, Ui_Form):
         try:
             self.maskWidget.hide()
             self.maskWidget.deleteLater()
+            self.acrylicEffect = None
+            self.maskWidget = None
         except:
             pass
 
@@ -253,6 +282,7 @@ class QCustomQDialog(QDialog, Ui_Form):
 
     def resizeEvent(self, e):
         self.adjustSizeToContent()
+        super().resizeEvent(e)
 
     def adjustSizeToContent(self):
         # # Calculate the size hint based on the content
@@ -265,22 +295,69 @@ class QCustomQDialog(QDialog, Ui_Form):
         self.adjustToParentSize()
 
         self.checkAppTheme()
-        self.updateBlurEffect()
+        
 
     def adjustToParentSize(self):
         """Adjust the dialog to the size and position of the parent."""
         if self.parent():
+            # Resize dialog to parent size
             self.resize(self.parent().size())
             
-            # Calculate the top-left position to center the dialog on the parent
-            parent_geometry = self.parent().geometry()
-            parent_center_x = parent_geometry.x() + parent_geometry.width() // 2
-            parent_center_y = parent_geometry.y() + parent_geometry.height() // 2
-
-            dialog_x = parent_center_x - self.width() // 2
-            dialog_y = parent_center_y - self.height() // 2
-
-            self.move(dialog_x, dialog_y)  # Move the dialog to the calculated position
+            # Position the dialog based on the position parameter
+            parent_rect = self.parent().geometry()
+            dialog_rect = self.geometry()
+            
+            if self.position == "center":
+                # Center position (default)
+                dialog_x = parent_rect.x() + (parent_rect.width() - dialog_rect.width()) // 2
+                dialog_y = parent_rect.y() + (parent_rect.height() - dialog_rect.height()) // 2
+            
+            elif self.position == "top":
+                # Top center
+                dialog_x = parent_rect.x() + (parent_rect.width() - dialog_rect.width()) // 2
+                dialog_y = parent_rect.y()
+            
+            elif self.position == "bottom":
+                # Bottom center
+                dialog_x = parent_rect.x() + (parent_rect.width() - dialog_rect.width()) // 2
+                dialog_y = parent_rect.y() + parent_rect.height() - dialog_rect.height()
+            
+            elif self.position == "left":
+                # Left center
+                dialog_x = parent_rect.x()
+                dialog_y = parent_rect.y() + (parent_rect.height() - dialog_rect.height()) // 2
+            
+            elif self.position == "right":
+                # Right center
+                dialog_x = parent_rect.x() + parent_rect.width() - dialog_rect.width()
+                dialog_y = parent_rect.y() + (parent_rect.height() - dialog_rect.height()) // 2
+            
+            elif self.position == "top-left":
+                # Top left corner
+                dialog_x = parent_rect.x()
+                dialog_y = parent_rect.y()
+            
+            elif self.position == "top-right":
+                # Top right corner
+                dialog_x = parent_rect.x() + parent_rect.width() - dialog_rect.width()
+                dialog_y = parent_rect.y()
+            
+            elif self.position == "bottom-left":
+                # Bottom left corner
+                dialog_x = parent_rect.x()
+                dialog_y = parent_rect.y() + parent_rect.height() - dialog_rect.height()
+            
+            elif self.position == "bottom-right":
+                # Bottom right corner
+                dialog_x = parent_rect.x() + parent_rect.width() - dialog_rect.width()
+                dialog_y = parent_rect.y() + parent_rect.height() - dialog_rect.height()
+            
+            else:
+                # Default to center if position is not recognized
+                dialog_x = parent_rect.x() + (parent_rect.width() - dialog_rect.width()) // 2
+                dialog_y = parent_rect.y() + (parent_rect.height() - dialog_rect.height()) // 2
+            
+            self.move(dialog_x, dialog_y)
 
     def checkAppTheme(self):
         # icons
@@ -309,16 +386,13 @@ class QCustomQDialog(QDialog, Ui_Form):
         else:
             # Light background
             return False
-    
-    def updateBlurEffect(self):
-        """Update the GlobalBlur effect to match the MaskWidget size."""
-        if self.blurBackground and self.maskWidget is not None:
-            self.bgBlur = GlobalBlur(HWND=self.winId(), widget=self, mask=self.maskWidget, Dark=self.isDark())
+
         
 class MaskWidget(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, dialog: QCustomQDialog = None):
         super().__init__(parent)
         
+        self.dialog = dialog
         # Make the widget fill the entire main window
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -383,5 +457,37 @@ class MaskWidget(QWidget):
     def showEvent(self, event):
         if self.parent():
             self.parent().destroyed.connect(self.onParentDestroyed)
+
+        self.screenGrab()
         super().showEvent(event)
 
+    def updateAcrylicEffect(self):
+        if is_in_designer(self):
+            return
+        
+        try:
+            # Create new acrylic effect if enabled
+            if self.dialog.blurBackground:
+                self.acrylicEffect = AcrylicEffect(
+                    widget=self,
+                    blurRadius=10,
+                    tintColor=QColor(255, 255, 255, 30) if not self.dialog.isDark() else QColor(0, 0, 0, 30),
+                    luminosityColor=QColor(255, 255, 255, 10) if not self.dialog.isDark() else QColor(0, 0, 0, 10),
+                    noiseOpacity=0.03
+                )
+                
+                # Apply the acrylic effect
+                self.acrylicEffect.applyToWidget()
+
+                self.screenGrab()
+        except Exception as e:
+            logError(f"Error applying acrylic effect: {e}")
+            
+        
+    def screenGrab(self):
+        if is_in_designer(self):
+            return None
+
+        if self.parent():
+            global_rect = self.parent().rect()
+            self.acrylicEffect.grabFromScreen(global_rect)

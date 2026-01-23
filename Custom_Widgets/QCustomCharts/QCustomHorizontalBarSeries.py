@@ -1,29 +1,29 @@
-# file name: QCustomVerticalBarSeries.py
+# file name: QCustomHorizontalBarSeries.py
 from qtpy.QtCore import Property
-from qtpy.QtGui import QColor
+from qtpy.QtGui import QColor, QPainter
 
 from .QCustomBarChartBase import QCustomBarChartBase
 from Custom_Widgets.Utils import is_in_designer
 
 
-class QCustomVerticalBarSeries(QCustomBarChartBase):
+class QCustomHorizontalBarSeries(QCustomBarChartBase):
     """
-    Vertical grouped bar chart implementation for Qt Designer.
+    Horizontal grouped bar chart implementation for Qt Designer.
     Inherits from QCustomBarChartBase and adds designer-specific functionality.
     """
     
     # Designer registration constants
-    WIDGET_ICON = "components/icons/bar_chart.png"
-    WIDGET_TOOLTIP = "Customizable vertical grouped bar chart"
+    WIDGET_ICON = "components/icons/bar_chart_horizontal.png"
+    WIDGET_TOOLTIP = "Customizable horizontal grouped bar chart"
     WIDGET_DOM_XML = """
     <ui language='c++'>
-        <widget class='QCustomVerticalBarSeries' name='customVerticalBarSeries'>
+        <widget class='QCustomHorizontalBarSeries' name='customHorizontalBarSeries'>
             <property name='geometry'>
                 <rect>
                     <x>0</x>
-<y>0</y>
-<width>600</width>
-<height>400</height>
+                    <y>0</y>
+                    <width>600</width>
+                    <height>400</height>
                 </rect>
             </property>
         </widget>
@@ -32,8 +32,8 @@ class QCustomVerticalBarSeries(QCustomBarChartBase):
     WIDGET_MODULE = "Custom_Widgets.QCustomCharts"
     
     def __init__(self, parent=None):
-        """Initialize vertical bar chart widget"""
-        super().__init__(parent, orientation="vertical")
+        """Initialize horizontal bar chart widget"""
+        super().__init__(parent, orientation="horizontal")
         
         # Add dummy data if in designer mode
         self._addDummyDataForDesigner()
@@ -48,52 +48,14 @@ class QCustomVerticalBarSeries(QCustomBarChartBase):
             self.updateChart()
             
             # Set nice chart title for designer
-            self._chart.setTitle("Vertical Bar Chart Preview (Designer Mode)")
-            self._axis_x.setTitleText("Categories - Dummy Data")
-            self._axis_y.setTitleText("Values - Dummy Data")
+            self._chart.setTitle("Horizontal Bar Chart Preview (Designer Mode)")
+            self._axis_x.setTitleText("Values - Dummy Data")
+            self._axis_y.setTitleText("Categories - Dummy Data")
             
-            print("Designer mode detected - showing dummy bar chart data")
-    
-    def _addDummyBarData(self, num_series=3, num_categories=5):
-        """Add dummy bar chart data"""
-        import random
-        
-        # Clear existing data first
-        self.clearAllData()
-        
-        # Generate categories
-        categories = [f"Category {i+1}" for i in range(num_categories)]
-        
-        # Add series
-        for i in range(num_series):
-            series_name = f"Series {i+1}"
-            data = []
-            
-            # Generate random values for each category
-            for j, category in enumerate(categories):
-                value = random.uniform(10, 100) + i * 20
-                # For bar chart, we store data as (category_index, value)
-                data.append((j, value))
-            
-            # Get color from default colors
-            color_idx = i % len(self.DEFAULT_BAR_COLORS)
-            
-            # Add series to data manager
-            self._data_manager.addSeries(
-                name=series_name,
-                data=data,
-                color=self.DEFAULT_BAR_COLORS[color_idx],
-                visible=True,
-                line_style=self.LINE_NONE,
-                line_width=1.0,
-                marker_style=self.MARKER_NONE,
-                marker_size=0.0
-            )
-        
-        # Store categories in data manager for reference
-        self._data_manager._categories = categories
+            print("Designer mode detected - showing dummy horizontal bar chart data")
 
     # ============ PROPERTIES FOR DESIGNER ============
+    # Note: These properties are the same as vertical bar chart but with different axis labels
     
     @Property(str)
     def chartTitle(self):
@@ -108,7 +70,7 @@ class QCustomVerticalBarSeries(QCustomBarChartBase):
     
     @Property(str)
     def xAxisTitle(self):
-        """Get X axis title"""
+        """Get X axis title (now values axis for horizontal bars)"""
         return self._x_axis_title
     
     @xAxisTitle.setter
@@ -119,7 +81,7 @@ class QCustomVerticalBarSeries(QCustomBarChartBase):
     
     @Property(str)
     def yAxisTitle(self):
-        """Get Y axis title"""
+        """Get Y axis title (now categories axis for horizontal bars)"""
         return self._y_axis_title
     
     @yAxisTitle.setter
@@ -137,7 +99,7 @@ class QCustomVerticalBarSeries(QCustomBarChartBase):
     def showGrid(self, value: bool):
         """Set grid visibility"""
         self._show_grid = value
-        self._axis_y.setGridLineVisible(value)
+        self._axis_x.setGridLineVisible(value)  # X axis for horizontal bars
     
     @Property(bool)
     def autoScale(self):
@@ -332,7 +294,8 @@ class QCustomVerticalBarSeries(QCustomBarChartBase):
     def customGridColor(self, value: QColor):
         """Set grid color"""
         self._custom_grid_color = value
-        self._axis_y.setGridLineColor(value)
+        # For horizontal bars, grid is on X axis
+        self._axis_x.setGridLineColor(value)
     
     @Property(float)
     def customBarBorderWidth(self):

@@ -51,7 +51,7 @@ class QAppSettings():
                     if (init_theme_set is None or not init_theme_set):
                         settings.setValue("THEME", theme.name)
                         settings.setValue("INIT-THEME-SET", True)
-                        logInfo("Initial theme set...", theme.name)
+                        logInfo(f"Initial theme set... {theme.name}")
 
         settings.setValue("THEMES-LIST", themeEngine.themes)
 
