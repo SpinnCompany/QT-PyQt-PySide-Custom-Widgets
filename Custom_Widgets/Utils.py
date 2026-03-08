@@ -7,6 +7,7 @@ import qtpy
 from qtpy.QtDesigner import QDesignerFormWindowInterface
 from qtpy.QtGui import QIcon
 from qtpy.QtCore import QSettings
+from qtpy.QtWidgets import QApplication
 
 # Import custom logging module
 from Custom_Widgets.Log import *
@@ -67,9 +68,42 @@ def get_icon_path(icon: QIcon | str) -> str:
     return icon 
 
 def is_in_designer(self):
-    """Check if the widget is in Qt Designer."""
-    # logInfo(QDesignerFormWindowInterface.findChild(self))
-    return QDesignerFormWindowInterface.findFormWindow(self) is not None
+    """Check if running in Qt Designer."""
+    try:
+        # Method 1: Check for QDesignerFormWindowInterface (if widget is in a form)
+        if QDesignerFormWindowInterface.findFormWindow(self) is not None:
+            return True
+    except:
+        pass
+    
+    try:
+        # Method 2: Check for QApplication's applicationName (Designer sets this)
+        app = QApplication.instance()
+        if app is not None:
+            app_name = app.applicationName().lower()
+            if app_name and 'designer' in app_name:
+                return True
+    except Exception as e:
+        pass
+    
+    # Method 3: Check command line arguments
+    if len(sys.argv) > 0:
+        exe_name = sys.argv[0].lower()
+        if 'designer' in exe_name or 'pyqt5-tools' in exe_name or 'pyqt6-tools' in exe_name:
+            return True
+    
+    # Method 4: Check if we're being imported by designer (parent chain check)
+    # This works if the theme object has a parent widget that's in designer
+    parent = self.parent()
+    while parent is not None:
+        try:
+            if QDesignerFormWindowInterface.findFormWindow(parent) is not None:
+                return True
+        except:
+            pass
+        parent = parent.parent()
+    
+    return False
 
 
 def createQrcFile(contents, filePath):

@@ -22,18 +22,23 @@ except ImportError:
 
 # Custom theme for rich console
 if RICH_AVAILABLE:
-    custom_theme = Theme({
-        "info": "cyan",
-        "warning": "yellow",
-        "error": "red",
-        "critical": "bold red",
-        "debug": "dim",
-        "success": "green",
-        "file": "blue",
-        "folder": "magenta",
-        "monitor": "bold blue"
-    })
-    console = Console(theme=custom_theme)
+    try:
+        custom_theme = Theme({
+            "info": "cyan",
+            "warning": "yellow",
+            "error": "red",
+            "critical": "bold red",
+            "debug": "dim",
+            "success": "green",
+            "file": "blue",
+            "folder": "magenta",
+            "monitor": "bold blue"
+        })
+        console = Console(theme=custom_theme)
+    except Exception as e:
+        print(f"Failed to initialize Rich theme: {e}")
+        RICH_AVAILABLE = False
+        console = None
 
 # Setup logger
 def setupLogger(self=None, designer=False):
@@ -71,19 +76,31 @@ def setupLogger(self=None, designer=False):
     file_handler.setFormatter(file_formatter)
     logger.addHandler(file_handler)
 
-    # Rich console handler for beautiful output
+    # Console handler
     if RICH_AVAILABLE:
-        rich_handler = RichHandler(
-            console=console,
-            rich_tracebacks=True,
-            tracebacks_show_locals=True,
-            show_time=True,
-            show_level=True,
-            show_path=True
-        )
-        rich_handler.setLevel(logging.INFO)
+        try:
+            rich_handler = RichHandler(
+                console=console,
+                rich_tracebacks=True,
+                tracebacks_show_locals=True,
+                show_time=True,
+                show_level=True,
+                show_path=True
+            )
+            rich_handler.setLevel(logging.INFO)
+            logger.addHandler(rich_handler)
+        except Exception as e:
+            print(f"Failed to create Rich handler: {e}")
+            # Fallback to basic console handler
+            console_handler = logging.StreamHandler()
+            console_handler.setLevel(logging.INFO)
+            console_formatter = logging.Formatter(
+                '%(asctime)s - %(levelname)s - %(message)s'
+            )
+            console_handler.setFormatter(console_formatter)
+            logger.addHandler(console_handler)
     else:
-        # Fallback to basic console handler
+        # Basic console handler when Rich is not available
         console_handler = logging.StreamHandler()
         console_handler.setLevel(logging.INFO)
         console_formatter = logging.Formatter(
@@ -94,122 +111,146 @@ def setupLogger(self=None, designer=False):
 
 # Retrieve QSettings
 def get_show_custom_widgets_logs():
-    settings = QSettings()
-    return settings.value("showCustomWidgetsLogs", True, type=bool)
+    try:
+        settings = QSettings()
+        return settings.value("showCustomWidgetsLogs", True, type=bool)
+    except Exception:
+        return True
 
 def set_show_custom_widgets_logs(value: bool):
-    settings = QSettings()
-    settings.setValue("showCustomWidgetsLogs", value)
+    try:
+        settings = QSettings()
+        settings.setValue("showCustomWidgetsLogs", value)
+    except Exception:
+        pass
+
+# Helper function to safely print with rich or fallback to normal print
+def safe_console_print(*args, **kwargs):
+    """Safely print using rich if available, otherwise use normal print"""
+    if RICH_AVAILABLE:
+        try:
+            console.print(*args, **kwargs)
+            return True
+        except Exception:
+            # If rich fails, fall back to normal print
+            pass
+    
+    # Fallback to normal print
+    # Remove any rich formatting tags for cleaner output
+    message = args[0] if args else ""
+    if isinstance(message, str):
+        # Simple stripping of rich tags [tag]text[/tag] -> text
+        import re
+        message = re.sub(r'\[/?[^\]]+\]', '', message)
+    print(message)
+    return False
 
 # Enhanced logging functions with rich formatting
 def logDebug(message, **kwargs):
     logging.debug(message, extra=kwargs)
-    if get_show_custom_widgets_logs() and RICH_AVAILABLE:
-        console.print(f"🔍 [debug]DEBUG:[/debug] {message}", **kwargs)
+    if get_show_custom_widgets_logs():
+        safe_console_print(f"🔍 DEBUG: {message}", **kwargs)
 
 def logInfo(message, **kwargs):
     logging.info(message, extra=kwargs)
     if get_show_custom_widgets_logs():
-        if RICH_AVAILABLE:
-            console.print(f"ℹ️ [info]INFO:[/info] {message}", **kwargs)
-        else:
-            print(f"INFO: {message}")
+        safe_console_print(f"ℹ️ INFO: {message}", **kwargs)
 
 def logWarning(message, **kwargs):
     logging.warning(message, extra=kwargs)
     if get_show_custom_widgets_logs():
-        if RICH_AVAILABLE:
-            console.print(f"⚠️ [warning]WARNING:[/warning] {message}", **kwargs)
-        else:
-            print(f"WARNING: {message}")
+        safe_console_print(f"⚠️ WARNING: {message}", **kwargs)
 
 def logError(message, **kwargs):
     logging.error(message, extra=kwargs)
     if get_show_custom_widgets_logs():
-        if RICH_AVAILABLE:
-            console.print(f"❌ [error]ERROR:[/error] {message}", **kwargs)
-        else:
-            print(f"ERROR: {message}")
+        safe_console_print(f"❌ ERROR: {message}", **kwargs)
 
 def logCritical(message, **kwargs):
     logging.critical(message, extra=kwargs)
     if get_show_custom_widgets_logs():
-        if RICH_AVAILABLE:
-            console.print(f"💥 [critical]CRITICAL:[/critical] {message}", **kwargs)
-        else:
-            print(f"CRITICAL: {message}")
+        safe_console_print(f"💥 CRITICAL: {message}", **kwargs)
 
 def logSuccess(message, **kwargs):
     logging.info(f"SUCCESS: {message}", extra=kwargs)
-    if get_show_custom_widgets_logs() and RICH_AVAILABLE:
-        console.print(f"✅ [success]SUCCESS:[/success] {message}", **kwargs)
+    if get_show_custom_widgets_logs():
+        safe_console_print(f"✅ SUCCESS: {message}", **kwargs)
 
 def logException(exception, message="Exception", **kwargs):
     logging.exception(f"{message}: {exception}", extra=kwargs)
     if get_show_custom_widgets_logs():
+        safe_console_print(f"🚨 EXCEPTION: {message}: {exception}")
         if RICH_AVAILABLE:
-            console.print(f"🚨 [error]EXCEPTION:[/error] {message}: {exception}", **kwargs)
-            console.print(Traceback.from_exception(type(exception), exception, exception.__traceback__))
+            try:
+                console.print(Traceback.from_exception(type(exception), exception, exception.__traceback__))
+            except Exception:
+                traceback.print_exc()
         else:
-            print(f"EXCEPTION: {message}: {exception}")
             traceback.print_exc()
 
 # File monitoring specific logging functions
 def logFileMonitorStart(files_count, folder_path=None):
-    message = f"Starting file monitor - Tracking {files_count} files"
-    if folder_path:
-        message += f" in [folder]{folder_path}[/folder]"
+    folder_text = f" in {folder_path}" if folder_path else ""
+    message = f"Starting file monitor - Tracking {files_count} files{folder_text}"
     logInfo(message)
-    if RICH_AVAILABLE and get_show_custom_widgets_logs():
-        console.print(Panel.fit(
-            f"📁 [monitor]FILE MONITOR STARTED[/monitor]\n"
-            f"• Files: [file]{files_count}[/file]\n"
-            f"• Folder: [folder]{folder_path or 'N/A'}[/folder]",
-            border_style="blue"
-        ))
+    
+    if get_show_custom_widgets_logs() and RICH_AVAILABLE:
+        try:
+            console.print(Panel.fit(
+                f"📁 FILE MONITOR STARTED\n"
+                f"• Files: {files_count}\n"
+                f"• Folder: {folder_path or 'N/A'}",
+                border_style="blue"
+            ))
+        except Exception:
+            print(f"📁 FILE MONITOR STARTED - Files: {files_count}, Folder: {folder_path or 'N/A'}")
 
 def logFileChange(path, action="modified"):
-    logInfo(f"File [file]{path}[/file] has been {action}")
-    if RICH_AVAILABLE and get_show_custom_widgets_logs():
-        console.print(f"📝 [info]File {action}:[/info] [file]{os.path.basename(path)}[/file]")
+    filename = os.path.basename(path)
+    logInfo(f"File {filename} has been {action}")
+    if get_show_custom_widgets_logs():
+        safe_console_print(f"📝 File {action}: {filename}")
 
 def logFileListUpdate(new_files, removed_files, total_files):
     changes = []
     if new_files:
-        changes.append(f"[success]+{len(new_files)} new[/success]")
+        changes.append(f"+{len(new_files)} new")
     if removed_files:
-        changes.append(f"[error]-{len(removed_files)} removed[/error]")
+        changes.append(f"-{len(removed_files)} removed")
     
     if changes:
-        logInfo(f"File list updated: {', '.join(changes)} - Total: {total_files} files")
-        if RICH_AVAILABLE and get_show_custom_widgets_logs():
-            console.print(f"🔄 [info]File list updated:[/info] {', '.join(changes)} - Total: [file]{total_files}[/file] files")
+        changes_text = ', '.join(changes)
+        logInfo(f"File list updated: {changes_text} - Total: {total_files} files")
+        if get_show_custom_widgets_logs():
+            safe_console_print(f"🔄 File list updated: {changes_text} - Total: {total_files} files")
 
 def logFileConversionStart(file_path):
-    logInfo(f"Starting conversion of [file]{file_path}[/file]")
-    if RICH_AVAILABLE and get_show_custom_widgets_logs():
-        console.print(f"🛠️ [info]Converting:[/info] [file]{os.path.basename(file_path)}[/file]")
+    filename = os.path.basename(file_path)
+    logInfo(f"Starting conversion of {filename}")
+    if get_show_custom_widgets_logs():
+        safe_console_print(f"🛠️ Converting: {filename}")
 
 def logFileConversionComplete(file_path):
-    logSuccess(f"Completed conversion of [file]{file_path}[/file]")
-    if RICH_AVAILABLE and get_show_custom_widgets_logs():
-        console.print(f"✅ [success]Converted:[/success] [file]{os.path.basename(file_path)}[/file]")
+    filename = os.path.basename(file_path)
+    logSuccess(f"Completed conversion of {filename}")
+    if get_show_custom_widgets_logs():
+        safe_console_print(f"✅ Converted: {filename}")
 
 def logWidgetProcessing(widget_class, widget_name, details=""):
     details_text = f" - {details}" if details else ""
     logDebug(f"Processing widget: {widget_class} '{widget_name}'{details_text}")
-    if RICH_AVAILABLE and get_show_custom_widgets_logs():
-        console.print(f"🎛️ [debug]Widget:[/debug] {widget_class} '[file]{widget_name}[/file]'[dim]{details_text}[/dim]")
+    if get_show_custom_widgets_logs():
+        safe_console_print(f"🎛️ Widget: {widget_class} '{widget_name}'{details_text}")
 
 def logIconProcessing(widget_name, icon_url, widget_type="Widget"):
     logDebug(f"{widget_type} '{widget_name}' icon: {icon_url}")
-    if RICH_AVAILABLE and get_show_custom_widgets_logs():
-        console.print(f"🖼️ [debug]{widget_type} icon:[/debug] '[file]{widget_name}[/file]' → [file]{icon_url}[/file]")
+    if get_show_custom_widgets_logs():
+        safe_console_print(f"🖼️ {widget_type} icon: '{widget_name}' → {icon_url}")
 
 def logJSONUpdate(json_file, data_summary):
     logInfo(f"Updated JSON file: {json_file} with {data_summary}")
-    if RICH_AVAILABLE and get_show_custom_widgets_logs():
-        console.print(f"📊 [info]JSON updated:[/info] [file]{json_file}[/file] - {data_summary}")
+    if get_show_custom_widgets_logs():
+        safe_console_print(f"📊 JSON updated: {json_file} - {data_summary}")
 
 # Handle unhandled exceptions with rich formatting
 def handle_unhandled_exception(exc_type, exc_value, exc_traceback):
@@ -222,12 +263,16 @@ def handle_unhandled_exception(exc_type, exc_value, exc_traceback):
     
     if get_show_custom_widgets_logs():
         if RICH_AVAILABLE:
-            console.print(Panel.fit(
-                f"[critical]UNHANDLED EXCEPTION[/critical]\n"
-                f"[error]{exc_type.__name__}: {exc_value}[/error]",
-                border_style="red"
-            ))
-            console.print(Traceback.from_exception(exc_type, exc_value, exc_traceback))
+            try:
+                console.print(Panel.fit(
+                    f"UNHANDLED EXCEPTION\n"
+                    f"{exc_type.__name__}: {exc_value}",
+                    border_style="red"
+                ))
+                console.print(Traceback.from_exception(exc_type, exc_value, exc_traceback))
+            except Exception:
+                print("UNHANDLED EXCEPTION:")
+                print(formatted_traceback)
         else:
             print("UNHANDLED EXCEPTION:")
             print(formatted_traceback)

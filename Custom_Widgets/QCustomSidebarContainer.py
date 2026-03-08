@@ -60,7 +60,10 @@ class QCustomSidebarContainer(QWidget):
         """Handle the visibility of the widget after the animation finishes."""
         if self.animation.endValue() == 0.0:
             self.setVisible(False)
-
+        else:
+            # Ensure widget is properly painted when shown
+            self.update()
+            
         self.visibilityChanged.emit(self.isVisible())
 
     def hideContainer(self):

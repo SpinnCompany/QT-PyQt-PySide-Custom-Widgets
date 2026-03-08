@@ -22,15 +22,15 @@ class QCustomBarChart(QCustomChartBase):
             <property name='geometry'>
                 <rect>
                     <x>0</x>
-<y>0</y>
-<width>600</width>
-<height>400</height>
+                    <y>0</y>
+                    <width>600</width>
+                    <height>400</height>
                 </rect>
             </property>
         </widget>
     </ui>
     """
-    WIDGET_MODULE = "Custom_Widgets.QCustomBarChart"
+    WIDGET_MODULE = "Custom_Widgets.QCustomCharts"
     
     # Additional signals for bar chart
     barClicked = Signal(str, float, str)  # category, value, series_name

@@ -47,7 +47,10 @@ class QCustomComponentLoader(QWidget):
         
         # Ensure designer mode is set up when widget is shown in Qt Designer
         if is_in_designer(self) and not self._designer_initialized and not self.previewComponent:
-            self._setup_designer_mode()
+            try:
+                self._setup_designer_mode()
+            except Exception as e:
+                logError(f"Error setting up designer mode: {e}")
         
         else:
             self.applyThemeIcons()
@@ -146,7 +149,7 @@ class QCustomComponentLoader(QWidget):
             
             # Check if file exists
             if not os.path.isfile(filePath):
-                logError(f"File not found: {filePath}")
+                logError(f"Component Loader - File not found: {filePath}")
                 if is_in_designer(self):
                     self._show_error_label(f"File not found: {os.path.basename(filePath)}")
                 return
@@ -247,35 +250,39 @@ class QCustomComponentLoader(QWidget):
         if not hasattr(self, 'label') or not self.label:
             return
             
-        # Prepare text for label based on class name and file path
-        label_text = "<b>Component Loader / Container</b>"  # Default text
-        
-        has_config = False
-        
-        if self._form_class is not None:
-            class_name = self._form_class.__name__
-            label_text += f"<br><b>Class:</b> {class_name}"
-            has_config = True
-
-        if self._file_path:
-            file_name = os.path.basename(self._file_path)
-            label_text += f"<br><b>File:</b> {file_name}"
-            has_config = True
+        try:
+            # Prepare text for label based on class name and file path
+            label_text = "<b>Component Loader / Container</b>"  # Default text
             
-        if self._form_class_name and not self._form_class:
-            label_text += f"<br><b>Class Name:</b> {self._form_class_name}"
-            has_config = True
+            has_config = False
+            
+            if self._form_class is not None:
+                class_name = self._form_class.__name__
+                label_text += f"<br><b>Class:</b> {class_name}"
+                has_config = True
 
-        if not has_config:
-            label_text += "<br><i>No Class or File Loaded</i>"
-        else:
-            # Add preview status
-            preview_status = "Enabled" if self.previewComponent else "Disabled"
-            label_text += f"<br><b>Preview:</b> {preview_status}"
+            if self._file_path:
+                file_name = os.path.basename(self._file_path)
+                label_text += f"<br><b>File:</b> {file_name}"
+                has_config = True
+                
+            if self._form_class_name and not self._form_class:
+                label_text += f"<br><b>Class Name:</b> {self._form_class_name}"
+                has_config = True
 
-        # Set the label text and styling
-        self.label.setText(label_text)
-        self.label.setWordWrap(True)
+            if not has_config:
+                label_text += "<br><i>No Class or File Loaded</i>"
+            else:
+                # Add preview status
+                preview_status = "Enabled" if self.previewComponent else "Disabled"
+                label_text += f"<br><b>Preview:</b> {preview_status}"
+
+            # Set the label text and styling
+            self.label.setText(label_text)
+            self.label.setWordWrap(True)
+
+        except Exception as e:
+            logError(f"Error updating designer label: {e}")
 
     def _import_class_from_file(self, file_path, class_name=None):
         """Dynamically import a class from a specified Python file."""

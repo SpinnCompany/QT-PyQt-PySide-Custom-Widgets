@@ -24,6 +24,7 @@ class QCustomSidebarLabel(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._hideOnCollapse = True
+        self._showOnCollapse = False  # Opposite of hideOnCollapse
         self._isVisible = True
         self._icon = None
         self._iconSize = QSize(24, 24)
@@ -87,10 +88,15 @@ class QCustomSidebarLabel(QWidget):
         """Start the hide animation."""
         if self._hideOnCollapse:
             self.start_hide_animation()
+        elif self._showOnCollapse:
+            self.start_show_animation()
 
     def showLabel(self):
         """Start the show animation."""
-        self.start_show_animation()
+        if self._hideOnCollapse:
+            self.start_show_animation()
+        elif self._showOnCollapse:
+            self.start_hide_animation()
 
     def showEvent(self, e):
         """Validate and display the correct widget (icon or label) on show."""
@@ -173,7 +179,24 @@ class QCustomSidebarLabel(QWidget):
 
     @hideOnCollapse.setter
     def hideOnCollapse(self, hide):
+        """Set hideOnCollapse property and ensure showOnCollapse is opposite."""
+        # If setting to True, ensure showOnCollapse is False
+        if hide:
+            self._showOnCollapse = False
         self._hideOnCollapse = hide
+
+    @Property(bool)
+    def showOnCollapse(self):
+        """Whether to show this label when the sidebar collapses (opposite of hideOnCollapse)."""
+        return self._showOnCollapse
+
+    @showOnCollapse.setter
+    def showOnCollapse(self, show):
+        """Set showOnCollapse property and ensure hideOnCollapse is opposite."""
+        # If setting to True, ensure hideOnCollapse is False
+        if show:
+            self._hideOnCollapse = False
+        self._showOnCollapse = show
 
     def connect_to_parent(self):
         """Connect to the closest QCustomSidebar parent to listen for collapse/expand signals."""
@@ -196,9 +219,9 @@ class QCustomSidebarLabel(QWidget):
             self._animationDuration = self.parent_sidebar.animationDuration
 
             if self.parent_sidebar.isCollapsed():
-                self.start_hide_animation()
+                self.hideLabel()
             else:
-                self.start_show_animation()
+                self.showLabel()
             
             self._connected = True  # Mark as connected
 

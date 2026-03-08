@@ -15,6 +15,7 @@ def set_dll_search_path():
 
 set_dll_search_path()
 
+from pathlib import Path
 import re
 import json
 import sys
@@ -43,8 +44,6 @@ from Custom_Widgets.Log import *
 from Custom_Widgets.Utils import createQrcFile, is_in_designer
 from Custom_Widgets.JSonStyles import loadJsonStyle
 
-script_dir = os.path.dirname(os.path.abspath(sys.argv[0])).replace("\\", "/") + "/"
-
 class QCustomTheme(QObject):
     _instance = None  # Class-level variable to hold the singleton instance
     onThemeChanged = Signal()  # Define a class-level signal
@@ -63,6 +62,12 @@ class QCustomTheme(QObject):
             self._themes = []
             self._initialized = True  # Mark as initialized to avoid multiple init calls
             self.checkForMissingicons = False
+
+            self.script_dir = os.path.dirname(os.path.abspath(sys.argv[0])).replace("\\", "/") + "/"
+            print(self.script_dir)
+            if is_in_designer(self):
+                self.script_dir = os.getcwd().replace("\\", "/") + "/"
+                print(self.script_dir, "in designer")
 
             self.initializeThemeVars()
             self.defineThemeVarMapping()
@@ -136,7 +141,8 @@ class QCustomTheme(QObject):
             '$BORDER_SELECTION_2': '1px solid ' + self.COLOR_ACCENT_2,
             '$BORDER_SELECTION_1': '1px solid ' + self.COLOR_ACCENT_1,
             '$PATH_RESOURCES': f"'{self.PATH_RESOURCES}'",
-            '$RELATIVE_FOLDER': f"{script_dir}",
+            '$RELATIVE_FOLDER': f"{self.script_dir}",
+            '$BASE_DIR': f"{self.script_dir}",
             
             'THEME.COLOR_BACKGROUND_1': self.COLOR_BACKGROUND_1,
             'THEME.COLOR_BACKGROUND_2': self.COLOR_BACKGROUND_2,
@@ -665,7 +671,8 @@ class QCustomTheme(QObject):
 
 
         self.PATH_RESOURCES = theme.ICONS
-        self.RELATIVE_FOLDER = script_dir
+        self.RELATIVE_FOLDER = self.script_dir
+        self.BASE_DIR = self.script_dir
 
          # Add other variables from the theme
         other_vars_scss = ""
@@ -749,7 +756,8 @@ class QCustomTheme(QObject):
             $BORDER_SELECTION_2: 1px solid $COLOR_ACCENT_2;
             $BORDER_SELECTION_1: 1px solid $COLOR_ACCENT_1;
             $PATH_RESOURCES: '{theme.ICONS}';
-            $RELATIVE_FOLDER: "{script_dir}";
+            $RELATIVE_FOLDER: "{self.script_dir}";
+            $BASE_DIR: "{self.script_dir}";
             """)
             
             # Add the other variables section
@@ -806,13 +814,12 @@ class QCustomTheme(QObject):
 
     # apply custom font
     def loadProductSansFont(self):
-        script_dir = os.path.dirname(os.path.realpath(__file__))
         """Load and apply product sans font"""
-        font_id = QFontDatabase.addApplicationFont(os.path.join(script_dir, "Qss/fonts/Rosario/Rosario-VariableFont_wght.ttf"))
+        font_id = QFontDatabase.addApplicationFont(os.path.join(self.script_dir, "Qss/fonts/Rosario/Rosario-VariableFont_wght.ttf"))
         # if font loaded
         if font_id == -1:
             print("Failed to load Product Sans font")
-            return 
+            return
 
     def applyCompiledSass(self, generateIcons: bool = True, paintEntireApp: bool = True):
         if not self.themesRead:

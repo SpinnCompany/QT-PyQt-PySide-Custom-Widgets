@@ -90,6 +90,12 @@ class QCustomChartConstants:
     
     # ============ BAR CHART CONSTANTS ============
 
+    # Bar label position constants (for Designer properties)
+    BAR_LABELS_CENTER = "center"
+    BAR_LABELS_INSIDE_BASE = "inside_base"
+    BAR_LABELS_INSIDE_END = "inside_end"
+    BAR_LABELS_OUTSIDE_END = "outside_end"
+
     # Bar pattern constants
     BAR_PATTERN_SOLID = "solid"
     BAR_PATTERN_HORIZONTAL = "horizontal"
