@@ -195,6 +195,7 @@ def configure_settings(self, data, update: bool = False):
                                 else:
                                     # Set the font name to the font loaded
                                     self._fontName = QFontDatabase.applicationFontFamilies(font_id)[0]
+                                    logInfo(f"👍 Loaded font: {self._fontName} from {font_path_abs}")
                             else:
                                 logError(f"Font file does not exist: {font_path}")
                 
@@ -206,7 +207,10 @@ def configure_settings(self, data, update: bool = False):
                         # Check if the default font exists in the font database
                         if default_font_name in QFontDatabase.families():  # Changed here
                             self._fontName = QFont(default_font_name)
+                            logInfo(f"👍 Set default font to: {self._fontName}")
                             self.setFont(self._fontName)
+                        else:
+                            logError(f"Default font not found: {default_font_name}")
                         
                               
         if update:

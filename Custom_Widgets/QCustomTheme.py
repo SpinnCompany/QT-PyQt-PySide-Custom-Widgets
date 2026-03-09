@@ -818,7 +818,7 @@ class QCustomTheme(QObject):
         font_id = QFontDatabase.addApplicationFont(os.path.join(self.script_dir, "Qss/fonts/Rosario/Rosario-VariableFont_wght.ttf"))
         # if font loaded
         if font_id == -1:
-            print("Failed to load Product Sans font")
+            logDebug("Failed to load Product Sans font")
             return
 
     def applyCompiledSass(self, generateIcons: bool = True, paintEntireApp: bool = True):

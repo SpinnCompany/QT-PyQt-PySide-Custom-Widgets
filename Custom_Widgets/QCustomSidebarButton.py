@@ -49,6 +49,10 @@ class QCustomSidebarButton(QPushButton):
         self._hoverTimer.setSingleShot(True)
         self._hoverTimer.timeout.connect(self.showFloatingButton)
         self._floatPosition = None
+        
+        self._fadeOutTimer = QTimer(self)
+        self._fadeOutTimer.setSingleShot(True)
+        self._fadeOutTimer.timeout.connect(self._doFadeOut)
 
     @Property(bool)
     def hideOnCollapse(self):
@@ -124,13 +128,14 @@ class QCustomSidebarButton(QPushButton):
         opt.initFrom(self)
         painter = QPainter(self)
         self.style().drawControl(QStyle.CE_PushButton, opt, painter, self)
+        painter.end()  # Important: End the painter
 
         if self.originalText and not self.labelHidden:  
             self.setText(self.originalText) 
         elif self.labelHidden:
             self.setText("**clear")
 
-        self.update()
+        # self.update()
         super().paintEvent(event) 
 
     def setText(self, text):
@@ -229,7 +234,10 @@ class QCustomSidebarButton(QPushButton):
             logException(e)
 
     def enterEvent(self, event: QEnterEvent):
-        """Show the button label when the button is hovered, even if the sidebar is collapsed."""
+        """Show the button label when the button is hovered."""
+        # Stop any pending fade out
+        self._fadeOutTimer.stop()
+        
         # Only show floating button if hideOnCollapse is True (normal behavior)
         if self.parentSidebar and (self.parentSidebar.isCollapsed() or not self.parentSidebar.isExpanded()):
             if self._hideOnCollapse:  # Only show floating button if button is hidden on collapse
@@ -240,8 +248,45 @@ class QCustomSidebarButton(QPushButton):
         """Handle mouse leave event to set _isHovered to False."""
         # Only trigger fade out if hideOnCollapse is True
         if self._hideOnCollapse:
-            self.fadeOutFloatingButton()
+            # Check if mouse is over either the original button or the floating button
+            mouse_pos = QCursor.pos()
+            
+            # Check if mouse is over original button
+            if self.rect().contains(self.mapFromGlobal(mouse_pos)):
+                return  # Mouse still over original button, don't fade out
+                
+            # Check if mouse is over floating button
+            if self._floatingWidget and self._floatingWidget.isVisible():
+                floating_global_rect = self._floatingWidget.geometry()
+                floating_global_rect.moveTopLeft(self._floatingWidget.mapToGlobal(QPoint(0, 0)))
+                
+                if floating_global_rect.contains(mouse_pos):
+                    return  # Mouse still over floating button, don't fade out
+            
+            # Mouse is not over either widget, start fade out timer
+            self._fadeOutTimer.start(300)  # 300ms delay before fading out
         super().leaveEvent(event)
+
+    def _doFadeOut(self):
+        """Actually perform the fade out after the delay."""
+        if self._hideOnCollapse:
+            # Double-check mouse position before fading out
+            mouse_pos = QCursor.pos()
+            
+            # Check if mouse is over original button
+            if self.rect().contains(self.mapFromGlobal(mouse_pos)):
+                return  # Mouse returned to original button, cancel fade out
+                
+            # Check if mouse is over floating button
+            if self._floatingWidget and self._floatingWidget.isVisible():
+                floating_global_rect = self._floatingWidget.geometry()
+                floating_global_rect.moveTopLeft(self._floatingWidget.mapToGlobal(QPoint(0, 0)))
+                
+                if floating_global_rect.contains(mouse_pos):
+                    return  # Mouse returned to floating button, cancel fade out
+            
+            # Mouse is still not over either widget, fade out
+            self.fadeOutFloatingButton()
 
     def deleteFloatingButton(self, e):
         """Hide the button label when the hover ends, return to original collapsed state."""
@@ -269,6 +314,8 @@ class QCustomSidebarButton(QPushButton):
             self._floatingButton.adjustSize()
             self._floatingWidget.adjustSize()
             self._floatingWidget.move(self.calculateFloatingPosition())
+            # Start fade in after widget is shown
+            QTimer.singleShot(50, self.fadeInFloatingButton)
 
     def createFloatingButton(self):
         """Create the floating version of the button."""
@@ -281,15 +328,21 @@ class QCustomSidebarButton(QPushButton):
         self._floatingWidget.hideOnCollapse = False
         self._floatingButton.setIcon(self.icon())
         self._floatingButton.setObjectName(self.objectName())
+        
+        # IMPORTANT: Copy the icon size from the original button
+        self._floatingButton.setIconSize(self.iconSize())
 
-        # Create the shadow effect
+        # Create the shadow effect - apply to button, not container
         shadow = QGraphicsDropShadowEffect(self._floatingButton)
-        shadow.setBlurRadius(10)  # Set the blur radius for the shadow
-        shadow.setColor(QColor(0, 0, 0, 160))  # Set the shadow color (can be customized)
-        shadow.setOffset(0, 0)  # Set the offset for the shadow (horizontal, vertical)
-
-        # Apply the shadow effect to the widget
+        shadow.setBlurRadius(10)
+        shadow.setColor(QColor(0, 0, 0, 160))
+        shadow.setOffset(0, 0)
         self._floatingButton.setGraphicsEffect(shadow)
+        
+        # Create opacity effect for the container
+        self._opacityEffect = QGraphicsOpacityEffect(self._floatingWidget)
+        self._opacityEffect.setOpacity(1.0)
+        self._floatingWidget.setGraphicsEffect(self._opacityEffect)
         
         # Create a QVBoxLayout
         layout = QVBoxLayout(self._floatingWidget)
@@ -306,9 +359,6 @@ class QCustomSidebarButton(QPushButton):
         self._floatingWidget.setAttribute(Qt.WA_TranslucentBackground, True)
         self._floatingWidget.setWindowFlags(Qt.FramelessWindowHint | Qt.ToolTip | Qt.Popup)
 
-        # 
-        self._floatingButton.showEvent = self.fadeInFloatingButton
-
         # Connect events from the floating button to the main button's event handlers
         self._floatingButton.mousePressEvent = self.mousePressEvent
         self._floatingButton.mouseReleaseEvent = self.mouseReleaseEvent
@@ -317,25 +367,19 @@ class QCustomSidebarButton(QPushButton):
 
         self._fadingOut = False
 
-    def passEventToMainButton(self, event):
-        """Pass all events from the floating button to the main button."""
-        # Forward the event to the main button
-        return super(QPushButton, self._floatingButton).event(event)
-
-    def fadeInFloatingButton(self, e=None):
+    def fadeInFloatingButton(self):
         """Fade in the floating button."""
         if self._floatingWidget and not self._fadingOut:
-            # fade animation
-            # Create opacity effect and animation
-            self._opacityEffect = QGraphicsOpacityEffect(self)
-            self._opacityEffect.setOpacity(0.0)  # start transparent
-            self.setGraphicsEffect(self._opacityEffect)
+            # Reset opacity effect
+            if hasattr(self, '_opacityEffect') and self._opacityEffect:
+                self._opacityEffect.setOpacity(0.0)
             
-            self._opacityAni = QPropertyAnimation(self._opacityEffect, b"opacity", self)
+            # Create animation
+            self._opacityAni = QPropertyAnimation(self._opacityEffect, b"opacity")
             self._opacityAni.setEasingCurve(QEasingCurve.OutCubic)
-            self._opacityAni.setDuration(500)
-            self._opacityAni.setStartValue(0)
-            self._opacityAni.setEndValue(1)
+            self._opacityAni.setDuration(300)  # Shorter duration for better UX
+            self._opacityAni.setStartValue(0.0)
+            self._opacityAni.setEndValue(1.0)
             self._opacityAni.start()
 
     def fadeOutFloatingButton(self):
@@ -345,26 +389,29 @@ class QCustomSidebarButton(QPushButton):
 
         if self._floatingWidget:
             self._fadingOut = True
-            # fade animation
-            # Create opacity effect and animation
-            self._opacityEffect = QGraphicsOpacityEffect(self)
-            self._opacityEffect.setOpacity(0.0)  # start transparent
-            self.setGraphicsEffect(self._opacityEffect)
             
-            self._opacityAni = QPropertyAnimation(self._opacityEffect, b"opacity", self)
+            # Create animation
+            self._opacityAni = QPropertyAnimation(self._opacityEffect, b"opacity")
             self._opacityAni.setEasingCurve(QEasingCurve.OutCubic)
-            self._opacityAni.setDuration(500)
-            self._opacityAni.setStartValue(1)
-            self._opacityAni.setEndValue(0)
+            self._opacityAni.setDuration(300)  # Shorter duration for better UX
+            self._opacityAni.setStartValue(1.0)
+            self._opacityAni.setEndValue(0.0)
             self._opacityAni.finished.connect(self.hideFloatingButton)
             self._opacityAni.start()
 
     def hideFloatingButton(self):
         """Hide the floating button after the fade-out."""
         if self._floatingWidget:
-            self._floatingWidget.hide()  # Hide the button
-            self._floatingWidget.deleteLater()  # Schedule for deletion
-            self._floatingWidget = None  # Clear reference
+            # Clean up animation
+            if hasattr(self, '_opacityAni') and self._opacityAni:
+                self._opacityAni.stop()
+                self._opacityAni.deleteLater()
+                self._opacityAni = None
+            
+            self._floatingWidget.hide()
+            self._floatingWidget.deleteLater()
+            self._floatingWidget = None
+            self._fadingOut = False
 
     def calculateFloatingPosition(self):
         """Calculate the exact relative position for the floating button."""
@@ -387,8 +434,25 @@ class QCustomSidebarButton(QPushButton):
     def eventFilter(self, obj, event: QEvent):
         if event.type() in (QEvent.MouseButtonPress, QEvent.MouseButtonRelease, QEvent.MouseButtonDblClick, QEvent.MouseMove):
             # Handle the mouse event here
-            localPos = self.mapFromGlobal(event.globalPos())
-            if hasattr(self, "_floatingWidget") and self._floatingWidget and not self._floatingButton.rect().contains(localPos):
-                self.fadeOutFloatingButton()
+            if hasattr(self, "_floatingWidget") and self._floatingWidget and self._floatingWidget.isVisible():
+                mouse_pos = event.globalPos()
+                
+                # Check if mouse is over original button
+                if self.rect().contains(self.mapFromGlobal(mouse_pos)):
+                    self._fadeOutTimer.stop()  # Cancel fade out if mouse is over original button
+                    return super().eventFilter(obj, event)
+                    
+                # Check if mouse is over floating button
+                if self._floatingWidget:
+                    floating_global_rect = self._floatingWidget.geometry()
+                    floating_global_rect.moveTopLeft(self._floatingWidget.mapToGlobal(QPoint(0, 0)))
+                    
+                    if floating_global_rect.contains(mouse_pos):
+                        self._fadeOutTimer.stop()  # Cancel fade out if mouse is over floating button
+                        return super().eventFilter(obj, event)
+                
+                # Mouse is not over either widget, start fade out timer
+                if not self._fadeOutTimer.isActive():
+                    self._fadeOutTimer.start(300)
 
         return super().eventFilter(obj, event)
