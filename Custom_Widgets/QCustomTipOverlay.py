@@ -1,9 +1,9 @@
 # coding:utf-8
 from enum import Enum
-from typing import Union
+from typing import Union, Optional
 
 from qtpy.QtCore import Qt, QPoint, QObject, QPointF, QTimer, QPropertyAnimation, QEvent, QSize, Signal, QAbstractAnimation, QRect
-from qtpy.QtGui import QPainter, QColor, QPainterPath, QIcon, QPolygonF, QPixmap, QImage, QPaintEvent, QCursor
+from qtpy.QtGui import QPainter, QColor, QPainterPath, QIcon, QPolygonF, QPixmap, QImage, QPaintEvent, QCursor, QScreen, QBrush
 from qtpy.QtWidgets import QWidget, QGraphicsDropShadowEffect, QGraphicsOpacityEffect, QStyle, QStyleOption, QApplication
 
 from Custom_Widgets.QCustomTheme import QCustomTheme
@@ -19,12 +19,12 @@ class LoadForm(QWidget):
         self.form.setupUi(self)
 
 class QCustomTipOverlay(QWidget, Ui_Form):
-    """ QCustomOvelay """
+    """ QCustomOvelay with multi-screen support """
     closed = Signal()
     def __init__(self, title: str = "", description: str = "", icon: Union[QIcon, str] = None,
                image: Union[str, QPixmap, QImage] = None, isClosable=False, target: Union[QWidget, QPoint, QPointF] = None,
                parent=None, aniType="pull-up", deleteOnClose=True, duration=1000, tailPosition="bottom-center", showForm = None, addWidget=None,
-               closeIcon: Union[QIcon, str] = None, toolFlag = False):
+               closeIcon: Union[QIcon, str] = None, toolFlag = False, bgBrush: Optional[Union[QColor, QBrush]] = None):  # Added bgBrush parameter
 
         super().__init__()
         self.setupUi(self)
@@ -44,6 +44,7 @@ class QCustomTipOverlay(QWidget, Ui_Form):
         self.shownForm = showForm
         self.widget = addWidget
         self.closeIcon = closeIcon
+        self.bgBrush = bgBrush  # Store the background brush
         self.closeButton.setStyleSheet("background-color: transparent; padding: 0")
         self.closeButton.clicked.connect(self._fadeOut)
 
@@ -59,6 +60,8 @@ class QCustomTipOverlay(QWidget, Ui_Form):
         self.setClosable(self.isClosable)
         self.moveButton()
 
+        if parent:
+            self.setParent(parent)
         # Connect the signal to a slot
         try:
             self.parent().themeEngine.onThemeChanged.connect(self.handleThemeChanged)
@@ -75,6 +78,8 @@ class QCustomTipOverlay(QWidget, Ui_Form):
         self.opacityAni = None
 
         self.setShadowEffect()
+        
+        # Set proper window flags for multi-screen support
         if toolFlag:
             self.setWindowFlags(Qt.Popup | Qt.ToolTip | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         else:
@@ -83,18 +88,34 @@ class QCustomTipOverlay(QWidget, Ui_Form):
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setAttribute(Qt.WA_ShowWithoutActivating)
 
-        # Handle parent and event filter
+        # Improved parent handling for multi-screen
         if parent:
             self.setParent(parent)
             if parent.window():
                 parent.window().installEventFilter(self)
         else:
-            # If no parent, set to application active window
-            app = QApplication.instance()
-            if app and app.activeWindow():
-                self.setParent(app.activeWindow())
+            # If no parent, find the correct window based on target
+            if target:
+                if isinstance(target, (QPoint, QPointF)):
+                    # For point target, find the window at that point
+                    point = target if isinstance(target, QPoint) else target.toPoint()
+                    widget_at_point = QApplication.widgetAt(point)
+                    if widget_at_point and widget_at_point.window():
+                        self.setParent(widget_at_point.window())
+                        widget_at_point.window().installEventFilter(self)
+                elif isinstance(target, QWidget):
+                    # For widget target, use its window
+                    if target.window():
+                        self.setParent(target.window())
+                        target.window().installEventFilter(self)
+            
+            # If still no parent, try active window
+            if not self.parent():
+                app = QApplication.instance()
+                if app and app.activeWindow():
+                    self.setParent(app.activeWindow())
     
-        self.setStyleSheet("#frame{background-color: transparent; padding: 10px;}")
+        # self.setStyleSheet("#frame{background-color: transparent; padding: 10px;}")
     
     def setShadowEffect(self):
         self.setGraphicsEffect(None)
@@ -181,6 +202,9 @@ class QCustomTipOverlay(QWidget, Ui_Form):
         self.adjustSizeToContent()
         self.raise_()
         
+        # Ensure the overlay appears on the correct screen
+        self._ensure_on_correct_screen()
+        
         # Start fade in animation
         self.opacityAni.setDuration(500)
         self.opacityAni.setStartValue(0.0)
@@ -196,6 +220,47 @@ class QCustomTipOverlay(QWidget, Ui_Form):
             self._auto_close_timer.start(self.duration)
         
         super().showEvent(e)
+    
+    def _ensure_on_correct_screen(self):
+        """Ensure the overlay appears on the correct screen"""
+        if not self.original_target:
+            return
+            
+        # Get the screen where the target is located
+        target_screen = self._get_target_screen()
+        if target_screen:
+            # Get the screen where the overlay currently is
+            current_screen = QApplication.screenAt(self.pos())
+            
+            # If overlay is on wrong screen or position is invalid, recalculate
+            if not current_screen or current_screen != target_screen:
+                # Recalculate position for the correct screen
+                new_pos = self.manager.position(self)
+                self.move(new_pos)
+    
+    def _get_target_screen(self):
+        """Get the screen where the target is located"""
+        app = QApplication.instance()
+        target = self.original_target
+        
+        if not target:
+            return app.primaryScreen()
+        
+        try:
+            if isinstance(target, (QPoint, QPointF)):
+                point = target if isinstance(target, QPoint) else target.toPoint()
+                screen = app.screenAt(point)
+                return screen if screen else app.primaryScreen()
+            elif isinstance(target, QWidget):
+                # Get the center point of the widget
+                center = target.geometry().center()
+                global_center = target.mapToGlobal(center)
+                screen = app.screenAt(global_center)
+                return screen if screen else app.primaryScreen()
+        except:
+            pass
+        
+        return app.primaryScreen()
     
     def _onFadeInFinished(self):
         """ Called when fade in animation finishes """
@@ -255,15 +320,18 @@ class QCustomTipOverlay(QWidget, Ui_Form):
             return
             
         super().paintEvent(e)
-        # Move the widget to the position determined by the animation manager
-        # self.move(self.manager.position(self))
 
         self.painter = QPainter(self)
         self.painter.setRenderHints(QPainter.Antialiasing)
         self.painter.setPen(Qt.NoPen)
 
-        # Set the brush color to the parent's background color if a parent is set
-        if self.parent():
+        # Set the brush color based on bgBrush parameter if provided, otherwise use palette
+        if self.bgBrush is not None:
+            if isinstance(self.bgBrush, QColor):
+                self.painter.setBrush(QBrush(self.bgBrush))
+            else:
+                self.painter.setBrush(self.bgBrush)
+        elif self.parent():
             self.painter.setBrush(self.parent().palette().window())
         else:
             self.painter.setBrush(self.palette().window())
@@ -404,7 +472,6 @@ class TopTailQCustomQToolTipManager(QCustomTipOverlayManager):
         target = tipOverlay.original_target
         if isinstance(target, (QPoint, QPointF)):
             # For QPoint target, place the tip with tail pointing to the point
-            # The tip should be above the point
             if isinstance(target, QPointF):
                 pos = target.toPoint()
             else:
@@ -412,7 +479,7 @@ class TopTailQCustomQToolTipManager(QCustomTipOverlayManager):
             
             # Center the tip horizontally over the point
             x = pos.x() - tipOverlay.width() // 2
-            # Place the tip above the point (tail points to the point)
+            # Place the tip above the point
             y = pos.y() - tipOverlay.height()
             return QPoint(x, y)
         else:
@@ -442,7 +509,6 @@ class BottomTailQCustomQToolTipManager(QCustomTipOverlayManager):
         target = tipOverlay.original_target
         if isinstance(target, (QPoint, QPointF)):
             # For QPoint target, place the tip with tail pointing to the point
-            # The tip should be below the point
             if isinstance(target, QPointF):
                 pos = target.toPoint()
             else:
@@ -450,8 +516,8 @@ class BottomTailQCustomQToolTipManager(QCustomTipOverlayManager):
             
             # Center the tip horizontally under the point
             x = pos.x() - tipOverlay.width() // 2
-            # Place the tip below the point (tail points upwards to the point)
-            y = pos.y()  # Tip starts at the point's y position
+            # Place the tip below the point
+            y = pos.y()
             return QPoint(x, y)
         else:
             # For QWidget target, calculate position above the widget
@@ -480,14 +546,13 @@ class LeftTailQCustomQToolTipManager(QCustomTipOverlayManager):
         target = tipOverlay.original_target
         if isinstance(target, (QPoint, QPointF)):
             # For QPoint target, place the tip with tail pointing to the point
-            # The tip should be to the left of the point
             if isinstance(target, QPointF):
                 pos = target.toPoint()
             else:
                 pos = target
             
             # Place the tip to the left of the point
-            x = pos.x() - tipOverlay.width()  # Tip ends at the point's x position
+            x = pos.x() - tipOverlay.width()
             # Center the tip vertically on the point
             y = pos.y() - tipOverlay.height() // 2
             return QPoint(x, y)
@@ -518,14 +583,13 @@ class RightTailQCustomQToolTipManager(QCustomTipOverlayManager):
         target = tipOverlay.original_target
         if isinstance(target, (QPoint, QPointF)):
             # For QPoint target, place the tip with tail pointing to the point
-            # The tip should be to the right of the point
             if isinstance(target, QPointF):
                 pos = target.toPoint()
             else:
                 pos = target
             
             # Place the tip to the right of the point
-            x = pos.x()  # Tip starts at the point's x position
+            x = pos.x()
             # Center the tip vertically on the point
             y = pos.y() - tipOverlay.height() // 2
             return QPoint(x, y)
@@ -561,8 +625,8 @@ class TopLeftTailQCustomQToolTipManager(TopTailQCustomQToolTipManager):
                 pos = target
             
             # The tail is at position 27, so adjust accordingly
-            x = pos.x() - 27  # Adjust so tail is at point's x
-            y = pos.y()  # Tip starts at the point's y position
+            x = pos.x() - 27
+            y = pos.y()
             return QPoint(x, y)
         else:
             # For QWidget target, calculate position
@@ -596,8 +660,8 @@ class TopRightTailQCustomQToolTipManager(TopTailQCustomQToolTipManager):
                 pos = target
             
             # The tail is at position width-27, so adjust accordingly
-            x = pos.x() - (tipOverlay.width() - 27)  # Adjust so tail is at point's x
-            y = pos.y()  # Tip starts at the point's y position
+            x = pos.x() - (tipOverlay.width() - 27)
+            y = pos.y()
             return QPoint(x, y)
         else:
             # For QWidget target, calculate position
@@ -612,7 +676,7 @@ class BottomLeftTailQCustomQToolTipManager(BottomTailQCustomQToolTipManager):
 
     def draw(self, tipOverlay, painter, path):
         w, h = tipOverlay.width(), tipOverlay.height()
-        margins =tipOverlay.layout().contentsMargins()
+        margins = tipOverlay.layout().contentsMargins()
         
         path.addPolygon(
             QPolygonF([QPointF(20, h - margins.top()/2), 
@@ -631,8 +695,8 @@ class BottomLeftTailQCustomQToolTipManager(BottomTailQCustomQToolTipManager):
                 pos = target
             
             # The tail is at position 27, so adjust accordingly
-            x = pos.x() - 27  # Adjust so tail is at point's x
-            y = pos.y() - tipOverlay.height()  # Tip is above the point
+            x = pos.x() - 27
+            y = pos.y() - tipOverlay.height()
             return QPoint(x, y)
         else:
             # For QWidget target, calculate position
@@ -647,7 +711,7 @@ class BottomRightTailQCustomQToolTipManager(BottomTailQCustomQToolTipManager):
 
     def draw(self, tipOverlay, painter, path):
         w, h = tipOverlay.width(), tipOverlay.height()
-        margins =tipOverlay.layout().contentsMargins()
+        margins = tipOverlay.layout().contentsMargins()
         path.addPolygon(
             QPolygonF([QPointF(w - 34, h - margins.top()/2), 
                       QPointF(w - 27, h - 1), 
@@ -665,8 +729,8 @@ class BottomRightTailQCustomQToolTipManager(BottomTailQCustomQToolTipManager):
                 pos = target
             
             # The tail is at position width-27, so adjust accordingly
-            x = pos.x() - (tipOverlay.width() - 27)  # Adjust so tail is at point's x
-            y = pos.y() - tipOverlay.height()  # Tip is above the point
+            x = pos.x() - (tipOverlay.width() - 27)
+            y = pos.y() - tipOverlay.height()
             return QPoint(x, y)
         else:
             # For QWidget target, calculate position
@@ -681,7 +745,7 @@ class LeftTopTailQCustomQToolTipManager(LeftTailQCustomQToolTipManager):
 
     def draw(self, tipOverlay, painter, path):
         w, h = tipOverlay.width(), tipOverlay.height()
-        margins =tipOverlay.layout().contentsMargins()
+        margins = tipOverlay.layout().contentsMargins()
         
         path.addPolygon(
             QPolygonF([QPointF(margins.right()/2, margins.top()), 
@@ -699,9 +763,9 @@ class LeftTopTailQCustomQToolTipManager(LeftTailQCustomQToolTipManager):
             else:
                 pos = target
             
-            # The tail is at position (1, margins.top() + 7), so adjust accordingly
-            x = pos.x() - tipOverlay.width()  # Tip is to the left of the point
-            y = pos.y() - (margins.top() + 7)  # Adjust so tail is at point's y
+            # The tail is at position (1, margins.top() + 7)
+            x = pos.x() - tipOverlay.width()
+            y = pos.y() - (margins.top() + 7)
             return QPoint(x, y)
         else:
             # For QWidget target, calculate position
@@ -716,7 +780,7 @@ class LeftBottomTailQCustomQToolTipManager(LeftTailQCustomQToolTipManager):
 
     def draw(self, tipOverlay, painter, path):
         w, h = tipOverlay.width(), tipOverlay.height()
-        margins =tipOverlay.layout().contentsMargins()
+        margins = tipOverlay.layout().contentsMargins()
         
         path.addPolygon(
             QPolygonF([QPointF(margins.right()/2, h - margins.top() - 14), 
@@ -734,9 +798,9 @@ class LeftBottomTailQCustomQToolTipManager(LeftTailQCustomQToolTipManager):
             else:
                 pos = target
             
-            # The tail is at position (1, h - margins.top() - 7), so adjust accordingly
-            x = pos.x() - tipOverlay.width()  # Tip is to the left of the point
-            y = pos.y() - (tipOverlay.height() - margins.top() - 7)  # Adjust so tail is at point's y
+            # The tail is at position (1, h - margins.top() - 7)
+            x = pos.x() - tipOverlay.width()
+            y = pos.y() - (tipOverlay.height() - margins.top() - 7)
             return QPoint(x, y)
         else:
             # For QWidget target, calculate position
@@ -751,7 +815,7 @@ class RightTopTailQCustomQToolTipManager(RightTailQCustomQToolTipManager):
 
     def draw(self, tipOverlay, painter, path):
         w, h = tipOverlay.width(), tipOverlay.height()
-        margins =tipOverlay.layout().contentsMargins()
+        margins = tipOverlay.layout().contentsMargins()
         
         path.addPolygon(
             QPolygonF([QPointF(w - margins.right()/2, margins.top()), 
@@ -769,9 +833,9 @@ class RightTopTailQCustomQToolTipManager(RightTailQCustomQToolTipManager):
             else:
                 pos = target
             
-            # The tail is at position (w-1, margins.top() + 7), so adjust accordingly
-            x = pos.x()  # Tip starts at the point's x position
-            y = pos.y() - (margins.top() + 7)  # Adjust so tail is at point's y
+            # The tail is at position (w-1, margins.top() + 7)
+            x = pos.x()
+            y = pos.y() - (margins.top() + 7)
             return QPoint(x, y)
         else:
             # For QWidget target, calculate position
@@ -786,7 +850,7 @@ class RightBottomTailQCustomQToolTipManager(RightTailQCustomQToolTipManager):
 
     def draw(self, tipOverlay, painter, path):
         w, h = tipOverlay.width(), tipOverlay.height()
-        margins =tipOverlay.layout().contentsMargins()
+        margins = tipOverlay.layout().contentsMargins()
         
         path.addPolygon(
             QPolygonF([QPointF(w - margins.right()/2, h - margins.top() - 14), 
@@ -804,9 +868,9 @@ class RightBottomTailQCustomQToolTipManager(RightTailQCustomQToolTipManager):
             else:
                 pos = target
             
-            # The tail is at position (w-1, h - margins.top() - 7), so adjust accordingly
-            x = pos.x()  # Tip starts at the point's x position
-            y = pos.y() - (tipOverlay.height() - margins.top() - 7)  # Adjust so tail is at point's y
+            # The tail is at position (w-1, h - margins.top() - 7)
+            x = pos.x()
+            y = pos.y() - (tipOverlay.height() - margins.top() - 7)
             return QPoint(x, y)
         else:
             # For QWidget target, calculate position
@@ -817,7 +881,7 @@ class RightBottomTailQCustomQToolTipManager(RightTailQCustomQToolTipManager):
 
 @QCustomTipOverlayManager.register("auto")
 class AutoPositionQCustomQToolTipManager(QCustomTipOverlayManager):
-    """ Auto-positioning QCustomOverlay manager """
+    """ Auto-positioning QCustomOverlay manager with improved multi-screen support """
 
     def draw(self, tipOverlay, painter, path):
         self.manager = self.createManager(tipOverlay)
@@ -975,5 +1039,5 @@ class QCustomQToolTipFilter(QObject):
     def showCustomToolTip(self, text, target):
         if not text or hasattr(target, "customTooltip") and target.customTooltip is not None:
             return
-        target.customTooltip = QCustomTipOverlay(text=text, target=target, duration = self.duration, tailPosition=self.tailPosition)
+        target.customTooltip = QCustomTipOverlay(title=text, target=target, duration=self.duration, tailPosition=self.tailPosition)
         target.customTooltip.show()
