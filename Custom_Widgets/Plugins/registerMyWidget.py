@@ -205,6 +205,19 @@ try:
 except Exception as e:
     logException(e, message="Error registering QCustomSidebarButton")
 
+from Custom_Widgets.QCustomSidebarContainer import QCustomSidebarContainer
+
+# Registering QCustomSidebarContainer with error handling
+try:
+    logInfo("Registering QCustomSidebarContainer")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomSidebarContainer, module=QCustomSidebarContainer.WIDGET_MODULE,
+        tool_tip=QCustomSidebarContainer.WIDGET_TOOLTIP, 
+        xml=QCustomSidebarContainer.WIDGET_DOM_XML,
+        icon=QCustomSidebarContainer.WIDGET_ICON, container=True, group="Sidebar"
+    )
+except Exception as e:
+    logException(e, message="Error registering QCustomSidebarContainer")
 
 from Custom_Widgets.QCustomProgressBars import QCustomRoundProgressBar 
 
@@ -369,5 +382,42 @@ except ImportError as e:
     logError(f"Failed to import QCustomPieChart: {e}")
 except Exception as e:
     logException(e, message="Error registering QCustomPieChart")
+
+from Custom_Widgets.QCustomFlowLayout import QCustomFlowLayout
+
+# Registering QCustomFlowLayout with error handling
+try:
+    logInfo("Registering QCustomFlowLayout")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomFlowLayout, 
+        module=QCustomFlowLayout.WIDGET_MODULE,
+        tool_tip=QCustomFlowLayout.WIDGET_TOOLTIP, 
+        xml=QCustomFlowLayout.WIDGET_DOM_XML,
+        icon=QCustomFlowLayout.WIDGET_ICON, 
+        container=True, 
+        group="Layouts",
+        # designable=False  # Marking the layout as non-designable to prevent it from appearing in the widget box
+    )
+    logInfo("QCustomFlowLayout registered successfully")
+except Exception as e:
+    logException(e, message="Error registering QCustomFlowLayout")
+
+from Custom_Widgets.QCustomFlowWidget import QCustomFlowWidget
+
+# Registering QCustomFlowWidget with error handling
+try:
+    logInfo("Registering QCustomFlowWidget")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomFlowWidget, 
+        module=QCustomFlowWidget.WIDGET_MODULE,
+        tool_tip=QCustomFlowWidget.WIDGET_TOOLTIP, 
+        xml=QCustomFlowWidget.WIDGET_DOM_XML,
+        icon=QCustomFlowWidget.WIDGET_ICON, 
+        container=True, 
+        group="Layouts"
+    )
+    logInfo("QCustomFlowWidget registered successfully")
+except Exception as e:
+    logException(e, message="Error registering QCustomFlowWidget")
 
 logInfo("✓ All chart widgets registered successfully!")

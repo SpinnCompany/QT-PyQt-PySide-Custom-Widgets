@@ -40,17 +40,81 @@ if RICH_AVAILABLE:
         RICH_AVAILABLE = False
         console = None
 
+def get_app_data_folder(app_name="CustomWidgets"):
+    """
+    Get the appropriate application data folder for different platforms
+    
+    Returns:
+        str: Path to the application data folder
+    """
+    if sys.platform == "win32":
+        # Windows: Use APPDATA or LOCALAPPDATA
+        base_folder = os.environ.get("LOCALAPPDATA", os.environ.get("APPDATA", ""))
+        if not base_folder:
+            # Fallback to user's home directory
+            base_folder = os.path.expanduser("~")
+        app_data_folder = os.path.join(base_folder, app_name)
+    elif sys.platform == "darwin":
+        # macOS: Use ~/Library/Application Support/
+        base_folder = os.path.expanduser("~/Library/Application Support")
+        app_data_folder = os.path.join(base_folder, app_name)
+    else:
+        # Linux/Unix: Use XDG_DATA_HOME or ~/.local/share
+        base_folder = os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share"))
+        app_data_folder = os.path.join(base_folder, app_name.lower())
+    
+    return app_data_folder
+
+def get_log_file_path(app_name="CustomWidgets", designer=False):
+    """
+    Get the appropriate log file path
+    
+    Args:
+        app_name: Name of the application for folder structure
+        designer: Whether this is for designer mode
+    
+    Returns:
+        str: Path to the log file
+    """
+    # Get the base data folder
+    data_folder = get_app_data_folder(app_name)
+    
+    # Create logs subdirectory
+    logs_folder = os.path.join(data_folder, "logs")
+    
+    # Ensure the logs directory exists
+    os.makedirs(logs_folder, exist_ok=True)
+    
+    # Set log filename based on mode
+    if designer:
+        log_filename = "custom_widgets_designer.log"
+    else:
+        log_filename = "custom_widgets.log"
+    
+    log_file_path = os.path.join(logs_folder, log_filename)
+    
+    return log_file_path
+
 # Setup logger
 def setupLogger(self=None, designer=False):
-    logFilePath = os.path.join(os.getcwd(), "logs/custom_widgets.log")
-    if designer or (self is not None and is_in_designer(self)):
-        logFilePath = os.path.join(os.getcwd(), "logs/custom_widgets_designer.log")
+    """
+    Setup logger with proper file handling
     
-    # Ensure the log directory exists
+    Args:
+        self: Widget instance (optional)
+        designer: Whether running in designer mode
+    
+    Returns:
+        logging.Logger: Configured logger instance
+    """
+    # Get the log file path
+    logFilePath = get_log_file_path(designer=designer or (self is not None and is_in_designer(self)))
+    
+    # Get the log directory (already created in get_log_file_path, but just in case)
     logDirectory = os.path.dirname(logFilePath)
-    if logDirectory != "" and not os.path.exists(logDirectory):
-        os.makedirs(logDirectory)
-
+    if logDirectory and not os.path.exists(logDirectory):
+        os.makedirs(logDirectory, exist_ok=True)
+    
     # Get the root logger
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
@@ -58,24 +122,48 @@ def setupLogger(self=None, designer=False):
     # Clear any existing handlers
     for handler in logger.handlers[:]:
         logger.removeHandler(handler)
-
+    
     # Set up the rotating file handler
     logFileMaxSize = 10 * 1024 * 1024  # 10 MB
     backupCount = 5  # Keep up to 5 backup log files
     
-    file_handler = RotatingFileHandler(
-        logFilePath, 
-        maxBytes=logFileMaxSize, 
-        backupCount=backupCount,
-        encoding='utf-8'
-    )
-    file_handler.setLevel(logging.DEBUG)
-    file_formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    )
-    file_handler.setFormatter(file_formatter)
-    logger.addHandler(file_handler)
-
+    try:
+        file_handler = RotatingFileHandler(
+            logFilePath, 
+            maxBytes=logFileMaxSize, 
+            backupCount=backupCount,
+            encoding='utf-8'
+        )
+        file_handler.setLevel(logging.DEBUG)
+        file_formatter = logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        )
+        file_handler.setFormatter(file_formatter)
+        logger.addHandler(file_handler)
+        
+        # Log the log file location on startup
+        print(f"Log file location: {logFilePath}")
+        
+    except Exception as e:
+        print(f"Failed to create log file handler for {logFilePath}: {e}")
+        # Try fallback to temp folder if permission denied
+        if "Permission denied" in str(e) or "Access is denied" in str(e):
+            import tempfile
+            fallback_path = os.path.join(tempfile.gettempdir(), "custom_widgets.log")
+            print(f"Permission denied. Falling back to temp folder: {fallback_path}")
+            try:
+                file_handler = RotatingFileHandler(
+                    fallback_path,
+                    maxBytes=logFileMaxSize,
+                    backupCount=backupCount,
+                    encoding='utf-8'
+                )
+                file_handler.setLevel(logging.DEBUG)
+                file_handler.setFormatter(file_formatter)
+                logger.addHandler(file_handler)
+            except Exception as fallback_error:
+                print(f"Also failed to create log in temp folder: {fallback_error}")
+    
     # Console handler
     if RICH_AVAILABLE:
         try:
@@ -108,6 +196,44 @@ def setupLogger(self=None, designer=False):
         )
         console_handler.setFormatter(console_formatter)
         logger.addHandler(console_handler)
+    
+    return logger
+
+# Optional: Function to clean up old logs
+def cleanup_old_logs(app_name="CustomWidgets", max_log_files=10):
+    """
+    Clean up old log files, keeping only the most recent ones
+    
+    Args:
+        app_name: Name of the application
+        max_log_files: Maximum number of log files to keep
+    """
+    try:
+        logs_folder = os.path.join(get_app_data_folder(app_name), "logs")
+        if not os.path.exists(logs_folder):
+            return
+        
+        # Get all log files
+        log_files = []
+        for file in os.listdir(logs_folder):
+            if file.startswith("custom_widgets") and file.endswith(".log"):
+                file_path = os.path.join(logs_folder, file)
+                log_files.append((file_path, os.path.getmtime(file_path)))
+        
+        # Sort by modification time (oldest first)
+        log_files.sort(key=lambda x: x[1])
+        
+        # Remove old files if we have too many
+        while len(log_files) > max_log_files:
+            old_file = log_files.pop(0)[0]
+            try:
+                os.remove(old_file)
+                print(f"Removed old log file: {old_file}")
+            except Exception as e:
+                print(f"Failed to remove old log file {old_file}: {e}")
+                
+    except Exception as e:
+        print(f"Error during log cleanup: {e}")
 
 # Retrieve QSettings
 def get_show_custom_widgets_logs():
@@ -281,4 +407,5 @@ def handle_unhandled_exception(exc_type, exc_value, exc_traceback):
 sys.excepthook = handle_unhandled_exception
 
 # Initialize logger when module is imported
-# setupLogger()
+# Note: You may want to call this explicitly in your main application
+# logger = setupLogger()

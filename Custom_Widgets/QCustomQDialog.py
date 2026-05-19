@@ -1,6 +1,6 @@
 # coding:utf-8
 from qtpy.QtCore import QEasingCurve, QPropertyAnimation, Qt, QEvent, Signal, QRect
-from qtpy.QtGui import QColor, QResizeEvent, QPalette, QPaintEvent, QPainter, QMouseEvent
+from qtpy.QtGui import QColor, QResizeEvent, QPalette, QPaintEvent, QPainter, QMouseEvent, QKeyEvent
 from qtpy.QtWidgets import (QDialog, QGraphicsDropShadowEffect, QStyleOption, QStyle, QApplication,
                              QGraphicsOpacityEffect, QWidget, QGraphicsBlurEffect, QLabel)
 
@@ -48,15 +48,23 @@ class QCustomQDialog(QDialog, Ui_Form):
         windowMovable=False,
         addWidget=None,
         blurBackground=True,
-        position="center"  # Added position parameter
+        position="center",  # Added position parameter
+        closeOnEsc=False,   # ESC key behavior (default False)
+        closeShortcut=None  # Custom close shortcut (QKeySequence)
     ):
         """Initialize the custom dialog with configurable options."""
         QDialog.__init__(self, parent)  # Initialize QDialog parent class
         Ui_Form.__init__(self)  # Initialize Ui_Form parent class
 
-        self.window().installEventFilter(self)
-
         self.setupUi(self)
+
+        # Store ESC and shortcut settings
+        self.closeOnEsc = closeOnEsc
+        self.closeShortcut = closeShortcut
+
+        # Install event filter on parent
+        if parent:
+            parent.installEventFilter(self)
 
         # Mask widget setup
         self.maskWidget = None
@@ -141,7 +149,13 @@ class QCustomQDialog(QDialog, Ui_Form):
         self.yesButton.setFocus()
         self.setShadowEffect()
 
-        self.blurBackground = blurBackground           
+        self.blurBackground = blurBackground
+
+        # Set up custom close shortcut if provided
+        if self.closeShortcut:
+            from qtpy.QtGui import QShortcut
+            self.closeShortcutObj = QShortcut(self.closeShortcut, self)
+            self.closeShortcutObj.activated.connect(self.reject)
      
     def _getQtAlignmentFromPosition(self):
         """Convert position string to Qt alignment flags."""
@@ -207,6 +221,15 @@ class QCustomQDialog(QDialog, Ui_Form):
     def hideCancelButton(self):
         self.cancelButton.hide()
     
+    def keyPressEvent(self, event: QKeyEvent):
+        """Handle key press events, including ESC key based on closeOnEsc setting."""
+        if event.key() == Qt.Key_Escape:
+            if self.closeOnEsc:
+                self.reject()
+            # If closeOnEsc is False, ignore the ESC key (do nothing)
+            return
+        super().keyPressEvent(event)
+    
     def paintEvent(self, e: QPaintEvent):
         painter = QPainter(self)
         if not painter.isActive():
@@ -249,6 +272,9 @@ class QCustomQDialog(QDialog, Ui_Form):
         opacityAni.finished.connect(opacityEffect.deleteLater)
         opacityAni.start()
         
+        # Ensure proper positioning when shown
+        self.adjustToParentSize()
+        
         super().showEvent(e)
 
             
@@ -285,77 +311,47 @@ class QCustomQDialog(QDialog, Ui_Form):
         super().resizeEvent(e)
 
     def adjustSizeToContent(self):
-        # # Calculate the size hint based on the content
-        # self.verticalLayout.setContentsMargins(self.margin, self.margin, self.margin, self.margin)
-        # content_size = self.layout().sizeHint()
-        # self.setMinimumSize(content_size.width() + self.padding, content_size.height() + self.padding)
-        # self.adjustSize()
-
         # Size maximized to support BG Blur
         self.adjustToParentSize()
-
         self.checkAppTheme()
         
 
     def adjustToParentSize(self):
         """Adjust the dialog to the size and position of the parent."""
         if self.parent():
-            # Resize dialog to parent size
-            self.resize(self.parent().size())
-            
-            # Position the dialog based on the position parameter
+            # Get parent geometry (works correctly even when maximized)
             parent_rect = self.parent().geometry()
-            dialog_rect = self.geometry()
             
+            # Resize dialog to parent size
+            self.resize(parent_rect.width(), parent_rect.height())
+            
+            # Position the dialog - use parent's global position
+            dialog_x = parent_rect.x()
+            dialog_y = parent_rect.y()
+            
+            # Apply position offset based on position parameter
             if self.position == "center":
-                # Center position (default)
-                dialog_x = parent_rect.x() + (parent_rect.width() - dialog_rect.width()) // 2
-                dialog_y = parent_rect.y() + (parent_rect.height() - dialog_rect.height()) // 2
-            
+                pass
             elif self.position == "top":
-                # Top center
-                dialog_x = parent_rect.x() + (parent_rect.width() - dialog_rect.width()) // 2
                 dialog_y = parent_rect.y()
-            
             elif self.position == "bottom":
-                # Bottom center
-                dialog_x = parent_rect.x() + (parent_rect.width() - dialog_rect.width()) // 2
-                dialog_y = parent_rect.y() + parent_rect.height() - dialog_rect.height()
-            
+                dialog_y = parent_rect.y() + parent_rect.height() - self.height()
             elif self.position == "left":
-                # Left center
                 dialog_x = parent_rect.x()
-                dialog_y = parent_rect.y() + (parent_rect.height() - dialog_rect.height()) // 2
-            
             elif self.position == "right":
-                # Right center
-                dialog_x = parent_rect.x() + parent_rect.width() - dialog_rect.width()
-                dialog_y = parent_rect.y() + (parent_rect.height() - dialog_rect.height()) // 2
-            
+                dialog_x = parent_rect.x() + parent_rect.width() - self.width()
             elif self.position == "top-left":
-                # Top left corner
                 dialog_x = parent_rect.x()
                 dialog_y = parent_rect.y()
-            
             elif self.position == "top-right":
-                # Top right corner
-                dialog_x = parent_rect.x() + parent_rect.width() - dialog_rect.width()
+                dialog_x = parent_rect.x() + parent_rect.width() - self.width()
                 dialog_y = parent_rect.y()
-            
             elif self.position == "bottom-left":
-                # Bottom left corner
                 dialog_x = parent_rect.x()
-                dialog_y = parent_rect.y() + parent_rect.height() - dialog_rect.height()
-            
+                dialog_y = parent_rect.y() + parent_rect.height() - self.height()
             elif self.position == "bottom-right":
-                # Bottom right corner
-                dialog_x = parent_rect.x() + parent_rect.width() - dialog_rect.width()
-                dialog_y = parent_rect.y() + parent_rect.height() - dialog_rect.height()
-            
-            else:
-                # Default to center if position is not recognized
-                dialog_x = parent_rect.x() + (parent_rect.width() - dialog_rect.width()) // 2
-                dialog_y = parent_rect.y() + (parent_rect.height() - dialog_rect.height()) // 2
+                dialog_x = parent_rect.x() + parent_rect.width() - self.width()
+                dialog_y = parent_rect.y() + parent_rect.height() - self.height()
             
             self.move(dialog_x, dialog_y)
 
@@ -367,10 +363,10 @@ class QCustomQDialog(QDialog, Ui_Form):
                 self.form.applyThemeIcons()
 
     def eventFilter(self, obj, e: QEvent):
-        if obj is self.window():
-            if e.type() in {QEvent.Resize, QEvent.Move}:
-                self.adjustToParentSize()
-
+        # Listen for resize events on the parent window
+        if obj == self.parent() and e.type() == QEvent.Resize:
+            self.adjustToParentSize()
+        
         return super().eventFilter(obj, e)
     
     def isDark(self):

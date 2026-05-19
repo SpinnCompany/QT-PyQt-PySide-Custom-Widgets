@@ -199,7 +199,10 @@ class QCustomTheme(QObject):
     def setTheme(self, value):
         self._theme = value
         settings = QSettings()
-        settings.setValue("THEME", value)
+        try:
+            settings.setValue("THEME", value)
+        except Exception as e:
+            logError(f"Failed to write theme to QSettings: {e}")
         # if settings.value("INIT-THEME-SET") is None:
         #     settings.setValue("INIT-THEME-SET", True)
         
@@ -245,9 +248,13 @@ class QCustomTheme(QObject):
     
     @staticmethod
     def readJsonFile(file_path):
-        with open(file_path, 'r') as file:
-            data = json.load(file)
-        return data
+        try:
+            with open(file_path, 'r') as file:
+                data = json.load(file)
+            return data
+        except Exception as e:
+            logError(f"Failed to read JSON file {file_path}: {e}")
+            return {}
 
     @Property(object)
     def currentTheme(self):
@@ -295,7 +302,10 @@ class QCustomTheme(QObject):
             icons_color = self.iconsColor
 
             settings = QSettings()
-            settings.setValue("ICONS-COLOR", icons_color)
+            try:
+                settings.setValue("ICONS-COLOR", icons_color)
+            except Exception as e:
+                logError(f"Failed to write ICONS-COLOR to QSettings: {e}")
 
             if icons_color is None:
                 logging.warning("Icons color is not set. Skipping icon application.")
@@ -306,8 +316,11 @@ class QCustomTheme(QObject):
             current_script_folder = os.path.dirname(os.path.realpath(sys.argv[0]))
             jsonFilesFolder = os.path.abspath(os.path.join(current_script_folder, "generated-files/json"))
             if not os.path.exists(jsonFilesFolder):
-                os.makedirs(jsonFilesFolder)
-                logInfo(f"Created JSON files folder: {jsonFilesFolder}")
+                try:
+                    os.makedirs(jsonFilesFolder)
+                    logInfo(f"Created JSON files folder: {jsonFilesFolder}")
+                except Exception as e:
+                    logError(f"Failed to create JSON files folder {jsonFilesFolder}: {e}")
             
             prefix_to_remove = re.compile(r'icons(.*?)icons', re.IGNORECASE)
 
@@ -566,7 +579,12 @@ class QCustomTheme(QObject):
             currentThemeInfo = {"background-color": theme.bg_color, "text-color": theme.txt_color, "accent-color": theme.accent_color, "icons-color": iconsColor}
 
         settings = QSettings()
-        settings.setValue("ICONS-COLOR", iconsColor)
+        try:
+            settings.setValue("ICONS-COLOR", iconsColor)
+        except Exception as e:
+            logError(f"Failed to write ICONS-COLOR to QSettings: {e}")
+        
+        print(f"Current theme info: {currentThemeInfo}")
         
         return currentThemeInfo
         
@@ -683,95 +701,100 @@ class QCustomTheme(QObject):
 
         scss_folder = os.path.abspath(os.path.join(os.getcwd(), 'Qss/scss'))
         if not os.path.exists(scss_folder):
-            os.makedirs(scss_folder)
+            try:
+                os.makedirs(scss_folder)
+                logInfo(f"Created SCSS folder: {scss_folder}")
+            except Exception as e:
+                logError(f"Failed to create SCSS folder {scss_folder}: {e}")
 
         scss_path = os.path.abspath(os.path.join(scss_folder, '_variables.scss'))
-        with open(scss_path, 'w') as f:
-            f.write(f"""
-            //===================================================//
-            // FILE AUTO-GENERATED, ANY CHANGES MADE WILL BE LOST //
-            //====================================================//
-            $COLOR_BACKGROUND_1: {theme.BG_1};
-            $COLOR_BACKGROUND_2: {theme.BG_2};
-            $COLOR_BACKGROUND_3: {theme.BG_3};
-            $COLOR_BACKGROUND_4: {theme.BG_4};
-            $COLOR_BACKGROUND_5: {theme.BG_5};
-            $COLOR_BACKGROUND_6: {theme.BG_6};
-            $CB1_R: {theme.CB1_R};
-            $CB1_G: {theme.CB1_G};
-            $CB1_B: {theme.CB1_B};
-            $CB2_R: {theme.CB2_R};
-            $CB2_G: {theme.CB2_G};
-            $CB2_B: {theme.CB2_B};
-            $CB3_R: {theme.CB3_R};
-            $CB3_G: {theme.CB3_G};
-            $CB3_B: {theme.CB3_B};
-            $CB4_R: {theme.CB4_R};
-            $CB4_G: {theme.CB4_G};
-            $CB4_B: {theme.CB4_B};
-            $CB5_R: {theme.CB5_R};
-            $CB5_G: {theme.CB5_G};
-            $CB5_B: {theme.CB5_B};
-            $CB6_R: {theme.CB6_R};
-            $CB6_G: {theme.CB6_G};
-            $CB6_B: {theme.CB6_B};
-            $COLOR_TEXT_1: {theme.CT_1};
-            $COLOR_TEXT_2: {theme.CT_2};
-            $COLOR_TEXT_3: {theme.CT_3};
-            $COLOR_TEXT_4: {theme.CT_4};
-            $CT1_R: {theme.CT1_R};
-            $CT1_G: {theme.CT1_G};
-            $CT1_B: {theme.CT1_B};
-            $CT2_R: {theme.CT2_R};
-            $CT2_G: {theme.CT2_G};
-            $CT2_B: {theme.CT2_B};
-            $CT3_R: {theme.CT3_R};
-            $CT3_G: {theme.CT3_G};
-            $CT3_B: {theme.CT3_B};
-            $CT4_R: {theme.CT4_R};
-            $CT4_G: {theme.CT4_G};
-            $CT4_B: {theme.CT4_B};
-            $COLOR_ACCENT_1: {theme.CA_1};
-            $COLOR_ACCENT_2: {theme.CA_2};
-            $COLOR_ACCENT_3: {theme.CA_3};
-            $COLOR_ACCENT_4: {theme.CA_4};
-            $CA1_R: {theme.CA1_R};
-            $CA1_G: {theme.CA1_G};
-            $CA1_B: {theme.CA1_B};
-            $CA2_R: {theme.CA2_R};
-            $CA2_G: {theme.CA2_G};
-            $CA2_B: {theme.CA2_B};
-            $CA3_R: {theme.CA3_R};
-            $CA3_G: {theme.CA3_G};
-            $CA3_B: {theme.CA3_B};
-            $CA4_R: {theme.CA4_R};
-            $CA4_G: {theme.CA4_G};
-            $CA4_B: {theme.CA4_B};
-            $OPACITY_TOOLTIP: 230;
-            $SIZE_BORDER_RADIUS: 4px;
-            $BORDER_1: 1px solid $COLOR_BACKGROUND_1;
-            $BORDER_2: 1px solid $COLOR_BACKGROUND_4;
-            $BORDER_3: 1px solid $COLOR_BACKGROUND_6;
-            $BORDER_SELECTION_3: 1px solid $COLOR_ACCENT_3;
-            $BORDER_SELECTION_2: 1px solid $COLOR_ACCENT_2;
-            $BORDER_SELECTION_1: 1px solid $COLOR_ACCENT_1;
-            $PATH_RESOURCES: '{theme.ICONS}';
-            $RELATIVE_FOLDER: "{self.script_dir}";
-            $BASE_DIR: "{self.script_dir}";
-            """)
-            
-            # Add the other variables section
-            if other_vars_scss:
-                f.write("\n        // Additional theme variables\n")
-                f.write(other_vars_scss)
-            
-            f.write("""
-            //===================================================//
-            // END //
-            //====================================================//
-            """)
-
-        f.close()
+        try:
+            with open(scss_path, 'w') as f:
+                f.write(f"""
+                //===================================================//
+                // FILE AUTO-GENERATED, ANY CHANGES MADE WILL BE LOST //
+                //====================================================//
+                $COLOR_BACKGROUND_1: {theme.BG_1};
+                $COLOR_BACKGROUND_2: {theme.BG_2};
+                $COLOR_BACKGROUND_3: {theme.BG_3};
+                $COLOR_BACKGROUND_4: {theme.BG_4};
+                $COLOR_BACKGROUND_5: {theme.BG_5};
+                $COLOR_BACKGROUND_6: {theme.BG_6};
+                $CB1_R: {theme.CB1_R};
+                $CB1_G: {theme.CB1_G};
+                $CB1_B: {theme.CB1_B};
+                $CB2_R: {theme.CB2_R};
+                $CB2_G: {theme.CB2_G};
+                $CB2_B: {theme.CB2_B};
+                $CB3_R: {theme.CB3_R};
+                $CB3_G: {theme.CB3_G};
+                $CB3_B: {theme.CB3_B};
+                $CB4_R: {theme.CB4_R};
+                $CB4_G: {theme.CB4_G};
+                $CB4_B: {theme.CB4_B};
+                $CB5_R: {theme.CB5_R};
+                $CB5_G: {theme.CB5_G};
+                $CB5_B: {theme.CB5_B};
+                $CB6_R: {theme.CB6_R};
+                $CB6_G: {theme.CB6_G};
+                $CB6_B: {theme.CB6_B};
+                $COLOR_TEXT_1: {theme.CT_1};
+                $COLOR_TEXT_2: {theme.CT_2};
+                $COLOR_TEXT_3: {theme.CT_3};
+                $COLOR_TEXT_4: {theme.CT_4};
+                $CT1_R: {theme.CT1_R};
+                $CT1_G: {theme.CT1_G};
+                $CT1_B: {theme.CT1_B};
+                $CT2_R: {theme.CT2_R};
+                $CT2_G: {theme.CT2_G};
+                $CT2_B: {theme.CT2_B};
+                $CT3_R: {theme.CT3_R};
+                $CT3_G: {theme.CT3_G};
+                $CT3_B: {theme.CT3_B};
+                $CT4_R: {theme.CT4_R};
+                $CT4_G: {theme.CT4_G};
+                $CT4_B: {theme.CT4_B};
+                $COLOR_ACCENT_1: {theme.CA_1};
+                $COLOR_ACCENT_2: {theme.CA_2};
+                $COLOR_ACCENT_3: {theme.CA_3};
+                $COLOR_ACCENT_4: {theme.CA_4};
+                $CA1_R: {theme.CA1_R};
+                $CA1_G: {theme.CA1_G};
+                $CA1_B: {theme.CA1_B};
+                $CA2_R: {theme.CA2_R};
+                $CA2_G: {theme.CA2_G};
+                $CA2_B: {theme.CA2_B};
+                $CA3_R: {theme.CA3_R};
+                $CA3_G: {theme.CA3_G};
+                $CA3_B: {theme.CA3_B};
+                $CA4_R: {theme.CA4_R};
+                $CA4_G: {theme.CA4_G};
+                $CA4_B: {theme.CA4_B};
+                $OPACITY_TOOLTIP: 230;
+                $SIZE_BORDER_RADIUS: 4px;
+                $BORDER_1: 1px solid $COLOR_BACKGROUND_1;
+                $BORDER_2: 1px solid $COLOR_BACKGROUND_4;
+                $BORDER_3: 1px solid $COLOR_BACKGROUND_6;
+                $BORDER_SELECTION_3: 1px solid $COLOR_ACCENT_3;
+                $BORDER_SELECTION_2: 1px solid $COLOR_ACCENT_2;
+                $BORDER_SELECTION_1: 1px solid $COLOR_ACCENT_1;
+                $PATH_RESOURCES: '{theme.ICONS}';
+                $RELATIVE_FOLDER: "{self.script_dir}";
+                $BASE_DIR: "{self.script_dir}";
+                """)
+                
+                # Add the other variables section
+                if other_vars_scss:
+                    f.write("\n        // Additional theme variables\n")
+                    f.write(other_vars_scss)
+                
+                f.write("""
+                //===================================================//
+                // END //
+                //====================================================//
+                """)
+        except Exception as e:
+            logError(f"Failed to write SCSS variables file {scss_path}: {e}")
 
     def compileSassTheme(self, progress_callback):
         ## GENERATE NEW ICONS FOR CURRENT THEME
@@ -815,22 +838,30 @@ class QCustomTheme(QObject):
     # apply custom font
     def loadProductSansFont(self):
         """Load and apply product sans font"""
-        font_id = QFontDatabase.addApplicationFont(os.path.join(self.script_dir, "Qss/fonts/Rosario/Rosario-VariableFont_wght.ttf"))
-        # if font loaded
-        if font_id == -1:
-            logDebug("Failed to load Product Sans font")
-            return
+        try:
+            font_id = QFontDatabase.addApplicationFont(os.path.join(self.script_dir, "Qss/fonts/Rosario/Rosario-VariableFont_wght.ttf"))
+            # if font loaded
+            if font_id == -1:
+                logDebug("Failed to load Product Sans font")
+        except Exception as e:
+            logError(f"Error loading font: {e}")
 
     def applyCompiledSass(self, generateIcons: bool = True, paintEntireApp: bool = True):
         if not self.themesRead:
             return
         qcss_folder = os.path.abspath(os.path.join(os.getcwd(), 'Qss/scss'))
         if not os.path.exists(qcss_folder):
-            os.makedirs(qcss_folder)
+            try:
+                os.makedirs(qcss_folder)
+            except Exception as e:
+                logError(f"Failed to create QSS folder {qcss_folder}: {e}")
         
         css_folder = os.path.abspath(os.path.join(os.getcwd(), 'generated-files/css/'))
         if not os.path.exists(css_folder):
-            os.makedirs(css_folder)
+            try:
+                os.makedirs(css_folder)
+            except Exception as e:
+                logError(f"Failed to create CSS folder {css_folder}: {e}")
 
         main_sass_path = os.path.abspath(os.path.join(os.getcwd(), 'Qss/scss/main.scss'))
         styles_sass_path = os.path.abspath(os.path.join(os.getcwd(), 'Qss/scss/_styles.scss'))
@@ -839,52 +870,71 @@ class QCustomTheme(QObject):
         self.createVariables()
 
         if not os.path.exists(main_sass_path):   
-            shutil.copy(os.path.abspath(os.path.join(os.path.dirname(__file__), 'Qss/scss/main.scss')), qcss_folder)  
+            try:
+                shutil.copy(os.path.abspath(os.path.join(os.path.dirname(__file__), 'Qss/scss/main.scss')), qcss_folder)
+            except Exception as e:
+                logError(f"Failed to copy main.scss: {e}")  
 
         if not os.path.exists(styles_sass_path):   
-            shutil.copy(os.path.abspath(os.path.join(os.path.dirname(__file__), 'Qss/scss/_styles.scss')), qcss_folder)  
+            try:
+                shutil.copy(os.path.abspath(os.path.join(os.path.dirname(__file__), 'Qss/scss/_styles.scss')), qcss_folder)
+            except Exception as e:
+                logError(f"Failed to copy _styles.scss: {e}")  
 
         default_scss_path = os.path.abspath(os.path.join(os.getcwd(), 'Qss/scss/defaultStyle.scss'))
         if not os.path.exists(default_scss_path):   
-            f = open(default_scss_path, 'w')
-            print(f"""
-            //===================================================//
-            // FILE AUTO-GENERATED. PUT YOUR DEFAULT STYLES HERE. 
-            // THESE STYLES WILL OVERIDE THE THEME STYLES
-            //====================================================//
-            
-            //===================================================//
-            // END //
-            //====================================================//
-            """, file=f)
+            try:
+                with open(default_scss_path, 'w') as f:
+                    f.write("""
+                    //===================================================//
+                    // FILE AUTO-GENERATED. PUT YOUR DEFAULT STYLES HERE. 
+                    // THESE STYLES WILL OVERIDE THE THEME STYLES
+                    //====================================================//
+                    
+                    //===================================================//
+                    // END //
+                    //====================================================//
+                    """)
+            except Exception as e:
+                logError(f"Failed to create defaultStyle.scss: {e}")
 
-            f.close()
-
-        qtsass.compile_filename(main_sass_path, css_path)
+        try:
+            qtsass.compile_filename(main_sass_path, css_path)
+        except Exception as e:
+            logError(f"Failed to compile SASS: {e}")
         
-        with open(css_path,"r") as css:
-            stylesheet = css.read()
+        try:
+            with open(css_path,"r") as css:
+                stylesheet = css.read()
+        except Exception as e:
+            logError(f"Failed to read compiled CSS {css_path}: {e}")
 
         # Create QApplication instance if it doesn't exist
         app = QApplication.instance() if QApplication.instance() else QApplication([])
         mainWindow = self.getMainWindow()
 
         if not paintEntireApp:
-            mainWindow.setStyleSheet(stylesheet)
-            palette = mainWindow.palette()
+            try:
+                mainWindow.setStyleSheet(stylesheet)
+                palette = mainWindow.palette()
 
-            app.setStyleSheet("")
-            # app.setPalette(app.style().standardPalette())
+                app.setStyleSheet("")
+                # app.setPalette(app.style().standardPalette())
+            except Exception as e:
+                logError(f"Failed to set stylesheet on main window: {e}")
 
         else:
-            mainWindow.setStyleSheet("")
-            mainWindow.setPalette(mainWindow.style().standardPalette())
+            try:
+                mainWindow.setStyleSheet("")
+                mainWindow.setPalette(mainWindow.style().standardPalette())
 
-            app.setStyleSheet(stylesheet)
-            # newly created menus may need re-styling
-            for obj in QApplication.instance().allWidgets():
-                if isinstance(obj, QMenu):
-                    obj.setStyleSheet(stylesheet)
+                app.setStyleSheet(stylesheet)
+                # newly created menus may need re-styling
+                for obj in QApplication.instance().allWidgets():
+                    if isinstance(obj, QMenu):
+                        obj.setStyleSheet(stylesheet)
+            except Exception as e:
+                logError(f"Failed to set application stylesheet: {e}")
         
             # palette = QPalette()
             palette = app.palette()
@@ -903,30 +953,45 @@ class QCustomTheme(QObject):
             
 
             # Set the text color
-            palette.setColor(QPalette.Text, QColor(self.COLOR_TEXT_1))
+            try:
+                palette.setColor(QPalette.Text, QColor(self.COLOR_TEXT_1))
+            except Exception as e:
+                logError(f"Failed to set text color: {e}")
 
             # Set the button color
-            palette.setColor(QPalette.Button, QColor(self.COLOR_BACKGROUND_3))
+            try:
+                palette.setColor(QPalette.Button, QColor(self.COLOR_BACKGROUND_3))
+            except Exception as e:
+                logError(f"Failed to set button color: {e}")
 
             # Set the button text color
-            palette.setColor(QPalette.ButtonText, QColor(self.COLOR_TEXT_1))
+            try:
+                palette.setColor(QPalette.ButtonText, QColor(self.COLOR_TEXT_1))
+            except Exception as e:
+                logError(f"Failed to set button text color: {e}")
 
             # Set the highlight color
-            palette.setColor(QPalette.Highlight, QColor(self.COLOR_BACKGROUND_6))
+            try:
+                palette.setColor(QPalette.Highlight, QColor(self.COLOR_BACKGROUND_6))
+            except Exception as e:
+                logError(f"Failed to set highlight color: {e}")
 
             # Set the highlight text color
-            palette.setColor(QPalette.HighlightedText, QColor(self.COLOR_ACCENT_1))
+            try:
+                palette.setColor(QPalette.HighlightedText, QColor(self.COLOR_ACCENT_1))
+            except Exception as e:
+                logError(f"Failed to set highlight text color: {e}")
 
             # Apply the palette to the main window
-            mainWindow.setPalette(palette)
+            try:
+                mainWindow.setPalette(palette)
+            except Exception as e:
+                logError(f"Failed to set palette on main window: {e}")
 
-            app.setPalette(palette)
-
-        try:
-            mainWindow.update()
-            app.update()
-        except:
-            pass
+            try:
+                app.setPalette(palette)
+            except Exception as e:
+                logError(f"Failed to set palette on app: {e}")
 
         background_color = palette.color(QPalette.Window)
         
@@ -972,18 +1037,24 @@ class QCustomTheme(QObject):
 
     def getAllFolders(self, base_folder):
         all_folders = []
-        for root, dirs, files in os.walk(base_folder):
-            for dir_name in dirs:
-                folder_path = os.path.relpath(os.path.join(root, dir_name), base_folder)
-                all_folders.append(folder_path)
+        try:
+            for root, dirs, files in os.walk(base_folder):
+                for dir_name in dirs:
+                    folder_path = os.path.relpath(os.path.join(root, dir_name), base_folder)
+                    all_folders.append(folder_path)
+        except Exception as e:
+            logError(f"Failed to walk folder {base_folder}: {e}")
         return all_folders
 
     def getAllSvgFiles(self, base_folder):
         svg_files = []
-        for file_name in os.listdir(base_folder):
-            if file_name.lower().endswith('.svg'):
-                file_path = os.path.join(base_folder, file_name)
-                svg_files.append(file_path)
+        try:
+            for file_name in os.listdir(base_folder):
+                if file_name.lower().endswith('.svg'):
+                    file_path = os.path.join(base_folder, file_name)
+                    svg_files.append(file_path)
+        except Exception as e:
+            logError(f"Failed to list SVG files in {base_folder}: {e}")
         return svg_files
     
     def generateIcons(self, progress_callback, iconsColor, suffix, iconsFolder="", createQrc=False, output_width=None, output_height=None):
@@ -1014,8 +1085,9 @@ class QCustomTheme(QObject):
             try:
                 if not os.path.exists(icons_folder_path):
                     os.makedirs(icons_folder_path)
-            except:
-                pass
+                    logInfo(f"Created icons folder: {icons_folder_path}")
+            except Exception as e:
+                logError(f"Failed to create icons folder {icons_folder_path}: {e}")
 
             folder_path = os.path.join(icons_folder_base, folder)
             list_of_files = self.getAllSvgFiles(folder_path)
@@ -1048,7 +1120,7 @@ class QCustomTheme(QObject):
                         new_icon_made = True
 
                 except Exception as e:
-                    print(f"Error processing {file_path}: {e}")
+                    logError(f"Error processing {file_path}: {e}")
 
             qrc_content += f'  </qresource>\n'
 
@@ -1056,7 +1128,11 @@ class QCustomTheme(QObject):
         qrc_file_path = os.path.abspath(os.path.join(qrc_folder_path, f'{suffix}_icons.qrc'))
 
         if (createQrc and new_icon_made) or not os.path.exists(qrc_file_path):
-            createQrcFile(qrc_content, qrc_file_path)
+            try:
+                createQrcFile(qrc_content, qrc_file_path)
+                logInfo(f"Created QRC file: {qrc_file_path}")
+            except Exception as e:
+                logError(f"Failed to create QRC file {qrc_file_path}: {e}")
             # Convert qrc to py 
             # qrc_output_path = qrc_file_path.replace(".qrc", "_rc.py")
             # qrc_output_path = qrc_output_path.replace("Qss/", "") #linux
@@ -1078,7 +1154,10 @@ class QCustomTheme(QObject):
             logInfo(("Current icons color ", settings.value("ICONS-COLOR"), "New icons color", normal_color))
             logInfo("Generating icons for your theme, please wait. This may take long")
             
-            settings.setValue("ICONS-COLOR", normal_color)
+            try:
+                settings.setValue("ICONS-COLOR", normal_color)
+            except Exception as e:
+                logError(f"Failed to write ICONS-COLOR to QSettings: {e}")
             iconsFolderName = normal_color.replace("#", "")
 
             # Create normal icons
@@ -1141,10 +1220,13 @@ class QCustomTheme(QObject):
             
         # then make icons for qt designer
         logInfo(f"Checking icons for qt designer app.")
-        if settings.value("DESIGNER-ICONS-COLOR") is not None:
-            self.generateIcons(progress_callback, settings.value("DESIGNER-ICONS-COLOR"), "", "icons", createQrc=True, output_width=24, output_height=24)
-        else:
-            self.generateIcons(progress_callback, self.designerIconsColor, "", "icons", createQrc=True, output_width=24, output_height=24)
+        try:
+            if settings.value("DESIGNER-ICONS-COLOR") is not None:
+                self.generateIcons(progress_callback, settings.value("DESIGNER-ICONS-COLOR"), "", "icons", createQrc=True, output_width=24, output_height=24)
+            else:
+                self.generateIcons(progress_callback, self.designerIconsColor, "", "icons", createQrc=True, output_width=24, output_height=24)
+        except Exception as e:
+            logError(f"Failed to generate designer icons: {e}")
 
     # Method to create a new theme dynamically
     def createNewTheme(self, name, bg_color, txt_color, accent_color, icons_color, createNewIcons=True, defaultTheme=False, other_variables={}, predefined=False):

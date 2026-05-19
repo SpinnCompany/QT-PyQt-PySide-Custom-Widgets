@@ -3,6 +3,7 @@ from qtpy.QtWidgets import QWidget, QStyleOption, QStyle, QSizePolicy, QGraphics
 from qtpy.QtGui import QPainter, QPaintEvent
 
 from Custom_Widgets.QCustomSidebar import QCustomSidebar 
+from Custom_Widgets.Utils import is_in_designer
 
 import os
 
@@ -37,13 +38,16 @@ class QCustomSidebarContainer(QWidget):
         self.animation = QPropertyAnimation(self.opacityEffect, b"opacity")
         self.animation.setEasingCurve(QEasingCurve.InOutQuad)
         self.animation.finished.connect(self.onAnimationFinished)
-        
-        # Size policy
-        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
 
     def startShowAnimation(self):
         """Animate opacity from 0 to 1 and then show the widget."""
+        # Skip in designer mode
+        if is_in_designer(self):
+            self.setVisible(True)
+            return
+            
         self.setVisible(True)
+        self.updateGeometry()
         self.animation.setStartValue(0.0)
         self.animation.setEndValue(1.0)
         self.animation.setDuration(self._animationDuration)
@@ -51,50 +55,104 @@ class QCustomSidebarContainer(QWidget):
 
     def startHideAnimation(self):
         """Animate opacity from 1 to 0 and then hide the widget."""
+        # Skip in designer mode
+        if is_in_designer(self):
+            self.setVisible(False)
+            return
+            
         self.animation.setStartValue(1.0)
         self.animation.setEndValue(0.0)
         self.animation.setDuration(self._animationDuration)
         self.animation.start()
 
     def onAnimationFinished(self):
-        """Handle the visibility of the widget after the animation finishes."""
         if self.animation.endValue() == 0.0:
             self.setVisible(False)
         else:
-            # Ensure widget is properly painted when shown
-            self.update()
-            
+            self.setVisible(True)
+            self._adjustToContent()
+
         self.visibilityChanged.emit(self.isVisible())
+
+    def _adjustToContent(self):
+        if not self.layout():
+            return
+        
+        # Skip in designer mode to prevent crashes
+        if is_in_designer(self):
+            return
+
+        try:
+            size = self.layout().sizeHint()
+            # Enforce minimum to prevent squeezing
+            self.setMinimumSize(size)
+            # Let Qt compute final size properly
+            self.adjustSize()
+            
+            # Force parent layout refresh with safety checks
+            if self.parentWidget():
+                parent_layout = self.parentWidget().layout()
+                if parent_layout is not None:
+                    try:
+                        parent_layout.activate()
+                    except (RuntimeError, AttributeError):
+                        # Layout might be deleted, just ignore
+                        pass
+        except (RuntimeError, AttributeError):
+            # Layout or parent might be deleted, just ignore
+            pass
+
+    def minimumSizeHint(self):
+        if self.layout():
+            return self.layout().minimumSize()
+        return super().minimumSizeHint()
 
     def hideContainer(self):
         """Start the hide animation if hideOnCollapse is True."""
+        # Skip in designer mode
+        if is_in_designer(self):
+            return
+            
         if self._hideOnCollapse:
             self.startHideAnimation()
         elif self._showOnCollapse:
-            # If showOnCollapse is True, we should show instead of hide
             self.startShowAnimation()
 
     def showContainer(self):
         """Start the show animation if hideOnCollapse is True."""
+        # Skip in designer mode
+        if is_in_designer(self):
+            return
+            
         if self._hideOnCollapse:
             self.startShowAnimation()
         elif self._showOnCollapse:
-            # If showOnCollapse is True, we should hide instead of show
             self.startHideAnimation()
 
     def hideContainerForce(self):
         """Force hide the container regardless of hideOnCollapse/showOnCollapse settings."""
+        if is_in_designer(self):
+            self.setVisible(False)
+            return
         self.startHideAnimation()
 
     def showContainerForce(self):
         """Force show the container regardless of hideOnCollapse/showOnCollapse settings."""
+        if is_in_designer(self):
+            self.setVisible(True)
+            return
         self.startShowAnimation()
 
     def showEvent(self, e):
         """Handle show event."""
         super().showEvent(e)
-        self.connectToParent()
         
+        # Skip designer mode to prevent crashes
+        if is_in_designer(self):
+            return
+            
+        self.connectToParent()
+        self._adjustToContent()
         self.update()
 
     @Property(bool)
@@ -105,7 +163,6 @@ class QCustomSidebarContainer(QWidget):
     @hideOnCollapse.setter
     def hideOnCollapse(self, hide):
         self._hideOnCollapse = hide
-        # If hideOnCollapse is set to True, ensure showOnCollapse is False
         if hide:
             self._showOnCollapse = False
 
@@ -117,7 +174,6 @@ class QCustomSidebarContainer(QWidget):
     @showOnCollapse.setter
     def showOnCollapse(self, show):
         self._showOnCollapse = show
-        # If showOnCollapse is set to True, ensure hideOnCollapse is False
         if show:
             self._hideOnCollapse = False
 
@@ -133,6 +189,10 @@ class QCustomSidebarContainer(QWidget):
 
     def connectToParent(self):
         """Connect to the closest QCustomSidebar parent to listen for collapse/expand signals."""
+        # Skip in designer mode
+        if is_in_designer(self):
+            return
+            
         # Only connect once
         if self._connected:
             return
@@ -142,31 +202,33 @@ class QCustomSidebarContainer(QWidget):
             self.parentSidebar = self.parentSidebar.parent()
 
         if self.parentSidebar:
-            # Connect to signals emitted on collapse/expand
-            self.parentSidebar.onCollapsed.connect(self.hideContainer)
-            self.parentSidebar.onExpanded.connect(self.showContainer)
+            try:
+                # Connect to signals emitted on collapse/expand
+                self.parentSidebar.onCollapsed.connect(self.hideContainer)
+                self.parentSidebar.onExpanded.connect(self.showContainer)
 
-            self.parentSidebar.onCollapsing.connect(self.hideContainer)
-            self.parentSidebar.onExpanding.connect(self.showContainer)
+                self.parentSidebar.onCollapsing.connect(self.hideContainer)
+                self.parentSidebar.onExpanding.connect(self.showContainer)
 
-            # Use parent sidebar's animation duration
-            self._animationDuration = self.parentSidebar.animationDuration
+                # Use parent sidebar's animation duration
+                self._animationDuration = self.parentSidebar.animationDuration
 
-            # Set initial visibility based on sidebar state
-            if self.parentSidebar.isCollapsed():
-                # When sidebar is collapsed initially
-                if self._hideOnCollapse:
-                    self.startHideAnimation()
-                elif self._showOnCollapse:
-                    self.startShowAnimation()
-            else:
-                # When sidebar is expanded initially
-                if self._hideOnCollapse:
-                    self.startShowAnimation()
-                elif self._showOnCollapse:
-                    self.startHideAnimation()
-            
-            self._connected = True  # Mark as connected
+                # Set initial visibility based on sidebar state
+                if self.parentSidebar.isCollapsed():
+                    if self._hideOnCollapse:
+                        self.startHideAnimation()
+                    elif self._showOnCollapse:
+                        self.startShowAnimation()
+                else:
+                    if self._hideOnCollapse:
+                        self.startShowAnimation()
+                    elif self._showOnCollapse:
+                        self.startHideAnimation()
+                
+                self._connected = True
+            except (RuntimeError, AttributeError):
+                # Parent sidebar might be partially destroyed
+                pass
 
     def paintEvent(self, event: QPaintEvent):
         """Handle paint event."""

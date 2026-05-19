@@ -26,11 +26,8 @@ class QCustomSidebarButton(QPushButton):
     def __init__(self, parent=None, *args):
         super().__init__(parent)
 
-        # Install event filter for the whole application
-        app = QCoreApplication.instance()
-        if app is not None:
-            app.installEventFilter(self)
-        elif self.parent():
+        # Only install event filter on the parent, not the whole app
+        if self.parent():
             self.parent().installEventFilter(self)
 
         # Store original text and icon for resetting
@@ -42,6 +39,7 @@ class QCustomSidebarButton(QPushButton):
         self._textPrefixSpaces = 5
 
         self._fadingOut = False
+        self._processingEvent = False  # Add recursion guard
 
         self._isHovered = False
         self._floatingWidget = None
@@ -432,27 +430,37 @@ class QCustomSidebarButton(QPushButton):
         super().moveEvent(event)
 
     def eventFilter(self, obj, event: QEvent):
-        if event.type() in (QEvent.MouseButtonPress, QEvent.MouseButtonRelease, QEvent.MouseButtonDblClick, QEvent.MouseMove):
-            # Handle the mouse event here
-            if hasattr(self, "_floatingWidget") and self._floatingWidget and self._floatingWidget.isVisible():
-                mouse_pos = event.globalPos()
-                
-                # Check if mouse is over original button
-                if self.rect().contains(self.mapFromGlobal(mouse_pos)):
-                    self._fadeOutTimer.stop()  # Cancel fade out if mouse is over original button
-                    return super().eventFilter(obj, event)
+        # Prevent recursion by checking if we're already processing an event
+        if hasattr(self, '_processingEvent') and self._processingEvent:
+            return super().eventFilter(obj, event)
+        
+        # Set processing flag
+        self._processingEvent = True
+        
+        try:
+            if event.type() in (QEvent.MouseButtonPress, QEvent.MouseButtonRelease, QEvent.MouseButtonDblClick, QEvent.MouseMove):
+                # Handle the mouse event here
+                if hasattr(self, "_floatingWidget") and self._floatingWidget and self._floatingWidget.isVisible():
+                    mouse_pos = event.globalPos()
                     
-                # Check if mouse is over floating button
-                if self._floatingWidget:
-                    floating_global_rect = self._floatingWidget.geometry()
-                    floating_global_rect.moveTopLeft(self._floatingWidget.mapToGlobal(QPoint(0, 0)))
-                    
-                    if floating_global_rect.contains(mouse_pos):
-                        self._fadeOutTimer.stop()  # Cancel fade out if mouse is over floating button
+                    # Check if mouse is over original button
+                    if self.rect().contains(self.mapFromGlobal(mouse_pos)):
+                        self._fadeOutTimer.stop()  # Cancel fade out if mouse is over original button
                         return super().eventFilter(obj, event)
-                
-                # Mouse is not over either widget, start fade out timer
-                if not self._fadeOutTimer.isActive():
-                    self._fadeOutTimer.start(300)
-
+                        
+                    # Check if mouse is over floating button
+                    if self._floatingWidget:
+                        floating_global_rect = self._floatingWidget.geometry()
+                        floating_global_rect.moveTopLeft(self._floatingWidget.mapToGlobal(QPoint(0, 0)))
+                        
+                        if floating_global_rect.contains(mouse_pos):
+                            self._fadeOutTimer.stop()  # Cancel fade out if mouse is over floating button
+                            return super().eventFilter(obj, event)
+                    
+                    # Mouse is not over either widget, start fade out timer
+                    if not self._fadeOutTimer.isActive():
+                        self._fadeOutTimer.start(300)
+        finally:
+            self._processingEvent = False
+        
         return super().eventFilter(obj, event)
