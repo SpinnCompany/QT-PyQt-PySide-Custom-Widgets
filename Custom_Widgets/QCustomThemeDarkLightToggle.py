@@ -37,7 +37,6 @@ class QCustomThemeDarkLightToggle(QPushButton):
         super(QCustomThemeDarkLightToggle, self).__init__(parent)
 
         # Initialize button text and theme
-        self._label_text = "Dark" if QCustomTheme.isAppDarkThemed() else "Light"
         self._update_label_text = True
         self._update_button_icon = True
 
@@ -51,6 +50,7 @@ class QCustomThemeDarkLightToggle(QPushButton):
         self.clicked.connect(self.toggle_theme)
 
         self.themeEngine = QCustomTheme() 
+        self._label_text = "Dark" if self.themeEngine.isAppDarkThemed() else "Light"
 
     def showEvent(self, event):
         super().showEvent(event)
@@ -62,7 +62,7 @@ class QCustomThemeDarkLightToggle(QPushButton):
     def toggle_theme(self):   
         self.themeEngine = QCustomTheme()      
         # Toggle theme based on current state
-        new_theme = "Light" if QCustomTheme.isAppDarkThemed() else "Dark"
+        new_theme = "Light" if self.themeEngine.isAppDarkThemed() else "Dark"
         self.themeEngine.theme = new_theme  # This updates the theme in QCustomTheme
 
         # Update button icon and text based on the new theme
@@ -80,7 +80,7 @@ class QCustomThemeDarkLightToggle(QPushButton):
             super().setText("")
             return
         # Update text based on the current theme
-        if QCustomTheme.isAppDarkThemed():
+        if self.themeEngine.isAppDarkThemed():
             super().setText("Light")
         else:
             super().setText("Dark")
@@ -90,7 +90,7 @@ class QCustomThemeDarkLightToggle(QPushButton):
         if not self._update_button_icon:
             return
         
-        if QCustomTheme.isAppDarkThemed():
+        if self.themeEngine.isAppDarkThemed():
             if self._light_theme_icon is not None:
                 self.setIcon(self._light_theme_icon)  # Light icon for dark theme
         else:

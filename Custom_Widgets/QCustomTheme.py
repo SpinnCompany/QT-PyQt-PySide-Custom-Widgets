@@ -64,7 +64,7 @@ class QCustomTheme(QObject):
             self.checkForMissingicons = False
 
             self.script_dir = os.path.dirname(os.path.abspath(sys.argv[0])).replace("\\", "/") + "/"
-            print(self.script_dir)
+            
             if is_in_designer(self):
                 self.script_dir = os.getcwd().replace("\\", "/") + "/"
                 print(self.script_dir, "in designer")
@@ -88,6 +88,30 @@ class QCustomTheme(QObject):
             self.themesRead = False
 
             self._isThemeDark = False 
+            # Theme indicator variables 
+            self.THEME_MODE = ""      # Will be "DARK" or "LIGHT"
+            self.THEME_EMOJI = ""     # Will be "🌙" or "☀️"
+            self.THEME_ICON = ""      # Will be "moon" or "sun"
+            self.THEME_STATUS = ""    # Will be "Dark Mode Active" or "Light Mode Active"
+
+    def updateThemeIndicators(self):
+        """Update theme indicator variables based on current theme"""
+        is_dark = self.isAppDarkThemed()
+        
+        if is_dark:
+            self.THEME_MODE = "DARK"
+            self.THEME_EMOJI = "🌙"
+            self.THEME_ICON = "moon"
+            self.THEME_STATUS = "Dark Mode Active"
+            self._isThemeDark = True
+        else:
+            self.THEME_MODE = "LIGHT"
+            self.THEME_EMOJI = "☀️"
+            self.THEME_ICON = "sun"
+            self.THEME_STATUS = "Light Mode Active"
+            self._isThemeDark = False
+        
+        return self.THEME_MODE
 
     def initializeThemeVars(self):
         """Initialize all theme variables"""
@@ -216,16 +240,15 @@ class QCustomTheme(QObject):
         # Emit the signal from the instance
         self.onThemeChanged.emit()
 
-    @staticmethod
-    def isAppDarkThemed():
+    def isAppDarkThemed(self):
         app = QApplication.instance()
-        if app is None:
-            raise RuntimeError("QApplication instance is required.")
+        # if app is None:
+        #     raise RuntimeError("QApplication instance is required.")
         
         palette = app.palette()
         
         # Extract the background color of the application palette
-        background_color = palette.color(QPalette.Window)
+        background_color = QColor(self.COLOR_BACKGROUND_1)
         
         # Calculate luminance using the YIQ color space formula
         luminance = (0.299 * background_color.red() + 0.587 * background_color.green() + 0.114 * background_color.blue()) / 255
@@ -584,12 +607,14 @@ class QCustomTheme(QObject):
         except Exception as e:
             logError(f"Failed to write ICONS-COLOR to QSettings: {e}")
         
-        print(f"Current theme info: {currentThemeInfo}")
+        print(f"Current theme info: {theme.name} {currentThemeInfo}")
         
         return currentThemeInfo
         
     def createVariables(self):
         theme = self.currentTheme
+        
+        # ============ EXISTING COLOR CALCULATIONS (PRESERVED) ============
         if self.isColorDarkOrLight(theme.bg_color) == "light":
             theme.BG_1 = theme.bg_color
             theme.BG_2 = self.darkenColor(theme.bg_color, 0.05)
@@ -597,7 +622,6 @@ class QCustomTheme(QObject):
             theme.BG_4 = self.darkenColor(theme.bg_color, 0.15)
             theme.BG_5 = self.darkenColor(theme.bg_color, 0.2)
             theme.BG_6 = self.darkenColor(theme.bg_color, 0.25)
-
         else:
             theme.BG_1 = theme.bg_color
             theme.BG_2 = self.adjustLightness(theme.bg_color, 0.90)
@@ -634,7 +658,7 @@ class QCustomTheme(QObject):
             folder = theme.accent_color.replace("#", "")
         
         QDir.addSearchPath('theme-icons', os.path.join(os.getcwd(), 'Qss/icons/'))
-        theme.ICONS = "theme-icons:"+folder+"/"
+        theme.ICONS = "theme-icons:" + folder + "/"
 
         self.COLOR_BACKGROUND_1 = theme.BG_1
         self.COLOR_BACKGROUND_2 = theme.BG_2
@@ -653,6 +677,39 @@ class QCustomTheme(QObject):
         self.COLOR_ACCENT_3 = theme.CA_3
         self.COLOR_ACCENT_4 = theme.CA_4
 
+        # ============ MODERN CSS VARIABLES (DERIVED FROM YOUR CALCULATIONS) ============
+        self.COLOR_PRIMARY = theme.CA_1
+        self.COLOR_PRIMARY_DARK = theme.CA_2
+        self.COLOR_PRIMARY_LIGHT = self.COLOR_ACCENT_2
+        self.COLOR_ON_PRIMARY = theme.CT_1
+        
+        self.COLOR_SURFACE = theme.BG_1
+        self.COLOR_SURFACE_VARIANT = theme.BG_3
+        self.COLOR_ON_SURFACE = theme.CT_1
+        
+        self.COLOR_BORDER = theme.BG_4
+        self.COLOR_BORDER_FOCUS = theme.CA_1
+
+        # Spacing variables
+        self.SPACING_XS = "4px"
+        self.SPACING_SM = "8px"
+        self.SPACING_MD = "12px"
+        self.SPACING_LG = "16px"
+        self.SPACING_XL = "20px"
+        self.SPACING_XXL = "24px"
+        self.SPACING_3XL = "32px"
+        
+        # Border radius
+        self.BORDER_RADIUS_NONE = "0px"
+        self.BORDER_RADIUS_SM = "4px"
+        self.BORDER_RADIUS_MD = "6px"
+        self.BORDER_RADIUS_LG = "8px"
+        self.BORDER_RADIUS_XL = "12px"
+        self.BORDER_RADIUS_2XL = "16px"
+        self.BORDER_RADIUS_3XL = "24px"
+        self.BORDER_RADIUS_FULL = "9999px"
+
+        # ============ RGB CONVERSIONS (PRESERVED) ============
         bg_rgb_1 = self.hexToRgb(theme.BG_1)
         bg_rgb_2 = self.hexToRgb(theme.BG_2)
         bg_rgb_3 = self.hexToRgb(theme.BG_3)
@@ -687,16 +744,16 @@ class QCustomTheme(QObject):
         theme.CA3_R, theme.CA3_G, theme.CA3_B = accent_rgb_3[0], accent_rgb_3[1], accent_rgb_3[2]
         theme.CA4_R, theme.CA4_G, theme.CA4_B = accent_rgb_4[0], accent_rgb_4[1], accent_rgb_4[2]
 
-
         self.PATH_RESOURCES = theme.ICONS
         self.RELATIVE_FOLDER = self.script_dir
         self.BASE_DIR = self.script_dir
 
-         # Add other variables from the theme
+        self.updateThemeIndicators()
+
+        # ============ ADD OTHER VARIABLES FROM THEME ============
         other_vars_scss = ""
         if hasattr(theme, 'other_variables') and theme.other_variables:
             for var_name, var_value in theme.other_variables.items():
-                # Convert to SCSS variable format
                 other_vars_scss += f"${var_name}: {var_value};\n"
 
         scss_folder = os.path.abspath(os.path.join(os.getcwd(), 'Qss/scss'))
@@ -710,89 +767,142 @@ class QCustomTheme(QObject):
         scss_path = os.path.abspath(os.path.join(scss_folder, '_variables.scss'))
         try:
             with open(scss_path, 'w') as f:
-                f.write(f"""
-                //===================================================//
-                // FILE AUTO-GENERATED, ANY CHANGES MADE WILL BE LOST //
-                //====================================================//
-                $COLOR_BACKGROUND_1: {theme.BG_1};
-                $COLOR_BACKGROUND_2: {theme.BG_2};
-                $COLOR_BACKGROUND_3: {theme.BG_3};
-                $COLOR_BACKGROUND_4: {theme.BG_4};
-                $COLOR_BACKGROUND_5: {theme.BG_5};
-                $COLOR_BACKGROUND_6: {theme.BG_6};
-                $CB1_R: {theme.CB1_R};
-                $CB1_G: {theme.CB1_G};
-                $CB1_B: {theme.CB1_B};
-                $CB2_R: {theme.CB2_R};
-                $CB2_G: {theme.CB2_G};
-                $CB2_B: {theme.CB2_B};
-                $CB3_R: {theme.CB3_R};
-                $CB3_G: {theme.CB3_G};
-                $CB3_B: {theme.CB3_B};
-                $CB4_R: {theme.CB4_R};
-                $CB4_G: {theme.CB4_G};
-                $CB4_B: {theme.CB4_B};
-                $CB5_R: {theme.CB5_R};
-                $CB5_G: {theme.CB5_G};
-                $CB5_B: {theme.CB5_B};
-                $CB6_R: {theme.CB6_R};
-                $CB6_G: {theme.CB6_G};
-                $CB6_B: {theme.CB6_B};
-                $COLOR_TEXT_1: {theme.CT_1};
-                $COLOR_TEXT_2: {theme.CT_2};
-                $COLOR_TEXT_3: {theme.CT_3};
-                $COLOR_TEXT_4: {theme.CT_4};
-                $CT1_R: {theme.CT1_R};
-                $CT1_G: {theme.CT1_G};
-                $CT1_B: {theme.CT1_B};
-                $CT2_R: {theme.CT2_R};
-                $CT2_G: {theme.CT2_G};
-                $CT2_B: {theme.CT2_B};
-                $CT3_R: {theme.CT3_R};
-                $CT3_G: {theme.CT3_G};
-                $CT3_B: {theme.CT3_B};
-                $CT4_R: {theme.CT4_R};
-                $CT4_G: {theme.CT4_G};
-                $CT4_B: {theme.CT4_B};
-                $COLOR_ACCENT_1: {theme.CA_1};
-                $COLOR_ACCENT_2: {theme.CA_2};
-                $COLOR_ACCENT_3: {theme.CA_3};
-                $COLOR_ACCENT_4: {theme.CA_4};
-                $CA1_R: {theme.CA1_R};
-                $CA1_G: {theme.CA1_G};
-                $CA1_B: {theme.CA1_B};
-                $CA2_R: {theme.CA2_R};
-                $CA2_G: {theme.CA2_G};
-                $CA2_B: {theme.CA2_B};
-                $CA3_R: {theme.CA3_R};
-                $CA3_G: {theme.CA3_G};
-                $CA3_B: {theme.CA3_B};
-                $CA4_R: {theme.CA4_R};
-                $CA4_G: {theme.CA4_G};
-                $CA4_B: {theme.CA4_B};
-                $OPACITY_TOOLTIP: 230;
-                $SIZE_BORDER_RADIUS: 4px;
-                $BORDER_1: 1px solid $COLOR_BACKGROUND_1;
-                $BORDER_2: 1px solid $COLOR_BACKGROUND_4;
-                $BORDER_3: 1px solid $COLOR_BACKGROUND_6;
-                $BORDER_SELECTION_3: 1px solid $COLOR_ACCENT_3;
-                $BORDER_SELECTION_2: 1px solid $COLOR_ACCENT_2;
-                $BORDER_SELECTION_1: 1px solid $COLOR_ACCENT_1;
-                $PATH_RESOURCES: '{theme.ICONS}';
-                $RELATIVE_FOLDER: "{self.script_dir}";
-                $BASE_DIR: "{self.script_dir}";
-                """)
+                f.write(f"""//===================================================//
+    // FILE AUTO-GENERATED, ANY CHANGES MADE WILL BE LOST //
+    //====================================================//
+
+    // Background Colors
+    $COLOR_BACKGROUND_1: {theme.BG_1};
+    $COLOR_BACKGROUND_2: {theme.BG_2};
+    $COLOR_BACKGROUND_3: {theme.BG_3};
+    $COLOR_BACKGROUND_4: {theme.BG_4};
+    $COLOR_BACKGROUND_5: {theme.BG_5};
+    $COLOR_BACKGROUND_6: {theme.BG_6};
+
+    // Background RGB Values
+    $CB1_R: {theme.CB1_R};
+    $CB1_G: {theme.CB1_G};
+    $CB1_B: {theme.CB1_B};
+    $CB2_R: {theme.CB2_R};
+    $CB2_G: {theme.CB2_G};
+    $CB2_B: {theme.CB2_B};
+    $CB3_R: {theme.CB3_R};
+    $CB3_G: {theme.CB3_G};
+    $CB3_B: {theme.CB3_B};
+    $CB4_R: {theme.CB4_R};
+    $CB4_G: {theme.CB4_G};
+    $CB4_B: {theme.CB4_B};
+    $CB5_R: {theme.CB5_R};
+    $CB5_G: {theme.CB5_G};
+    $CB5_B: {theme.CB5_B};
+    $CB6_R: {theme.CB6_R};
+    $CB6_G: {theme.CB6_G};
+    $CB6_B: {theme.CB6_B};
+
+    // Text Colors
+    $COLOR_TEXT_1: {theme.CT_1};
+    $COLOR_TEXT_2: {theme.CT_2};
+    $COLOR_TEXT_3: {theme.CT_3};
+    $COLOR_TEXT_4: {theme.CT_4};
+
+    // Text RGB Values
+    $CT1_R: {theme.CT1_R};
+    $CT1_G: {theme.CT1_G};
+    $CT1_B: {theme.CT1_B};
+    $CT2_R: {theme.CT2_R};
+    $CT2_G: {theme.CT2_G};
+    $CT2_B: {theme.CT2_B};
+    $CT3_R: {theme.CT3_R};
+    $CT3_G: {theme.CT3_G};
+    $CT3_B: {theme.CT3_B};
+    $CT4_R: {theme.CT4_R};
+    $CT4_G: {theme.CT4_G};
+    $CT4_B: {theme.CT4_B};
+
+    // Accent Colors
+    $COLOR_ACCENT_1: {theme.CA_1};
+    $COLOR_ACCENT_2: {theme.CA_2};
+    $COLOR_ACCENT_3: {theme.CA_3};
+    $COLOR_ACCENT_4: {theme.CA_4};
+
+    // Accent RGB Values
+    $CA1_R: {theme.CA1_R};
+    $CA1_G: {theme.CA1_G};
+    $CA1_B: {theme.CA1_B};
+    $CA2_R: {theme.CA2_R};
+    $CA2_G: {theme.CA2_G};
+    $CA2_B: {theme.CA2_B};
+    $CA3_R: {theme.CA3_R};
+    $CA3_G: {theme.CA3_G};
+    $CA3_B: {theme.CA3_B};
+    $CA4_R: {theme.CA4_R};
+    $CA4_G: {theme.CA4_G};
+    $CA4_B: {theme.CA4_B};
+
+    // Modern CSS Variables (Derived)
+    $COLOR_PRIMARY: {self.COLOR_PRIMARY};
+    $COLOR_PRIMARY_DARK: {self.COLOR_PRIMARY_DARK};
+    $COLOR_PRIMARY_LIGHT: {self.COLOR_PRIMARY_LIGHT};
+    $COLOR_ON_PRIMARY: {self.COLOR_ON_PRIMARY};
+    $COLOR_SURFACE: {self.COLOR_SURFACE};
+    $COLOR_SURFACE_VARIANT: {self.COLOR_SURFACE_VARIANT};
+    $COLOR_ON_SURFACE: {self.COLOR_ON_SURFACE};
+    $COLOR_BORDER: {self.COLOR_BORDER};
+    $COLOR_BORDER_FOCUS: {self.COLOR_BORDER_FOCUS};
+
+    // Theme Mode Variables
+    $THEME_MODE: "{self.THEME_MODE}";
+    $THEME_EMOJI: "{self.THEME_EMOJI}";
+    $THEME_ICON: "{self.THEME_ICON}";
+    $THEME_STATUS: "{self.THEME_STATUS}";
+    $IS_THEME_DARK: {str(self._isThemeDark).lower()};
+
+    // Spacing
+    $SPACING_XS: {self.SPACING_XS};
+    $SPACING_SM: {self.SPACING_SM};
+    $SPACING_MD: {self.SPACING_MD};
+    $SPACING_LG: {self.SPACING_LG};
+    $SPACING_XL: {self.SPACING_XL};
+    $SPACING_XXL: {self.SPACING_XXL};
+    $SPACING_3XL: {self.SPACING_3XL};
+
+    // Border Radius
+    $BORDER_RADIUS_NONE: {self.BORDER_RADIUS_NONE};
+    $BORDER_RADIUS_SM: {self.BORDER_RADIUS_SM};
+    $BORDER_RADIUS_MD: {self.BORDER_RADIUS_MD};
+    $BORDER_RADIUS_LG: {self.BORDER_RADIUS_LG};
+    $BORDER_RADIUS_XL: {self.BORDER_RADIUS_XL};
+    $BORDER_RADIUS_2XL: {self.BORDER_RADIUS_2XL};
+    $BORDER_RADIUS_3XL: {self.BORDER_RADIUS_3XL};
+    $BORDER_RADIUS_FULL: {self.BORDER_RADIUS_FULL};
+
+    // Legacy Variables (Keep for backward compatibility)
+    $OPACITY_TOOLTIP: 230;
+    $SIZE_BORDER_RADIUS: {self.SPACING_SM};
+    $BORDER_1: 1px solid $COLOR_BACKGROUND_1;
+    $BORDER_2: 1px solid $COLOR_BACKGROUND_4;
+    $BORDER_3: 1px solid $COLOR_BACKGROUND_6;
+    $BORDER_SELECTION_3: 1px solid $COLOR_ACCENT_3;
+    $BORDER_SELECTION_2: 1px solid $COLOR_ACCENT_2;
+    $BORDER_SELECTION_1: 1px solid $COLOR_ACCENT_1;
+
+    // Paths
+    $PATH_RESOURCES: '{theme.ICONS}';
+    $RELATIVE_FOLDER: "{self.script_dir}";
+    $BASE_DIR: "{self.script_dir}";
+
+    """)
                 
                 # Add the other variables section
                 if other_vars_scss:
-                    f.write("\n        // Additional theme variables\n")
+                    f.write("\n// Additional theme variables\n")
                     f.write(other_vars_scss)
                 
                 f.write("""
-                //===================================================//
-                // END //
-                //====================================================//
-                """)
+    //===================================================//
+    // END //
+    //====================================================//
+    """)
         except Exception as e:
             logError(f"Failed to write SCSS variables file {scss_path}: {e}")
 
@@ -867,8 +977,6 @@ class QCustomTheme(QObject):
         styles_sass_path = os.path.abspath(os.path.join(os.getcwd(), 'Qss/scss/_styles.scss'))
         css_path = os.path.abspath(os.path.join(os.getcwd(), 'generated-files/css/main.css'))
 
-        self.createVariables()
-
         if not os.path.exists(main_sass_path):   
             try:
                 shutil.copy(os.path.abspath(os.path.join(os.path.dirname(__file__), 'Qss/scss/main.scss')), qcss_folder)
@@ -898,6 +1006,79 @@ class QCustomTheme(QObject):
             except Exception as e:
                 logError(f"Failed to create defaultStyle.scss: {e}")
 
+        # Create QApplication instance if it doesn't exist
+        app = QApplication.instance() if QApplication.instance() else QApplication([])
+        mainWindow = self.getMainWindow()
+        
+        # palette = QPalette()
+        palette = app.palette()
+
+        # Set the background color
+        try:
+            # pyside2
+            palette.setColor(QPalette.Background, QColor(self.COLOR_BACKGROUND_1))
+        except AttributeError as e:
+            pass
+        try:
+            # pyside6
+            palette.setColor(QPalette.Window, QColor(self.COLOR_BACKGROUND_1))
+        except AttributeError as e:
+            pass
+        
+
+        # Set the text color
+        try:
+            palette.setColor(QPalette.Text, QColor(self.COLOR_TEXT_1))
+        except Exception as e:
+            logError(f"Failed to set text color: {e}")
+
+        # Set the button color
+        try:
+            palette.setColor(QPalette.Button, QColor(self.COLOR_BACKGROUND_3))
+        except Exception as e:
+            logError(f"Failed to set button color: {e}")
+
+        # Set the button text color
+        try:
+            palette.setColor(QPalette.ButtonText, QColor(self.COLOR_TEXT_1))
+        except Exception as e:
+            logError(f"Failed to set button text color: {e}")
+
+        # Set the highlight color
+        try:
+            palette.setColor(QPalette.Highlight, QColor(self.COLOR_BACKGROUND_6))
+        except Exception as e:
+            logError(f"Failed to set highlight color: {e}")
+
+        # Set the highlight text color
+        try:
+            palette.setColor(QPalette.HighlightedText, QColor(self.COLOR_ACCENT_1))
+        except Exception as e:
+            logError(f"Failed to set highlight text color: {e}")
+
+        # Apply the palette to the main window
+        try:
+            mainWindow.setPalette(palette)
+        except Exception as e:
+            logError(f"Failed to set palette on main window: {e}")
+
+        try:
+            app.setPalette(palette)
+        except Exception as e:
+            logError(f"Failed to set palette on app: {e}")
+        
+        self.createVariables()
+
+        background_color = QColor(self.COLOR_BACKGROUND_1)
+
+        # Calculate luminance using the YIQ color space formula
+        luminance = (0.299 * background_color.red() + 0.587 * background_color.green() + 0.114 * background_color.blue()) / 255
+        
+        if luminance < 0.5:
+            self._isThemeDark = True  # Dark theme
+        else:
+            self._isThemeDark = False  # Light theme
+
         try:
             qtsass.compile_filename(main_sass_path, css_path)
         except Exception as e:
@@ -909,101 +1090,18 @@ class QCustomTheme(QObject):
         except Exception as e:
             logError(f"Failed to read compiled CSS {css_path}: {e}")
 
-        # Create QApplication instance if it doesn't exist
-        app = QApplication.instance() if QApplication.instance() else QApplication([])
-        mainWindow = self.getMainWindow()
+        try:
+            mainWindow.setStyleSheet("")
+            mainWindow.setPalette(mainWindow.style().standardPalette())
 
-        if not paintEntireApp:
-            try:
-                mainWindow.setStyleSheet(stylesheet)
-                palette = mainWindow.palette()
+            app.setStyleSheet(stylesheet)
+            # newly created menus may need re-styling
+            for obj in QApplication.instance().allWidgets():
+                if isinstance(obj, QMenu):
+                    obj.setStyleSheet(stylesheet)
+        except Exception as e:
+            logError(f"Failed to set application stylesheet: {e}")
 
-                app.setStyleSheet("")
-                # app.setPalette(app.style().standardPalette())
-            except Exception as e:
-                logError(f"Failed to set stylesheet on main window: {e}")
-
-        else:
-            try:
-                mainWindow.setStyleSheet("")
-                mainWindow.setPalette(mainWindow.style().standardPalette())
-
-                app.setStyleSheet(stylesheet)
-                # newly created menus may need re-styling
-                for obj in QApplication.instance().allWidgets():
-                    if isinstance(obj, QMenu):
-                        obj.setStyleSheet(stylesheet)
-            except Exception as e:
-                logError(f"Failed to set application stylesheet: {e}")
-        
-            # palette = QPalette()
-            palette = app.palette()
-
-            # Set the background color
-            try:
-                # pyside2
-                palette.setColor(QPalette.Background, QColor(self.COLOR_BACKGROUND_1))
-            except AttributeError as e:
-                pass
-            try:
-                # pyside6
-                palette.setColor(QPalette.Window, QColor(self.COLOR_BACKGROUND_1))
-            except AttributeError as e:
-                pass
-            
-
-            # Set the text color
-            try:
-                palette.setColor(QPalette.Text, QColor(self.COLOR_TEXT_1))
-            except Exception as e:
-                logError(f"Failed to set text color: {e}")
-
-            # Set the button color
-            try:
-                palette.setColor(QPalette.Button, QColor(self.COLOR_BACKGROUND_3))
-            except Exception as e:
-                logError(f"Failed to set button color: {e}")
-
-            # Set the button text color
-            try:
-                palette.setColor(QPalette.ButtonText, QColor(self.COLOR_TEXT_1))
-            except Exception as e:
-                logError(f"Failed to set button text color: {e}")
-
-            # Set the highlight color
-            try:
-                palette.setColor(QPalette.Highlight, QColor(self.COLOR_BACKGROUND_6))
-            except Exception as e:
-                logError(f"Failed to set highlight color: {e}")
-
-            # Set the highlight text color
-            try:
-                palette.setColor(QPalette.HighlightedText, QColor(self.COLOR_ACCENT_1))
-            except Exception as e:
-                logError(f"Failed to set highlight text color: {e}")
-
-            # Apply the palette to the main window
-            try:
-                mainWindow.setPalette(palette)
-            except Exception as e:
-                logError(f"Failed to set palette on main window: {e}")
-
-            try:
-                app.setPalette(palette)
-            except Exception as e:
-                logError(f"Failed to set palette on app: {e}")
-
-        background_color = palette.color(QPalette.Window)
-        
-        # Calculate luminance using the YIQ color space formula
-        luminance = (0.299 * background_color.red() + 0.587 * background_color.green() + 0.114 * background_color.blue()) / 255
-        
-        if luminance < 0.5:
-            self._isThemeDark =  True  # Dark theme
-        else:
-            self._isThemeDark = False  # Light theme
-            
-        
         if generateIcons:
             ########################################################################
             ## GENERATE NEW ICONS
