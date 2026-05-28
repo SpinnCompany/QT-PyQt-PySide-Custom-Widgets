@@ -61,13 +61,11 @@ class QCustomTheme(QObject):
             self._theme = "default"
             self._themes = []
             self._initialized = True  # Mark as initialized to avoid multiple init calls
-            self.checkForMissingicons = False
-
+            self.checkForMissingicons = True
             self.script_dir = os.path.dirname(os.path.abspath(sys.argv[0])).replace("\\", "/") + "/"
             
             if is_in_designer(self):
                 self.script_dir = os.getcwd().replace("\\", "/") + "/"
-                print(self.script_dir, "in designer")
 
             self.initializeThemeVars()
             self.defineThemeVarMapping()
@@ -90,7 +88,6 @@ class QCustomTheme(QObject):
             self._isThemeDark = False 
             # Theme indicator variables 
             self.THEME_MODE = ""      # Will be "DARK" or "LIGHT"
-            self.THEME_EMOJI = ""     # Will be "🌙" or "☀️"
             self.THEME_ICON = ""      # Will be "moon" or "sun"
             self.THEME_STATUS = ""    # Will be "Dark Mode Active" or "Light Mode Active"
 
@@ -100,13 +97,11 @@ class QCustomTheme(QObject):
         
         if is_dark:
             self.THEME_MODE = "DARK"
-            self.THEME_EMOJI = "🌙"
             self.THEME_ICON = "moon"
             self.THEME_STATUS = "Dark Mode Active"
             self._isThemeDark = True
         else:
             self.THEME_MODE = "LIGHT"
-            self.THEME_EMOJI = "☀️"
             self.THEME_ICON = "sun"
             self.THEME_STATUS = "Light Mode Active"
             self._isThemeDark = False
@@ -385,6 +380,20 @@ class QCustomTheme(QObject):
                                         logError(f"Failed to process widget '{widget_name}' in JSON file '{jsonFile}': Error: Missing file - {abs_icon_url}")
                                         continue
 
+                                    # Safety check: ensure widget_container still has the attribute
+                                    if not hasattr(widget_container, str(widget_name)):
+                                        continue
+                                    
+                                    # Safety check: try to get widget and verify it's not deleted
+                                    try:
+                                        widget = getattr(widget_container, str(widget_name))
+                                        # Test if widget is still valid by calling a simple method
+                                        _ = widget.objectName()
+                                    except (RuntimeError, AttributeError) as e:
+                                        if "already deleted" in str(e) or "C++ object" in str(e):
+                                            logDebug(f"Widget '{widget_name}' already deleted, skipping")
+                                        continue
+
                                     if widget_class == "QCustomThemeDarkLightToggle":
                                         light_icon_url = widget_info.get("lightThemeIcon", "")
                                         dark_icon_url = widget_info.get("darkThemeIcon", "")
@@ -401,33 +410,60 @@ class QCustomTheme(QObject):
                                         abs_d_icon_url = os.path.abspath(os.path.join(current_script_folder, dark_icon_url))
 
                                         if hasattr(widget_container, str(widget_name)):
-                                            btn = getattr(widget_container, str(widget_name))
-                                            if abs_l_icon_url != "default_icon_url":
-                                                btn.lightThemeIcon = QIcon(abs_l_icon_url)
-                                            if abs_d_icon_url != "default_icon_url":
-                                                btn.darkThemeIcon = QIcon(abs_d_icon_url)
-                                            btn.update()
+                                            try:
+                                                btn = getattr(widget_container, str(widget_name))
+                                                _ = btn.objectName()  # Check if valid
+                                                if abs_l_icon_url != "default_icon_url" and os.path.exists(abs_l_icon_url):
+                                                    btn.lightThemeIcon = QIcon(abs_l_icon_url)
+                                                if abs_d_icon_url != "default_icon_url" and os.path.exists(abs_d_icon_url):
+                                                    btn.darkThemeIcon = QIcon(abs_d_icon_url)
+                                                btn.update()
+                                            except (RuntimeError, AttributeError):
+                                                continue
 
-                                    elif abs_icon_url != "default_icon_url" and hasattr(widget_container, str(widget_name)):
-                                        widget = getattr(widget_container, str(widget_name))
-                                        if setter_method is not None and isinstance(widget, globals()[widget_class]):
-                                            getattr(widget, setter_method)(abs_icon_url)
-                                        elif widget_class == "QWidget" and "QTabWidget" in widget_info:
-                                            parent_name = widget_info.get("QTabWidget", "")
-                                            parent = getattr(widget_container, str(parent_name))
-                                            if isinstance(parent, QTabWidget):
-                                                parent.setNewTabIcon(widget_name, abs_icon_url)
-                                        elif widget_class == "QWidget" and "QToolBox" in widget_info:
-                                            parent_name = widget_info.get("QToolBox", "")
-                                            parent = getattr(widget_container, str(parent_name))
-                                            if isinstance(parent, QToolBox):
-                                                parent.setNewItemIcon(widget_name, abs_icon_url)
-                                        elif widget_class == "QTreeWidget":
-                                            tree_item = getattr(widget_container, str(widget_name))
-                                            tree_item.setNewItemIcon(tree_item, abs_icon_url)
+                                    elif abs_icon_url != "default_icon_url":
+                                        try:
+                                            if setter_method is not None and isinstance(widget, globals().get(widget_class, object())):
+                                                if hasattr(widget, setter_method):
+                                                    getattr(widget, setter_method)(abs_icon_url)
+                                            elif widget_class == "QWidget" and "QTabWidget" in widget_info:
+                                                parent_name = widget_info.get("QTabWidget", "")
+                                                if hasattr(widget_container, parent_name):
+                                                    parent = getattr(widget_container, parent_name)
+                                                    try:
+                                                        _ = parent.objectName()  # Check if valid
+                                                        if isinstance(parent, QTabWidget) and hasattr(parent, 'setNewTabIcon'):
+                                                            parent.setNewTabIcon(widget_name, abs_icon_url)
+                                                    except (RuntimeError, AttributeError):
+                                                        pass
+                                            elif widget_class == "QWidget" and "QToolBox" in widget_info:
+                                                parent_name = widget_info.get("QToolBox", "")
+                                                if hasattr(widget_container, parent_name):
+                                                    parent = getattr(widget_container, parent_name)
+                                                    try:
+                                                        _ = parent.objectName()  # Check if valid
+                                                        if isinstance(parent, QToolBox) and hasattr(parent, 'setNewItemIcon'):
+                                                            parent.setNewItemIcon(widget_name, abs_icon_url)
+                                                    except (RuntimeError, AttributeError):
+                                                        pass
+                                            elif widget_class == "QTreeWidget":
+                                                if hasattr(widget, 'setNewItemIcon'):
+                                                    try:
+                                                        widget.setNewItemIcon(widget, abs_icon_url)
+                                                    except (RuntimeError, AttributeError):
+                                                        pass
+                                        except (RuntimeError, AttributeError) as e:
+                                            if "already deleted" in str(e) or "C++ object" in str(e):
+                                                logDebug(f"Widget '{widget_name}' deleted during icon application")
+                                            continue
 
+                                except (RuntimeError, AttributeError) as e:
+                                    if "already deleted" in str(e) or "C++ object" in str(e):
+                                        logDebug(f"Widget '{widget_info.get('name', 'unknown')}' already deleted, skipping")
+                                    else:
+                                        logError(f"Failed to process widget '{widget_info.get('name', 'unknown')}' in JSON file '{jsonFile}': {e}")
                                 except Exception as e:
-                                    logError(f"Failed to process widget '{widget_name}' in JSON file '{jsonFile}': {e}")
+                                    logError(f"Failed to process widget '{widget_info.get('name', 'unknown')}' in JSON file '{jsonFile}': {e}")
 
                     except Exception as e:
                         logError(f"Error processing JSON file '{jsonFile}': {e}")
@@ -606,8 +642,6 @@ class QCustomTheme(QObject):
             settings.setValue("ICONS-COLOR", iconsColor)
         except Exception as e:
             logError(f"Failed to write ICONS-COLOR to QSettings: {e}")
-        
-        print(f"Current theme info: {theme.name} {currentThemeInfo}")
         
         return currentThemeInfo
         
@@ -852,7 +886,6 @@ class QCustomTheme(QObject):
 
     // Theme Mode Variables
     $THEME_MODE: "{self.THEME_MODE}";
-    $THEME_EMOJI: "{self.THEME_EMOJI}";
     $THEME_ICON: "{self.THEME_ICON}";
     $THEME_STATUS: "{self.THEME_STATUS}";
     $IS_THEME_DARK: {str(self._isThemeDark).lower()};
@@ -1231,11 +1264,6 @@ class QCustomTheme(QObject):
                 logInfo(f"Created QRC file: {qrc_file_path}")
             except Exception as e:
                 logError(f"Failed to create QRC file {qrc_file_path}: {e}")
-            # Convert qrc to py 
-            # qrc_output_path = qrc_file_path.replace(".qrc", "_rc.py")
-            # qrc_output_path = qrc_output_path.replace("Qss/", "") #linux
-            # qrc_output_path = qrc_output_path.replace("Qss\\", "") #windows
-            # NewIconsGenerator.qrcToPy(qrc_file_path, qrc_output_path)
 
     def generateNewIcons(self, progress_callback = None, force = False): 
         if not self.checkForMissingicons and progress_callback is not None:
@@ -1259,17 +1287,20 @@ class QCustomTheme(QObject):
             iconsFolderName = normal_color.replace("#", "")
 
             # Create normal icons
-            self.generateIcons(progress_callback, normal_color, "", iconsFolderName, createQrc = False)
+            worker = Worker(self.generateIcons, progress_callback, normal_color, "", iconsFolderName, createQrc = False)
+            worker.signals.result.connect(WorkerResponse.print_output)
+            
+            # self.generateIcons(progress_callback, normal_color, "", iconsFolderName, createQrc = False)
 
             settings = QSettings()
 
             logInfo(("DONE: Current icons color ", settings.value("ICONS-COLOR")))   
             self._themeChangeComplete()     
+            
 
     def generateAllIcons(self, progress_callback = None):
         if is_in_designer(self):
             return
-        
         settings = QSettings()
         if not self.checkForMissingicons and progress_callback is not None:
             # emit 100% progress
@@ -1301,7 +1332,9 @@ class QCustomTheme(QObject):
             logInfo(f"Checking icons for {theme.name} theme. Icons color: {color}")
 
             iconsFolderName = color.replace("#", "")
-            self.generateIcons(progress_callback, color, "", iconsFolderName)
+            worker = Worker(self.generateIcons, progress_callback, color, "", iconsFolderName)
+            worker.signals.result.connect(WorkerResponse.print_output)
+            # self.generateIcons(progress_callback, color, "", iconsFolderName)
 
             # Add the theme name to the checked list
             checked_themes.append(theme.name)
@@ -1320,9 +1353,11 @@ class QCustomTheme(QObject):
         logInfo(f"Checking icons for qt designer app.")
         try:
             if settings.value("DESIGNER-ICONS-COLOR") is not None:
-                self.generateIcons(progress_callback, settings.value("DESIGNER-ICONS-COLOR"), "", "icons", createQrc=True, output_width=24, output_height=24)
+                worker = Worker(self.generateIcons, progress_callback, settings.value("DESIGNER-ICONS-COLOR"), "", "icons", createQrc=True, output_width=24, output_height=24)
+                worker.signals.result.connect(WorkerResponse.print_output)
             else:
-                self.generateIcons(progress_callback, self.designerIconsColor, "", "icons", createQrc=True, output_width=24, output_height=24)
+                worker = Worker(self.generateIcons, progress_callback, self.designerIconsColor, "", "icons", createQrc=True, output_width=24, output_height=24)
+                worker.signals.result.connect(WorkerResponse.print_output)
         except Exception as e:
             logError(f"Failed to generate designer icons: {e}")
 

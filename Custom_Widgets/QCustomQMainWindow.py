@@ -73,7 +73,7 @@ class QCustomQMainWindow(QMainWindow):
         self._window_radius = 0
 
         self.showCustomWidgetsLogs = True  
-        self.checkForMissingicons = False 
+        self.checkForMissingicons = True 
 
         self._qss_file_monitor = QSsFileMonitor.instance()
         self.qss_watcher = None
