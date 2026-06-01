@@ -16,7 +16,7 @@ setup(
         'Custom_Widgets.Qss',
     ],
     include_package_data=True,
-    version='2.1.9',
+    version='2.2.0',
     license="GNU General Public License v3.0",
     description='A comprehensive library of custom Qt widgets, animations, and UI components for PySide and PyQt desktop applications.',
     long_description=README,

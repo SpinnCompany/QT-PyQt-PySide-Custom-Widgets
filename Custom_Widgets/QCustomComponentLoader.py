@@ -43,7 +43,6 @@ class QCustomComponentLoader(QWidget):
 
     def showEvent(self, event):
         """Handle the show event to ensure designer mode is set up when widget becomes visible."""
-        super().showEvent(event)
         
         # Ensure designer mode is set up when widget is shown in Qt Designer
         if is_in_designer(self) and not self._designer_initialized and not self.previewComponent:
@@ -54,6 +53,8 @@ class QCustomComponentLoader(QWidget):
         
         else:
             self.applyThemeIcons()
+
+        super().showEvent(event)
 
     def applyThemeIcons(self):
         if self._applying_icon:

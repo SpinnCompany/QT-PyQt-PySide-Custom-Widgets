@@ -247,6 +247,7 @@ class QCustomQDialog(QDialog, Ui_Form):
         self.adjustSizeToContent()
         
     def showEvent(self, e):
+        super().showEvent(e)
         self.checkAppTheme()
         c = 0 if self.isDark() else 255
         if self.maskWidget is None:
@@ -274,8 +275,6 @@ class QCustomQDialog(QDialog, Ui_Form):
         
         # Ensure proper positioning when shown
         self.adjustToParentSize()
-        
-        super().showEvent(e)
 
             
     def hideEvent(self, e):
@@ -451,11 +450,12 @@ class MaskWidget(QWidget):
         self.deleteLater()
 
     def showEvent(self, event):
+        super().showEvent(event)
+        
         if self.parent():
             self.parent().destroyed.connect(self.onParentDestroyed)
 
         self.screenGrab()
-        super().showEvent(event)
 
     def updateAcrylicEffect(self):
         if is_in_designer(self):
