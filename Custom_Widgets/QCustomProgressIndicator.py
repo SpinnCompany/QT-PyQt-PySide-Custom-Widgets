@@ -230,7 +230,7 @@ class QCustomProgressIndicator(QWidget):
                         border-radius: """+str(int(self.formProgressHeight / 3))+""";
 
                     """)
-                    getattr(self, '_'+str(x)).setText(u"<html><head/><body><p align=\"center\"><span style=\" font-weight:600;\"> ✘ </span><span style=\" font-weight:600; vertical-align:super;\"> "+str(x)+" </span></p></body></html>")
+                    getattr(self, '_'+str(x)).setText(u"<html><head/><body><p align=\"center\"><span style=\" font-weight:600;\">  </span><span style=\" font-weight:600; vertical-align:super;\"> "+str(x)+" </span></p></body></html>")
                     getattr(self, '_'+str(x)).setToolTip(u"Error!")
 
             elif hasattr(self, 'step_'+str(x)+"_warning") and getattr(self, 'step_'+str(x)+"_warning"):
@@ -252,7 +252,7 @@ class QCustomProgressIndicator(QWidget):
                         border-radius: """+str(int(self.formProgressHeight / 3))+""";
 
                     """)
-                    getattr(self, '_'+str(x)).setText(u"<html><head/><body><p align=\"center\"><span style=\" font-weight:600;\"> ✔ </span><span style=\" font-weight:600; vertical-align:super;\"> "+str(x)+" </span></p></body></html>")
+                    getattr(self, '_'+str(x)).setText(u"<html><head/><body><p align=\"center\"><span style=\" font-weight:600;\">  </span><span style=\" font-weight:600; vertical-align:super;\"> "+str(x)+" </span></p></body></html>")
                     getattr(self, '_'+str(x)).setToolTip(u"Success!")
 
 

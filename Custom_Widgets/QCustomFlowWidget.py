@@ -11,12 +11,7 @@ from Custom_Widgets.QCustomFlowLayout import QCustomFlowLayout
 class QCustomFlowWidget(QWidget):
     """
     A container widget that uses QCustomFlowLayout internally.
-    Fully customizable in Qt Designer with properties for:
-    - spacing (horizontal/vertical)
-    - margins
-    - animation settings
-    
-    Also properly manages existing child widgets when loaded from Qt Designer.
+    ALL custom properties are exposed here for Qt Designer.
     """
     
     # Qt Designer integration properties
@@ -55,7 +50,7 @@ class QCustomFlowWidget(QWidget):
             <property name="animationEasingCurve">
                 <string>OutCubic</string>
             </property>
-            <property name="justifySpacing">
+            <property name="equalDistribution">
                 <bool>true</bool>
             </property>
             <property name="autoFillWidth">
@@ -63,6 +58,12 @@ class QCustomFlowWidget(QWidget):
             </property>
             <property name="autoFillHeight">
                 <bool>false</bool>
+            </property>
+            <property name="justifySpacing">
+                <bool>false</bool>
+            </property>
+            <property name="orderJsonPath">
+                <string></string>
             </property>
         </widget>
     </ui>
@@ -92,23 +93,26 @@ class QCustomFlowWidget(QWidget):
         self._animationEnabled = True
         self._animationDuration = 300
         self._animationEasingCurve = "OutCubic"
-        self._autoFillWidth = False  # Add this
-        self._autoFillHeight = False  # Add this
+        self._equalDistribution = True
+        self._autoFillWidth = False
+        self._autoFillHeight = False
+        self._justifySpacing = False
+        self._orderJsonPath = ""
 
     def adoptExistingChildren(self):
-        """
-        Adopt any existing child widgets that were placed in this container
-        from Qt Designer. This should be called after the UI is loaded.
-        """
+        """Adopt existing child widgets from Qt Designer in their original order"""
         if self._adoptingChildren:
             return
         
         self._adoptingChildren = True
         
-        # Find all direct child widgets that are not the layout itself
+        # IMPORTANT: Get children in the order they appear in the UI file
+        # The findChildren returns in no guaranteed order, so we need to sort
+        # by their position in the widget hierarchy
+        children = []
         for child in self.findChildren(QWidget):
             if child.parent() == self and child != self and child.layout() != self._flowLayout:
-                # Check if this widget is already managed by the flow layout
+                # Check if already in layout
                 already_managed = False
                 for i in range(self._flowLayout.count()):
                     item = self._flowLayout.itemAt(i)
@@ -117,36 +121,33 @@ class QCustomFlowWidget(QWidget):
                         break
                 
                 if not already_managed:
-                    # Remove the widget from its current geometry management
-                    child.setParent(None)
-                    child.setParent(self)
-                    # Add to flow layout
-                    self._flowLayout.addWidget(child)
+                    children.append(child)
+        
+        # Sort children by their visual order (approximate)
+        # This tries to preserve the order from Qt Designer
+        children.sort(key=lambda w: (w.y(), w.x()))
+        
+        # Add children to layout in order
+        for child in children:
+            child.setParent(None)
+            child.setParent(self)
+            self._flowLayout.addWidget(child)
         
         self._adoptingChildren = False
-        
-        # Force layout update
         self._forceLayoutUpdate()
     
     def showEvent(self, event):
         """Handle show events - adopt existing children when shown"""
         super().showEvent(event)
-        # Adopt any existing children that were added from Designer
         self.adoptExistingChildren()
         self._forceLayoutUpdate()
     
     def childEvent(self, event):
-        """
-        Handle child events to detect when widgets are added.
-        This also catches widgets added from Qt Designer.
-        """
+        """Handle child events to detect when widgets are added"""
         if event.type() == QtCore.QEvent.Type.ChildAdded:
             child = event.child()
             if isinstance(child, QWidget) and child.parent() == self and not self._adoptingChildren:
-                # Check if this widget should be managed by the flow layout
-                # Only adopt if it's not the layout itself and not already in layout
                 if child != self and child.layout() != self._flowLayout:
-                    # Check if already in flow layout
                     already_in_layout = False
                     for i in range(self._flowLayout.count()):
                         item = self._flowLayout.itemAt(i)
@@ -155,7 +156,6 @@ class QCustomFlowWidget(QWidget):
                             break
                     
                     if not already_in_layout:
-                        # Schedule adoption after a short delay to allow all UI setup
                         QtCore.QTimer.singleShot(10, lambda: self._addChildToLayout(child))
         
         super().childEvent(event)
@@ -163,7 +163,6 @@ class QCustomFlowWidget(QWidget):
     def _addChildToLayout(self, child):
         """Safely add a child widget to the flow layout"""
         if child and child.parent() == self and not self._adoptingChildren:
-            # Temporarily block adoption to prevent recursion
             self._adoptingChildren = True
             child.setParent(None)
             child.setParent(self)
@@ -175,12 +174,10 @@ class QCustomFlowWidget(QWidget):
     
     @Property(int)
     def spacing(self):
-        """Get the spacing between items (both directions)"""
         return self._spacing
     
     @spacing.setter
     def spacing(self, value):
-        """Set the spacing between items (both directions)"""
         self._spacing = value
         self._horizontalSpacing = value
         self._verticalSpacing = value
@@ -190,14 +187,11 @@ class QCustomFlowWidget(QWidget):
 
     @Property(int)
     def horizontalSpacing(self):
-        """Get horizontal spacing between items"""
         return self._horizontalSpacing
     
     @horizontalSpacing.setter
     def horizontalSpacing(self, value):
-        """Set horizontal spacing between items"""
         self._horizontalSpacing = value
-        # QFlowLayout uses single spacing value, so we'll use the average
         if hasattr(self, '_flowLayout'):
             avg_spacing = (self._horizontalSpacing + self._verticalSpacing) // 2
             self._flowLayout.setSpacing(avg_spacing)
@@ -205,12 +199,10 @@ class QCustomFlowWidget(QWidget):
 
     @Property(int)
     def verticalSpacing(self):
-        """Get vertical spacing between items"""
         return self._verticalSpacing
     
     @verticalSpacing.setter
     def verticalSpacing(self, value):
-        """Set vertical spacing between items"""
         self._verticalSpacing = value
         if hasattr(self, '_flowLayout'):
             avg_spacing = (self._horizontalSpacing + self._verticalSpacing) // 2
@@ -221,12 +213,10 @@ class QCustomFlowWidget(QWidget):
     
     @Property(int)
     def margin(self):
-        """Get the margin around the layout"""
         return self._margin
     
     @margin.setter
     def margin(self, value):
-        """Set the margin around the layout"""
         self._margin = value
         if hasattr(self, '_flowLayout'):
             self._flowLayout.setContentsMargins(value, value, value, value)
@@ -236,70 +226,64 @@ class QCustomFlowWidget(QWidget):
     
     @Property(bool)
     def animationEnabled(self):
-        """Enable or disable animations"""
         return self._animationEnabled
     
     @animationEnabled.setter
     def animationEnabled(self, enabled):
-        """Enable or disable animations"""
         self._animationEnabled = enabled
         if hasattr(self, '_flowLayout'):
             self._flowLayout.setAnimated(enabled)
 
     @Property(int)
     def animationDuration(self):
-        """Get animation duration in milliseconds"""
         return self._animationDuration
     
     @animationDuration.setter
     def animationDuration(self, duration):
-        """Set animation duration in milliseconds"""
         self._animationDuration = duration
         if hasattr(self, '_flowLayout'):
             self._flowLayout.setAnimationDuration(duration)
 
     @Property(str)
     def animationEasingCurve(self):
-        """Get easing curve name"""
         return self._animationEasingCurve
     
     @animationEasingCurve.setter
     def animationEasingCurve(self, curveName):
-        """Set easing curve by name"""
         self._animationEasingCurve = curveName
         if hasattr(self, '_flowLayout'):
             self._flowLayout.setAnimationEasingCurve(curveName)
 
+    # ========== Layout Strategy Properties ==========
+    
     @Property(bool)
-    def justifySpacing(self):
-        """Enable/disable even spacing between widgets"""
+    def equalDistribution(self):
+        return self._equalDistribution
+    
+    @equalDistribution.setter
+    def equalDistribution(self, enabled):
+        self._equalDistribution = enabled
         if hasattr(self, '_flowLayout'):
-            return self._flowLayout.justifySpacing
-        return True
-
-    @justifySpacing.setter
-    def justifySpacing(self, enabled):
-        if hasattr(self, '_flowLayout'):
-            self._flowLayout.justifySpacing = enabled
+            self._flowLayout.equalDistribution = enabled
             self._forceLayoutUpdate()
     
     @Property(bool)
     def autoFillWidth(self):
-        """Auto-fill available width by expanding widgets evenly across each row"""
-        return self._autoFillWidth if hasattr(self, '_autoFillWidth') else False
-
+        return self._autoFillWidth
+    
     @autoFillWidth.setter
     def autoFillWidth(self, enabled):
         self._autoFillWidth = enabled
+        if enabled:
+            self._equalDistribution = enabled
         if hasattr(self, '_flowLayout'):
             self._flowLayout.autoFillWidth = enabled
             self._forceLayoutUpdate()
 
     @Property(bool)
     def autoFillHeight(self):
-        """Auto-fill available height by expanding widgets evenly across all rows"""
-        return self._autoFillHeight if hasattr(self, '_autoFillHeight') else False
-
+        return self._autoFillHeight
+    
     @autoFillHeight.setter
     def autoFillHeight(self, enabled):
         self._autoFillHeight = enabled
@@ -308,33 +292,37 @@ class QCustomFlowWidget(QWidget):
             self._forceLayoutUpdate()
 
     @Property(bool)
-    def equalDistribution(self):
-        """Enable/disable equal distribution of available space among widgets in each row"""
+    def justifySpacing(self):
+        return self._justifySpacing
+    
+    @justifySpacing.setter
+    def justifySpacing(self, enabled):
+        self._justifySpacing = enabled
         if hasattr(self, '_flowLayout'):
-            return self._flowLayout.equalDistribution
-        return True
+            self._flowLayout.justifySpacing = enabled
+            self._forceLayoutUpdate()
 
-    @equalDistribution.setter
-    def equalDistribution(self, enabled):
+    # ========== Order Configuration ==========
+    
+    @Property(str)
+    def orderJsonPath(self):
+        return self._orderJsonPath
+    
+    @orderJsonPath.setter
+    def orderJsonPath(self, path):
+        self._orderJsonPath = path if path else ""
         if hasattr(self, '_flowLayout'):
-            self._flowLayout.equalDistribution = enabled
+            self._flowLayout.orderJsonPath = self._orderJsonPath
             self._forceLayoutUpdate()
 
     # ========== Helper Methods ==========
     
-    def _scheduleLayoutUpdate(self):
-        """Schedule a layout update (debounced)"""
-        if hasattr(self, '_flowLayout'):
-            self._flowLayout._scheduleLayoutUpdate()
-    
     def _forceLayoutUpdate(self):
         """Force an immediate layout update"""
         if hasattr(self, '_flowLayout'):
-            # Cancel any pending timer
             if hasattr(self._flowLayout, '_updateTimer'):
                 self._flowLayout._updateTimer.stop()
             
-            # Force immediate layout
             rect = self.geometry()
             if rect.isValid():
                 if self._animationEnabled:
@@ -343,33 +331,11 @@ class QCustomFlowWidget(QWidget):
                     self._flowLayout._performImmediateLayout()
     
     def addWidget(self, widget, position=None):
-        """
-        Add a widget to the flow layout
-        
-        Args:
-            widget: QWidget to add
-            position: Optional position index to insert at
-        """
+        """Add a widget to the flow layout"""
         if position is not None:
             self._flowLayout.addWidget(widget, position)
         else:
             self._flowLayout.addWidget(widget)
-        
-        # Force layout update immediately after adding
-        self._forceLayoutUpdate()
-        
-        # Also ensure widget is visible
-        widget.show()
-    
-    def insertWidget(self, index, widget):
-        """
-        Insert a widget at a specific index
-        
-        Args:
-            index: Position to insert at
-            widget: QWidget to insert
-        """
-        self._flowLayout.addWidget(widget, index)
         self._forceLayoutUpdate()
         widget.show()
     
@@ -380,17 +346,12 @@ class QCustomFlowWidget(QWidget):
     
     def clear(self):
         """Remove all widgets from the flow layout"""
-        # Stop any ongoing animations first
         self.stopAllAnimations()
-        
-        # Remove all items
         while self._flowLayout.count():
             item = self._flowLayout.takeAt(0)
             if item and item.widget():
-                widget = item.widget()
-                widget.hide()
-                widget.deleteLater()
-        
+                item.widget().hide()
+                item.widget().deleteLater()
         self._forceLayoutUpdate()
     
     def getFlowLayout(self):
@@ -412,10 +373,8 @@ class QCustomFlowWidget(QWidget):
         """Manually refresh the layout"""
         self._forceLayoutUpdate()
     
-    # ========== Event Handlers ==========
-    
     def resizeEvent(self, event):
         """Handle resize events"""
         super().resizeEvent(event)
         if hasattr(self, '_flowLayout'):
-            self._scheduleLayoutUpdate()
+            self._flowLayout._scheduleLayoutUpdate()

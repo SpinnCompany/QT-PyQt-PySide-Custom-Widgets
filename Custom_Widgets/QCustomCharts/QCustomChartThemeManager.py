@@ -129,54 +129,68 @@ class QCustomChartThemeManager(QObject, QCustomChartConstants):
                 chart.setTheme(QChart.ChartThemeLight)
     
     def _applyAppTheme(self, chart: QChart):
-        """Apply App Theme based on QCustomTheme"""
+        """Apply App Theme based on QCustomTheme theme variables"""
         if not chart:
             return
         
         # Clear any existing theme
         chart.setTheme(QChart.ChartThemeLight)  # Start with a clean slate
         
-        if hasattr(self._appTheme, 'isThemeDark') and self._appTheme.isThemeDark:
+        # Use theme variables directly from QCustomTheme
+        if self._appTheme.isThemeDark:
             chart.setTheme(QChart.ChartThemeDark)
         else:
             chart.setTheme(QChart.ChartThemeLight)
 
-        # Use application palette from QCustomTheme
-        palette = self._appTheme.getPalette()
+        # Get theme variable values directly
+        try:
+            # Background colors - use COLOR_BACKGROUND_1
+            bg_color_1 = QColor(self._appTheme.COLOR_BACKGROUND_1)
+            bg_color_3 = QColor(self._appTheme.COLOR_BACKGROUND_3)
+            text_color_1 = QColor(self._appTheme.COLOR_TEXT_1)
+            accent_color_1 = QColor(self._appTheme.COLOR_ACCENT_1)
+            
+        except Exception as e:
+            logError(f"Error accessing theme variables: {e}")
+            # Fallback to palette if theme variables not available
+            palette = self._appTheme.getPalette()
+            bg_color_1 = palette.color(QPalette.Window)
+            bg_color_3 = palette.color(QPalette.Base)
+            text_color_1 = palette.color(QPalette.Text)
+            accent_color_1 = palette.color(QPalette.Highlight)
         
-        # Set background to window color
-        chart.setBackgroundBrush(QBrush(palette.color(QPalette.Window)))
+        # Set background to COLOR_BACKGROUND_1
+        chart.setBackgroundBrush(QBrush(bg_color_1))
         
-        # Set plot area background to base color
-        chart.setPlotAreaBackgroundBrush(QBrush(palette.color(QPalette.Base)))
+        # Set plot area background to COLOR_BACKGROUND_3 (slightly different shade)
+        chart.setPlotAreaBackgroundBrush(QBrush(bg_color_3))
         chart.setPlotAreaBackgroundVisible(True)
         
-        # Set title color to text color
+        # Set title color to COLOR_TEXT_1
         title_font = chart.titleFont()
         title_font.setBold(True)
         chart.setTitleFont(title_font)
         
-        # Apply palette to axes
-        text_color = palette.color(QPalette.Text)
+        # Apply theme variables to axes
         for axis in chart.axes():
-            axis.setTitleBrush(QBrush(text_color))
-            axis.setLabelsBrush(QBrush(text_color))
-            axis.setLinePenColor(text_color)
+            axis.setTitleBrush(QBrush(text_color_1))
+            axis.setLabelsBrush(QBrush(text_color_1))
+            axis.setLinePenColor(text_color_1)
             
-            # Set grid color with transparency
-            grid_color = QColor(text_color)
+            # Set grid color with transparency using COLOR_TEXT_1
+            grid_color = QColor(text_color_1)
             grid_color.setAlpha(100)
             axis.setGridLineColor(grid_color)
         
-        # Apply palette to legend
+        # Apply to legend
         legend = chart.legend()
         if legend:
-            legend.setLabelColor(text_color)
+            legend.setLabelColor(text_color_1)
             legend.setBackgroundVisible(True)
-            legend.setBrush(QBrush(palette.color(QPalette.Window)))
-            legend.setPen(QPen(palette.color(QPalette.Mid)))
+            legend.setBrush(QBrush(bg_color_1))
+            legend.setPen(QPen(bg_color_3))
         
-        logInfo(f"Applied App Theme (Dark: {self._appTheme.isThemeDark}) to chart")
+        logInfo(f"Applied App Theme (Dark: {self._appTheme.isThemeDark}) to chart using theme variables")
     
     def applyCustomPalette(self, chart: QChart, palette: QPalette):
         """Apply a custom palette to the chart (for App Theme)"""
@@ -216,13 +230,15 @@ class QCustomChartThemeManager(QObject, QCustomChartConstants):
             theme_name = self._currentTheme
         
         if theme_name == self.THEME_APP_THEME:
-            # For App Theme, use the application's text color with transparency
-            app = QApplication.instance()
-            if app:
-                text_color = app.palette().color(QPalette.Text)
+            # Use COLOR_TEXT_1 directly from theme
+            try:
+                text_color = QColor(self._appTheme.COLOR_TEXT_1)
                 crosshair_color = QColor(text_color)
                 crosshair_color.setAlpha(200)
                 return crosshair_color
+            except Exception:
+                # Fallback
+                return QColor(0, 0, 0, 200)
         
         if theme_name in [self.THEME_DARK, self.THEME_QT_DARK]:
             # Dark themes - use light crosshair
@@ -237,15 +253,11 @@ class QCustomChartThemeManager(QObject, QCustomChartConstants):
             theme_name = self._currentTheme
         
         if theme_name == self.THEME_APP_THEME:
-            # Use QCustomTheme palette if available
-            if self._appTheme and hasattr(self._appTheme, 'getPalette'):
-                palette = self._appTheme.getPalette()
-                return palette.color(QPalette.Text)
-            else:
-                app = QApplication.instance()
-                if app:
-                    return app.palette().color(QPalette.Text)
-            return QColor(0, 0, 0)
+            # Use COLOR_TEXT_1 directly from theme
+            try:
+                return QColor(self._appTheme.COLOR_TEXT_1)
+            except Exception:
+                return QColor(0, 0, 0)
         
         if theme_name in [self.THEME_DARK, self.THEME_QT_DARK]:
             return QColor(255, 255, 255)
@@ -258,15 +270,11 @@ class QCustomChartThemeManager(QObject, QCustomChartConstants):
             theme_name = self._currentTheme
         
         if theme_name == self.THEME_APP_THEME:
-            # Use QCustomTheme palette if available
-            if self._appTheme and hasattr(self._appTheme, 'getPalette'):
-                palette = self._appTheme.getPalette()
-                return palette.color(QPalette.Window)
-            else:
-                app = QApplication.instance()
-                if app:
-                    return app.palette().color(QPalette.Window)
-            return QColor(255, 255, 255)
+            # Use COLOR_BACKGROUND_1 directly from theme
+            try:
+                return QColor(self._appTheme.COLOR_BACKGROUND_1)
+            except Exception:
+                return QColor(255, 255, 255)
         
         if theme_name in [self.THEME_DARK, self.THEME_QT_DARK]:
             return QColor(30, 30, 30)
@@ -279,10 +287,14 @@ class QCustomChartThemeManager(QObject, QCustomChartConstants):
             theme_name = self._currentTheme
         
         if theme_name == self.THEME_APP_THEME:
-            text_color = self.getTextColor(theme_name)
-            grid_color = QColor(text_color)
-            grid_color.setAlpha(100)
-            return grid_color
+            # Use COLOR_TEXT_1 with transparency
+            try:
+                text_color = QColor(self._appTheme.COLOR_TEXT_1)
+                grid_color = QColor(text_color)
+                grid_color.setAlpha(100)
+                return grid_color
+            except Exception:
+                return QColor(200, 200, 200, 150)
         
         if theme_name in [self.THEME_DARK, self.THEME_QT_DARK]:
             return QColor(80, 80, 80, 150)
@@ -295,15 +307,11 @@ class QCustomChartThemeManager(QObject, QCustomChartConstants):
             theme_name = self._currentTheme
         
         if theme_name == self.THEME_APP_THEME:
-            # Use QCustomTheme palette if available
-            if self._appTheme and hasattr(self._appTheme, 'getPalette'):
-                palette = self._appTheme.getPalette()
-                return palette.color(QPalette.Highlight)
-            else:
-                app = QApplication.instance()
-                if app:
-                    return app.palette().color(QPalette.Highlight)
-            return QColor(0, 120, 215)
+            # Use COLOR_ACCENT_1 directly from theme
+            try:
+                return QColor(self._appTheme.COLOR_ACCENT_1)
+            except Exception:
+                return QColor(0, 120, 215)
         
         if theme_name in [self.THEME_DARK, self.THEME_QT_DARK]:
             return QColor(0, 180, 255)
@@ -316,11 +324,16 @@ class QCustomChartThemeManager(QObject, QCustomChartConstants):
             theme_name = self._currentTheme
         
         if theme_name == self.THEME_APP_THEME:
-            if self._appTheme and hasattr(self._appTheme, 'isThemeDark'):
-                return self._appTheme.isThemeDark
-            # Fallback: guess based on text color brightness
-            text_color = self.getTextColor(theme_name)
-            return text_color.lightness() < 128  # Fixed: should be < 128 for dark
+            # Use _isThemeDark from QCustomTheme
+            try:
+                return self._appTheme._isThemeDark
+            except Exception:
+                # Fallback: check brightness of COLOR_BACKGROUND_1
+                try:
+                    bg_color = QColor(self._appTheme.COLOR_BACKGROUND_1)
+                    return bg_color.lightness() < 128
+                except Exception:
+                    return False
         
         return theme_name in [self.THEME_DARK, self.THEME_QT_DARK]
     

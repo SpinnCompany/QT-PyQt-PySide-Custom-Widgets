@@ -892,26 +892,26 @@ class QCustomCharts(QWidget):
         
         # Tool buttons
         self.zoom_btn = QToolButton()
-        self.zoom_btn.setText("🔍")
+        self.zoom_btn.setText("")
         self.zoom_btn.setCheckable(True)
         self.zoom_btn.toggled.connect(lambda checked: setattr(self, "zoomEnabled", checked))
         self.zoom_btn.setToolTip("Zoom")
         
         self.pan_btn = QToolButton()
-        self.pan_btn.setText("✋")
+        self.pan_btn.setText("")
         self.pan_btn.setCheckable(True)
         self.pan_btn.toggled.connect(lambda checked: setattr(self, "panEnabled", checked))
         self.pan_btn.setToolTip("Pan")
         
         self.legend_btn = QToolButton()
-        self.legend_btn.setText("📖")
+        self.legend_btn.setText("")
         self.legend_btn.setCheckable(True)
         self.legend_btn.setChecked(self._showLegend)
         self.legend_btn.toggled.connect(lambda checked: setattr(self, "showLegend", checked))
         self.legend_btn.setToolTip("Toggle Legend")
         
         self.controls_btn = QToolButton()
-        self.controls_btn.setText("⚙️")
+        self.controls_btn.setText("⚙")
         self.controls_btn.setCheckable(True)
         self.controls_btn.setChecked(self._showControls)
         self.controls_btn.toggled.connect(lambda checked: setattr(self, "showControls", checked))

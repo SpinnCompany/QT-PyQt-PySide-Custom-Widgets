@@ -275,37 +275,37 @@ def safe_console_print(*args, **kwargs):
 def logDebug(message, **kwargs):
     logging.debug(message, extra=kwargs)
     if get_show_custom_widgets_logs():
-        safe_console_print(f"🔍 DEBUG: {message}", **kwargs)
+        safe_console_print(f" DEBUG: {message}", **kwargs)
 
 def logInfo(message, **kwargs):
     logging.info(message, extra=kwargs)
     if get_show_custom_widgets_logs():
-        safe_console_print(f"ℹ️ INFO: {message}", **kwargs)
+        safe_console_print(f" INFO: {message}", **kwargs)
 
 def logWarning(message, **kwargs):
     logging.warning(message, extra=kwargs)
     if get_show_custom_widgets_logs():
-        safe_console_print(f"⚠️ WARNING: {message}", **kwargs)
+        safe_console_print(f" WARNING: {message}", **kwargs)
 
 def logError(message, **kwargs):
     logging.error(message, extra=kwargs)
     if get_show_custom_widgets_logs():
-        safe_console_print(f"❌ ERROR: {message}", **kwargs)
+        safe_console_print(f" ERROR: {message}", **kwargs)
 
 def logCritical(message, **kwargs):
     logging.critical(message, extra=kwargs)
     if get_show_custom_widgets_logs():
-        safe_console_print(f"💥 CRITICAL: {message}", **kwargs)
+        safe_console_print(f" CRITICAL: {message}", **kwargs)
 
 def logSuccess(message, **kwargs):
     logging.info(f"SUCCESS: {message}", extra=kwargs)
     if get_show_custom_widgets_logs():
-        safe_console_print(f"✅ SUCCESS: {message}", **kwargs)
+        safe_console_print(f" SUCCESS: {message}", **kwargs)
 
 def logException(exception, message="Exception", **kwargs):
     logging.exception(f"{message}: {exception}", extra=kwargs)
     if get_show_custom_widgets_logs():
-        safe_console_print(f"🚨 EXCEPTION: {message}: {exception}")
+        safe_console_print(f" EXCEPTION: {message}: {exception}")
         if RICH_AVAILABLE:
             try:
                 console.print(Traceback.from_exception(type(exception), exception, exception.__traceback__))
@@ -323,19 +323,19 @@ def logFileMonitorStart(files_count, folder_path=None):
     if get_show_custom_widgets_logs() and RICH_AVAILABLE:
         try:
             console.print(Panel.fit(
-                f"📁 FILE MONITOR STARTED\n"
+                f" FILE MONITOR STARTED\n"
                 f"• Files: {files_count}\n"
                 f"• Folder: {folder_path or 'N/A'}",
                 border_style="blue"
             ))
         except Exception:
-            print(f"📁 FILE MONITOR STARTED - Files: {files_count}, Folder: {folder_path or 'N/A'}")
+            print(f" FILE MONITOR STARTED - Files: {files_count}, Folder: {folder_path or 'N/A'}")
 
 def logFileChange(path, action="modified"):
     filename = os.path.basename(path)
     logInfo(f"File {filename} has been {action}")
     if get_show_custom_widgets_logs():
-        safe_console_print(f"📝 File {action}: {filename}")
+        safe_console_print(f" File {action}: {filename}")
 
 def logFileListUpdate(new_files, removed_files, total_files):
     changes = []
@@ -348,35 +348,35 @@ def logFileListUpdate(new_files, removed_files, total_files):
         changes_text = ', '.join(changes)
         logInfo(f"File list updated: {changes_text} - Total: {total_files} files")
         if get_show_custom_widgets_logs():
-            safe_console_print(f"🔄 File list updated: {changes_text} - Total: {total_files} files")
+            safe_console_print(f" File list updated: {changes_text} - Total: {total_files} files")
 
 def logFileConversionStart(file_path):
     filename = os.path.basename(file_path)
     logInfo(f"Starting conversion of {filename}")
     if get_show_custom_widgets_logs():
-        safe_console_print(f"🛠️ Converting: {filename}")
+        safe_console_print(f" Converting: {filename}")
 
 def logFileConversionComplete(file_path):
     filename = os.path.basename(file_path)
     logSuccess(f"Completed conversion of {filename}")
     if get_show_custom_widgets_logs():
-        safe_console_print(f"✅ Converted: {filename}")
+        safe_console_print(f" Converted: {filename}")
 
 def logWidgetProcessing(widget_class, widget_name, details=""):
     details_text = f" - {details}" if details else ""
     logDebug(f"Processing widget: {widget_class} '{widget_name}'{details_text}")
     if get_show_custom_widgets_logs():
-        safe_console_print(f"🎛️ Widget: {widget_class} '{widget_name}'{details_text}")
+        safe_console_print(f" Widget: {widget_class} '{widget_name}'{details_text}")
 
 def logIconProcessing(widget_name, icon_url, widget_type="Widget"):
     logDebug(f"{widget_type} '{widget_name}' icon: {icon_url}")
     if get_show_custom_widgets_logs():
-        safe_console_print(f"🖼️ {widget_type} icon: '{widget_name}' → {icon_url}")
+        safe_console_print(f" {widget_type} icon: '{widget_name}'  {icon_url}")
 
 def logJSONUpdate(json_file, data_summary):
     logInfo(f"Updated JSON file: {json_file} with {data_summary}")
     if get_show_custom_widgets_logs():
-        safe_console_print(f"📊 JSON updated: {json_file} - {data_summary}")
+        safe_console_print(f" JSON updated: {json_file} - {data_summary}")
 
 # Handle unhandled exceptions with rich formatting
 def handle_unhandled_exception(exc_type, exc_value, exc_traceback):

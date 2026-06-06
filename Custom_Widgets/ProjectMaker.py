@@ -41,15 +41,15 @@ def print_header(title):
 
 def print_success(message):
     """Print success message"""
-    print(colored(f"✓ {message}", "green"))
+    print(colored(f" {message}", "green"))
 
 def print_warning(message):
     """Print warning message"""
-    print(colored(f"⚠ {message}", "yellow"))
+    print(colored(f" {message}", "yellow"))
 
 def print_error(message):
     """Print error message"""
-    print(colored(f"✗ {message}", "red"))
+    print(colored(f" {message}", "red"))
 
 def print_info(message):
     """Print info message"""
@@ -119,9 +119,9 @@ def get_user_choice_for_non_empty_dir():
     
     for entry in os.scandir():
         if entry.is_file():
-            print(f"  📄 {entry.name}")
+            print(f"   {entry.name}")
         elif entry.is_dir():
-            print(f"  📁 {entry.name}")
+            print(f"   {entry.name}")
     
     print("\nChoose an option:")
     print("1. Overwrite existing project files (recommended for new projects)")
@@ -250,7 +250,7 @@ def show_workflow_instructions(appQtBinding):
     """Show workflow instructions to the user"""
     print_header("NEXT STEPS - WORKFLOW INSTRUCTIONS")
     
-    print_info("🎯 RECOMMENDED WORKFLOW:")
+    print_info(" RECOMMENDED WORKFLOW:")
     print("1. Design your interface in Qt Designer (with custom widgets)")
     print("2. Save .ui files in the 'ui' folder")
     print("3. Automatically convert .ui to .py when changes occur")
@@ -562,7 +562,7 @@ def create_project():
             elif choice == 4:
                 show_workflow_instructions(appQtBinding)
             elif choice == 5:
-                print_info("Project creation complete! Happy coding! 🎉")
+                print_info("Project creation complete! Happy coding! ")
                 break
             else:
                 print_warning("Please enter a number between 1 and 5")
@@ -570,13 +570,13 @@ def create_project():
             # After each action, ask if user wants to do something else
             if choice != 5:
                 if not query_yes_no("\nWould you like to do something else?"):
-                    print_info("Project creation complete! Happy coding! 🎉")
+                    print_info("Project creation complete! Happy coding! ")
                     break
                     
         except ValueError:
             print_warning("Please enter a valid number")
         except KeyboardInterrupt:
-            print_info("\nProject creation complete! Happy coding! 🎉")
+            print_info("\nProject creation complete! Happy coding! ")
             break
 
 if __name__ == "__main__":

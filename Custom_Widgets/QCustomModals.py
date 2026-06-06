@@ -9,7 +9,6 @@ from Custom_Widgets.QCustomComponentLoader import QCustomComponentLoader
 class LoadForm(QWidget):
     def __init__(self, form):
         super().__init__()
-        # self.ui = Ui_Form()
         self.form = form
         self.form.setupUi(self)
         
@@ -19,10 +18,10 @@ class QCustomModals:
         title = None
         description = None
         closeIcon = None
-        closeIcon = None
         modalIcon = None
         isClosable = True
         animationDuration = 5000
+        fadeOutDuration = 1000
         
         margin = 24
         spacing = 16
@@ -55,42 +54,33 @@ class QCustomModals:
     
             super().__init__()
             self.setupUi(self)
+            self._is_closing = False
+            self._fadeOutAnimationRunning = False
+            self._is_manual_close = False
+            
             if parent:
                 self.setParent(parent)
 
             if self.parent() is not None:
                 palette = self.parent().palette()
             else:
-                # Get the existing QApplication instance (if it exists)
                 app = QApplication.instance()
-                # If no QApplication instance exists, create one
                 if app is None:
                     app = QApplication([])
-                # Get the palette from the application
                 palette = app.palette()
 
             background_color = palette.color(QPalette.Window)
-
-            # Calculate the luminance of the background color
             luminance = 0.2126 * background_color.red() + 0.7152 * background_color.green() + 0.0722 * background_color.blue()
-
-            # Determine if the background color is dark or light
             self.isDark = luminance < 128
 
-            # get default icon:
             self.closeIcon = self.style().standardIcon(QStyle.SP_TitleBarCloseButton).pixmap(QSize(32, 32))
             self.closeButton.setIcon(self.closeIcon)
 
-            # Get the info icon from the style
             self.infoIcon = self.style().standardIcon(QStyle.SP_MessageBoxInformation).pixmap(QSize(32, 32))
-            # Get the success icon from the style
             self.successIcon = self.style().standardIcon(QStyle.SP_DialogApplyButton).pixmap(QSize(32, 32))
-            # Get the warning icon from the style
             self.warningIcon = self.style().standardIcon(QStyle.SP_MessageBoxWarning).pixmap(QSize(32, 32))
-            # Get the error icon from the style
             self.errorIcon = self.style().standardIcon(QStyle.SP_MessageBoxCritical).pixmap(QSize(32, 32))
 
-            # Customize modal based on arguments
             self.isClosable = isClosable
             self.position = position
 
@@ -102,20 +92,16 @@ class QCustomModals:
             if description:
                 self.bodyLabel.setText(description)
             else:
-                # hide body
                 self.body.hide()
 
             if closeIcon:
-                # Set icon
                 self.closeIcon = QIcon(closeIcon)
                 self.closeButton.setIcon(self.closeIcon)
 
             if not self.isClosable and not title:
-                # hide header
                 self.header.hide()
 
             if modalIcon:
-                # Set modal icon
                 self.modalIcon = QPixmap(modalIcon)
                 self.iconlabel.setPixmap(self.modalIcon)
 
@@ -123,7 +109,6 @@ class QCustomModals:
                 self.form = QCustomComponentLoader()
                 self.form.loadComponent(formClass=showForm)
                 self.layout().addWidget(self.form) 
-                # older versions
                 self.form.form = self.form.ui 
                 self.shownForm = self.form.ui  
               
@@ -131,16 +116,21 @@ class QCustomModals:
                 self.addWidget(addWidget)
 
             self.animationDuration = animationDuration if animationDuration else duration
+            self._autoCloseTimer = None
 
             self.closeButton.setFixedSize(20, 20)
             self.closeButton.setIconSize(QSize(self.spacing, self.spacing))
             self.closeButton.setCursor(Qt.PointingHandCursor)
-            # Connect close button
-            self.closeButton.clicked.connect(self.close)
+            self.closeButton.clicked.connect(self.manualClose)
             self.closeButton.setVisible(self.isClosable)
 
             self.opacityEffect = QGraphicsOpacityEffect(self)
-            self.opacityAni = QPropertyAnimation(self.opacityEffect, b'opacity', self)
+            self.opacityEffect.setOpacity(1.0)
+            self.setGraphicsEffect(self.opacityEffect)
+            self.opacityAni = QPropertyAnimation(self.opacityEffect, b"opacity")
+            self.opacityAni.setDuration(self.fadeOutDuration)
+            self.opacityAni.setEasingCurve(QEasingCurve.OutCubic)
+            self.opacityAni.finished.connect(self._onFadeOutFinished)
 
                         
         def paintEvent(self, e: QPaintEvent):
@@ -152,7 +142,6 @@ class QCustomModals:
             painter.setRenderHints(QPainter.Antialiasing)
             painter.setPen(Qt.NoPen)
 
-            #
             rect = self.rect().adjusted(1, 1, -1, -1)
             painter.drawRoundedRect(rect, 6, 6)
 
@@ -160,21 +149,10 @@ class QCustomModals:
             
             
         def adjustSizeToContent(self):
-            # Calculate the size hint based on the content
-            content_size = self.layout().sizeHint()
-            # Add some padding if needed
-            padding = 0
-            # self.setFixedSize(content_size.width() + padding, content_size.height() + padding)
-            # self.resize(content_size.width() + padding, content_size.height() + padding)
-            # size_hint = self.sizeHint()
-            # self.resize(size_hint.width() + padding, size_hint.height() + padding)
-
-            # Automatically resize to fit content
             self.adjustSize()
             
             if self.position == 'top-right':
                 x = self.parent().size().width() - self.width() - self.margin
-                # Adjust x-position to have a 20-pixel margin
                 self.move(x, self.pos().y())
             
             if self.position == 'top-center':
@@ -210,34 +188,104 @@ class QCustomModals:
                 y = self.parent().size().height() - self.height() - self.margin
                 self.move(x, y)
 
+        def manualClose(self):
+            """Handle manual close button click - immediate removal"""
+            if self._is_closing:
+                return
+            
+            # Mark as manual close - no fade animation
+            self._is_manual_close = True
+            self._performClose()
+
+        def closeModal(self):
+            """Public method to close modal from external code"""
+            if self._is_closing:
+                return
+            self._is_manual_close = True
+            self._performClose()
             
         def fadeOut(self):
-            """ fade out """
-            if self.animationDuration < 0:
+            """Auto fade out animation before closing"""
+            if self._is_closing or self._fadeOutAnimationRunning:
                 return
-            self.opacityAni.setDuration(self.animationDuration - 500)
-            self.opacityAni.setStartValue(1)
-            self.opacityAni.setEndValue(0)
-            self.opacityAni.finished.connect(self.close)
+                
+            if self.animationDuration is None or self.animationDuration < 0:
+                self._performClose()
+                return
+                
+            self._fadeOutAnimationRunning = True
+            
+            # Stop any ongoing animations
+            if self.opacityAni.state() == QPropertyAnimation.Running:
+                self.opacityAni.stop()
+            
+            # Start fade out animation
+            self.opacityAni.setStartValue(1.0)
+            self.opacityAni.setEndValue(0.0)
             self.opacityAni.start()
 
-        def eventFilter(self, obj, e: QEvent):
-            # if obj is self.parent():
-            #     if e.type() in [QEvent.Resize, QEvent.WindowStateChange]:
-            #         self.adjustSizeToContent()
+        def _onFadeOutFinished(self):
+            """Called after fade out animation completes"""
+            self._fadeOutAnimationRunning = False
+            self._performClose()
 
-            return super().eventFilter(obj, e)
+        def _performClose(self):
+            """Actually close the modal and clean up"""
+            if self._is_closing:
+                return
+                
+            self._is_closing = True
+            
+            # Stop auto-close timer if it exists
+            if self._autoCloseTimer:
+                self._autoCloseTimer.stop()
+                self._autoCloseTimer.deleteLater()
+                self._autoCloseTimer = None
+            
+            # Notify manager to remove this modal and update positions
+            if self.position is not None:
+                try:
+                    manager = QCustomModalsManager.make(self.position)
+                    manager.remove(self)
+                except Exception as ex:
+                    pass
+            
+            self.closedSignal.emit()
+            
+            # Clear graphics effect before deletion
+            self.setGraphicsEffect(None)
+            
+            # Hide immediately
+            self.hide()
+            
+            # Schedule deletion
+            self.deleteLater()
 
         def closeEvent(self, e):
-            self.closedSignal.emit()
-            self.deleteLater()
+            """Handle close event"""
+            if self._is_closing:
+                e.accept()
+                return
+            
+            self._performClose()
+            e.accept()
+
+        def forceClose(self):
+            """Force close immediately without any animation"""
+            self._is_manual_close = True
+            self._performClose()
 
         def showEvent(self, e):
             self.adjustSizeToContent()
-            if self.animationDuration > 0:
-                QTimer.singleShot(self.animationDuration, self.fadeOut)
+            
+            # Set up auto-close timer only if not manually closed and duration is positive
+            if not self._is_manual_close and self.animationDuration and self.animationDuration > 0:
+                self._autoCloseTimer = QTimer(self)
+                self._autoCloseTimer.setSingleShot(True)
+                self._autoCloseTimer.timeout.connect(self.fadeOut)
+                self._autoCloseTimer.start(self.animationDuration)
 
-            if self.position != None:
+            if self.position is not None:
                 manager = QCustomModalsManager.make(self.position)
                 manager.add(self)
             
@@ -249,7 +297,6 @@ class QCustomModals:
                 pixmap = icon.pixmap(QSize(32, 32))
                 self.iconlabel.setPixmap(pixmap)
             elif isinstance(icon, str):
-                # Assuming icon is a path to an image file
                 pixmap = QPixmap(icon).scaled(QSize(32, 32))
                 self.iconlabel.setPixmap(pixmap)
             else:
@@ -271,7 +318,6 @@ class QCustomModals:
 
         def loadForm(self, form):
             self.showForm = form
-            # load form
             if self.showForm:
                 self.form = LoadForm(self.showForm)
                 self.verticalLayout_2.addWidget(self.form) 
@@ -290,9 +336,8 @@ class QCustomModals:
             else: self.iconlabel.setPixmap(self.infoIcon)
             
             lightStyle = """
-                /* Information Modal */
                 InformationModal {
-                    background-color: #E6F7FF; /* Light blue or teal */
+                    background-color: #E6F7FF;
                 }
                 InformationModal * {
                     color: #333333;
@@ -302,10 +347,10 @@ class QCustomModals:
             
             darkStyle = """
                 InformationModal {
-                    background-color: #2799be; /* Light blue or teal for improved contrast */
+                    background-color: #2799be;
                 }
                 InformationModal * {
-                    color: #F5F5F5; /* Whitish color */
+                    color: #F5F5F5;
                     background-color: transparent;
                 }
             """
@@ -323,22 +368,20 @@ class QCustomModals:
             else: self.iconlabel.setPixmap(self.successIcon)
             
             lightStyle = """
-                /* Success Modal */
                 SuccessModal {
-                    background-color: #C8E6C9; /* Light green */
+                    background-color: #C8E6C9;
                 }
                 SuccessModal * {
-                    color: #333333; /* Dark green or gray */
+                    color: #333333;
                     background-color: transparent;
                 }
             """
             darkStyle = """
-                /* Success Modal */
                 SuccessModal {
-                    background-color: #29b328; /* Dark green for improved contrast */
+                    background-color: #29b328;
                 }
                 SuccessModal * {
-                    color: #F5F5F5; /* Whitish color */
+                    color: #F5F5F5;
                     background-color: transparent;
                 }
             """
@@ -356,22 +399,20 @@ class QCustomModals:
             else: self.iconlabel.setPixmap(self.warningIcon)
             
             lightStyle = """
-                /* Warning Modal */
                 WarningModal {
-                    background-color: #FFF9E1; /* Light yellow */
+                    background-color: #FFF9E1;
                 }
                 WarningModal * {
-                    color: #333333; /* Dark yellow or gray */
+                    color: #333333;
                     background-color: transparent;
                 }
             """
             darkStyle = """
-                /* Warning Modal */
                 WarningModal {
-                    background-color: #bb8128; /* Light yellow for improved contrast */
+                    background-color: #bb8128;
                 }
                 WarningModal * {
-                    color: #F5F5F5; /* Whitish color */
+                    color: #F5F5F5;
                     background-color: transparent;
                 }
             """
@@ -389,22 +430,20 @@ class QCustomModals:
             else: self.iconlabel.setPixmap(self.errorIcon)
             
             lightStyle = """
-                /* Error Modal */
                 ErrorModal {
-                    background-color: #FFEBEE; /* Light red or pink */
+                    background-color: #FFEBEE;
                 }
                 ErrorModal * {
-                    color: #333333; /* Dark red or gray */
+                    color: #333333;
                     background-color: transparent;
                 }
             """
             darkStyle = """
-                /* Error Modal */
                 ErrorModal {
-                    background-color: #bb221d; /* Light red or pink for improved contrast */
+                    background-color: #bb221d;
                 }
                 ErrorModal * {
-                    color: #F5F5F5; /* Whitish color */
+                    color: #F5F5F5;
                     background-color: transparent;
                 }
             """
@@ -421,10 +460,7 @@ class QCustomModals:
             self.setWindowTitle("Custom")
             if self.modalIcon: self.iconlabel.setPixmap(QPixmap(self.modalIcon))
 
-            style = """
-                
-            """
-
+            style = ""
             self.setStyleSheet(style)
             
 
@@ -433,126 +469,142 @@ class QCustomModalsManager(QObject):
     managers = {}
 
     def __new__(cls, *args, **kwargs):
-        # Singleton pattern: ensures only one instance of the class is created
         if cls._instance is None:
             cls._instance = super(QCustomModalsManager, cls).__new__(cls, *args, **kwargs)
             cls._instance.__initialized = False
-
         return cls._instance
 
     def __init__(self):
-        # Initialize the class attributes and instance variables
         if self.__initialized:
             return
 
         super().__init__()
         self.spacing = 16
         self.margin = 24
-        self.QCustomModalss = weakref.WeakKeyDictionary()  # Dictionary to hold modal instances
-        self.aniGroups = weakref.WeakKeyDictionary()       # Dictionary to hold animation groups
-        self.slideAnis = []  # List to hold slide animations
-        self.dropAnis = []   # List to hold drop animations
+        self.QCustomModalss = weakref.WeakKeyDictionary()
+        self.aniGroups = weakref.WeakKeyDictionary()
+        self.slideAnis = []
+        self.dropAnis = []
         self.__initialized = True
 
     def add(self, QCustomModals: QCustomModals):
-        """Add an info bar"""
-        p = QCustomModals.parent()    # Get the parent widget
+        p = QCustomModals.parent()
         if not p:
             return
 
-        # Initialize dictionaries if the parent widget is not already in them
         if p not in self.QCustomModalss:
-            p.installEventFilter(self)  # Install event filter on parent widget
-            self.QCustomModalss[p] = [] # List to hold modal instances for this parent
-            self.aniGroups[p] = QParallelAnimationGroup(self) # Animation group for this parent
+            p.installEventFilter(self)
+            self.QCustomModalss[p] = []
+            self.aniGroups[p] = QParallelAnimationGroup(self)
 
-        # Check if the modal instance already exists for this parent
         if QCustomModals in self.QCustomModalss[p]:
             return
 
-        # Add drop animation if there are already existing modal instances for this parent
         if self.QCustomModalss[p]:
-            dropAni = QPropertyAnimation(QCustomModals, b'pos') # Create a drop animation
-            dropAni.setDuration(200)  # Set the duration of the animation
+            dropAni = QPropertyAnimation(QCustomModals, b'pos')
+            dropAni.setDuration(200)
+            dropAni.setEasingCurve(QEasingCurve.OutCubic)
 
-            self.aniGroups[p].addAnimation(dropAni)  # Add the drop animation to the animation group
-            self.dropAnis.append(dropAni)           # Add the drop animation to the list
+            self.aniGroups[p].addAnimation(dropAni)
+            self.dropAnis.append(dropAni)
+            QCustomModals.setProperty('dropAni', dropAni)
 
-            QCustomModals.setProperty('dropAni', dropAni)  # Set a property to hold the drop animation
+        self.QCustomModalss[p].append(QCustomModals)
+        slideAni = self.createSlideAni(QCustomModals)
+        self.slideAnis.append(slideAni)
 
-        # Add slide animation
-        self.QCustomModalss[p].append(QCustomModals)    # Add the modal instance to the list
-        slideAni = self.createSlideAni(QCustomModals)  # Create a slide animation
-        self.slideAnis.append(slideAni)                 # Add the slide animation to the list
+        QCustomModals.setProperty('slideAni', slideAni)
+        QCustomModals.closedSignal.connect(lambda: self.remove(QCustomModals))
 
-        QCustomModals.setProperty('slideAni', slideAni)  # Set a property to hold the slide animation
-        QCustomModals.closedSignal.connect(lambda: self.remove(QCustomModals))  # Connect close signal to remove method
-
-        slideAni.start()  # Start the slide animation
+        slideAni.start()
 
     def remove(self, QCustomModals: QCustomModals):
-        """Remove an info bar"""
-        p = QCustomModals.parent()  # Get the parent widget
-        if p not in self.QCustomModalss:
+        p = QCustomModals.parent()
+        if p is None or p not in self.QCustomModalss:
             return
 
         if QCustomModals not in self.QCustomModalss[p]:
             return
 
-        # Remove the modal instance from the list
-        self.QCustomModalss[p].remove(QCustomModals)
+        # Store the list of remaining modals before removal
+        remaining_modals = [m for m in self.QCustomModalss[p] if m != QCustomModals]
 
-        # Remove drop animation
-        dropAni = QCustomModals.property('dropAni')   # Get the drop animation property
-        if dropAni:
-            self.aniGroups[p].removeAnimation(dropAni)  # Remove the drop animation from the animation group
-            self.dropAnis.remove(dropAni)              # Remove the drop animation from the list
+        # Remove from list
+        if QCustomModals in self.QCustomModalss[p]:
+            self.QCustomModalss[p].remove(QCustomModals)
 
-        # Remove slide animation
-        slideAni = QCustomModals.property('slideAni') # Get the slide animation property
-        if slideAni:
-            self.slideAnis.remove(slideAni)  # Remove the slide animation from the list
+        # Clean up animations
+        dropAni = QCustomModals.property('dropAni')
+        if dropAni and p in self.aniGroups:
+            self.aniGroups[p].removeAnimation(dropAni)
+            if dropAni in self.dropAnis:
+                self.dropAnis.remove(dropAni)
 
-        # Adjust the position of the remaining info bars
-        self.updateDropAni(p)
-        self.aniGroups[p].start()  # Start the animation group
+        slideAni = QCustomModals.property('slideAni')
+        if slideAni and slideAni in self.slideAnis:
+            self.slideAnis.remove(slideAni)
+
+        # Clear properties
+        QCustomModals.setProperty('dropAni', None)
+        QCustomModals.setProperty('slideAni', None)
+
+        # Immediately update positions of remaining modals
+        if remaining_modals:
+            # Calculate and set new positions for all remaining modals
+            for modal in remaining_modals:
+                new_pos = self.modalPosition(modal)
+                modal.move(new_pos)
+            
+            # Start animation group if it exists and has animations
+            if p in self.aniGroups and self.aniGroups[p].animationCount() > 0:
+                self.aniGroups[p].start()
+        else:
+            # No modals left, clean up
+            if p in self.QCustomModalss:
+                del self.QCustomModalss[p]
+            if p in self.aniGroups:
+                self.aniGroups[p].deleteLater()
+                del self.aniGroups[p]
 
     def createSlideAni(self, QCustomModals: QCustomModals):
-        """Create a slide animation for the given modal"""
-        slideAni = QPropertyAnimation(QCustomModals, b'pos')  # Create a slide animation
-        
-        # Set easing curve for smooth animation
-        easing_curve = QEasingCurve.OutCubic
-        slideAni.setEasingCurve(easing_curve)
-        
-        slideAni.setDuration(500)  # Set the duration of the animation
+        slideAni = QPropertyAnimation(QCustomModals, b'pos')
+        slideAni.setEasingCurve(QEasingCurve.OutCubic)
+        slideAni.setDuration(300)
 
-        # Set initial position and end value for the animation
         start_pos = self.slideStartPos(QCustomModals)
         end_pos = self.modalPosition(QCustomModals)
         
-        # Ensure that the initial position is set correctly
         QCustomModals.move(start_pos)
         
-        # Set start and end values for the animation
         slideAni.setStartValue(start_pos)
         slideAni.setEndValue(end_pos)
 
         return slideAni
 
     def updateDropAni(self, parent):
-        """Update drop animation for the remaining info bars"""
+        if parent not in self.QCustomModalss:
+            return
+            
         for bar in self.QCustomModalss[parent]:
-            ani = bar.property('dropAni')  # Get the drop animation property
+            ani = bar.property('dropAni')
             if not ani:
                 continue
 
-            ani.setStartValue(bar.pos())   # Set the start value of the animation
-            ani.setEndValue(self.modalPosition(bar))  # Set the end value of the animation
+            current_pos = bar.pos()
+            new_pos = self.modalPosition(bar)
+            
+            if current_pos != new_pos:
+                ani.setStartValue(current_pos)
+                ani.setEndValue(new_pos)
 
     def modalPosition(self, QCustomModals: QCustomModals, parentSize=None) -> QPoint:
-        """Return the position of the modal"""
         position = QCustomModals.position
+        parent = QCustomModals.parent()
+        
+        if parent is None:
+            return QCustomModals.pos()
+            
+        parentSize = parentSize or parent.size()
         
         if position == 'top-right':
             x = parentSize.width() - QCustomModals.width() - self.margin
@@ -582,224 +634,240 @@ class QCustomModalsManager(QObject):
             x = (parentSize.width() - QCustomModals.width()) / 2
             y = parentSize.height() - QCustomModals.height() - self.margin
         else:
-            # Default to top-right position if position is not recognized
             x = parentSize.width() - QCustomModals.width() - self.margin
             y = self.margin
 
-        return QPoint(x, y)
+        # Adjust y position for stacked modals
+        if parent in self.QCustomModalss and QCustomModals in self.QCustomModalss[parent]:
+            index = self.QCustomModalss[parent].index(QCustomModals)
+            if position in ['top-right', 'top-left', 'top-center']:
+                offset_y = y
+                for i in range(index):
+                    if i < len(self.QCustomModalss[parent]):
+                        modal = self.QCustomModalss[parent][i]
+                        if modal and modal is not QCustomModals:
+                            offset_y += modal.height() + self.spacing
+                y = offset_y
+            elif position in ['bottom-right', 'bottom-left', 'bottom-center']:
+                offset_y = y
+                for i in range(index):
+                    if i < len(self.QCustomModalss[parent]):
+                        modal = self.QCustomModalss[parent][i]
+                        if modal and modal is not QCustomModals:
+                            offset_y -= modal.height() + self.spacing
+                y = offset_y
 
+        return QPoint(int(x), int(y))
 
     def slideStartPos(self, QCustomModals: QCustomModals) -> QPoint:
-        """Return the start position of slide animation"""
+        target_pos = self.modalPosition(QCustomModals)
+        
         if QCustomModals.position.startswith('top'):
-            return QPoint(QCustomModals.pos().x(), -QCustomModals.height())
-        elif QCustomModals.position.startswith('center'):
-            return QPoint(QCustomModals.pos().x(), QCustomModals.parent().height())
+            # Slide down from above final position
+            return QPoint(target_pos.x(), target_pos.y() - QCustomModals.height())
         elif QCustomModals.position.startswith('bottom'):
-            return QPoint(QCustomModals.pos().x(), QCustomModals.parent().height() + QCustomModals.height())
+            # Slide up from below final position
+            return QPoint(target_pos.x(), target_pos.y() + QCustomModals.height())
+        elif QCustomModals.position.startswith('center'):
+            # For center positions, slide from appropriate direction
+            if QCustomModals.position.endswith('left'):
+                return QPoint(target_pos.x() - QCustomModals.width(), target_pos.y())
+            elif QCustomModals.position.endswith('right'):
+                return QPoint(target_pos.x() + QCustomModals.width(), target_pos.y())
+            else:
+                # Center-center slides from above
+                return QPoint(target_pos.x(), target_pos.y() - QCustomModals.height())
         else:
-            # Default to top position if position is not recognized
-            return QPoint(self.pos().x(), -self.height())
+            # Default slide from top
+            return QPoint(target_pos.x(), target_pos.y() - QCustomModals.height())
 
     def eventFilter(self, obj, e: QEvent):
-        """Event filter to handle resize and window state change events"""
         if obj not in self.QCustomModalss:
             return False
 
         if e.type() in [QEvent.Resize, QEvent.WindowStateChange]:
             size = e.size() if e.type() == QEvent.Resize else None
-            for bar in self.QCustomModalss[obj]:
-                bar.move(self.modalPosition(bar, size))
+            modals = list(self.QCustomModalss[obj])
+            for modal in modals:
+                if modal and not modal._is_closing:
+                    new_pos = self.modalPosition(modal, size)
+                    modal.move(new_pos)
 
         return super().eventFilter(obj, e)
 
     @classmethod
     def register(cls, name):
-        """Register menu animation manager"""
         def wrapper(Manager):
             if name not in cls.managers:
                 cls.managers[name] = Manager
-
             return Manager
-
         return wrapper
 
     @classmethod
     def make(cls, position: str):
-        """Create info bar manager according to the display position"""
         if position not in cls.managers:
             raise ValueError(f'`{position}` is an invalid animation type.')
-
         return cls.managers[position]()
 
 @QCustomModalsManager.register("center-center")
 class CenterCenterQCustomModalsManager(QCustomModalsManager):
-    """Center position info bar manager"""
-
     def modalPosition(self, QCustomModals: QCustomModals, parentSize=None):
-        """Calculate the position of the modal for center-center"""
         p = QCustomModals.parent()
+        if p is None:
+            return QCustomModals.pos()
         parentSize = parentSize or p.size()
-
         x = (parentSize.width() - QCustomModals.width()) // 2
         y = (parentSize.height() - QCustomModals.height()) // 2
-
         return QPoint(x, y)
 
     def slideStartPos(self, QCustomModals: QCustomModals):
-        """Calculate the start position of slide animation for center-center"""
-        return QPoint(QCustomModals.pos().x(), -QCustomModals.height())
+        target_pos = self.modalPosition(QCustomModals)
+        return QPoint(target_pos.x(), target_pos.y() - QCustomModals.height())
 
 @QCustomModalsManager.register("top-center")
 class TopQCustomModalsManager(QCustomModalsManager):
-    """ Top position info bar manager """
-
     def modalPosition(self, QCustomModals: QCustomModals, parentSize=None):
         p = QCustomModals.parent()
+        if p is None or p not in self.QCustomModalss:
+            return QCustomModals.pos()
         parentSize = parentSize or p.size()
-
-        x = (QCustomModals.parent().width() - QCustomModals.width()) // 2
+        x = (parentSize.width() - QCustomModals.width()) // 2
         y = self.margin
-        index = self.QCustomModalss[p].index(QCustomModals)
-        for bar in self.QCustomModalss[p][0:index]:
-            y += (bar.height() + self.spacing)
-
+        if QCustomModals in self.QCustomModalss[p]:
+            index = self.QCustomModalss[p].index(QCustomModals)
+            for bar in self.QCustomModalss[p][0:index]:
+                if bar is not None and bar is not QCustomModals:
+                    y += (bar.height() + self.spacing)
         return QPoint(x, y)
 
     def slideStartPos(self, QCustomModals: QCustomModals):
-       return QPoint(QCustomModals.pos().x(), -QCustomModals.height())
-
+        target_pos = self.modalPosition(QCustomModals)
+        return QPoint(target_pos.x(), target_pos.y() - QCustomModals.height())
 
 @QCustomModalsManager.register("top-right")
 class TopRightQCustomModalsManager(QCustomModalsManager):
-    """ Top right position info bar manager """
-
     def modalPosition(self, QCustomModals: QCustomModals, parentSize=None):
         p = QCustomModals.parent()
+        if p is None or p not in self.QCustomModalss:
+            return QCustomModals.pos()
         parentSize = parentSize or p.size()
-
         x = parentSize.width() - QCustomModals.width() - self.margin
         y = self.margin
-        index = self.QCustomModalss[p].index(QCustomModals)
-        for bar in self.QCustomModalss[p][0:index]:
-            y += (bar.height() + self.spacing)
-
+        if QCustomModals in self.QCustomModalss[p]:
+            index = self.QCustomModalss[p].index(QCustomModals)
+            for bar in self.QCustomModalss[p][0:index]:
+                if bar is not None and bar is not QCustomModals:
+                    y += (bar.height() + self.spacing)
         return QPoint(x, y)
 
     def slideStartPos(self, QCustomModals: QCustomModals):
-        return QPoint(QCustomModals.parent().width(), self.modalPosition(QCustomModals).y())
-
+        target_pos = self.modalPosition(QCustomModals)
+        return QPoint(target_pos.x() + QCustomModals.width(), target_pos.y())
 
 @QCustomModalsManager.register("bottom-right")
 class BottomRightQCustomModalsManager(QCustomModalsManager):
-    """ Bottom right position info bar manager """
-
     def modalPosition(self, QCustomModals: QCustomModals, parentSize=None) -> QPoint:
         p = QCustomModals.parent()
+        if p is None or p not in self.QCustomModalss:
+            return QCustomModals.pos()
         parentSize = parentSize or p.size()
-
         x = parentSize.width() - QCustomModals.width() - self.margin
         y = parentSize.height() - QCustomModals.height() - self.margin
-
-        index = self.QCustomModalss[p].index(QCustomModals)
-        for bar in self.QCustomModalss[p][0:index]:
-            y -= (bar.height() + self.spacing)
-
+        if QCustomModals in self.QCustomModalss[p]:
+            index = self.QCustomModalss[p].index(QCustomModals)
+            for bar in self.QCustomModalss[p][0:index]:
+                if bar is not None and bar is not QCustomModals:
+                    y -= (bar.height() + self.spacing)
         return QPoint(x, y)
 
     def slideStartPos(self, QCustomModals: QCustomModals):
-        return QPoint(QCustomModals.parent().width(), self.modalPosition(QCustomModals).y())
-
+        target_pos = self.modalPosition(QCustomModals)
+        return QPoint(target_pos.x() + QCustomModals.width(), target_pos.y())
 
 @QCustomModalsManager.register("top-left")
 class TopLeftQCustomModalsManager(QCustomModalsManager):
-    """ Top left position info bar manager """
-
     def modalPosition(self, QCustomModals: QCustomModals, parentSize=None) -> QPoint:
         p = QCustomModals.parent()
+        if p is None or p not in self.QCustomModalss:
+            return QCustomModals.pos()
         parentSize = parentSize or p.size()
-
         y = self.margin
-        index = self.QCustomModalss[p].index(QCustomModals)
-
-        for bar in self.QCustomModalss[p][0:index]:
-            y += (bar.height() + self.spacing)
-
+        if QCustomModals in self.QCustomModalss[p]:
+            index = self.QCustomModalss[p].index(QCustomModals)
+            for bar in self.QCustomModalss[p][0:index]:
+                if bar is not None and bar is not QCustomModals:
+                    y += (bar.height() + self.spacing)
         return QPoint(self.margin, y)
 
     def slideStartPos(self, QCustomModals: QCustomModals):
-        return QPoint(-QCustomModals.width(), self.modalPosition(QCustomModals).y())
-
+        target_pos = self.modalPosition(QCustomModals)
+        return QPoint(target_pos.x() - QCustomModals.width(), target_pos.y())
 
 @QCustomModalsManager.register("bottom-left")
 class BottomLeftQCustomModalsManager(QCustomModalsManager):
-    """ Bottom left position info bar manager """
-
     def modalPosition(self, QCustomModals: QCustomModals, parentSize: QSize = None) -> QPoint:
         p = QCustomModals.parent()
+        if p is None or p not in self.QCustomModalss:
+            return QCustomModals.pos()
         parentSize = parentSize or p.size()
-
         y = parentSize.height() - QCustomModals.height() - self.margin
-        index = self.QCustomModalss[p].index(QCustomModals)
-
-        for bar in self.QCustomModalss[p][0:index]:
-            y -= (bar.height() + self.spacing)
-
+        if QCustomModals in self.QCustomModalss[p]:
+            index = self.QCustomModalss[p].index(QCustomModals)
+            for bar in self.QCustomModalss[p][0:index]:
+                if bar is not None and bar is not QCustomModals:
+                    y -= (bar.height() + self.spacing)
         return QPoint(self.margin, y)
 
     def slideStartPos(self, QCustomModals: QCustomModals):
-        return QPoint(-QCustomModals.width(), self.modalPosition(QCustomModals).y())
-
+        target_pos = self.modalPosition(QCustomModals)
+        return QPoint(target_pos.x() - QCustomModals.width(), target_pos.y())
 
 @QCustomModalsManager.register("bottom-center")
 class BottomQCustomModalsManager(QCustomModalsManager):
-    """ Bottom position info bar manager """
-
     def modalPosition(self, QCustomModals: QCustomModals, parentSize: QSize = None) -> QPoint:
         p = QCustomModals.parent()
+        if p is None or p not in self.QCustomModalss:
+            return QCustomModals.pos()
         parentSize = parentSize or p.size()
-
         x = (parentSize.width() - QCustomModals.width()) // 2
         y = parentSize.height() - QCustomModals.height() - self.margin
-        index = self.QCustomModalss[p].index(QCustomModals)
-
-        for bar in self.QCustomModalss[p][0:index]:
-            y -= (bar.height() + self.spacing)
-
+        if QCustomModals in self.QCustomModalss[p]:
+            index = self.QCustomModalss[p].index(QCustomModals)
+            for bar in self.QCustomModalss[p][0:index]:
+                if bar is not None and bar is not QCustomModals:
+                    y -= (bar.height() + self.spacing)
         return QPoint(x, y)
 
     def slideStartPos(self, QCustomModals: QCustomModals):
-        return QPoint(self.modalPosition(QCustomModals).x() + self.spacing, self.modalPosition(QCustomModals).y())
+        target_pos = self.modalPosition(QCustomModals)
+        return QPoint(target_pos.x(), target_pos.y() + QCustomModals.height())
 
 @QCustomModalsManager.register("center-left")
 class CenterLeftQCustomModalsManager(QCustomModalsManager):
-    """ Center left position info bar manager """
-
     def modalPosition(self, QCustomModals, parentSize=None):
         p = QCustomModals.parent()
+        if p is None:
+            return QCustomModals.pos()
         parentSize = parentSize or p.size()
-
         x = self.margin
         y = (parentSize.height() - QCustomModals.height()) // 2
-
         return QPoint(x, y)
 
     def slideStartPos(self, QCustomModals):
-        return QPoint(-QCustomModals.width(), QCustomModals.pos().y())
+        target_pos = self.modalPosition(QCustomModals)
+        return QPoint(target_pos.x() - QCustomModals.width(), target_pos.y())
 
 @QCustomModalsManager.register("center-right")
 class CenterRightQCustomModalsManager(QCustomModalsManager):
-    """ Center right position info bar manager """
-
     def modalPosition(self, QCustomModals, parentSize=None):
         p = QCustomModals.parent()
+        if p is None:
+            return QCustomModals.pos()
         parentSize = parentSize or p.size()
-
         x = parentSize.width() - QCustomModals.width() - self.margin
         y = (parentSize.height() - QCustomModals.height()) // 2
-
         return QPoint(x, y)
 
     def slideStartPos(self, QCustomModals):
-        return QPoint(QCustomModals.parent().width(), QCustomModals.pos().y())
-    
+        target_pos = self.modalPosition(QCustomModals)
+        return QPoint(target_pos.x() + QCustomModals.width(), target_pos.y())

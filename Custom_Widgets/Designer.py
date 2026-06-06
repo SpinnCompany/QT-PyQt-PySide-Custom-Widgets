@@ -43,7 +43,7 @@ def start_designer(load_plugins: bool = False, process_mode: str = "normal"):
             
             qt_plugins_base = pyside6_dir / "designer" / "plugins"
         except ImportError:
-            sys.exit("❌ PySide6 not found in current venv.")
+            sys.exit(" PySide6 not found in current venv.")
 
     elif qt_lib == "PySide2":
         possible_paths.append(
@@ -62,7 +62,7 @@ def start_designer(load_plugins: bool = False, process_mode: str = "normal"):
             
             qt_plugins_base = pyside2_dir / "designer" / "plugins"
         except ImportError:
-            sys.exit("❌ PySide2 not found in current venv.")
+            sys.exit(" PySide2 not found in current venv.")
 
     elif qt_lib == "PyQt6":
         possible_paths.append(
@@ -81,7 +81,7 @@ def start_designer(load_plugins: bool = False, process_mode: str = "normal"):
             
             qt_plugins_base = None
         except ImportError:
-            sys.exit("❌ PyQt6 not found in current venv.")
+            sys.exit(" PyQt6 not found in current venv.")
 
     elif qt_lib == "PyQt5":
         possible_paths.append(
@@ -100,22 +100,22 @@ def start_designer(load_plugins: bool = False, process_mode: str = "normal"):
             
             qt_plugins_base = None
         except ImportError:
-            sys.exit("❌ PyQt5 not found in current venv.")
+            sys.exit(" PyQt5 not found in current venv.")
 
     else:
-        sys.exit(f"❌ Unsupported Qt library: {qt_lib}")
+        sys.exit(f" Unsupported Qt library: {qt_lib}")
 
     # Find designer executable
     designer_exe = None
     for path in possible_paths:
         if path.exists():
             designer_exe = path
-            print(f"✅ Found designer at: {designer_exe}")
+            print(f" Found designer at: {designer_exe}")
             break
     
     if not designer_exe and process_mode == "normal":
         paths_str = "\n  ".join(str(p) for p in possible_paths)
-        sys.exit(f"❌ Designer executable not found in any of these locations:\n  {paths_str}")
+        sys.exit(f" Designer executable not found in any of these locations:\n  {paths_str}")
 
     # --- Setup environment variables ---
     env = os.environ.copy()
@@ -135,17 +135,17 @@ def start_designer(load_plugins: bool = False, process_mode: str = "normal"):
         print(f"Plugins dir: {plugins_dir}")
         if plugins_dir.exists():
             plugins_paths.append(str(plugins_dir))
-            print(f"✅ Found Custom_Widgets plugins at: {plugins_dir}")
+            print(f" Found Custom_Widgets plugins at: {plugins_dir}")
         else:
-            print(f"⚠️ Plugins directory not found: {plugins_dir}")
+            print(f" Plugins directory not found: {plugins_dir}")
     
     # CRITICAL: Set PYSIDE_DESIGNER_PLUGINS for Windows
     if plugins_paths:
         plugins_env = os.pathsep.join(plugins_paths)
         env["PYSIDE_DESIGNER_PLUGINS"] = plugins_env
-        print(f"✅ PYSIDE_DESIGNER_PLUGINS set to: {plugins_env}")
+        print(f" PYSIDE_DESIGNER_PLUGINS set to: {plugins_env}")
     else:
-        print("⚠️ No plugin paths found - custom widgets may not appear")
+        print(" No plugin paths found - custom widgets may not appear")
 
     # --- Launch Designer based on process mode ---
     if process_mode == "qprocess":
@@ -164,7 +164,7 @@ def start_designer(load_plugins: bool = False, process_mode: str = "normal"):
         designer_process.setProcessEnvironment(qenv)
         designer_process.setProcessChannelMode(QProcess.ProcessChannelMode.ForwardedChannels)
         
-        print(f"🚀 Launching Qt Designer using QProcess: {designer_cmd}")
+        print(f" Launching Qt Designer using QProcess: {designer_cmd}")
         
         # On Windows, use the full path if available
         if sys.platform.startswith("win") and designer_exe:
@@ -174,16 +174,16 @@ def start_designer(load_plugins: bool = False, process_mode: str = "normal"):
         
         if not designer_process.waitForStarted(30000):
             error_string = designer_process.errorString()
-            print(f"❌ Designer process failed to start: {error_string}")
+            print(f" Designer process failed to start: {error_string}")
             sys.exit(1)
         
-        print("✅ Qt Designer started successfully")
+        print(" Qt Designer started successfully")
         designer_process.waitForFinished(-1)
         sys.exit(designer_process.exitCode())
         
     else:
         # Use normal subprocess mode
-        print(f"🚀 Launching Qt Designer using subprocess from: {designer_exe}")
+        print(f" Launching Qt Designer using subprocess from: {designer_exe}")
         
         # On Windows, environment variables need to be passed explicitly
         if sys.platform.startswith("win"):

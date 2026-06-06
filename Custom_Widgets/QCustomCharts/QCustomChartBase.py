@@ -15,6 +15,7 @@ from .QCustomChartView import QCustomChartView
 from .QCustomChartTooltip import QCustomChartTooltip
 from .QCustomLegendManager import QCustomLegendManager
 
+from ..QCustomTheme import QCustomTheme
 
 class QCustomChartBase(QWidget, QCustomChartConstants):
     """
@@ -45,7 +46,6 @@ class QCustomChartBase(QWidget, QCustomChartConstants):
         
         # Toolbar
         self._toolbar = QCustomChartToolbar(self)
-        
         # Layout
         self._layout = QVBoxLayout(self)
         self._layout.setContentsMargins(0, 0, 0, 0)

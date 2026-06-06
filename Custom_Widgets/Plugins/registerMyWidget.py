@@ -420,4 +420,4 @@ try:
 except Exception as e:
     logException(e, message="Error registering QCustomFlowWidget")
 
-logInfo("✓ All chart widgets registered successfully!")
+logInfo(" All chart widgets registered successfully!")

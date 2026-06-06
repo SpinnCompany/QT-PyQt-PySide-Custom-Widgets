@@ -65,7 +65,7 @@ class FileMonitor(QObject):
         self.folder_watcher = QFileSystemWatcher([folder_to_monitor])
         self.folder_watcher.directoryChanged.connect(self.on_folder_change)
         
-        logInfo(f"📁 Monitoring folder: {folder_to_monitor}")
+        logInfo(f" Monitoring folder: {folder_to_monitor}")
         
         # Initially monitor the files already in the folder
         self.monitor_files(self.files_to_monitor)
@@ -91,28 +91,28 @@ class FileMonitor(QObject):
         for watcher in self.fileSystemWatchers:
             watcher.fileChanged.connect(self.on_file_change)
 
-        logSuccess(f"✅ Monitoring {len(self.files_to_monitor)} UI files:")
+        logSuccess(f" Monitoring {len(self.files_to_monitor)} UI files:")
         for file in self.files_to_monitor:
             logInfo(f"   • {os.path.basename(file)}")
 
     def on_file_change(self, path):
         """Handle file modification events."""
         logInfo("")
-        logInfo("🔄 " + "=" * 50)
-        logInfo(f"🔄 FILE CHANGE DETECTED: {os.path.basename(path)}")
-        logInfo("🔄 " + "=" * 50)
+        logInfo(" " + "=" * 50)
+        logInfo(f" FILE CHANGE DETECTED: {os.path.basename(path)}")
+        logInfo(" " + "=" * 50)
         
         # Handle file modification event - pass source output directory
         convert_file(path, self.src_output_dir)
         
-        logSuccess(f"✅ Successfully regenerated files from {os.path.basename(path)}")
-        logInfo("🔄 " + "=" * 50 + "\n")
+        logSuccess(f" Successfully regenerated files from {os.path.basename(path)}")
+        logInfo(" " + "=" * 50 + "\n")
         
         self.update_file_list()
 
     def on_folder_change(self, path):
         """Handle folder changes (files added/removed)."""
-        logInfo(f"📂 Folder change detected in: {path}")
+        logInfo(f" Folder change detected in: {path}")
         # Refresh the list of .ui files to monitor if a folder is updated
         self.update_file_list(fresh=True)
 
@@ -130,12 +130,12 @@ class FileMonitor(QObject):
             return
             
         if new_files:
-            logInfo(f"📄 New UI files detected: {len(new_files)}")
+            logInfo(f" New UI files detected: {len(new_files)}")
             for file in new_files:
                 logInfo(f"   + {os.path.basename(file)}")
                 
         if removed_files:
-            logInfo(f"📄 Removed UI files: {len(removed_files)}")
+            logInfo(f" Removed UI files: {len(removed_files)}")
             for file in removed_files:
                 logInfo(f"   - {os.path.basename(file)}")
             
@@ -171,7 +171,7 @@ def convert_file(path, src_output_dir="src"):
         path (str): Path to the UI file
         src_output_dir (str): Directory for output Python source files
     """
-    logInfo(f"🔧 Processing: {os.path.basename(path)}")
+    logInfo(f" Processing: {os.path.basename(path)}")
     
     # Load the UI file
     try:
@@ -465,7 +465,7 @@ def convert_file(path, src_output_dir="src"):
     # Generate Python source
     replace_attributes_values(path, replacements_list, src_output_dir=src_output_dir)
     
-    logSuccess(f"✨ Completed processing {os.path.basename(path)}")
+    logSuccess(f" Completed processing {os.path.basename(path)}")
     logInfo(f"   ├─ JSON: {json_file_name}")
     logInfo(f"   ├─ UI:   {new_file_name}")
     logInfo(f"   └─ Python: ui_{base_name}.py")
@@ -482,16 +482,16 @@ def start_file_listener(file_or_folder, qt_binding="PySide6", src_output_dir="sr
     if qt_binding is None:
         qt_binding = "PySide6"
     if qt_binding not in ["PySide6", "PySide2", "PyQt6", "PyQt5"]:
-        logError(f"❌ {qt_binding} is not a valid Qt binding/API Name")
+        logError(f" {qt_binding} is not a valid Qt binding/API Name")
         return
 
     qtpy.API_NAME = qt_binding
     os.environ['QT_API'] = qt_binding.lower()
 
     logInfo("")
-    logInfo("🚀 " + "=" * 60)
-    logInfo("🚀 STARTING CUSTOM WIDGETS FILE MONITOR")
-    logInfo("🚀 " + "=" * 60)
+    logInfo(" " + "=" * 60)
+    logInfo(" STARTING CUSTOM WIDGETS FILE MONITOR")
+    logInfo(" " + "=" * 60)
     logInfo(f"Qt Binding: {qt_binding}")
     logInfo(f"Source output: {os.path.abspath(src_output_dir)}")
 
@@ -510,17 +510,17 @@ def start_file_listener(file_or_folder, qt_binding="PySide6", src_output_dir="sr
             raise FileNotFoundError(f"The file {file_or_folder} does not exist.")
 
         files_to_monitor.append(file_or_folder)
-        logSuccess(f"📄 Monitoring single file: {file_or_folder}")
+        logSuccess(f" Monitoring single file: {file_or_folder}")
 
     elif os.path.isdir(file_or_folder):
         # If the provided path is a directory, get all .ui files in the folder
         ui_files = [f for f in os.listdir(file_or_folder) if f.lower().endswith(".ui")]
 
         if not ui_files:
-            logWarning("⚠️ No .ui files found in the specified folder.")
+            logWarning(" No .ui files found in the specified folder.")
             return
 
-        logSuccess(f"📂 Monitoring folder: {file_or_folder}")
+        logSuccess(f" Monitoring folder: {file_or_folder}")
         logInfo(f"Found {len(ui_files)} UI files:")
         for ui_file in ui_files:
             logInfo(f"   • {ui_file}")
@@ -528,7 +528,7 @@ def start_file_listener(file_or_folder, qt_binding="PySide6", src_output_dir="sr
             files_to_monitor.append(file_path)
 
     else:
-        logError("❌ Invalid path. Please provide a valid .ui file or folder.")
+        logError(" Invalid path. Please provide a valid .ui file or folder.")
         return
 
     # Create a QApplication instance
@@ -538,7 +538,7 @@ def start_file_listener(file_or_folder, qt_binding="PySide6", src_output_dir="sr
     file_monitor = FileMonitor(files_to_monitor, refresh=True, src_output_dir=src_output_dir)
 
     logInfo("")
-    logInfo("✅ File monitor is running. Press Ctrl+C to stop.")
+    logInfo(" File monitor is running. Press Ctrl+C to stop.")
     logInfo("⏳ Waiting for file changes...")
     logInfo("")
 
@@ -668,16 +668,16 @@ def start_ui_conversion(file_or_folder, qt_binding="PySide6", src_output_dir="sr
     if qt_binding is None:
         qt_binding = "PySide6"
     if qt_binding not in ["PySide6", "PySide2", "PyQt6", "PyQt5"]:
-        logError(f"❌ {qt_binding} is not a valid Qt binding/API Name")
+        logError(f" {qt_binding} is not a valid Qt binding/API Name")
         return
 
     qtpy.API_NAME = qt_binding
     os.environ['QT_API'] = qt_binding.lower()
 
     logInfo("")
-    logInfo("🔄 " + "=" * 60)
-    logInfo("🔄 CUSTOM WIDGETS UI CONVERSION")
-    logInfo("🔄 " + "=" * 60)
+    logInfo(" " + "=" * 60)
+    logInfo(" CUSTOM WIDGETS UI CONVERSION")
+    logInfo(" " + "=" * 60)
     logInfo(f"Qt Binding: {qt_binding}")
     logInfo(f"Source output: {os.path.abspath(src_output_dir)}")
 
@@ -690,16 +690,16 @@ def start_ui_conversion(file_or_folder, qt_binding="PySide6", src_output_dir="sr
             raise FileNotFoundError(f"The file {file_or_folder} does not exist.")
 
         files_to_convert.append(file_or_folder)
-        logSuccess(f"📄 Converting single file: {file_or_folder}")
+        logSuccess(f" Converting single file: {file_or_folder}")
 
     elif os.path.isdir(file_or_folder):
         ui_files = [f for f in os.listdir(file_or_folder) if f.lower().endswith(".ui")]
 
         if not ui_files:
-            logWarning("⚠️ No .ui files found in the specified folder.")
+            logWarning(" No .ui files found in the specified folder.")
             return
 
-        logSuccess(f"📂 Converting folder: {file_or_folder}")
+        logSuccess(f" Converting folder: {file_or_folder}")
         logInfo(f"Found {len(ui_files)} UI files:")
         for ui_file in ui_files:
             logInfo(f"   • {ui_file}")
@@ -707,7 +707,7 @@ def start_ui_conversion(file_or_folder, qt_binding="PySide6", src_output_dir="sr
             files_to_convert.append(file_path)
 
     else:
-        logError("❌ Invalid path. Please provide a valid .ui file or folder.")
+        logError(" Invalid path. Please provide a valid .ui file or folder.")
         return
     
     # Create necessary directories
@@ -739,8 +739,8 @@ def start_ui_conversion(file_or_folder, qt_binding="PySide6", src_output_dir="sr
             failed += 1
 
     logInfo("-" * 40)
-    logSuccess(f"✅ Conversion complete! Successful: {successful}, Failed: {failed}")
-    logInfo(f"📁 Output locations:")
+    logSuccess(f" Conversion complete! Successful: {successful}, Failed: {failed}")
+    logInfo(f" Output locations:")
     logInfo(f"   ├─ Python source: {os.path.abspath(src_output_dir)}")
     logInfo(f"   ├─ Modified UI:  {os.path.abspath(os.path.join('generated-files', 'ui'))}")
     logInfo(f"   └─ JSON data:    {os.path.abspath(os.path.join('generated-files', 'json'))}")
@@ -798,9 +798,9 @@ class QSsFileMonitor(QObject):
                 json_file_path = os.path.abspath(os.path.join(os.getcwd(), json_file))
                 if os.path.isfile(json_file_path):
                     self.qss_watcher.addPath(json_file_path)
-                    logInfo(f"📄 Live monitoring {json_file} for changes")
+                    logInfo(f" Live monitoring {json_file} for changes")
                 else:
-                    logError(f"❌ JSON file not found: {json_file_path}")
+                    logError(f" JSON file not found: {json_file_path}")
 
             # Connect signal
             try:
@@ -811,13 +811,13 @@ class QSsFileMonitor(QObject):
 
             self.qss_watcher.fileChanged.connect(self.qss_file_changed)
             self.qss_watcher.connected = True
-            logSuccess(f"✅ Live monitoring QSS/SCSS files")
+            logSuccess(f" Live monitoring QSS/SCSS files")
             logInfo(f"   • {os.path.basename(default_sass_path)}")
             for json_file in self.jsonStyleSheets:
                 logInfo(f"   • {json_file}")
 
         else:
-            logError(f"❌ SASS file not found: {default_sass_path}")
+            logError(f" SASS file not found: {default_sass_path}")
 
     def qss_file_changed(self, file_path, live_compile=False):
         """Handle QSS/SCSS file changes."""
@@ -826,18 +826,18 @@ class QSsFileMonitor(QObject):
             return
 
         logInfo("")
-        logInfo("🎨 " + "=" * 50)
-        logInfo(f"🎨 STYLE FILE CHANGED: {os.path.basename(file_path)}")
-        logInfo("🎨 " + "=" * 50)
+        logInfo(" " + "=" * 50)
+        logInfo(f" STYLE FILE CHANGED: {os.path.basename(file_path)}")
+        logInfo(" " + "=" * 50)
 
         if file_path.endswith('.json'):
-            logInfo("🔄 Reloading JSON settings...")
+            logInfo(" Reloading JSON settings...")
             QAppSettings.updateAppSettings(self, generateIcons=False, reloadJson=True)
-            logSuccess("✅ JSON settings reloaded")
+            logSuccess(" JSON settings reloaded")
         else:
-            logInfo("🔄 Recompiling styles...")
+            logInfo(" Recompiling styles...")
             QAppSettings.updateAppSettings(self, generateIcons=False, reloadJson=False)
-            logSuccess("✅ Styles recompiled")
+            logSuccess(" Styles recompiled")
 
     def stop_qss_file_listener(self):
         """Stop monitoring QSS/SCSS files."""

@@ -41,6 +41,32 @@ class QCustomComponentLoader(QWidget):
         
         self.applyThemeIcons()
 
+    def _normalize_path(self, path):
+        """Normalize file path to handle mixed separators and platform differences."""
+        if not path:
+            return path
+        
+        # Convert to string if needed
+        path = str(path)
+        
+        # Replace backslashes with forward slashes for consistent processing
+        normalized_path = path.replace('\\', '/')
+        
+        # Remove any duplicate slashes
+        while '//' in normalized_path:
+            normalized_path = normalized_path.replace('//', '/')
+        
+        # Get absolute path
+        try:
+            abs_path = get_absolute_path(normalized_path)
+            # Normalize again after get_absolute_path
+            if abs_path:
+                abs_path = os.path.normpath(abs_path)
+        except:
+            abs_path = os.path.normpath(normalized_path)
+        
+        return abs_path
+
     def showEvent(self, event):
         """Handle the show event to ensure designer mode is set up when widget becomes visible."""
         
@@ -100,10 +126,14 @@ class QCustomComponentLoader(QWidget):
             self._update_designer_label()
             return
 
+        # Normalize the file path if provided
+        if filePath:
+            filePath = self._normalize_path(filePath)
+
         # If in designer mode with preview but file path is invalid, show error label
         if is_in_designer(self) and self.previewComponent:
-            if filePath and not os.path.isfile(get_absolute_path(filePath)):
-                self._show_error_label(f"File not found: {filePath}")
+            if filePath and not os.path.isfile(filePath):
+                self._show_error_label(f"File not found: {os.path.basename(filePath)}")
                 return
             elif formClassName and not self._form_class:
                 self._show_error_label(f"Class not found: {formClassName}")
@@ -145,7 +175,7 @@ class QCustomComponentLoader(QWidget):
 
         # If filePath is provided, handle accordingly
         elif filePath is not None:
-            filePath = get_absolute_path(filePath)
+            # Store normalized path
             self._file_path = filePath
             
             # Check if file exists
@@ -287,6 +317,9 @@ class QCustomComponentLoader(QWidget):
 
     def _import_class_from_file(self, file_path, class_name=None):
         """Dynamically import a class from a specified Python file."""
+        # Normalize the file path first
+        file_path = self._normalize_path(file_path)
+        
         # Ensure the file exists
         if not os.path.isfile(file_path):
             logError(f"The specified file does not exist: {file_path}")
@@ -304,7 +337,7 @@ class QCustomComponentLoader(QWidget):
             if class_name and class_name.strip():
                 # If class_name is provided, attempt to find it
                 ui_class = next((cls for cls in ui_classes if cls.__name__ == class_name), None)
-                if ui_class.strip():
+                if ui_class:
                     return ui_class
                 else:
                     logError(f"No class named '{class_name}' found in the specified file.")
@@ -329,6 +362,10 @@ class QCustomComponentLoader(QWidget):
 
     @filePath.setter
     def filePath(self, value: str):
+        # Normalize the incoming path
+        if value:
+            value = self._normalize_path(value)
+        
         if self._file_path != value:
             self._file_path = value
             if is_in_designer(self):

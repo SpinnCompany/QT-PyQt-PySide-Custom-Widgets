@@ -370,4 +370,4 @@ except ImportError as e:
 except Exception as e:
     logException(e, message="Error registering QCustomPieChart")
 
-logInfo("✓ All chart widgets registered successfully!")
+logInfo(" All chart widgets registered successfully!")
