@@ -21,6 +21,10 @@ from qtpy.QtCharts import (
 )
 
 from Custom_Widgets.QCustomTheme import QCustomTheme
+from Custom_Widgets.QCustomCharts.QCustomChartConstants import (
+    QCustomChartConstants as _CC, chart_str_to_int, chart_int_to_str,
+    LEGEND_POSITION_TO_INT, INT_TO_LEGEND_POSITION,
+    LINE_STYLE_TO_INT, MARKER_STYLE_TO_INT)
 from Custom_Widgets.Log import logInfo, logWarning, logError
 from Custom_Widgets.QCustomTipOverlay import QCustomTipOverlay 
 
@@ -1223,14 +1227,14 @@ class QCustomLineSeries(QWidget):
             total_points = sum(len(data) for data in self._seriesData.values())
             self.status_bar.setText(f"<b>{visible_count}</b> series | <b>{total_points}</b> total points | Theme: <b>{self._chartTheme}</b> | Legend: <b>{self._legendPosition}</b>")
 
-    @Property(str)
+    @Property(int)
     def legendPosition(self):
-        """Get the current legend position"""
-        return self._legendPosition
+        """Legend position (int; see QCustomChartEnums.LegendPosition)."""
+        return chart_str_to_int(LEGEND_POSITION_TO_INT, self._legendPosition)
 
     @legendPosition.setter
     def legendPosition(self, value):
-        """Set the legend position"""
+        value = chart_int_to_str(INT_TO_LEGEND_POSITION, value, _CC.LEGEND_BOTTOM)
         if value != self._legendPosition and value in self.getAvailableLegendPositions():
             self._legendPosition = str(value)
             if hasattr(self, 'legend_position_combo') and self.legend_position_combo:
@@ -1582,13 +1586,15 @@ class QCustomLineSeries(QWidget):
 
     # ============ LINE AND MARKER STYLE PROPERTIES ============
     
-    @Property(str)
+    @Property(int)
     def defaultLineStyle(self):
-        return self.LINE_SOLID
+        """Default line style (int; see QCustomChartEnums.LineStyle)."""
+        return chart_str_to_int(LINE_STYLE_TO_INT, self.LINE_SOLID)
 
-    @Property(str)
+    @Property(int)
     def defaultMarkerStyle(self):
-        return self.MARKER_NONE
+        """Default marker style (int; see QCustomChartEnums.MarkerStyle)."""
+        return chart_str_to_int(MARKER_STYLE_TO_INT, self.MARKER_NONE)
 
     def getSeriesLineStyle(self, name: str) -> str:
         return self._seriesLineStyles.get(name, self.LINE_SOLID)

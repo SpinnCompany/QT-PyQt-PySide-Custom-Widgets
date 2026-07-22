@@ -47,6 +47,65 @@ class TestHamburgerPosition:
         assert w._position == "Bottom"  # internal string kept for QSS/layout
 
 
+class TestEasingProps:
+    CASES = [
+        ("QCustomSidebar", "QCustomSidebar", "animationEasingCurve"),
+        ("QCustomHamburgerMenu", "QCustomHamburgerMenu", "animationEasingCurve"),
+        ("QCustomCheckBox", "QCustomCheckBox", "animationEasingCurve"),
+        ("QCustomQStackedWidget", "QCustomQStackedWidget", "fadeInCurve"),
+        ("QCustomQStackedWidget", "QCustomQStackedWidget", "transitionEasingCurve"),
+    ]
+
+    def test_easing_props_are_int(self, qapp):
+        import importlib
+        from qtpy.QtCore import QEasingCurve
+        from qtpy.QtWidgets import QWidget
+
+        parent = QWidget()  # some setters trigger layout that needs a parent
+        parent.resize(400, 300)
+        for module, cls, prop in self.CASES:
+            mod = importlib.import_module(f"Custom_Widgets.{module}")
+            w = getattr(mod, cls)(parent)
+            p = _prop(w, prop)
+            assert p is not None and p.typeName() == "int", f"{cls}.{prop}"
+            setattr(w, prop, QEasingCurve.InBounce)   # QEasingCurve.Type
+            assert getattr(w, prop) == QEasingCurve.InBounce.value
+            setattr(w, prop, "out_quad")              # snake legacy
+            assert getattr(w, prop) == QEasingCurve.OutQuad.value
+
+
+class TestChartProps:
+    def test_chart_state_props_are_int(self, qapp):
+        import importlib
+        from Custom_Widgets.QCustomCharts.QCustomChartConstants import QCustomChartEnums as E
+
+        cases = {
+            "QCustomLineChart": ["theme", "legendPosition", "defaultLineStyle", "defaultMarkerStyle"],
+            "QCustomBarChart": ["theme", "legendPosition", "labelsPosition"],
+            "QCustomPieChart": ["theme", "legendPosition", "labelsPosition"],
+            "QCustomHorizontalBarSeries": ["theme", "legendPosition", "barPattern", "barSelectionMode"],
+            "QCustomVerticalBarSeries": ["theme", "legendPosition", "barPattern", "barSelectionMode"],
+        }
+        for cls, props in cases.items():
+            mod = importlib.import_module(f"Custom_Widgets.QCustomCharts.{cls}")
+            w = getattr(mod, cls)()
+            for name in props:
+                p = _prop(w, name)
+                assert p is not None and p.typeName() == "int", f"{cls}.{name}"
+
+    def test_chart_enum_roundtrip(self, qapp):
+        from Custom_Widgets.QCustomCharts.QCustomLineChart import QCustomLineChart
+        from Custom_Widgets.QCustomCharts.QCustomChartConstants import QCustomChartEnums as E
+
+        w = QCustomLineChart()
+        w.theme = int(E.ChartTheme.Dark)
+        assert w.theme == int(E.ChartTheme.Dark)
+        w.legendPosition = int(E.LegendPosition.Right)
+        assert w.legendPosition == int(E.LegendPosition.Right)
+        w.theme = "Light"  # legacy string coerced
+        assert w.theme == int(E.ChartTheme.Light)
+
+
 class TestSidebarSizes:
     SIZE_PROPS = ["defaultWidth", "defaultHeight", "collapsedWidth",
                   "collapsedHeight", "expandedWidth", "expandedHeight"]

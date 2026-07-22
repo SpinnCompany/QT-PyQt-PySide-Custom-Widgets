@@ -7,6 +7,11 @@ from qtpy.QtWidgets import QGraphicsLayout
 
 from .QCustomChartBase import QCustomChartBase # This already includes QCustomChartConstants
 from Custom_Widgets.Utils import is_in_designer
+from Custom_Widgets.QCustomCharts.QCustomChartConstants import (
+    QCustomChartConstants as _CC, chart_str_to_int, chart_int_to_str,
+    CHART_THEME_TO_INT, INT_TO_CHART_THEME,
+    LEGEND_POSITION_TO_INT, INT_TO_LEGEND_POSITION,
+    LABELS_POSITION_TO_INT, INT_TO_LABELS_POSITION)
 
 
 class QCustomPieChart(QCustomChartBase):
@@ -1382,15 +1387,15 @@ class QCustomPieChart(QCustomChartBase):
         self._show_labels = value
         self.updateChart()
     
-    @Property(str)
+    @Property(int)
     def labelsPosition(self):
-        """Get labels position"""
-        return self._labels_position
-    
+        """Labels position (int; see QCustomChartEnums.LabelsPosition)."""
+        return chart_str_to_int(LABELS_POSITION_TO_INT, self._labels_position)
+
     @labelsPosition.setter
-    def labelsPosition(self, value: str):
-        """Set labels position"""
-        if value in [self.LABELS_POSITION_OUTSIDE, self.LABELS_POSITION_INSIDE, 
+    def labelsPosition(self, value):
+        value = chart_int_to_str(INT_TO_LABELS_POSITION, value, _CC.LABELS_POSITION_OUTSIDE)
+        if value in [self.LABELS_POSITION_OUTSIDE, self.LABELS_POSITION_INSIDE,
                     self.LABELS_POSITION_INSIDE_TANGENTIAL, self.LABELS_POSITION_CALLOUT]:
             self._labels_position = value
             self.updateChart()
@@ -1624,25 +1629,23 @@ class QCustomPieChart(QCustomChartBase):
         self._tooltip_duration = value
         self._tooltip_manager.setDuration(value)
     
-    @Property(str)
+    @Property(int)
     def theme(self):
-        """Get current theme"""
-        return self.getTheme()
-    
+        """Current theme (int; see QCustomChartEnums.ChartTheme)."""
+        return chart_str_to_int(CHART_THEME_TO_INT, self.getTheme())
+
     @theme.setter
-    def theme(self, value: str):
-        """Set current theme"""
-        self.setTheme(value)
-    
-    @Property(str)
+    def theme(self, value):
+        self.setTheme(chart_int_to_str(INT_TO_CHART_THEME, value, _CC.THEME_APP_THEME))
+
+    @Property(int)
     def legendPosition(self):
-        """Get legend position"""
-        return self.getLegendPosition()
-    
+        """Legend position (int; see QCustomChartEnums.LegendPosition)."""
+        return chart_str_to_int(LEGEND_POSITION_TO_INT, self.getLegendPosition())
+
     @legendPosition.setter
-    def legendPosition(self, value: str):
-        """Set legend position"""
-        self.setLegendPosition(value)
+    def legendPosition(self, value):
+        self.setLegendPosition(chart_int_to_str(INT_TO_LEGEND_POSITION, value, _CC.LEGEND_BOTTOM))
     
     @Property(int)
     def legendFontSize(self):
