@@ -28,6 +28,7 @@ from qtpy.QtGui import QPixmapCache
 from qtpy.QtNetwork import QLocalServer, QLocalSocket
 from qtpy.QtWidgets import QApplication, QWidget
 
+from Custom_Widgets.Project import projectRoot
 from Custom_Widgets.Log import *
 
 _bridge_server = None
@@ -126,7 +127,7 @@ def formEditorCore():
 def bridgeServerName(project_dir=None):
     """Server name unique per project folder, identical for the app and a
     Designer launched from that folder (Custom_Widgets --start-designer)."""
-    project_dir = os.path.abspath(project_dir or os.getcwd())
+    project_dir = os.path.abspath(project_dir or projectRoot())
     digest = hashlib.sha1(project_dir.encode("utf-8")).hexdigest()[:12]
     return f"customwidgets-designer-{digest}"
 
@@ -144,7 +145,7 @@ class DesignerBridgeServer(QObject):
 
     def __init__(self, parent=None, project_dir=None):
         super().__init__(parent)
-        self._project_dir = os.path.abspath(project_dir or os.getcwd())
+        self._project_dir = os.path.abspath(project_dir or projectRoot())
         self._sockets = []
 
         # Themed url(theme-icons:...) references resolve inside Designer too

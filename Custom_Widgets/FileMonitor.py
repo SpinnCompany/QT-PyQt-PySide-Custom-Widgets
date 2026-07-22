@@ -11,6 +11,7 @@ import qtpy
 
 from Custom_Widgets.QAppSettings import QAppSettings
 from Custom_Widgets.Utils import replace_url_prefix, SharedData, is_in_designer, uiToPy
+from Custom_Widgets.Project import projectRoot
 from Custom_Widgets.Log import *
 
 class FileMonitor(QObject):
@@ -48,9 +49,9 @@ class FileMonitor(QObject):
     def _create_directories(self):
         """Create all required directories if they don't exist."""
         directories = [
-            os.path.join(os.getcwd(), "generated-files"),
-            os.path.join(os.getcwd(), "generated-files/ui"),
-            os.path.join(os.getcwd(), "generated-files/json"),
+            os.path.join(projectRoot(), "generated-files"),
+            os.path.join(projectRoot(), "generated-files/ui"),
+            os.path.join(projectRoot(), "generated-files/json"),
             self.src_output_dir
         ]
         
@@ -61,7 +62,7 @@ class FileMonitor(QObject):
 
     def monitor_folders(self):
         """Monitor the folder for changes (e.g., new .ui files added)."""
-        folder_to_monitor = os.path.dirname(self.files_to_monitor[0]) if self.files_to_monitor else os.getcwd()
+        folder_to_monitor = os.path.dirname(self.files_to_monitor[0]) if self.files_to_monitor else projectRoot()
         self.folder_watcher = QFileSystemWatcher([folder_to_monitor])
         self.folder_watcher.directoryChanged.connect(self.on_folder_change)
         
@@ -119,7 +120,7 @@ class FileMonitor(QObject):
     def update_file_list(self, fresh=False):
         """Update the list of monitored UI files."""
         # Find all .ui files in the folder
-        folder_path = os.path.dirname(self.files_to_monitor[0]) if self.files_to_monitor else os.getcwd()
+        folder_path = os.path.dirname(self.files_to_monitor[0]) if self.files_to_monitor else projectRoot()
         ui_files = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith(".ui")]
 
         # Update the list of monitored files if there are new files or missing files
@@ -263,7 +264,7 @@ def convert_file(path, src_output_dir="src"):
                         # Regular file path
                         ui_dir = os.path.dirname(path)
                         abs_path = os.path.abspath(os.path.join(ui_dir, relative_path))
-                        project_root = os.getcwd()
+                        project_root = projectRoot()
                         try:
                             icon_url = os.path.relpath(abs_path, project_root)
                         except ValueError:
@@ -355,7 +356,7 @@ def convert_file(path, src_output_dir="src"):
                     else:
                         ui_dir = os.path.dirname(path)
                         abs_path = os.path.abspath(os.path.join(ui_dir, relative_path))
-                        project_root = os.getcwd()
+                        project_root = projectRoot()
                         try:
                             dark_theme_icon_url = os.path.relpath(abs_path, project_root)
                         except ValueError:
@@ -381,7 +382,7 @@ def convert_file(path, src_output_dir="src"):
                     else:
                         ui_dir = os.path.dirname(path)
                         abs_path = os.path.abspath(os.path.join(ui_dir, relative_path))
-                        project_root = os.getcwd()
+                        project_root = projectRoot()
                         try:
                             light_theme_icon_url = os.path.relpath(abs_path, project_root)
                         except ValueError:
@@ -429,7 +430,7 @@ def convert_file(path, src_output_dir="src"):
                     else:
                         ui_dir = os.path.dirname(path)
                         abs_path = os.path.abspath(os.path.join(ui_dir, relative_path))
-                        project_root = os.getcwd()
+                        project_root = projectRoot()
                         try:
                             pixmap_url = os.path.relpath(abs_path, project_root)
                         except ValueError:
@@ -445,7 +446,7 @@ def convert_file(path, src_output_dir="src"):
     # Generate JSON file
     base_name, _ = os.path.splitext(os.path.basename(path))
     json_file_name = f"{base_name}.json"
-    json_path = os.path.join(os.getcwd(), "generated-files/json", json_file_name)
+    json_path = os.path.join(projectRoot(), "generated-files/json", json_file_name)
     
     with open(json_path, "w") as json_file:
         json.dump(widget_info, json_file, indent=2)
@@ -457,7 +458,7 @@ def convert_file(path, src_output_dir="src"):
     # Create modified UI file
     base_name, extension = os.path.splitext(os.path.basename(path))
     new_file_name = "new_{}{}".format(base_name, extension)
-    new_file_path = os.path.join(os.getcwd(), "generated-files/ui", new_file_name)
+    new_file_path = os.path.join(projectRoot(), "generated-files/ui", new_file_name)
     
     tree.write(new_file_path, encoding="utf-8", xml_declaration=True)
     logDebug(f"Generated modified UI: {new_file_name}")
@@ -472,7 +473,7 @@ def convert_file(path, src_output_dir="src"):
 
 def update_json(data, json_file_name):
     """Save JSON data to file."""
-    json_path = os.path.join(os.getcwd(), "generated-files/json", json_file_name)
+    json_path = os.path.join(projectRoot(), "generated-files/json", json_file_name)
     with open(json_path, "w") as json_file:
         json.dump(data, json_file, indent=2)
     logDebug(f"JSON file updated: {json_file_name}")
@@ -579,7 +580,7 @@ def replace_attributes_values(ui_file_path, replacements, root=None, tree=None, 
     # Create modified UI file
     base_name, extension = os.path.splitext(os.path.basename(ui_file_path))
     new_file_name = "new_{}{}".format(base_name, extension)
-    new_file_path = os.path.join(os.getcwd(), "generated-files/ui", new_file_name)
+    new_file_path = os.path.join(projectRoot(), "generated-files/ui", new_file_name)
 
     # Save the modified XML
     tree.write(new_file_path, encoding="utf-8", xml_declaration=True)
@@ -714,8 +715,8 @@ def start_ui_conversion(file_or_folder, qt_binding="PySide6", src_output_dir="sr
     
     # Create necessary directories
     directories = [
-        os.path.join(os.getcwd(), "generated-files/ui"),
-        os.path.join(os.getcwd(), "generated-files/json"),
+        os.path.join(projectRoot(), "generated-files/ui"),
+        os.path.join(projectRoot(), "generated-files/json"),
         src_output_dir
     ]
     
@@ -787,7 +788,7 @@ class QSsFileMonitor(QObject):
             logInfo("Live QSS compile disabled.")
             return
 
-        default_sass_path = os.path.abspath(os.path.join(os.getcwd(), 'Qss/scss/defaultStyle.scss'))
+        default_sass_path = os.path.abspath(os.path.join(projectRoot(), 'Qss/scss/defaultStyle.scss'))
 
         if os.path.isfile(default_sass_path):
             if not self.shared_data.url_exists(default_sass_path):
@@ -797,7 +798,7 @@ class QSsFileMonitor(QObject):
 
             # Monitor JSON files
             for json_file in self.jsonStyleSheets:
-                json_file_path = os.path.abspath(os.path.join(os.getcwd(), json_file))
+                json_file_path = os.path.abspath(os.path.join(projectRoot(), json_file))
                 if os.path.isfile(json_file_path):
                     self.qss_watcher.addPath(json_file_path)
                     logInfo(f" Live monitoring {json_file} for changes")

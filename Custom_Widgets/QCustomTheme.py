@@ -41,6 +41,7 @@ from Custom_Widgets.QAppSettings import QAppSettings
 from Custom_Widgets.QCustomSidebarLabel import QCustomSidebarLabel 
 from Custom_Widgets.QCustomSidebarButton import QCustomSidebarButton 
 from Custom_Widgets.WidgetsWorker import Worker, WorkerResponse
+from Custom_Widgets.Project import projectRoot
 from Custom_Widgets.Log import *
 from Custom_Widgets.Utils import createQrcFile, is_in_designer
 from Custom_Widgets.JSonStyles import loadJsonStyle
@@ -63,10 +64,7 @@ class QCustomTheme(QObject):
             self._themes = []
             self._initialized = True  # Mark as initialized to avoid multiple init calls
             self.checkForMissingicons = True
-            self.script_dir = os.path.dirname(os.path.abspath(sys.argv[0])).replace("\\", "/") + "/"
-            
-            if is_in_designer(self):
-                self.script_dir = os.getcwd().replace("\\", "/") + "/"
+            self.script_dir = projectRoot().replace("\\", "/") + "/"
 
             self.initializeThemeVars()
             self.defineThemeVarMapping()
@@ -338,7 +336,7 @@ class QCustomTheme(QObject):
                 # Single shared icon set
                 folder = "icons"
 
-            current_script_folder = os.path.dirname(os.path.realpath(sys.argv[0]))
+            current_script_folder = projectRoot()
             jsonFilesFolder = os.path.abspath(os.path.join(current_script_folder, "generated-files/json"))
             if not os.path.exists(jsonFilesFolder):
                 try:
@@ -687,7 +685,7 @@ class QCustomTheme(QObject):
             theme.CA_3 = self.lightenColor(theme.accent_color, .4)
             theme.CA_4 = self.lightenColor(theme.accent_color, .6)
 
-        QDir.addSearchPath('theme-icons', os.path.join(os.getcwd(), 'Qss/icons/'))
+        QDir.addSearchPath('theme-icons', os.path.join(projectRoot(), 'Qss/icons/'))
         # Single shared icon set: the app stylesheet, ui files and Qt Designer
         # all read Qss/icons/icons. The set is recolored in place whenever the
         # resolved icon color changes (theme switch, QtDesignerIconsColor or
@@ -797,7 +795,7 @@ class QCustomTheme(QObject):
             for var_name, var_value in theme.other_variables.items():
                 other_vars_scss += f"${var_name}: {var_value};\n"
 
-        scss_folder = os.path.abspath(os.path.join(os.getcwd(), 'Qss/scss'))
+        scss_folder = os.path.abspath(os.path.join(projectRoot(), 'Qss/scss'))
         if not os.path.exists(scss_folder):
             try:
                 os.makedirs(scss_folder)
@@ -1002,23 +1000,23 @@ class QCustomTheme(QObject):
     def applyCompiledSass(self, generateIcons: bool = True, paintEntireApp: bool = True):
         if not self.themesRead:
             return
-        qcss_folder = os.path.abspath(os.path.join(os.getcwd(), 'Qss/scss'))
+        qcss_folder = os.path.abspath(os.path.join(projectRoot(), 'Qss/scss'))
         if not os.path.exists(qcss_folder):
             try:
                 os.makedirs(qcss_folder)
             except Exception as e:
                 logError(f"Failed to create QSS folder {qcss_folder}: {e}")
         
-        css_folder = os.path.abspath(os.path.join(os.getcwd(), 'generated-files/css/'))
+        css_folder = os.path.abspath(os.path.join(projectRoot(), 'generated-files/css/'))
         if not os.path.exists(css_folder):
             try:
                 os.makedirs(css_folder)
             except Exception as e:
                 logError(f"Failed to create CSS folder {css_folder}: {e}")
 
-        main_sass_path = os.path.abspath(os.path.join(os.getcwd(), 'Qss/scss/main.scss'))
-        styles_sass_path = os.path.abspath(os.path.join(os.getcwd(), 'Qss/scss/_styles.scss'))
-        css_path = os.path.abspath(os.path.join(os.getcwd(), 'generated-files/css/main.css'))
+        main_sass_path = os.path.abspath(os.path.join(projectRoot(), 'Qss/scss/main.scss'))
+        styles_sass_path = os.path.abspath(os.path.join(projectRoot(), 'Qss/scss/_styles.scss'))
+        css_path = os.path.abspath(os.path.join(projectRoot(), 'generated-files/css/main.css'))
 
         if not os.path.exists(main_sass_path):   
             try:
@@ -1032,7 +1030,7 @@ class QCustomTheme(QObject):
             except Exception as e:
                 logError(f"Failed to copy _styles.scss: {e}")  
 
-        default_scss_path = os.path.abspath(os.path.join(os.getcwd(), 'Qss/scss/defaultStyle.scss'))
+        default_scss_path = os.path.abspath(os.path.join(projectRoot(), 'Qss/scss/defaultStyle.scss'))
         if not os.path.exists(default_scss_path):   
             try:
                 with open(default_scss_path, 'w') as f:
@@ -1251,14 +1249,14 @@ class QCustomTheme(QObject):
         new_icon_made = False
         qrc_content = f'<RCC>\n'
 
-        qrc_folder_path = os.path.abspath(os.path.join(os.getcwd(), f'Qss/icons'))
+        qrc_folder_path = os.path.abspath(os.path.join(projectRoot(), f'Qss/icons'))
         
         for folder in folders:
             # Prefix must be identical on every platform - ui files reference it
             qrc_prefix = (folder + suffix).replace("/", "_").replace("\\", "_")
             qrc_content += f'  <qresource prefix="{qrc_prefix}">\n'
             
-            icons_folder_path = os.path.abspath(os.path.join(os.getcwd(), f'Qss/icons/{iconsFolder}/{folder}'))
+            icons_folder_path = os.path.abspath(os.path.join(projectRoot(), f'Qss/icons/{iconsFolder}/{folder}'))
 
             try:
                 if not os.path.exists(icons_folder_path):
@@ -1362,7 +1360,7 @@ class QCustomTheme(QObject):
         """Optional stylesheet override for the icon color: put e.g.
         `$ICONS_COLOR: #ff5722;` in Qss/scss/defaultStyle.scss and the whole
         shared icon set is generated in that color."""
-        path = os.path.abspath(os.path.join(os.getcwd(), 'Qss/scss/defaultStyle.scss'))
+        path = os.path.abspath(os.path.join(projectRoot(), 'Qss/scss/defaultStyle.scss'))
         try:
             if os.path.exists(path):
                 with open(path, encoding='utf-8', errors='ignore') as f:

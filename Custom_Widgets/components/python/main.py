@@ -7,6 +7,12 @@
 ########################################################################
 import os
 import sys
+
+# Make the app location-independent: the project root is THIS file's
+# folder, wherever the app is launched from.
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
+
 ########################################################################
 # IMPORT GUI FILE
 from src.ui_QCustomQMainWindow import *

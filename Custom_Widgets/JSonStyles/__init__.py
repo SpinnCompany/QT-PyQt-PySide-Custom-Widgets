@@ -14,6 +14,7 @@ from Custom_Widgets.QCustomQPushButtonGroup import QCustomQPushButtonGroup
 from Custom_Widgets.QCustomQPushButton import applyAnimationThemeStyle, applyButtonShadow, iconify, applyCustomAnimationThemeStyle, applyStylesFromColor
 from Custom_Widgets.QPropertyAnimation import returnAnimationEasingCurve, returnQtDirection
 
+from Custom_Widgets.Project import projectRoot
 from Custom_Widgets.Log import *
 from Custom_Widgets.Utils import replace_url_prefix, SharedData, is_in_designer
 
@@ -37,8 +38,8 @@ def loadJsonStyle(self, update = False, **jsonFiles):
             # Check if the path is absolute
             if not os.path.isabs(file_path):
                 # If the path is relative, construct the absolute path based on the current script's directory
-                current_script = os.path.dirname(os.path.realpath(sys.argv[0]))
-                jsonFile = os.path.abspath(os.path.join(os.getcwd(), file_path))
+                current_script = projectRoot()
+                jsonFile = os.path.abspath(os.path.join(projectRoot(), file_path))
                 # jsonFile = os.path.abspath(os.path.join(json_file_path, file_path))
             else:
                 # If the path is already absolute, use it as is
@@ -187,7 +188,7 @@ def configure_settings(self, data, update: bool = False):
                         font_name = font.get("name", "")
                         font_path = font.get("path", "")
                         if font_name and font_path:
-                            font_path_abs = os.path.join(os.getcwd(), font_path)  # Construct absolute path
+                            font_path_abs = os.path.join(projectRoot(), font_path)  # Construct absolute path
                             if os.path.isfile(font_path_abs):
                                 font_id = QFontDatabase.addApplicationFont(font_path_abs)
                                 if font_id == -1:
@@ -1332,7 +1333,7 @@ def configure_qr_generator(self, data, update: bool = False):
                     embedded_image_path = str(qr_config["embeddedImagePath"])
                     # Handle relative paths by joining with current working directory
                     if not os.path.isabs(embedded_image_path):
-                        embedded_image_path = os.path.join(os.getcwd(), embedded_image_path)
+                        embedded_image_path = os.path.join(projectRoot(), embedded_image_path)
                     
                     if os.path.isfile(embedded_image_path):
                         qr_widget.embeddedImageIcon = QIcon(embedded_image_path)

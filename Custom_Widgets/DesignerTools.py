@@ -28,6 +28,7 @@ from qtpy.QtWidgets import (QApplication, QCheckBox, QComboBox, QCompleter,
                             QMainWindow, QMenu, QPlainTextEdit, QPushButton,
                             QToolButton, QVBoxLayout, QWidget)
 
+from Custom_Widgets.Project import projectRoot
 from Custom_Widgets.Log import *
 
 
@@ -195,7 +196,7 @@ class WorkspaceDock(QDockWidget):
         super().__init__("Custom Widgets - UI Workspace", parent)
         self.setObjectName("customWidgetsWorkspaceDock")
         WorkspaceDock._instance = self
-        self._project_dir = os.path.abspath(project_dir or os.getcwd())
+        self._project_dir = os.path.abspath(project_dir or projectRoot())
         ui_dir = os.path.join(self._project_dir, "ui")
         self._folder = ui_dir if os.path.isdir(ui_dir) else self._project_dir
         self._extra = []  # files opened/created outside the folder (realpaths)
@@ -257,7 +258,7 @@ class WorkspaceDock(QDockWidget):
             return
         try:
             from Custom_Widgets.ProjectMaker import create_ui_file
-            prev = os.getcwd()
+            prev = projectRoot()
             os.chdir(self._project_dir)
             try:
                 create_ui_file(os.path.splitext(os.path.basename(name))[0])
@@ -532,7 +533,7 @@ class QssEditorDock(QDockWidget):
     def __init__(self, parent=None, project_dir=None):
         super().__init__("Custom Widgets - QSS Editor", parent)
         self.setObjectName("customWidgetsQssDock")
-        self._project_dir = os.path.abspath(project_dir or os.getcwd())
+        self._project_dir = os.path.abspath(project_dir or projectRoot())
         self._scss_dir = os.path.join(self._project_dir, "Qss", "scss")
         self._path = os.path.join(self._scss_dir, "defaultStyle.scss")
 
@@ -966,11 +967,11 @@ class CustomPropertiesDock(QDockWidget):
 
             def pick(_=False, e=edit):
                 path, _filter = QFileDialog.getOpenFileName(
-                    self, name, e.text() or os.getcwd(),
+                    self, name, e.text() or projectRoot(),
                     spec.get("filter", "All files (*)"))
                 if path:
                     # Keep project files relative to the project dir (cwd).
-                    rel = os.path.relpath(path, os.getcwd())
+                    rel = os.path.relpath(path, projectRoot())
                     value = rel if not rel.startswith("..") else path
                     e.setText(value)
                     self._apply(name, value)
