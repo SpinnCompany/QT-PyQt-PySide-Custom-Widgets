@@ -19,13 +19,19 @@ import re
 from qtpy.QtCore import Qt, QObject, QTimer, Signal, QStringListModel
 from qtpy.QtGui import (QColor, QFont, QSyntaxHighlighter, QTextCharFormat,
                         QTextCursor)
-from qtpy.QtWidgets import (QApplication, QComboBox, QCompleter, QDockWidget,
-                            QFileDialog, QHBoxLayout, QLabel, QLineEdit,
-                            QListWidget, QListWidgetItem, QMainWindow, QMenu,
-                            QPlainTextEdit, QPushButton, QToolButton,
-                            QVBoxLayout, QWidget)
+from qtpy.QtWidgets import (QApplication, QCheckBox, QComboBox, QCompleter,
+                            QDockWidget, QFileDialog, QHBoxLayout, QLabel,
+                            QLineEdit, QListWidget, QListWidgetItem,
+                            QMainWindow, QMenu, QPlainTextEdit, QPushButton,
+                            QToolButton, QVBoxLayout, QWidget)
 
 from Custom_Widgets.Log import *
+
+
+def _checkbox(text, checked):
+    box = QCheckBox(text)
+    box.setChecked(checked)
+    return box
 
 _tools = {}  # keep references alive inside Designer
 
@@ -514,20 +520,28 @@ class _CodeEditor(QPlainTextEdit):
 
 
 class QssEditorDock(QDockWidget):
-    """Edit QSS with highlighting, autocomplete and editor shortcuts, and
-    push it onto the open form previews (same path the theme engine uses)."""
+    """Edits the project's default style (Qss/scss/defaultStyle.scss), open
+    by default. New style files are auto-imported into it. On change the SCSS
+    is compiled (qtsass) and applied live to the open form previews - and,
+    if the user opts in, to the whole Designer window. Styles live in scss,
+    never inline in .ui files."""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, project_dir=None):
         super().__init__("Custom Widgets - QSS Editor", parent)
         self.setObjectName("customWidgetsQssDock")
-        self._path = None
+        self._project_dir = os.path.abspath(project_dir or os.getcwd())
+        self._scss_dir = os.path.join(self._project_dir, "Qss", "scss")
+        self._path = os.path.join(self._scss_dir, "defaultStyle.scss")
 
         container = QWidget()
         layout = QVBoxLayout(container)
 
+        self._fileLabel = QLabel()
+        layout.addWidget(self._fileLabel)
+
         self._editor = _CodeEditor()
         self._editor.setPlaceholderText(
-            "QSS / theme styles...\n"
+            "Default styles (Qss/scss/defaultStyle.scss)...\n"
             "Tab/Shift+Tab indent · Ctrl+/ comment · Ctrl+D duplicate · Ctrl+S save")
         font = QFont("Monospace")
         font.setStyleHint(QFont.TypeWriter)
@@ -537,12 +551,25 @@ class QssEditorDock(QDockWidget):
         layout.addWidget(self._editor)
 
         row = QHBoxLayout()
-        for label, slot in (("Open...", self._open), ("Save", self._save),
-                            ("Check", self._check), ("Apply to forms", self._apply)):
+        for label, slot in (("Open...", self._open),
+                            ("New Style File...", self._newStyleFile),
+                            ("Save", self._save), ("Check", self._check),
+                            ("Apply", self._apply)):
             btn = QPushButton(label)
             btn.clicked.connect(slot)
             row.addWidget(btn)
         layout.addLayout(row)
+
+        opts = QHBoxLayout()
+        self._autoApply = _checkbox("Auto-compile & apply on change", True)
+        self._autoApply.stateChanged.connect(lambda *_: self._scheduleApply())
+        opts.addWidget(self._autoApply)
+        self._repaintDesigner = _checkbox("Repaint entire Designer window", False)
+        self._repaintDesigner.stateChanged.connect(lambda *_: self._scheduleApply())
+        opts.addWidget(self._repaintDesigner)
+        opts.addStretch()
+        layout.addLayout(opts)
+
         self.setWidget(container)
 
         completer = QCompleter(QStringListModel(QSS_PROPERTIES, self))
@@ -550,30 +577,80 @@ class QssEditorDock(QDockWidget):
         completer.setCaseSensitivity(Qt.CaseInsensitive)
         self._editor.setCompleter(completer)
 
-    # --- actions --------------------------------------------------------
+        # debounce live compile/apply
+        self._applyTimer = QTimer(self)
+        self._applyTimer.setSingleShot(True)
+        self._applyTimer.setInterval(500)
+        self._applyTimer.timeout.connect(self._apply)
+        self._editor.textChanged.connect(self._scheduleApply)
+
+        self._loadDefault()  # open the default style by default
+
+    # --- file handling --------------------------------------------------
+    def _loadDefault(self):
+        os.makedirs(self._scss_dir, exist_ok=True)
+        if not os.path.exists(self._path):
+            with open(self._path, "w", encoding="utf-8") as f:
+                f.write("// Project default styles (override theme styles)\n"
+                        "// New style files are @import-ed here automatically.\n")
+        self._load(self._path)
+
+    def _load(self, path):
+        with open(path, encoding="utf-8", errors="ignore") as f:
+            self._editor.setPlainText(f.read())
+        self._path = path
+        self._fileLabel.setText("✎ " + os.path.relpath(path, self._project_dir))
+
     def _open(self):
         path, _ = QFileDialog.getOpenFileName(
-            self, "Open stylesheet", os.getcwd(),
+            self, "Open stylesheet", self._scss_dir,
             "Styles (*.qss *.css *.scss);;All files (*)")
         if path:
-            with open(path, encoding="utf-8", errors="ignore") as f:
-                self._editor.setPlainText(f.read())
-            self._path = path
+            self._load(path)
+
+    def _newStyleFile(self):
+        """Create a new scss file and auto-import it into defaultStyle.scss."""
+        path, _ = QFileDialog.getSaveFileName(
+            self, "New style file", os.path.join(self._scss_dir, "custom.scss"),
+            "SCSS files (*.scss)")
+        if not path:
+            return
+        name = os.path.basename(path)
+        if not name.endswith(".scss"):
+            name += ".scss"
+            path = os.path.join(os.path.dirname(path), name)
+        if not os.path.exists(path):
+            with open(path, "w", encoding="utf-8") as f:
+                f.write(f"// {name} - imported into defaultStyle.scss\n")
+        self._ensureImport(name)
+        self._load(path)
+        logInfo(f"QSS editor: created {name} and imported it into defaultStyle.scss")
+
+    def _ensureImport(self, name):
+        """Add `@import '<name>';` to defaultStyle.scss if missing."""
+        default_path = os.path.join(self._scss_dir, "defaultStyle.scss")
+        stem = name[:-5] if name.endswith(".scss") else name
+        import_line = f"@import '{stem}';"
+        content = ""
+        if os.path.exists(default_path):
+            with open(default_path, encoding="utf-8", errors="ignore") as f:
+                content = f.read()
+        if import_line not in content:
+            with open(default_path, "a", encoding="utf-8") as f:
+                f.write(f"\n{import_line}\n")
 
     def _save(self):
-        path = self._path
-        if not path:
-            path, _ = QFileDialog.getSaveFileName(
-                self, "Save stylesheet", os.getcwd(), "Styles (*.qss *.scss)")
-            if not path:
-                return
-        with open(path, "w", encoding="utf-8") as f:
-            f.write(self._editor.toPlainText())
-        self._path = path
-        logInfo(f"QSS editor: saved {path}")
+        try:
+            with open(self._path, "w", encoding="utf-8") as f:
+                f.write(self._editor.toPlainText())
+            logInfo(f"QSS editor: saved {os.path.relpath(self._path, self._project_dir)}")
+            if self._autoApply.isChecked():
+                self._apply()
+        except Exception as e:
+            logException(e, message="QSS editor: save failed")
 
+    # --- lint -----------------------------------------------------------
     def _check(self):
-        """Basic lint: brace balance + unknown property names."""
         text = self._editor.toPlainText()
         problems = []
         if text.count("{") != text.count("}"):
@@ -589,12 +666,41 @@ class QssEditorDock(QDockWidget):
         else:
             logInfo("QSS check: no problems found")
 
+    # --- compile & apply ------------------------------------------------
+    def _scheduleApply(self):
+        if self._autoApply.isChecked():
+            self._applyTimer.start()
+
+    def _compile(self):
+        """Compile the current buffer (SCSS) to CSS, resolving @imports from
+        the scss folder and the theme's _variables.scss when present."""
+        import qtsass
+        source = self._editor.toPlainText()
+        variables = os.path.join(self._scss_dir, "_variables.scss")
+        if os.path.exists(variables):
+            with open(variables, encoding="utf-8", errors="ignore") as f:
+                source = f.read() + "\n" + source
+        return qtsass.compile(source, include_paths=[self._scss_dir])
+
     def _apply(self):
         try:
+            css = self._compile()
+        except Exception as e:
+            logWarning(f"QSS compile error: {str(e).splitlines()[0]}")
+            return
+        try:
             from Custom_Widgets.DesignerBridge import startDesignerBridge
-            startDesignerBridge()._setStyleSheet(self._editor.toPlainText())
+            bridge = startDesignerBridge()
+            bridge._setStyleSheet(css)
+            if self._repaintDesigner.isChecked():
+                self._repaintWholeDesigner(css)
         except Exception as e:
             logException(e, message="QSS editor: apply failed")
+
+    def _repaintWholeDesigner(self, css):
+        window = _designerMainWindow()
+        if window is not None:
+            window.setStyleSheet(css)
 
 
 ########################################################################
