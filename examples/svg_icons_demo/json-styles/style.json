@@ -1,7 +1,7 @@
 {
     "ShowLogs": true,
     "QtBinding": "PySide6",
-    "LiveCompileQss": false,
+    "LiveCompileQss": true,
     "CheckForMissingicons": true,
     "QSettings": {
         "AppSettings": {

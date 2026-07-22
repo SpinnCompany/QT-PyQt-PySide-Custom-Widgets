@@ -83,8 +83,10 @@ class TestChartProps:
             "QCustomLineChart": ["theme", "legendPosition", "defaultLineStyle", "defaultMarkerStyle"],
             "QCustomBarChart": ["theme", "legendPosition", "labelsPosition"],
             "QCustomPieChart": ["theme", "legendPosition", "labelsPosition"],
-            "QCustomHorizontalBarSeries": ["theme", "legendPosition", "barPattern", "barSelectionMode"],
-            "QCustomVerticalBarSeries": ["theme", "legendPosition", "barPattern", "barSelectionMode"],
+            "QCustomHorizontalBarSeries": ["theme", "legendPosition", "barPattern",
+                                           "barSelectionMode", "valueLabelsPosition", "labelsPosition"],
+            "QCustomVerticalBarSeries": ["theme", "legendPosition", "barPattern",
+                                         "barSelectionMode", "valueLabelsPosition", "labelsPosition"],
         }
         for cls, props in cases.items():
             mod = importlib.import_module(f"Custom_Widgets.QCustomCharts.{cls}")
@@ -104,6 +106,22 @@ class TestChartProps:
         assert w.legendPosition == int(E.LegendPosition.Right)
         w.theme = "Light"  # legacy string coerced
         assert w.theme == int(E.ChartTheme.Light)
+
+    def test_bar_labels_position_roundtrip(self, qapp):
+        import importlib
+        from Custom_Widgets.QCustomCharts.QCustomChartConstants import QCustomChartEnums as E
+
+        for cls in ("QCustomHorizontalBarSeries", "QCustomVerticalBarSeries"):
+            mod = importlib.import_module(f"Custom_Widgets.QCustomCharts.{cls}")
+            w = getattr(mod, cls)()
+            for name in ("valueLabelsPosition", "labelsPosition"):
+                for member in E.BarLabelsPosition:
+                    setattr(w, name, int(member))
+                    assert getattr(w, name) == int(member), f"{cls}.{name}={member.name}"
+            # both aliases stay in sync and coerce legacy strings
+            w.valueLabelsPosition = "center"
+            assert w.valueLabelsPosition == int(E.BarLabelsPosition.Center)
+            assert w.labelsPosition == int(E.BarLabelsPosition.Center)
 
 
 class TestSidebarSizes:
