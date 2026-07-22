@@ -893,6 +893,47 @@ class CustomPropertiesDock(QDockWidget):
 
     def _buildEditor(self, widget, name, kind, spec, current):
         from qtpy.QtWidgets import QSpinBox
+        if kind == "easing":
+            # Int property holding a QEasingCurve.Type value - offer the
+            # curve names, store the int.
+            from qtpy.QtCore import QEasingCurve
+            combo = QComboBox()
+            members = [(t.name, t.value) for t in QEasingCurve.Type
+                       if t.value <= QEasingCurve.Type.OutInBounce.value]
+            for label, value in members:
+                combo.addItem(label, value)
+            try:
+                index = combo.findData(int(current))
+                combo.setCurrentIndex(index if index >= 0 else 0)
+            except (TypeError, ValueError):
+                pass
+            combo.activated.connect(
+                lambda _i, c=combo: self._apply(name, c.currentData()))
+            return combo
+        if kind == "file":
+            box = QWidget()
+            hbox = QHBoxLayout(box)
+            hbox.setContentsMargins(0, 0, 0, 0)
+            edit = QLineEdit(str(current) if current else "")
+            edit.editingFinished.connect(
+                lambda e=edit: self._apply(name, e.text()))
+            browse = QToolButton()
+            browse.setText("...")
+
+            def pick(_=False, e=edit):
+                path, _filter = QFileDialog.getOpenFileName(
+                    self, name, e.text() or os.getcwd(),
+                    spec.get("filter", "All files (*)"))
+                if path:
+                    # Keep project files relative to the project dir (cwd).
+                    rel = os.path.relpath(path, os.getcwd())
+                    value = rel if not rel.startswith("..") else path
+                    e.setText(value)
+                    self._apply(name, value)
+            browse.clicked.connect(pick)
+            hbox.addWidget(edit, 1)
+            hbox.addWidget(browse)
+            return box
         if kind == "theme":
             from Custom_Widgets.DesignerExtensions import readThemeNames
             combo = QComboBox()

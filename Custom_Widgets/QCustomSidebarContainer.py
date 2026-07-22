@@ -22,6 +22,14 @@ class QCustomSidebarContainer(QWidget):
     """
     WIDGET_MODULE = "Custom_Widgets.QCustomSidebarContainer"
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "hideOnCollapse", "kind": "bool", "group": "Sidebar"},
+        {"name": "showOnCollapse", "kind": "bool", "group": "Sidebar"},
+        {"name": "animationDuration", "kind": "int", "group": "Animation"},
+    ]
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self._hideOnCollapse = True

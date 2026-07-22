@@ -134,7 +134,12 @@ def _make_task_menu_classes():
                     return
             except Exception as e:
                 logDebug(f"DesignerExtensions: dock unavailable: {e}")
-            self._chooseTheme()
+            # Fallback works only for widgets that actually have appTheme.
+            if self._widget.metaObject().indexOfProperty("appTheme") >= 0:
+                self._chooseTheme()
+            else:
+                logWarning("DesignerExtensions: Custom Properties dock "
+                           "unavailable and widget has no appTheme fallback")
 
         def _chooseTheme(self):
             try:
@@ -162,7 +167,11 @@ def _make_task_menu_classes():
             if iid != TASKMENU_IID:
                 return None
             try:
-                if not obj.inherits("QCustomQMainWindow"):
+                # Any Custom_Widgets widget that declares a spec for the
+                # Custom Properties dock gets the context-menu entry (the
+                # registrars hand Designer OUR classes, so obj is the real
+                # Python instance and the class attribute is visible).
+                if not hasattr(type(obj), "DESIGNER_CUSTOM_PROPS"):
                     return None
             except Exception:
                 return None

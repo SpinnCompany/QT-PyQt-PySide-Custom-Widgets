@@ -27,6 +27,31 @@ class QCustomSidebar(QCustomSlideMenu):
     """
     WIDGET_MODULE = "Custom_Widgets.QCustomSidebar"
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "defaultWidth", "kind": "int", "group": "Size"},
+        {"name": "defaultHeight", "kind": "int", "group": "Size"},
+        {"name": "collapsedWidth", "kind": "int", "group": "Size"},
+        {"name": "collapsedHeight", "kind": "int", "group": "Size"},
+        {"name": "expandedWidth", "kind": "int", "group": "Size"},
+        {"name": "expandedHeight", "kind": "int", "group": "Size"},
+        {"name": "toggleButtonName", "kind": "widget-ref",
+         "types": ("QPushButton", "QToolButton"), "group": "Toggle"},
+        {"name": "iconCollapsed", "kind": "file",
+         "filter": "Images (*.svg *.png *.ico *.jpg);;All files (*)",
+         "group": "Toggle"},
+        {"name": "iconExpanded", "kind": "file",
+         "filter": "Images (*.svg *.png *.ico *.jpg);;All files (*)",
+         "group": "Toggle"},
+        {"name": "animationDuration", "kind": "int", "group": "Animation"},
+        {"name": "animationEasingCurve", "kind": "easing", "group": "Animation"},
+        {"name": "shadowColor", "kind": "color", "group": "Shadow"},
+        {"name": "shadowBlurRadius", "kind": "int", "group": "Shadow"},
+        {"name": "shadowXOffset", "kind": "int", "group": "Shadow"},
+        {"name": "shadowYOffset", "kind": "int", "group": "Shadow"},
+    ]
+
     def __init__(self, parent=None):
         super().__init__(parent)
         # Shadow properties

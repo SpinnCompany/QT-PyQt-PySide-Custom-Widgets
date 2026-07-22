@@ -17,6 +17,14 @@ class QCustomHorizontalSeparator(QWidget):
     """
     WIDGET_MODULE = "Custom_Widgets.QCustomHorizontalSeparator"
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "color", "kind": "color", "group": "Separator"},
+        {"name": "height", "kind": "int", "group": "Separator"},
+        {"name": "margin", "kind": "int", "group": "Separator"},
+    ]
+
     def __init__(self, parent=None, color=None, height=1, margin=8):
         super().__init__(parent)
         

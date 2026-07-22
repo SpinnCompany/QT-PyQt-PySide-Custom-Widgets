@@ -23,6 +23,15 @@ class QCustomSidebarButton(QPushButton):
     """
     WIDGET_MODULE = "Custom_Widgets.QCustomSidebarButton"
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "labelText", "kind": "str", "group": "Label"},
+        {"name": "textPrefixSpaces", "kind": "int", "group": "Label"},
+        {"name": "hideOnCollapse", "kind": "bool", "group": "Sidebar"},
+        {"name": "showOnCollapse", "kind": "bool", "group": "Sidebar"},
+    ]
+
     def __init__(self, parent=None, *args):
         super().__init__(parent)
 
