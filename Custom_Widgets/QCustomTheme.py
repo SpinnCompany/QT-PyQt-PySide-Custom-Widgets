@@ -9,7 +9,6 @@ import subprocess
 from urllib.parse import urlparse
 import __main__
 
-import matplotlib.colors as mc
 import colorsys
 
 from qtpy.QtWidgets import QApplication, QPushButton, QLabel, QTabWidget, QCheckBox, QToolBox, QMainWindow, QMenu, QTreeWidgetItem
@@ -17,6 +16,18 @@ from qtpy.QtGui import QPalette, QCursor, QFont, QFontDatabase, QIcon, QColor, Q
 from qtpy.QtCore import QCoreApplication, QRect, Signal, QObject, QSettings, Property, QDir, QThreadPool
 
 import qtsass
+
+
+def _qcolor_rgbf(color):
+    """Any color spec (CSS/SVG name, hex string, float rgb(a) tuple) ->
+    (r, g, b) floats in 0-1, via QColor. Replaces matplotlib.colors."""
+    if isinstance(color, (tuple, list)):
+        qc = QColor.fromRgbF(*[float(v) for v in color[:3]])
+    else:
+        qc = QColor(str(color))
+    if not qc.isValid():
+        raise ValueError(f"Invalid color: {color!r}")
+    return qc.redF(), qc.greenF(), qc.blueF()
 
 # Icons are shipped and themed as SVG. Importing QtSvg makes sure the Qt SVG
 # image-format plugin is bundled by deployment tools (PyInstaller, cx_Freeze).
@@ -486,11 +497,7 @@ class QCustomTheme(QObject):
         return QApplication.instance()  # This returns the QApplication instance if no main window is found
 
     def adjustLightness(self, color, amount=0.5):
-        try:
-            c = mc.cnames[color]
-        except KeyError:
-            c = color
-        c = colorsys.rgb_to_hls(*mc.to_rgb(c))
+        c = colorsys.rgb_to_hls(*_qcolor_rgbf(color))
 
         if c[1] > 0:
             adjusted_lightness = c[1] * amount * amount 
@@ -523,18 +530,13 @@ class QCustomTheme(QObject):
 
     def colorToHex(self, color):
         if isinstance(color, str):
-            if color in mc.CSS4_COLORS:
-                return mc.CSS4_COLORS[color]
-            else:
-                try:
-                    rgba = mc.to_rgba(color)
-                    return mc.to_hex(rgba)
-                except ValueError:
-                    raise ValueError(f"Invalid color name: {color}")
+            qc = QColor(color)
+            if not qc.isValid():
+                raise ValueError(f"Invalid color name: {color}")
+            return qc.name()
 
         elif isinstance(color, tuple) and len(color) == 3:
-            rgba = color + (1.0,)
-            return mc.to_hex(rgba)
+            return QColor.fromRgbF(*[float(v) for v in color]).name()
 
         else:
             raise ValueError("Invalid color representation")
@@ -564,7 +566,7 @@ class QCustomTheme(QObject):
         return darkened_color
 
     def isColorDarkOrLight(self, color):
-        rgb = mc.to_rgba(color)[:3]
+        rgb = _qcolor_rgbf(color)
         luminance = 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]
         threshold = 0.5
         return "dark" if luminance < threshold else "light"
@@ -579,7 +581,7 @@ class QCustomTheme(QObject):
                 raise ValueError("Invalid hex color format")
         else:
             try:
-                rgb = mc.to_rgb(color)
+                rgb = _qcolor_rgbf(color)
                 color = "#{:02X}{:02X}{:02X}".format(int(rgb[0]*255), int(rgb[1]*255), int(rgb[2]*255))
             except ValueError:
                 raise ValueError("Invalid color name")

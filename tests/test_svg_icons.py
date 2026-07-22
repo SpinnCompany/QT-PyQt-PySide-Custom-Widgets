@@ -248,8 +248,8 @@ class TestNoLegacyPngPipeline:
         assert "cairosvg" not in content
 
     def test_cairosvg_not_in_install_requires(self):
-        setup_py = os.path.join(PACKAGE_DIR, "..", "setup.py")
-        with open(setup_py, encoding="utf-8") as f:
+        pyproject = os.path.join(PACKAGE_DIR, "..", "pyproject.toml")
+        with open(pyproject, encoding="utf-8") as f:
             content = f.read()
         assert "cairosvg" not in content
 
