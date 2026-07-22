@@ -121,6 +121,17 @@ class DevServer:
                 "*.scss/*.json (app live-reloads)")
         logInfo(" " + "=" * 60)
 
+        # A supervisor killed with SIGTERM (e.g. Designer's Stop button via
+        # QProcess.terminate) must still tear down the child app - route it
+        # through KeyboardInterrupt so the finally block runs.
+        def _on_sigterm(signum, frame):
+            raise KeyboardInterrupt
+
+        try:
+            signal.signal(signal.SIGTERM, _on_sigterm)
+        except (ValueError, OSError):
+            pass  # non-main thread or unsupported platform
+
         snapshot = _scan(self.root)
         self.start_app()
         try:

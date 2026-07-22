@@ -239,6 +239,16 @@ class DesignerBridgeServer(QObject):
             return self._setWidgetProperty(str(message.get("widget", "")),
                                            str(message.get("property", "")),
                                            message.get("value"))
+        if method == "runApp":
+            return self._runApp("start")
+        if method == "stopApp":
+            return self._runApp("stop")
+        if method == "restartApp":
+            return self._runApp("restart")
+        if method == "appStatus":
+            return self._runApp("status")
+        if method == "appLogs":
+            return self._runApp("logs", int(message.get("lines", 100)))
         return {"error": f"unknown method '{method}'"}
 
     ####################################################################
@@ -481,6 +491,36 @@ class DesignerBridgeServer(QObject):
                                 "png": grab_b64(fw.mainContainer())} for fw in forms]}
         return {"result": grab_b64(forms[0].mainContainer()), "file": forms[0].fileName()}
 
+
+    def _runApp(self, action, lines=100):
+        """Drive the project's app via the Designer Run controller
+        (DesignerTools.RunController): start/stop/restart/status/logs."""
+        try:
+            from Custom_Widgets.DesignerTools import RunController
+            runner = RunController._instance
+            if runner is None:
+                return {"error": "run controller not installed "
+                                 "(Designer tools missing?)"}
+            if action == "start":
+                ok = runner.start()
+                return {"result": "ok" if ok else "failed",
+                        "running": runner.isRunning(),
+                        "script": runner.script()}
+            if action == "stop":
+                runner.stop()
+                return {"result": "ok", "running": runner.isRunning()}
+            if action == "restart":
+                runner.restart()
+                return {"result": "ok", "running": runner.isRunning()}
+            if action == "status":
+                return {"result": {"running": runner.isRunning(),
+                                   "script": runner.script(),
+                                   "available": runner.available()}}
+            if action == "logs":
+                return {"result": runner.appLogs(lines)}
+            return {"error": f"unknown app action '{action}'"}
+        except Exception as e:
+            return {"error": f"runApp failed: {e}"}
 
     ####################################################################
     ## WINDOW MANAGEMENT (panes, dialogs, actions, properties)
