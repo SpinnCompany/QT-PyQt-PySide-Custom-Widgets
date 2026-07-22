@@ -58,6 +58,47 @@ class TestQssGeneration:
         w.setStyleSheet("")                            # clean up shared app state
 
 
+class TestScssEngine:
+    def test_token_function_compiles(self, qapp):
+        from Custom_Widgets.JSonStyles.tokens import compile_scss
+        out = compile_scss("W { background-color: token('primary');"
+                           " padding: token('space.2'); border-radius: token('radius.md');"
+                           " font-weight: token('font.weight.semibold'); }", theme="light")
+        assert "#2563eb" in out            # colour, unquoted
+        assert "8px" in out                # space.2 / radius.md
+        assert "600" in out                # weight, unitless
+
+    def test_theme_switches_token_values(self, qapp):
+        from Custom_Widgets.JSonStyles.tokens import compile_scss
+        assert "#2563eb" in compile_scss("W{c: token('primary');}", theme="light")
+        assert "#3b82f6" in compile_scss("W{c: token('primary');}", theme="dark")
+
+    def test_theme_colour_override_bridges(self, qapp):
+        # QCustomTheme bridges the active theme colours onto token roles.
+        from Custom_Widgets.JSonStyles.tokens import compile_scss, DesignTokens
+        tokens = DesignTokens(theme="light",
+                              semantic={"light": {"surface": "#123456"}})
+        out = compile_scss("W{background-color: token('surface');}", tokens=tokens)
+        assert "#123456" in out
+
+    def test_qtsass_defaults_preserved(self, qapp):
+        # Registering token() must not clobber qtsass's own functions.
+        from Custom_Widgets.JSonStyles.tokens import compile_scss
+        out = compile_scss(
+            "W { background-color: token('primary');"
+            " qproperty-x: qlineargradient(0, 0, 0, 1, (0 red, 1 blue)); }",
+            theme="light")
+        assert "#2563eb" in out
+        assert "qlineargradient" in out    # qtsass default still worked
+
+    def test_compile_from_file(self, qapp, tmp_path):
+        from Custom_Widgets.JSonStyles.tokens import compile_scss
+        f = tmp_path / "style.scss"
+        f.write_text("W { color: token('on-surface'); }")
+        out = compile_scss(str(f), theme="light", is_filename=True)
+        assert "#0f172a" in out             # on-surface light
+
+
 class TestDataTableTokens:
     def test_datatable_qss_selectors(self, qapp):
         from Custom_Widgets.JSonStyles.tokens import DesignTokens, datatable_qss

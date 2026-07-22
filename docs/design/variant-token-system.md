@@ -189,5 +189,10 @@ Out of scope for the pilot: other widgets, MCP catalog tool, binding layer, WASM
 - Do we keep `Accent-color` from old themes as a migration convenience mapping to
   `semantic.primary`, or require full re-authoring? (Clean-break bias says
   re-author + provide a one-shot migration script, not a runtime shim.)
-- SCSS `token()` function vs plain SCSS variables — decide with scss-engine.md.
+- ~~SCSS `token()` function vs plain SCSS variables~~ **RESOLVED**: implemented as
+  a `token('role')` **qtsass custom function** (`tokens.sass_functions` /
+  `compile_scss`), wired into `QCustomTheme` so project `.scss` can call it. The
+  active theme's background/text/accent are bridged onto the `surface`/
+  `on-surface`/`primary`/`accent` roles, so `token()` follows the live theme.
+  A `scss_tokens_partial()` variable/map fallback also exists for editors.
 - Secondary variant definition (is it muted-surface or a second accent?).

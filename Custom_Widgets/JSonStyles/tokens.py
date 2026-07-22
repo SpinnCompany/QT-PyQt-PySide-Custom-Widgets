@@ -289,6 +289,66 @@ _MARK_END = "/* <<< custom-widgets design tokens <<< */"
 _MARK_RE = re.compile(re.escape(_MARK_START) + ".*?" + re.escape(_MARK_END), re.DOTALL)
 
 
+########################################################################
+## SCSS engine integration - expose token() to SCSS/QtSASS
+########################################################################
+def _token_string(tokens, name):
+    """QSS-ready string for a token name: colours as hex, font weights
+    unitless, other numerics (space/radius/size) as px."""
+    val = tokens.role(name)
+    if isinstance(val, str):        # colour hex
+        return val
+    if "weight" in name:
+        return str(int(val))
+    return "%dpx" % int(val)
+
+
+def sass_functions(tokens):
+    """qtsass/libsass custom functions exposing ``token()`` to SCSS.
+
+    In SCSS:  background-color: token('primary');  padding: token('space.2');
+    qtsass keys custom functions by ``fn.__name__``, so the callable must be
+    named ``token``.
+    """
+    def token(name):
+        raw = getattr(name, "value", name)      # SassString -> its .value
+        return _token_string(tokens, str(raw))
+    return [token]
+
+
+def compile_scss(source, tokens=None, theme="light", is_filename=False,
+                 output_file=None, **kwargs):
+    """Compile QtSASS/SCSS with the ``token()`` function registered.
+
+    source       SCSS string, or a file path when is_filename=True.
+    tokens/theme DesignTokens to expose (or a theme name to build one).
+    Returns the compiled QSS string.
+    """
+    import qtsass
+    if tokens is None:
+        tokens = DesignTokens(theme=theme)
+    fns = list(kwargs.pop("custom_functions", [])) + sass_functions(tokens)
+    if is_filename:
+        return qtsass.compile_filename(source, output_file,
+                                       custom_functions=fns, **kwargs)
+    return qtsass.compile(source, custom_functions=fns, **kwargs)
+
+
+def scss_tokens_partial(tokens):
+    """A SCSS partial exposing semantic roles as a map + ``token()`` function
+    and as ``$role`` variables. For editors and compilers without custom-
+    function support; the runtime path uses the Python token() above."""
+    lines = ["// AUTO-GENERATED from Custom_Widgets design tokens - do not edit.",
+             "$__design_tokens: ("]
+    for name in sorted(tokens._semantic.keys()):
+        lines.append('    "%s": %s,' % (name, _token_string(tokens, name)))
+    lines.append(");")
+    lines.append("@function token($name) { @return map-get($__design_tokens, $name); }")
+    for name in sorted(tokens._semantic.keys()):
+        lines.append("$%s: %s;" % (name.replace("-", "_"), _token_string(tokens, name)))
+    return "\n".join(lines) + "\n"
+
+
 def applyDesignTokens(target, tokens=None, theme="light"):
     """Generate token QSS and apply it to a QApplication or widget.
 
