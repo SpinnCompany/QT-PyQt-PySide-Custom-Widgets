@@ -68,19 +68,19 @@ except Exception as e:
     logException(e, message="Error registering QAvatarWidget")
 
 
-from Custom_Widgets.QBadgeWidget import QBadgeWidget 
+from Custom_Widgets.QCustomBadge import QCustomBadge
 
-# Registering QBadgeWidget with error handling
+# Registering QCustomBadge with error handling
 try:
-    logInfo("Registering QBadgeWidget")
+    logInfo("Registering QCustomBadge")
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QBadgeWidget, module=QBadgeWidget.WIDGET_MODULE,
-        tool_tip=QBadgeWidget.WIDGET_TOOLTIP, 
-        xml=QBadgeWidget.WIDGET_DOM_XML,
-        icon=QBadgeWidget.WIDGET_ICON
+        QCustomBadge, module=QCustomBadge.WIDGET_MODULE,
+        tool_tip=QCustomBadge.WIDGET_TOOLTIP,
+        xml=QCustomBadge.WIDGET_DOM_XML,
+        icon=QCustomBadge.WIDGET_ICON, group="Display Widgets"
     )
 except Exception as e:
-    logException(e, message="Error registering QBadgeWidget")
+    logException(e, message="Error registering QCustomBadge")
 
 
 from Custom_Widgets.AnalogGaugeWidget import AnalogGaugeWidget 

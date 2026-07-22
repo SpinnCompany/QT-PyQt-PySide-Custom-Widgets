@@ -906,6 +906,40 @@ def card_qss(tokens):
     return "".join(css)
 
 
+def badge_qss(tokens):
+    """Generate QCustomBadge QSS: a pill whose colour comes from the semantic
+    `variant`, plus sizes and a dot mode."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+    css.append("QCustomBadge {\n"
+               "    border-radius: %s; padding: 1px %s;\n"
+               "    font-weight: %d; font-size: %s;\n"
+               "}\n" % (px("radius.full"), px("space.2"),
+                        int(r("font.weight.medium")), px("font.size.sm")))
+    fills = {"default": ("surface-muted", "on-surface"),
+             "primary": ("primary", "on-primary"),
+             "secondary": ("secondary", "on-secondary"),
+             "success": ("success", "on-success"),
+             "warning": ("warning", "on-warning"),
+             "destructive": ("destructive", "on-destructive"),
+             "info": ("info", "on-info")}
+    for name, (bg, fg) in fills.items():
+        css.append('QCustomBadge[variant="%s"] { background-color: %s; color: %s; }\n'
+                   % (name, r(bg), r(fg)))
+    css.append('QCustomBadge[variant="outline"] {'
+               ' background-color: transparent; color: %s; border: 1px solid %s; }\n'
+               % (r("on-surface"), r("outline")))
+    # sizes
+    css.append('QCustomBadge[sizeVariant="sm"] { padding: 0 %s; font-size: %s; }\n'
+               % (px("space.1"), px("font.size.sm")))
+    css.append('QCustomBadge[sizeVariant="lg"] { padding: 2px %s; font-size: %s; }\n'
+               % (px("space.2"), px("font.size.md")))
+    # dot mode: no padding (size is fixed in code)
+    css.append('QCustomBadge[dot="true"] { padding: 0; min-width: 0; }\n')
+    return "".join(css)
+
+
 def build_component_qss(tokens):
     """All token-driven component QSS. Extend as more widgets adopt tokens."""
     return (button_qss(tokens) + datatable_qss(tokens) + toast_qss(tokens)
@@ -918,7 +952,8 @@ def build_component_qss(tokens):
             + pagination_qss(tokens) + popover_qss(tokens) + segmented_qss(tokens)
             + emptystate_qss(tokens) + dropzone_qss(tokens) + rangeslider_qss(tokens)
             + switch_qss(tokens) + number_qss(tokens) + alert_qss(tokens)
-            + statcard_qss(tokens) + progressring_qss(tokens) + card_qss(tokens))
+            + statcard_qss(tokens) + progressring_qss(tokens) + card_qss(tokens)
+            + badge_qss(tokens))
 
 
 _MARK_START = "/* >>> custom-widgets design tokens >>> */"
