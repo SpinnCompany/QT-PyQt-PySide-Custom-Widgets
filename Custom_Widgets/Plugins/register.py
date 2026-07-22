@@ -1,6 +1,21 @@
 # Custom Widgets Registration for Qt Designer
 # Author: Khamisi Kibet
 
+# Dump a native + Python traceback to stderr on a fatal signal (SIGSEGV/SIGABRT)
+# so custom-widget crashes inside the Designer process are diagnosable instead
+# of silently returning -11.
+import os as _os
+try:
+    import faulthandler as _faulthandler
+    _fh_path = _os.path.join(
+        _os.path.expanduser("~/.local/share/customwidgets/logs"),
+        "designer_faulthandler.log")
+    _os.makedirs(_os.path.dirname(_fh_path), exist_ok=True)
+    _fh_file = open(_fh_path, "a", buffering=1)
+    _faulthandler.enable(file=_fh_file, all_threads=True)
+except Exception:
+    pass
+
 # Import custom logging module
 from Custom_Widgets.Log import *
 
@@ -83,7 +98,22 @@ except Exception as e:
     logException(e, message="Error registering AnalogGaugeWidget")
 
 
-from Custom_Widgets.QCustomThemeList import QCustomThemeList 
+from Custom_Widgets.QCustomDataTable import QCustomDataTable
+
+# Registering QCustomDataTable with error handling
+try:
+    logInfo("Registering QCustomDataTable")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomDataTable, module=QCustomDataTable.WIDGET_MODULE,
+        tool_tip=QCustomDataTable.WIDGET_TOOLTIP,
+        xml=QCustomDataTable.WIDGET_DOM_XML,
+        icon=QCustomDataTable.WIDGET_ICON, group="Item Views"
+    )
+except Exception as e:
+    logException(e, message="Error registering QCustomDataTable")
+
+
+from Custom_Widgets.QCustomThemeList import QCustomThemeList
 
 # Registering QCustomThemeList with error handling
 try:
