@@ -227,9 +227,17 @@ class DesignerBridgeServer(QObject):
             pending.append(path)
 
         if pending:
-            # No reachable manager - open in a fresh Designer window
+            # No reachable manager (needs at least one open form) - fall back
+            # to opening in a Designer window via the desktop shell
             from qtpy.QtCore import QProcess
-            program = sys.executable if 'designer' in sys.executable.lower() else 'pyside6-designer'
+            candidates = [
+                os.path.join(os.path.dirname(sys.executable), 'pyside6-designer'),
+                'pyside6-designer',
+            ]
+            if 'designer' in sys.executable.lower():
+                candidates.insert(0, sys.executable)
+            program = next((c for c in candidates
+                            if os.path.sep not in c or os.path.exists(c)), candidates[-1])
             QProcess.startDetached(program, pending)
             opened.extend(os.path.basename(p) + " (new window)" for p in pending)
         return opened
@@ -361,3 +369,29 @@ class DesignerBridgeClient:
         if delivered and qss:
             self.send({"method": "setStyleSheet", "qss": qss})
         return delivered
+
+    def request(self, message, reply_timeout_ms=10000):
+        """Send one message and wait for the JSON reply. Returns the reply
+        dict, or None when Designer/the bridge is not running."""
+        try:
+            sock = QLocalSocket()
+            sock.connectToServer(self._name)
+            if not sock.waitForConnected(self._timeout):
+                return None
+            sock.write((json.dumps(message) + "\n").encode("utf-8"))
+            sock.flush()
+            sock.waitForBytesWritten(self._timeout)
+
+            import time
+            buffer = b""
+            deadline = time.monotonic() + (reply_timeout_ms / 1000.0)
+            while time.monotonic() < deadline and b"\n" not in buffer:
+                if sock.waitForReadyRead(200):
+                    buffer += bytes(sock.readAll())
+            sock.disconnectFromServer()
+            if b"\n" not in buffer:
+                return None
+            return json.loads(buffer.split(b"\n")[0].decode("utf-8"))
+        except Exception as e:
+            logDebug(f"Designer bridge request failed: {e}")
+            return None

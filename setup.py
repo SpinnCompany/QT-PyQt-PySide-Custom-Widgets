@@ -46,6 +46,9 @@ setup(
         "rich",
         "qrcode >= 8.0",
     ],
+    extras_require={
+        "mcp": ["mcp"],
+    },
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
@@ -61,6 +64,7 @@ setup(
     entry_points={
         'console_scripts': [
             'Custom_Widgets=Custom_Widgets.CMD:run_command',
+            'Custom_Widgets-mcp=Custom_Widgets.McpServer:main',
         ],
     },
 )
