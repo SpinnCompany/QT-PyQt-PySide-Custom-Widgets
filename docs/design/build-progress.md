@@ -12,7 +12,7 @@ the "no push until the full commercial product is ready" decision).
 | Repo | Location | Branch | Commits (this effort) | Tests |
 |---|---|---|---|---|
 | Free core | `QT-PyQt-PySide-Custom-Widgets` | `feat/qcustom-datatable` | 18 ahead of `main` | 211 passing¹ |
-| Pro (private) | `custom-widgets-pro` (dist `QT-PyQt-PySide-Custom-Widgets-Pro`) | `main` | 7 | 38 passing |
+| Pro (private) | `custom-widgets-pro` (dist `QT-PyQt-PySide-Custom-Widgets-Pro`) | `main` | 9 | 66 passing |
 
 ¹ One unrelated pre-existing failure (`test_dev_server.py::test_classify`) comes
 from an uncommitted parallel-session change to `DevServer.py`; excluded from the count.
@@ -78,12 +78,24 @@ runtime), 100% original code (no bundled assets).
 - **Frozen (pinned) columns** — synced two-view overlay.
 - **Inline editing** — per-column editable + type coercion + validation + bool
   checkboxes; `cellEdited` / `validationFailed`.
+- **Grouping + aggregation** — group by one or more columns as a flat outline
+  (header rows interleaved with data rows, so the frozen overlay/proxy/view chain
+  is untouched); per-group sum/avg/count/min/max/first/last or a callable;
+  click / `expand|collapseAllGroups` toggle; `groupToggled`. Pure `GroupingEngine`
+  is Qt-free + unit-tested. Materialises the current sort/filter while grouped,
+  restores lazy mode when cleared.
+- **Pivot (cross-tab)** — `pivot(index, columns, values, aggfunc)` reshapes into
+  a matrix (row dims × distinct column values × aggregated cell + row totals) via
+  a pure `pivot_table` transform rendered through the ordinary flat table;
+  `clearPivot` restores; mutually exclusive with grouping.
 
 Licence verification is still **stubbed** (deliberately deferred to last).
+This completes all five DataTable Pro capability layers (virtualization, frozen
+columns, inline editing, grouping/pivot, export) — the SKU is feature-complete
+bar the licence hook + native compile.
 
 ## What's next (open threads)
 
-- DataTable Pro: **grouping / pivot** (last major SKU feature).
 - More free widgets if desired (number-stepper, switch, stat card, progress ring, ...).
 - **Compliance fixes before any launch** (see THIRD_PARTY_NOTICES.draft.md):
   remove bundled **Product Sans** (proprietary), verify **BlurWindow.py** provenance,
