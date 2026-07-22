@@ -4,7 +4,7 @@ from PySide6.QtGui import QColor
 from PySide6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QPushButton, QWidget, QGraphicsDropShadowEffect
 from Custom_Widgets.QCustomTipOverlay import QCustomTipOverlay
 
-class MainWindow(QCustomMainWindow):
+class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("QCustomTipOverlay Tail Position Test")

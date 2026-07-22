@@ -218,6 +218,20 @@ except Exception as e:
     logException(e, message="Error registering QCustomSidebarButton")
 
 
+from Custom_Widgets.QCustomSidebarContainer import QCustomSidebarContainer
+
+# Registering QCustomSidebarContainer with error handling
+try:
+    logInfo("Registering QCustomSidebarContainer")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomSidebarContainer, module=QCustomSidebarContainer.WIDGET_MODULE,
+        tool_tip=QCustomSidebarContainer.WIDGET_TOOLTIP, 
+        xml=QCustomSidebarContainer.WIDGET_DOM_XML,
+        icon=QCustomSidebarContainer.WIDGET_ICON, container=True, group="Sidebar"
+    )
+except Exception as e:
+    logException(e, message="Error registering QCustomSidebarContainer")
+
 from Custom_Widgets.QCustomProgressBars import QCustomRoundProgressBar 
 
 # Registering QCustomRoundProgressBar with error handling
@@ -381,6 +395,42 @@ except ImportError as e:
     logError(f"Failed to import QCustomPieChart: {e}")
 except Exception as e:
     logException(e, message="Error registering QCustomPieChart")
+
+try:
+    from Custom_Widgets.QCustomCharts import QCustomVerticalBarSeries
+
+    logInfo("Registering QCustomVerticalBarSeries")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomVerticalBarSeries,
+        module=QCustomVerticalBarSeries.WIDGET_MODULE,
+        tool_tip=QCustomVerticalBarSeries.WIDGET_TOOLTIP,
+        xml=QCustomVerticalBarSeries.WIDGET_DOM_XML,
+        icon=QCustomVerticalBarSeries.WIDGET_ICON,
+        container=False,
+        group="Charts"
+    )
+except ImportError as e:
+    logError(f"Failed to import QCustomVerticalBarSeries: {e}")
+except Exception as e:
+    logException(e, message="Error registering QCustomVerticalBarSeries")
+
+try:
+    from Custom_Widgets.QCustomCharts import QCustomHorizontalBarSeries
+
+    logInfo("Registering QCustomHorizontalBarSeries")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomHorizontalBarSeries,
+        module=QCustomHorizontalBarSeries.WIDGET_MODULE,
+        tool_tip=QCustomHorizontalBarSeries.WIDGET_TOOLTIP,
+        xml=QCustomHorizontalBarSeries.WIDGET_DOM_XML,
+        icon=QCustomHorizontalBarSeries.WIDGET_ICON,
+        container=False,
+        group="Charts"
+    )
+except ImportError as e:
+    logError(f"Failed to import QCustomHorizontalBarSeries: {e}")
+except Exception as e:
+    logException(e, message="Error registering QCustomHorizontalBarSeries")
 
 # NOTE: QCustomFlowLayout is a QLayout subclass, not a QWidget, so it cannot be
 # registered as a Designer custom widget. Register QCustomFlowWidget instead -

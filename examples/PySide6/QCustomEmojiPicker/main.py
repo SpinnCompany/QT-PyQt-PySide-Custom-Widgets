@@ -3,7 +3,7 @@ from PySide6.QtGui import QColor
 from Custom_Widgets.QCustomEmojiPicker import QCustomEmojiPicker
 import sys
 
-class MainWindow(QCustomMainWindow):
+class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.initUI()

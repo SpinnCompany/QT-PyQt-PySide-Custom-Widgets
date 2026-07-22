@@ -137,31 +137,12 @@ def get_user_choice_for_non_empty_dir():
             print_warning("Please enter 1 or 2")
 
 def register_custom_widgets():
-    """Register custom widgets with Qt Designer"""
-    print_header("REGISTERING CUSTOM WIDGETS")
-    print_info("Registering custom widgets with Qt Designer...")
-    
-    try:
-        # Find the site-packages directory
-        result = subprocess.run([sys.executable, "-m", "site", "--user-site"], 
-                              capture_output=True, text=True)
-        site_packages = result.stdout.strip()
-        
-        if site_packages:
-            plugins_path = os.path.join(site_packages, "Custom_Widgets", "Plugins", "registerMyWidget.py")
-            if os.path.exists(plugins_path):
-                print_info("Running widget registration script...")
-                subprocess.run([sys.executable, plugins_path])
-                print_success("Custom widgets registered successfully!")
-            else:
-                print_warning(f"Registration script not found at: {plugins_path}")
-                print_info("You can manually register widgets later using:")
-        else:
-            print_warning("Could not find site-packages directory")
-            
-    except Exception as e:
-        print_error(f"Failed to register widgets: {e}")
-        print_info("You can manually register widgets later")
+    """Widget registration happens inside Qt Designer itself: launching via
+    `Custom_Widgets --start-designer --plugins` points PYSIDE_DESIGNER_PLUGINS
+    at Custom_Widgets/Plugins, and Designer runs the registrar there. Nothing
+    to do at project-creation time."""
+    print_info("Custom widgets register automatically when Designer is "
+               "launched with: Custom_Widgets --start-designer --plugins")
 
 def start_file_monitoring(ui_path="ui", qt_binding="PySide6"):
     """Start monitoring UI files for changes"""

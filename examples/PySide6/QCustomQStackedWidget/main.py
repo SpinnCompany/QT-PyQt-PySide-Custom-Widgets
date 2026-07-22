@@ -20,9 +20,9 @@ from ui_interface import *
 ########################################################################
 ## MAIN WINDOW CLASS
 ########################################################################
-class MainWindow(QCustomMainWindow):
+class MainWindow(QMainWindow):
     def __init__(self, parent=None):
-        QCustomMainWindow.__init__(self)
+        QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 

@@ -6,16 +6,15 @@ from qtpy.QtCharts import QChart, QPieSeries, QPieSlice, QChartView
 from qtpy.QtWidgets import QGraphicsLayout
 
 from .QCustomChartBase import QCustomChartBase # This already includes QCustomChartConstants
+from .QCustomChartProps import ChartCommonProps
 from Custom_Widgets.Utils import is_in_designer
 from Custom_Widgets.QCustomCharts.QCustomChartConstants import (
     QCustomChartEnums as _CE,
     QCustomChartConstants as _CC, chart_str_to_int, chart_int_to_str,
-    CHART_THEME_TO_INT, INT_TO_CHART_THEME,
-    LEGEND_POSITION_TO_INT, INT_TO_LEGEND_POSITION,
     LABELS_POSITION_TO_INT, INT_TO_LABELS_POSITION)
 
 
-class QCustomPieChart(QCustomChartBase):
+class QCustomPieChart(QCustomChartBase, ChartCommonProps):
     """
     Pie chart implementation using the modular architecture.
     Qt Designer compatible with property exposure.
@@ -1354,17 +1353,9 @@ class QCustomPieChart(QCustomChartBase):
         return self._exporter.printChart(self._chart_view)
     
     # ============ PROPERTIES FOR DESIGNER ============
-    
-    @Property(str)
-    def chartTitle(self):
-        """Get chart title"""
-        return self._chart_title
-    
-    @chartTitle.setter
-    def chartTitle(self, value: str):
-        """Set chart title"""
-        self._chart_title = value
-        self._chart.setTitle(value)
+    # Common properties are inherited from ChartCommonProps
+    # (see QCustomChartProps.py). Only pie-chart specific
+    # implementations live here.
     
     @Property(bool)
     def showLegend(self):
@@ -1376,43 +1367,6 @@ class QCustomPieChart(QCustomChartBase):
         """Set legend visibility"""
         self._show_legend = value
         self._updateLegendSettings()
-    
-    @Property(bool)
-    def animationEnabled(self):
-        """Get animation enabled state"""
-        return self._animation_enabled
-    
-    @animationEnabled.setter
-    def animationEnabled(self, value: bool):
-        """Set animation enabled state"""
-        self._animation_enabled = value
-        if value:
-            self._chart.setAnimationOptions(QChart.SeriesAnimations)
-        else:
-            self._chart.setAnimationOptions(QChart.NoAnimation)
-    
-    @Property(int)
-    def animationDuration(self):
-        """Get animation duration in ms"""
-        return self._animation_duration
-    
-    @animationDuration.setter
-    def animationDuration(self, value: int):
-        """Set animation duration in ms"""
-        self._animation_duration = value
-        if self._animation_enabled:
-            self._chart.setAnimationDuration(value)
-    
-    @Property(bool)
-    def antialiasing(self):
-        """Get antialiasing state"""
-        return self._antialiasing
-    
-    @antialiasing.setter
-    def antialiasing(self, value: bool):
-        """Set antialiasing state"""
-        self._antialiasing = value
-        self._chart_view.setRenderHint(QPainter.Antialiasing, value)
     
     @Property(bool)
     def showLabels(self):
@@ -1625,94 +1579,3 @@ class QCustomPieChart(QCustomChartBase):
                 slice_obj.setExplodeDistanceFactor(value)
                 self._chart.update()
     
-    @Property(bool)
-    def showToolbar(self):
-        """Get toolbar visibility"""
-        return self.isToolbarVisible()
-    
-    @showToolbar.setter
-    def showToolbar(self, value: bool):
-        """Set toolbar visibility"""
-        self.setToolbarVisible(value)
-    
-    @Property(bool)
-    def tooltipsEnabled(self):
-        """Get tooltips enabled state"""
-        return self.areTooltipsEnabled()
-    
-    @tooltipsEnabled.setter
-    def tooltipsEnabled(self, value: bool):
-        """Set tooltips enabled state"""
-        self.setTooltipsEnabled(value)
-    
-    @Property(int)
-    def tooltipDelay(self):
-        """Get tooltip delay in ms"""
-        return self._tooltip_delay
-    
-    @tooltipDelay.setter
-    def tooltipDelay(self, value: int):
-        """Set tooltip delay in ms"""
-        self._tooltip_delay = value
-        self._tooltip_manager.setDelay(value)
-    
-    @Property(int)
-    def tooltipDuration(self):
-        """Get tooltip duration in ms"""
-        return self._tooltip_duration
-    
-    @tooltipDuration.setter
-    def tooltipDuration(self, value: int):
-        """Set tooltip duration in ms"""
-        self._tooltip_duration = value
-        self._tooltip_manager.setDuration(value)
-    
-    @Property(int)
-    def theme(self):
-        """Current theme (int; see QCustomChartEnums.ChartTheme)."""
-        return chart_str_to_int(CHART_THEME_TO_INT, self.getTheme())
-
-    @theme.setter
-    def theme(self, value):
-        self.setTheme(chart_int_to_str(INT_TO_CHART_THEME, value, _CC.THEME_APP_THEME))
-
-    @Property(int)
-    def legendPosition(self):
-        """Legend position (int; see QCustomChartEnums.LegendPosition)."""
-        return chart_str_to_int(LEGEND_POSITION_TO_INT, self.getLegendPosition())
-
-    @legendPosition.setter
-    def legendPosition(self, value):
-        self.setLegendPosition(chart_int_to_str(INT_TO_LEGEND_POSITION, value, _CC.LEGEND_BOTTOM))
-    
-    @Property(int)
-    def legendFontSize(self):
-        """Get legend font size"""
-        return self._legend_font_size
-    
-    @legendFontSize.setter
-    def legendFontSize(self, value: int):
-        """Set legend font size"""
-        self._legend_font_size = value
-        self._legend_manager.setFontSize(value)
-    
-    @Property(bool)
-    def legendBackgroundVisible(self):
-        """Get legend background visibility"""
-        return self._legend_background_visible
-    
-    @legendBackgroundVisible.setter
-    def legendBackgroundVisible(self, value: bool):
-        """Set legend background visibility"""
-        self._legend_background_visible = value
-        self._legend_manager.setBackgroundVisible(value)
-    
-    @Property(bool)
-    def compactMode(self):
-        """Get compact mode state"""
-        return self.isCompactMode()
-    
-    @compactMode.setter
-    def compactMode(self, value: bool):
-        """Set compact mode state"""
-        self.setCompactMode(value)

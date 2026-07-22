@@ -22,9 +22,9 @@ from PySide6.QtWidgets import QStyle
 ########################################################################
 ## MAIN WINDOW CLASS
 ########################################################################
-class MainWindow(QCustomMainWindow):
+class MainWindow(QMainWindow):
     def __init__(self):
-        QCustomMainWindow.__init__(self)
+        QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
