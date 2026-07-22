@@ -76,9 +76,6 @@
            <property name="tristate">
             <bool>true</bool>
            </property>
-           <property name="checkState">
-            <enum>Qt::PartiallyChecked</enum>
-           </property>
           </widget>
          </item>
          <item row="1" column="0">
