@@ -8,7 +8,7 @@ from qtpy.QtGui import QPainter, QPixmap
 from qtpy.QtWidgets import QStackedWidget, QWidget, QGraphicsOpacityEffect, QStyleOption, QStyle, QPushButton
 import os
 
-from Custom_Widgets.QPropertyAnimation import returnAnimationEasingCurve, returnQtDirection
+from Custom_Widgets.QPropertyAnimation import returnAnimationEasingCurve, returnQtDirection, easingCurveToInt
 from Custom_Widgets.Utils import is_in_designer
 
 class QCustomQStackedWidget(QStackedWidget):
@@ -242,59 +242,40 @@ class QCustomQStackedWidget(QStackedWidget):
         self._fadeOutTime = time
         self._fadeOutTimeSet = True  # Mark as manually set
 
-    @Property(str)
+    # Easing curves are typed as int (a QEasingCurve.Type value) so Designer
+    # shows a spin box; developers can pass QEasingCurve.OutQuad etc. Legacy
+    # name strings are still accepted. The internal _*Curve values keep their
+    # original form and are resolved via returnAnimationEasingCurve when used.
+    @Property(int)
     def fadeInCurve(self):
-        """Get the easing curve name for fade in animation."""
-        return self._fadeInCurve
+        return easingCurveToInt(self._fadeInCurve)
 
     @fadeInCurve.setter
     def fadeInCurve(self, curve):
-        """
-        Set the easing curve for fade in animation.
-        
-        Args:
-            curve (str): Name of the easing curve.
-        """
         self._fadeInCurve = curve
 
-    @Property(str)
+    @Property(int)
     def fadeOutCurve(self):
-        """Get the easing curve name for fade out animation."""
-        return self._fadeOutCurve
+        return easingCurveToInt(self._fadeOutCurve)
 
     @fadeOutCurve.setter
     def fadeOutCurve(self, curve):
-        """
-        Set the easing curve for fade out animation.
-        
-        Args:
-            curve (str): Name of the easing curve.
-        """
         self._fadeOutCurve = curve
 
-    @Property(str)
+    @Property(int)
     def transitionEasingCurve(self):
-        """Get the easing curve name for slide animations."""
-        return self._transitionEasingCurve
+        return easingCurveToInt(self._transitionEasingCurve)
 
     @transitionEasingCurve.setter
     def transitionEasingCurve(self, curve):
-        """
-        Set the easing curve for slide animations.
-        
-        Args:
-            curve (str): Name of the easing curve.
-        """
         self._transitionEasingCurve = curve
 
-    @Property(str)
+    @Property(int)
     def fadeEasingCurve(self):
-        """Legacy property for fade easing curve."""
-        return self._fadeEasingCurve
+        return easingCurveToInt(self._fadeEasingCurve)
 
     @fadeEasingCurve.setter
     def fadeEasingCurve(self, curve):
-        """Legacy setter for fade easing curve."""
         self._fadeEasingCurve = curve
 
     # =========================================================================

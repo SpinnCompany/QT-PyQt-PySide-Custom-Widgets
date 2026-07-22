@@ -1,6 +1,18 @@
 # file name: QCustomChartConstants.py
+from enum import IntEnum
 from qtpy.QtCore import Qt, QEasingCurve
 from qtpy.QtGui import QColor, QBrush
+
+
+def _build_maps(enum_cls, values):
+    """Given an IntEnum class and its ordered list of string constants,
+    return (name->int, int->name) so chart properties can be typed as int
+    for Qt Designer while the rendering code keeps using the string
+    constants. Values must line up with the enum members by order."""
+    members = list(enum_cls)
+    str_to_int = {v: int(m) for m, v in zip(members, values)}
+    int_to_str = {int(m): v for m, v in zip(members, values)}
+    return str_to_int, int_to_str
 
 class QCustomChartConstants:
     """Shared constants for the chart module"""
@@ -263,3 +275,97 @@ class QCustomChartConstants:
         "out_bounce": QEasingCurve.OutBounce,
         "in_out_bounce": QEasingCurve.InOutBounce,
     }
+
+########################################################################
+## TYPED ENUMS FOR QT DESIGNER
+##
+## Chart state/mode properties are exposed to Qt Designer as int (backed
+## by these IntEnums) instead of free-form strings. The rendering code
+## keeps using the string constants above; properties map int<->string at
+## the boundary via the paired maps. Developers can use e.g.
+## QCustomChartEnums.LegendPosition.Top.
+########################################################################
+class QCustomChartEnums:
+
+    class LineStyle(IntEnum):
+        Solid = 0; Dash = 1; Dot = 2; DashDot = 3; DashDotDot = 4; NoneStyle = 5
+
+    class MarkerStyle(IntEnum):
+        Circle = 0; Rectangle = 1; RotatedRectangle = 2; Triangle = 3
+        Star = 4; Pentagon = 5; NoneStyle = 6
+
+    class ChartTheme(IntEnum):
+        AppTheme = 0; Light = 1; Dark = 2; BlueNcs = 3; BlueIcy = 4
+        HighContrast = 5; QtLight = 6; QtDark = 7; QtBrownSand = 8
+
+    class LegendPosition(IntEnum):
+        Top = 0; Bottom = 1; Left = 2; Right = 3; Floating = 4
+
+    class LabelsPosition(IntEnum):
+        Outside = 0; Inside = 1; InsideTangential = 2; Callout = 3
+
+    class BarLabelsPosition(IntEnum):
+        Center = 0; InsideBase = 1; InsideEnd = 2; OutsideEnd = 3
+
+    class BarPattern(IntEnum):
+        Solid = 0; Horizontal = 1; Vertical = 2; Cross = 3; Diagonal = 4
+        ReverseDiagonal = 5; DiagonalCross = 6; Dense = 7; Sparse = 8
+
+    class BarBorderStyle(IntEnum):
+        Solid = 0; Dashed = 1; Dotted = 2; DashDot = 3
+
+    class BarSelectionMode(IntEnum):
+        NoneMode = 0; Single = 1; Multiple = 2; Category = 3
+
+
+_C = QCustomChartConstants
+_E = QCustomChartEnums
+
+# name<->int maps, ordered to line up with each IntEnum's members
+LINE_STYLE_TO_INT, INT_TO_LINE_STYLE = _build_maps(
+    _E.LineStyle, [_C.LINE_SOLID, _C.LINE_DASH, _C.LINE_DOT,
+                   _C.LINE_DASH_DOT, _C.LINE_DASH_DOT_DOT, _C.LINE_NONE])
+MARKER_STYLE_TO_INT, INT_TO_MARKER_STYLE = _build_maps(
+    _E.MarkerStyle, [_C.MARKER_CIRCLE, _C.MARKER_RECTANGLE, _C.MARKER_ROTATED_RECTANGLE,
+                     _C.MARKER_TRIANGLE, _C.MARKER_STAR, _C.MARKER_PENTAGON, _C.MARKER_NONE])
+CHART_THEME_TO_INT, INT_TO_CHART_THEME = _build_maps(
+    _E.ChartTheme, [_C.THEME_APP_THEME, _C.THEME_LIGHT, _C.THEME_DARK, _C.THEME_BLUE_NCS,
+                    _C.THEME_BLUE_ICY, _C.THEME_HIGH_CONTRAST, _C.THEME_QT_LIGHT,
+                    _C.THEME_QT_DARK, _C.THEME_QT_BROWN_SAND])
+LEGEND_POSITION_TO_INT, INT_TO_LEGEND_POSITION = _build_maps(
+    _E.LegendPosition, [_C.LEGEND_TOP, _C.LEGEND_BOTTOM, _C.LEGEND_LEFT,
+                        _C.LEGEND_RIGHT, _C.LEGEND_FLOATING])
+LABELS_POSITION_TO_INT, INT_TO_LABELS_POSITION = _build_maps(
+    _E.LabelsPosition, [_C.LABELS_POSITION_OUTSIDE, _C.LABELS_POSITION_INSIDE,
+                        _C.LABELS_POSITION_INSIDE_TANGENTIAL, _C.LABELS_POSITION_CALLOUT])
+BAR_LABELS_TO_INT, INT_TO_BAR_LABELS = _build_maps(
+    _E.BarLabelsPosition, [_C.BAR_LABELS_CENTER, _C.BAR_LABELS_INSIDE_BASE,
+                           _C.BAR_LABELS_INSIDE_END, _C.BAR_LABELS_OUTSIDE_END])
+BAR_PATTERN_TO_INT, INT_TO_BAR_PATTERN = _build_maps(
+    _E.BarPattern, [_C.BAR_PATTERN_SOLID, _C.BAR_PATTERN_HORIZONTAL, _C.BAR_PATTERN_VERTICAL,
+                    _C.BAR_PATTERN_CROSS, _C.BAR_PATTERN_DIAGONAL, _C.BAR_PATTERN_REVERSE_DIAGONAL,
+                    _C.BAR_PATTERN_DIAGONAL_CROSS, _C.BAR_PATTERN_DENSE, _C.BAR_PATTERN_SPARSE])
+BAR_BORDER_TO_INT, INT_TO_BAR_BORDER = _build_maps(
+    _E.BarBorderStyle, [_C.BAR_BORDER_SOLID, _C.BAR_BORDER_DASHED,
+                        _C.BAR_BORDER_DOTTED, _C.BAR_BORDER_DASH_DOT])
+BAR_SELECTION_TO_INT, INT_TO_BAR_SELECTION = _build_maps(
+    _E.BarSelectionMode, [_C.BAR_SELECTION_NONE, _C.BAR_SELECTION_SINGLE,
+                          _C.BAR_SELECTION_MULTIPLE, _C.BAR_SELECTION_CATEGORY])
+
+
+def chart_str_to_int(mapping, value, default=0):
+    """Map a chart string constant / int / IntEnum to its int, tolerant of
+    legacy string values."""
+    if isinstance(value, bool):
+        return default
+    if isinstance(value, int):
+        return int(value)
+    return mapping.get(value, default)
+
+
+def chart_int_to_str(mapping, value, default):
+    """Map an int (or legacy string) back to the string constant used by the
+    rendering code."""
+    if isinstance(value, str):
+        return value
+    return mapping.get(int(value), default)

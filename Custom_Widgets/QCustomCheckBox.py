@@ -7,6 +7,8 @@ from qtpy.QtCore import Qt, QEasingCurve, QPropertyAnimation, QSize, Property, Q
 from qtpy.QtGui import QPalette, QIcon, QPaintEvent, QPainter, QColor
 from qtpy.QtWidgets import QCheckBox, QApplication, QLabel, QStyleOption, QStyle
 
+from Custom_Widgets.QPropertyAnimation import returnAnimationEasingCurve, easingCurveToInt
+
 import os
 
 class QCustomCheckBox(QCheckBox):
@@ -48,14 +50,13 @@ class QCustomCheckBox(QCheckBox):
         self._circleColor = circleColor
         self._activeColor = activeColor
 
-        # Animation
-        self._animationEasingCurve = QEasingCurve.OutBounce
-        self._easing_curve = 0
+        # Animation (easing stored as QEasingCurve.Type internally)
+        self._easing_curve = QEasingCurve.OutBounce
         self._animationDuration = 300
 
         self.pos = 0
         self.animation = QPropertyAnimation(self, b"position")
-        self.animation.setEasingCurve(self._animationEasingCurve)
+        self.animation.setEasingCurve(self._easing_curve)
         self.animation.setDuration(self._animationDuration)
         self.stateChanged.connect(self.setup_animation)
 
@@ -100,16 +101,15 @@ class QCustomCheckBox(QCheckBox):
     def animationDuration(self, duration):
         self._animationDuration = duration
 
-    @Property(QEasingCurve, designable=True)
+    @Property(int)
     def animationEasingCurve(self):
-        return self._easing_curve
-    
+        """Easing as an int (a QEasingCurve.Type value). Accepts
+        QEasingCurve.OutBounce etc.; legacy name strings still work."""
+        return easingCurveToInt(self._easing_curve)
+
     @animationEasingCurve.setter
     def animationEasingCurve(self, curve):
-        # if not isinstance(curve, EasingCurveEnum):
-        #     raise ValueError("Invalid easing curve enum")
-            
-        self._easing_curve = curve
+        self._easing_curve = returnAnimationEasingCurve(curve)
 
     def setIcon(self, icon):
         self.icon = icon
@@ -140,7 +140,7 @@ class QCustomCheckBox(QCheckBox):
 
         if "animationEasingCurve" in customValues:
             self.animationEasingCurve = customValues["animationEasingCurve"]
-            self.animation.setEasingCurve(self.animationEasingCurve)
+            self.animation.setEasingCurve(self._easing_curve)
 
         if "animationDuration" in customValues:
             self._animationDuration = customValues["animationDuration"]

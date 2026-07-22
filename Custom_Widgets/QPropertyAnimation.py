@@ -5,9 +5,70 @@ from qtpy.QtCore import QEasingCurve, Qt
 # WEBSITE: spinncode.com
 ########################################################################
 
+# snake_case easing names (used by the chart widgets) -> QEasingCurve.Type.
+# The CamelCase names handled by returnAnimationEasingCurve below are the
+# QEasingCurve member names themselves, resolved via getattr.
+_SNAKE_EASING = {
+    "linear": QEasingCurve.Linear, "in_quad": QEasingCurve.InQuad,
+    "out_quad": QEasingCurve.OutQuad, "in_out_quad": QEasingCurve.InOutQuad,
+    "out_in_quad": QEasingCurve.OutInQuad, "in_cubic": QEasingCurve.InCubic,
+    "out_cubic": QEasingCurve.OutCubic, "in_out_cubic": QEasingCurve.InOutCubic,
+    "out_in_cubic": QEasingCurve.OutInCubic, "in_quart": QEasingCurve.InQuart,
+    "out_quart": QEasingCurve.OutQuart, "in_out_quart": QEasingCurve.InOutQuart,
+    "out_in_quart": QEasingCurve.OutInQuart, "in_quint": QEasingCurve.InQuint,
+    "out_quint": QEasingCurve.OutQuint, "in_out_quint": QEasingCurve.InOutQuint,
+    "out_in_quint": QEasingCurve.OutInQuint, "in_sine": QEasingCurve.InSine,
+    "out_sine": QEasingCurve.OutSine, "in_out_sine": QEasingCurve.InOutSine,
+    "out_in_sine": QEasingCurve.OutInSine, "in_expo": QEasingCurve.InExpo,
+    "out_expo": QEasingCurve.OutExpo, "in_out_expo": QEasingCurve.InOutExpo,
+    "out_in_expo": QEasingCurve.OutInExpo, "in_circ": QEasingCurve.InCirc,
+    "out_circ": QEasingCurve.OutCirc, "in_out_circ": QEasingCurve.InOutCirc,
+    "out_in_circ": QEasingCurve.OutInCirc, "in_elastic": QEasingCurve.InElastic,
+    "out_elastic": QEasingCurve.OutElastic, "in_out_elastic": QEasingCurve.InOutElastic,
+    "out_in_elastic": QEasingCurve.OutInElastic, "in_back": QEasingCurve.InBack,
+    "out_back": QEasingCurve.OutBack, "in_out_back": QEasingCurve.InOutBack,
+    "out_in_back": QEasingCurve.OutInBack, "in_bounce": QEasingCurve.InBounce,
+    "out_bounce": QEasingCurve.OutBounce, "in_out_bounce": QEasingCurve.InOutBounce,
+    "out_in_bounce": QEasingCurve.OutInBounce,
+}
+
+
+def easingCurveFromAny(value):
+    """Normalize any easing input to a QEasingCurve.Type: accepts a
+    QEasingCurve.Type, an int (its value), a CamelCase member name
+    ("OutQuad"), or a snake_case name ("out_quad")."""
+    if isinstance(value, QEasingCurve.Type):
+        return value
+    if isinstance(value, bool):
+        return QEasingCurve.OutQuad
+    if isinstance(value, int):
+        try:
+            return QEasingCurve.Type(value)
+        except Exception:
+            return QEasingCurve.OutQuad
+    if isinstance(value, str):
+        name = value.strip()
+        if name in _SNAKE_EASING:
+            return _SNAKE_EASING[name]
+        member = getattr(QEasingCurve, name, None)
+        if isinstance(member, QEasingCurve.Type):
+            return member
+    return QEasingCurve.OutQuad
+
+
+def easingCurveToInt(value):
+    """Easing input (name/int/QEasingCurve.Type) -> int, for @Property(int)."""
+    return easingCurveFromAny(value).value
+
+
 def returnAnimationEasingCurve(easingCurveName):
+    # Accept ints and snake_case in addition to the CamelCase names below.
     if isinstance(easingCurveName, QEasingCurve.Type):
         return easingCurveName
+    if isinstance(easingCurveName, int) and not isinstance(easingCurveName, bool):
+        return easingCurveFromAny(easingCurveName)
+    if isinstance(easingCurveName, str) and easingCurveName.strip() in _SNAKE_EASING:
+        return _SNAKE_EASING[easingCurveName.strip()]
 
     if easingCurveName:
         if str(easingCurveName) == "OutQuad":

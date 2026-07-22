@@ -13,7 +13,7 @@ from Custom_Widgets.QCustomSlideMenu import QCustomSlideMenu
 from Custom_Widgets.JSonStyles import updateJson
 from Custom_Widgets.Log import *
 from Custom_Widgets.Utils import replace_url_prefix, is_in_designer, get_icon_path
-from Custom_Widgets.QPropertyAnimation import returnAnimationEasingCurve
+from Custom_Widgets.QPropertyAnimation import returnAnimationEasingCurve, easingCurveToInt
 
 class QCustomSidebar(QCustomSlideMenu):
     script_dir = os.path.dirname(os.path.realpath(__file__))
@@ -213,12 +213,15 @@ class QCustomSidebar(QCustomSlideMenu):
         self._animationDuration = duration
         self.customizeQCustomSlideMenu(update=False, animationDuration=duration)
         
-    @Property(QEasingCurve)
+    @Property(int)
     def animationEasingCurve(self):
-        return self._animationEasingCurve
-    
+        """Easing as an int (a QEasingCurve.Type value). Developers can use
+        QEasingCurve.OutQuad etc.; Designer shows a spin box."""
+        return easingCurveToInt(self._animationEasingCurve)
+
     @animationEasingCurve.setter
     def animationEasingCurve(self, curve):
+        # Accept int / QEasingCurve.Type / legacy name string.
         self._animationEasingCurve = curve
         _curve = returnAnimationEasingCurve(curve)
         self.customizeQCustomSlideMenu(update=False, animationEasingCurve=_curve)
