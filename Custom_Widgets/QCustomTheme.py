@@ -62,6 +62,7 @@ class QCustomTheme(QObject):
             super().__init__(parent)
             self._theme = "default"
             self._themes = []
+            self._last_variables_scss = None
             self._initialized = True  # Mark as initialized to avoid multiple init calls
             self.checkForMissingicons = True
             self.script_dir = projectRoot().replace("\\", "/") + "/"
@@ -805,8 +806,7 @@ class QCustomTheme(QObject):
 
         scss_path = os.path.abspath(os.path.join(scss_folder, '_variables.scss'))
         try:
-            with open(scss_path, 'w') as f:
-                f.write(f"""//===================================================//
+            content = f"""//===================================================//
     // FILE AUTO-GENERATED, ANY CHANGES MADE WILL BE LOST //
     //====================================================//
 
@@ -930,20 +930,27 @@ class QCustomTheme(QObject):
     $RELATIVE_FOLDER: "{self.script_dir}";
     $BASE_DIR: "{self.script_dir}";
 
-    """)
-                
-                # Add the other variables section
-                if other_vars_scss:
-                    f.write("\n// Additional theme variables\n")
-                    f.write(other_vars_scss)
-                
-                f.write("""
+    """
+            if other_vars_scss:
+                content += "\n// Additional theme variables\n" + other_vars_scss
+            content += """
     //===================================================//
     // END //
     //====================================================//
-    """)
+    """
+            # Only touch the disk when the variables actually changed -
+            # getThemeVariableValue used to rewrite this file on EVERY
+            # variable lookup, dozens of times per style pass.
+            if content != self._last_variables_scss or not os.path.exists(scss_path):
+                with open(scss_path, 'w') as f:
+                    f.write(content)
+                self._last_variables_scss = content
         except Exception as e:
             logError(f"Failed to write SCSS variables file {scss_path}: {e}")
+
+        # Keep the $VAR -> value mapping in sync with what was just computed
+        # (getThemeVariableValue reads it).
+        self.defineThemeVarMapping()
 
     def compileSassTheme(self, progress_callback, themeInfo, iconsColor, iconsForce):
         ## Runs on a worker thread: every QSettings-derived value is resolved
@@ -966,17 +973,17 @@ class QCustomTheme(QObject):
 
             if self.allIconsWorker is not None:
                 self.allIconsWorker.stop()
-        except:
+        except Exception:
             pass
 
     def styleVariablesFromTheme(self, stylesheet):
         self.defineThemeVarMapping()
-        # Replace variables in the stylesheet string
+        # Replace variables in the stylesheet string. The trailing
+        # (?![A-Za-z0-9_]) guard stops $COLOR_ACCENT_1 from eating the
+        # front of $COLOR_ACCENT_10 and similar prefix collisions.
         for var, value in self._variable_mapping.items():
-            # Escape special characters in the variable name
-            var_pattern = re.escape(var)
-            # Replace the variable with its corresponding value
-            stylesheet = re.sub(var_pattern, value, stylesheet)
+            var_pattern = re.escape(var) + r"(?![A-Za-z0-9_])"
+            stylesheet = re.sub(var_pattern, str(value), stylesheet)
         return stylesheet
     
     def getThemeVariableValue(self, color_variable):
@@ -1111,16 +1118,40 @@ class QCustomTheme(QObject):
         else:
             self._isThemeDark = False  # Light theme
 
+        # Skip the (slow, UI-thread) sass compile when none of the scss
+        # inputs changed since the last compile.
         try:
-            qtsass.compile_filename(main_sass_path, css_path)
-        except Exception as e:
-            logError(f"Failed to compile SASS: {e}")
-        
-        try:
-            with open(css_path,"r") as css:
-                stylesheet = css.read()
-        except Exception as e:
-            logError(f"Failed to read compiled CSS {css_path}: {e}")
+            scss_dir = os.path.dirname(main_sass_path)
+            mtimes = []
+            for name in sorted(os.listdir(scss_dir)):
+                if name.endswith('.scss'):
+                    fp = os.path.join(scss_dir, name)
+                    mtimes.append((name, os.path.getmtime(fp)))
+            compile_key = tuple(mtimes)
+        except Exception:
+            compile_key = None
+
+        stylesheet = ""
+        if compile_key is not None and \
+                compile_key == getattr(self, '_last_compile_key', None) and \
+                os.path.exists(css_path):
+            try:
+                with open(css_path, "r") as css:
+                    stylesheet = css.read()
+                logDebug("SASS unchanged - reusing compiled stylesheet")
+            except Exception:
+                stylesheet = ""
+        if not stylesheet:
+            try:
+                qtsass.compile_filename(main_sass_path, css_path)
+                self._last_compile_key = compile_key
+            except Exception as e:
+                logError(f"Failed to compile SASS: {e}")
+            try:
+                with open(css_path, "r") as css:
+                    stylesheet = css.read()
+            except Exception as e:
+                logError(f"Failed to read compiled CSS {css_path}: {e}")
 
         try:
             mainWindow.setStyleSheet("")
@@ -1243,7 +1274,7 @@ class QCustomTheme(QObject):
         # Get a list of all folders inside 'icons'
         try:
             folders = self.getAllFolders(icons_folder_base)
-        except:
+        except Exception:
             folders = QCustomTheme.getAllFolders(None, icons_folder_base)
 
         new_icon_made = False
