@@ -32,6 +32,7 @@ from Custom_Widgets.Log import *
 
 _bridge_server = None
 _form_editor_core = None  # QDesignerFormEditorInterface, captured at plugin init
+_core_listeners = []      # callbacks run once the core is captured
 
 
 def setFormEditorCore(core):
@@ -41,6 +42,23 @@ def setFormEditorCore(core):
     global _form_editor_core
     _form_editor_core = core
     logDebug("Designer bridge: form editor core captured")
+    for callback in list(_core_listeners):
+        try:
+            callback(core)
+        except Exception as e:
+            logException(e, message="Designer bridge: core listener failed")
+
+
+def addCoreListener(callback):
+    """Run `callback(core)` when the form-editor core is captured (or now, if
+    it already has been). Lets plugin registrars install Designer extensions
+    that need the core, without racing its asynchronous capture."""
+    _core_listeners.append(callback)
+    if _form_editor_core is not None:
+        try:
+            callback(_form_editor_core)
+        except Exception as e:
+            logException(e, message="Designer bridge: core listener failed")
 
 
 def registerCoreCapture():
@@ -48,8 +66,16 @@ def registerCoreCapture():
     the QDesignerFormEditorInterface via initialize(core). Call from the
     Designer plugin registrars."""
     try:
-        from qtpy.QtDesigner import (QDesignerCustomWidgetInterface,
-                                     QPyDesignerCustomWidgetCollection)
+        # Import the registration helpers from the concrete binding. qtpy's
+        # `from PySide6.QtDesigner import *` shim drops QPyDesignerCustom-
+        # WidgetCollection inside Designer's embedded interpreter, so reach
+        # for PySide6 (then PyQt) directly, matching how the registrars do.
+        try:
+            from PySide6.QtDesigner import (QDesignerCustomWidgetInterface,
+                                            QPyDesignerCustomWidgetCollection)
+        except ImportError:
+            from qtpy.QtDesigner import (QDesignerCustomWidgetInterface,
+                                         QPyDesignerCustomWidgetCollection)
         from qtpy.QtWidgets import QWidget
 
         class _CoreCapturePlugin(QDesignerCustomWidgetInterface):
