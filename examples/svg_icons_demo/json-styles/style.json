@@ -1,0 +1,45 @@
+{
+    "ShowLogs": true,
+    "QtBinding": "PySide6",
+    "LiveCompileQss": false,
+    "CheckForMissingicons": true,
+    "QSettings": {
+        "AppSettings": {
+            "OrginizationName": "CustomWidgets",
+            "ApplicationName": "SvgIconsDemo",
+            "OrginizationDormain": "spinncompany.com"
+        },
+        "ThemeSettings": {
+            "QtDesignerIconsColor": "#D9DEE7",
+            "CustomThemes": [
+                {
+                    "Theme-name": "Demo Dark",
+                    "Default-Theme": true,
+                    "Create-icons": true,
+                    "Background-color": "#0a0c12",
+                    "Text-color": "#eef2ff",
+                    "Accent-color": "#f57b00",
+                    "Icons-color": "#eef2ff"
+                },
+                {
+                    "Theme-name": "Demo Light",
+                    "Default-Theme": false,
+                    "Create-icons": true,
+                    "Background-color": "#f5f6fa",
+                    "Text-color": "#16181d",
+                    "Accent-color": "#0078d7",
+                    "Icons-color": "#16181d"
+                },
+                {
+                    "Theme-name": "Emerald",
+                    "Default-Theme": false,
+                    "Create-icons": true,
+                    "Background-color": "#0e1513",
+                    "Text-color": "#e8fff7",
+                    "Accent-color": "#00c9a7",
+                    "Icons-color": "#00c9a7"
+                }
+            ]
+        }
+    }
+}

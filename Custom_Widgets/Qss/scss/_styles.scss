@@ -88,14 +88,14 @@ QMainWindow {
             width: 5px;
             margin-top: 2px;
             margin-bottom: 2px;
-            image: url($PATH_RESOURCES+'feather/toolbar_separator_vertical.png');
+            image: url($PATH_RESOURCES+'feather/toolbar_separator_vertical.svg');
         }
 
         &:vertical {
             height: 5px;
             margin-left: 2px;
             margin-right: 2px;
-            image: url($PATH_RESOURCES+'feather/toolbar_separator_horizontal.png');
+            image: url($PATH_RESOURCES+'feather/toolbar_separator_horizontal.svg');
         }
     }
 }
@@ -180,46 +180,46 @@ QCheckBox {
         width: 14px;
 
         &:unchecked {
-            image: url($PATH_RESOURCES+'feather/checkbox_unchecked.png');
+            image: url($PATH_RESOURCES+'feather/checkbox_unchecked.svg');
 
             &:hover,
             &:focus,
             &:pressed {
                 border: none;
-                image: url($PATH_RESOURCES+'feather/checkbox_unchecked.png');
+                image: url($PATH_RESOURCES+'feather/checkbox_unchecked.svg');
             }
 
             &:disabled {
-                image: url($PATH_RESOURCES+'feather/checkbox_unchecked.png');
+                image: url($PATH_RESOURCES+'feather/checkbox_unchecked.svg');
             }
         }
 
         &:checked {
-            image: url($PATH_RESOURCES+'feather/checkbox_checked.png');
+            image: url($PATH_RESOURCES+'feather/checkbox_checked.svg');
 
             &:hover,
             &:focus,
             &:pressed {
                 border: none;
-                image: url($PATH_RESOURCES+'feather/checkbox_checked.png');
+                image: url($PATH_RESOURCES+'feather/checkbox_checked.svg');
             }
 
             &:disabled {
-                image: url($PATH_RESOURCES+'feather/checkbox_checked.png');
+                image: url($PATH_RESOURCES+'feather/checkbox_checked.svg');
             }
         }
 
         &:indeterminate {
-            image: url($PATH_RESOURCES+'feather/checkbox_indeterminate.png');
+            image: url($PATH_RESOURCES+'feather/checkbox_indeterminate.svg');
 
             &:disabled {
-                image: url($PATH_RESOURCES+'feather/checkbox_indeterminate.png');
+                image: url($PATH_RESOURCES+'feather/checkbox_indeterminate.svg');
             }
 
             &:focus,
             &:hover,
             &:pressed {
-                image: url($PATH_RESOURCES+'feather/checkbox_indeterminate.png');
+                image: url($PATH_RESOURCES+'feather/checkbox_indeterminate.svg');
             }
         }
     }
@@ -256,34 +256,34 @@ QGroupBox {
 
         &:unchecked {
             border: none;
-            image: url($PATH_RESOURCES+'feather/checkbox_unchecked.png');
+            image: url($PATH_RESOURCES+'feather/checkbox_unchecked.svg');
 
             &:hover,
             &:focus,
             &:pressed {
                 border: none;
-                image: url($PATH_RESOURCES+'feather/checkbox_unchecked.png');
+                image: url($PATH_RESOURCES+'feather/checkbox_unchecked.svg');
             }
 
             &:disabled {
-                image: url($PATH_RESOURCES+'feather/checkbox_unchecked.png');
+                image: url($PATH_RESOURCES+'feather/checkbox_unchecked.svg');
             }
         }
 
         &:checked {
             border: none;
-            image: url($PATH_RESOURCES+'feather/checkbox_checked.png');
+            image: url($PATH_RESOURCES+'feather/checkbox_checked.svg');
 
 
             &:hover,
             &:focus,
             &:pressed {
                 border: none;
-                image: url($PATH_RESOURCES+'feather/checkbox_checked.png');
+                image: url($PATH_RESOURCES+'feather/checkbox_checked.svg');
             }
 
             &:disabled {
-                image: url($PATH_RESOURCES+'feather/checkbox_checked.png');
+                image: url($PATH_RESOURCES+'feather/checkbox_checked.svg');
             }
         }
     }
@@ -331,37 +331,37 @@ QRadioButton {
         width: 14px;
 
         &:unchecked {
-            image: url($PATH_RESOURCES+'feather/radio_unchecked.png');
+            image: url($PATH_RESOURCES+'feather/radio_unchecked.svg');
 
             &:hover,
             &:focus,
             &:pressed {
                 border: none;
                 outline: none;
-                image: url($PATH_RESOURCES+'feather/radio_unchecked.png');
+                image: url($PATH_RESOURCES+'feather/radio_unchecked.svg');
             }
 
             &:disabled {
-                image: url($PATH_RESOURCES+'feather/radio_unchecked.png');
+                image: url($PATH_RESOURCES+'feather/radio_unchecked.svg');
             }
         }
 
         &:checked {
             border: none;
             outline: none;
-            image: url($PATH_RESOURCES+'feather/radio_checked.png');
+            image: url($PATH_RESOURCES+'feather/radio_checked.svg');
 
             &:hover,
             &:focus,
             &:pressed {
                 border: none;
                 outline: none;
-                image: url($PATH_RESOURCES+'feather/radio_checked.png');
+                image: url($PATH_RESOURCES+'feather/radio_checked.svg');
             }
 
             &:disabled {
                 outline: none;
-                image: url($PATH_RESOURCES+'feather/radio_checked.png');
+                image: url($PATH_RESOURCES+'feather/radio_checked.svg');
             }
         }
     }
@@ -452,46 +452,46 @@ QMenu {
         &:non-exclusive {
 
             &:unchecked {
-                image: url($PATH_RESOURCES+'feather/checkbox_unchecked.png');
+                image: url($PATH_RESOURCES+'feather/checkbox_unchecked.svg');
 
                 &:hover,
                 &:focus,
                 &:pressed {
                     border: none;
-                    image: url($PATH_RESOURCES+'feather/checkbox_unchecked.png');
+                    image: url($PATH_RESOURCES+'feather/checkbox_unchecked.svg');
                 }
 
                 &:disabled {
-                    image: url($PATH_RESOURCES+'feather/checkbox_unchecked.png');
+                    image: url($PATH_RESOURCES+'feather/checkbox_unchecked.svg');
                 }
             }
 
             &:checked {
-                image: url($PATH_RESOURCES+'feather/checkbox_checked.png');
+                image: url($PATH_RESOURCES+'feather/checkbox_checked.svg');
 
                 &:hover,
                 &:focus,
                 &:pressed {
                     border: none;
-                    image: url($PATH_RESOURCES+'feather/checkbox_checked.png');
+                    image: url($PATH_RESOURCES+'feather/checkbox_checked.svg');
                 }
 
                 &:disabled {
-                    image: url($PATH_RESOURCES+'feather/checkbox_checked.png');
+                    image: url($PATH_RESOURCES+'feather/checkbox_checked.svg');
                 }
             }
 
             &:indeterminate {
-                image: url($PATH_RESOURCES+'feather/checkbox_indeterminate.png');
+                image: url($PATH_RESOURCES+'feather/checkbox_indeterminate.svg');
 
                 &:disabled {
-                    image: url($PATH_RESOURCES+'feather/checkbox_indeterminate.png');
+                    image: url($PATH_RESOURCES+'feather/checkbox_indeterminate.svg');
                 }
 
                 &:focus,
                 &:hover,
                 &:pressed {
-                    image: url($PATH_RESOURCES+'feather/checkbox_indeterminate.png');
+                    image: url($PATH_RESOURCES+'feather/checkbox_indeterminate.svg');
                 }
             }
         }
@@ -500,37 +500,37 @@ QMenu {
         &:exclusive {
 
             &:unchecked {
-                image: url($PATH_RESOURCES+'feather/radio_unchecked.png');
+                image: url($PATH_RESOURCES+'feather/radio_unchecked.svg');
 
                 &:hover,
                 &:focus,
                 &:pressed {
                     border: none;
                     outline: none;
-                    image: url($PATH_RESOURCES+'feather/radio_unchecked.png');
+                    image: url($PATH_RESOURCES+'feather/radio_unchecked.svg');
                 }
 
                 &:disabled {
-                    image: url($PATH_RESOURCES+'feather/radio_unchecked.png');
+                    image: url($PATH_RESOURCES+'feather/radio_unchecked.svg');
                 }
             }
 
             &:checked {
                 border: none;
                 outline: none;
-                image: url($PATH_RESOURCES+'feather/radio_checked.png');
+                image: url($PATH_RESOURCES+'feather/radio_checked.svg');
 
                 &:hover,
                 &:focus,
                 &:pressed {
                     border: none;
                     outline: none;
-                    image: url($PATH_RESOURCES+'feather/radio_checked.png');
+                    image: url($PATH_RESOURCES+'feather/radio_checked.svg');
                 }
 
                 &:disabled {
                     outline: none;
-                    image: url($PATH_RESOURCES+'feather/radio_checked.png');
+                    image: url($PATH_RESOURCES+'feather/radio_checked.svg');
                 }
             }
         }
@@ -539,7 +539,7 @@ QMenu {
     &::right-arrow {
         margin: 5px;
         padding-left:12px;
-        image: url($PATH_RESOURCES+'feather/arrow_right.png');
+        image: url($PATH_RESOURCES+'feather/arrow_right.svg');
         height: 12px;
         width: 12px;
     }
@@ -653,7 +653,7 @@ QScrollBar {
 
         &:horizontal {
             margin: 0px 0px 0px 0px;
-            border-image: url($PATH_RESOURCES+'feather/arrow_right.png');
+            border-image: url($PATH_RESOURCES+'feather/arrow_right.svg');
             height: 12px;
             width: 12px;
             subcontrol-position: right;
@@ -661,7 +661,7 @@ QScrollBar {
 
             &:hover,
             &:on {
-                border-image: url($PATH_RESOURCES+'feather/arrow_right.png');
+                border-image: url($PATH_RESOURCES+'feather/arrow_right.svg');
                 height: 12px;
                 width: 12px;
                 subcontrol-position: right;
@@ -671,7 +671,7 @@ QScrollBar {
 
         &:vertical {
             margin: 3px 0px 3px 0px;
-            border-image: url($PATH_RESOURCES+'feather/arrow_down.png');
+            border-image: url($PATH_RESOURCES+'feather/arrow_down.svg');
             height: 12px;
             width: 12px;
             subcontrol-position: bottom;
@@ -679,7 +679,7 @@ QScrollBar {
 
             &:hover,
             &:on {
-                border-image: url($PATH_RESOURCES+'feather/arrow_down.png');
+                border-image: url($PATH_RESOURCES+'feather/arrow_down.svg');
                 height: 12px;
                 width: 12px;
                 subcontrol-position: bottom;
@@ -691,7 +691,7 @@ QScrollBar {
     &::sub-line {
         &:horizontal {
             margin: 0px 3px 0px 3px;
-            border-image: url($PATH_RESOURCES+'feather/arrow_left.png');
+            border-image: url($PATH_RESOURCES+'feather/arrow_left.svg');
             height: 12px;
             width: 12px;
             subcontrol-position: left;
@@ -699,7 +699,7 @@ QScrollBar {
 
             &:hover,
             &:on {
-                border-image: url($PATH_RESOURCES+'feather/arrow_left.png');
+                border-image: url($PATH_RESOURCES+'feather/arrow_left.svg');
                 height: 12px;
                 width: 12px;
                 subcontrol-position: left;
@@ -709,7 +709,7 @@ QScrollBar {
 
         &:vertical {
             margin: 3px 0px 3px 0px;
-            border-image: url($PATH_RESOURCES+'feather/arrow_up.png');
+            border-image: url($PATH_RESOURCES+'feather/arrow_up.svg');
             height: 12px;
             width: 12px;
             subcontrol-position: top;
@@ -717,7 +717,7 @@ QScrollBar {
 
             &:hover,
             &:on {
-                border-image: url($PATH_RESOURCES+'feather/arrow_up.png');
+                border-image: url($PATH_RESOURCES+'feather/arrow_up.svg');
                 height: 12px;
                 width: 12px;
                 subcontrol-position: top;
@@ -796,7 +796,7 @@ QSizeGrip {
     background: transparent;
     width: 12px;
     height: 12px;
-    image: url($PATH_RESOURCES+'feather/window_grip.png');
+    image: url($PATH_RESOURCES+'feather/window_grip.svg');
 }
 
 /* QStackedWidget ---------------------------------------------------------
@@ -829,12 +829,12 @@ QToolBar {
 
         &:horizontal {
             width: 16px;
-            image: url($PATH_RESOURCES+'feather/toolbar_move_horizontal.png');
+            image: url($PATH_RESOURCES+'feather/toolbar_move_horizontal.svg');
         }
 
         &:vertical {
             height: 16px;
-            image: url($PATH_RESOURCES+'feather/toolbar_move_vertical.png');
+            image: url($PATH_RESOURCES+'feather/toolbar_move_vertical.svg');
         }
     }
 
@@ -842,12 +842,12 @@ QToolBar {
 
         &:horizontal {
             width: 16px;
-            image: url($PATH_RESOURCES+'feather/toolbar_separator_horizontal.png');
+            image: url($PATH_RESOURCES+'feather/toolbar_separator_horizontal.svg');
         }
 
         &:vertical {
             height: 16px;
-            image: url($PATH_RESOURCES+'feather/toolbar_separator_vertical.png');
+            image: url($PATH_RESOURCES+'feather/toolbar_separator_vertical.svg');
         }
     }
 }
@@ -856,7 +856,7 @@ QToolButton#qt_toolbar_ext_button {
     background: $COLOR_BACKGROUND_4;
     border: 0px;
     color: $COLOR_TEXT_1;
-    image: url($PATH_RESOURCES+'feather/arrow_right.png');
+    image: url($PATH_RESOURCES+'feather/arrow_right.svg');
 }
 
 /* QAbstractSpinBox -------------------------------------------------------
@@ -893,13 +893,13 @@ QAbstractSpinBox {
     &::up-arrow,
     &::up-arrow:disabled,
     &::up-arrow:off {
-        image: url($PATH_RESOURCES+'feather/arrow_up.png');
+        image: url($PATH_RESOURCES+'feather/arrow_up.svg');
         height: 8px;
         width: 8px;
     }
 
     &::up-arrow:hover {
-        image: url($PATH_RESOURCES+'feather/arrow_up.png');
+        image: url($PATH_RESOURCES+'feather/arrow_up.svg');
     }
 
     &:down-button {
@@ -918,13 +918,13 @@ QAbstractSpinBox {
     &::down-arrow,
     &::down-arrow:disabled,
     &::down-arrow:off {
-        image: url($PATH_RESOURCES+'feather/arrow_down.png');
+        image: url($PATH_RESOURCES+'feather/arrow_down.svg');
         height: 8px;
         width: 8px;
     }
 
     &::down-arrow:hover {
-        image: url($PATH_RESOURCES+'feather/arrow_down.png');
+        image: url($PATH_RESOURCES+'feather/arrow_down.svg');
     }
 
     &:hover {
@@ -1256,7 +1256,7 @@ QToolButton {
     }
 
     &::menu-indicator {
-        image: url($PATH_RESOURCES+'feather/arrow_down.png');
+        image: url($PATH_RESOURCES+'feather/arrow_down.svg');
         height: 8px;
         width: 8px;
         top: 0;
@@ -1266,12 +1266,12 @@ QToolButton {
     }
 
     &::menu-arrow {
-        image: url($PATH_RESOURCES+'feather/arrow_down.png');
+        image: url($PATH_RESOURCES+'feather/arrow_down.svg');
         height: 8px;
         width: 8px;
 
         &:hover {
-            image: url($PATH_RESOURCES+'feather/arrow_down.png');
+            image: url($PATH_RESOURCES+'feather/arrow_down.svg');
         }
     }
 }
@@ -1396,14 +1396,14 @@ QComboBox {
     }
 
     &::down-arrow {
-        image: url($PATH_RESOURCES+'feather/arrow_down.png');
+        image: url($PATH_RESOURCES+'feather/arrow_down.svg');
         height: 8px;
         width: 8px;
 
         &:on,
         &:hover,
         &:focus {
-            image: url($PATH_RESOURCES+'feather/arrow_down.png');
+            image: url($PATH_RESOURCES+'feather/arrow_down.svg');
         }
     }
 }
@@ -1595,14 +1595,14 @@ QTabBar, QDockWidget QTabBar {
         margin: 0;
         padding: 4px;
 
-        image: url($PATH_RESOURCES+'feather/window_close.png');
+        image: url($PATH_RESOURCES+'feather/window_close.svg');
 
         &:hover {
-            image: url($PATH_RESOURCES+'feather/window_close.png');
+            image: url($PATH_RESOURCES+'feather/window_close.svg');
         }
 
         &:pressed {
-            image: url($PATH_RESOURCES+'feather/window_close_pressed.png');
+            image: url($PATH_RESOURCES+'feather/window_close_pressed.svg');
         }
     }
 
@@ -1803,21 +1803,21 @@ QTabBar, QDockWidget QTabBar {
 
         &::left-arrow {
             &:enabled {
-                image: url($PATH_RESOURCES+'feather/arrow_left.png');
+                image: url($PATH_RESOURCES+'feather/arrow_left.svg');
             }
 
             &:disabled {
-                image: url($PATH_RESOURCES+'feather/arrow_left.png');
+                image: url($PATH_RESOURCES+'feather/arrow_left.svg');
             }
         }
 
         &::right-arrow {
             &:enabled {
-                image: url($PATH_RESOURCES+'feather/arrow_right.png');
+                image: url($PATH_RESOURCES+'feather/arrow_right.svg');
             }
 
             &:disabled {
-                image: url($PATH_RESOURCES+'feather/arrow_right.png');
+                image: url($PATH_RESOURCES+'feather/arrow_right.svg');
             }
         }
     }
@@ -1832,8 +1832,8 @@ QDockWidget {
     border: $BORDER_2;
     border-radius: $SIZE_BORDER_RADIUS;
     // See discussion here: https://stackoverflow.com/questions/32145080/qdockwidget-float-close-button-hover-images
-    titlebar-close-icon: url($PATH_RESOURCES+'feather/transparent.png');
-    titlebar-normal-icon: url($PATH_RESOURCES+'feather/transparent.png');
+    titlebar-close-icon: url($PATH_RESOURCES+'feather/transparent.svg');
+    titlebar-normal-icon: url($PATH_RESOURCES+'feather/transparent.svg');
 
     &::title {
         /* Better size for title bar */
@@ -1852,14 +1852,14 @@ QDockWidget {
         margin: 0;
         padding: 0;
 
-        image: url($PATH_RESOURCES+'feather/window_close.png');
+        image: url($PATH_RESOURCES+'feather/window_close.svg');
 
         &:hover {
-            image: url($PATH_RESOURCES+'feather/window_close.png');
+            image: url($PATH_RESOURCES+'feather/window_close.svg');
         }
 
         &:pressed {
-            image: url($PATH_RESOURCES+'feather/window_close_pressed.png');
+            image: url($PATH_RESOURCES+'feather/window_close_pressed.svg');
         }
     }
 
@@ -1875,14 +1875,14 @@ QDockWidget {
         margin: 0;
         padding: 0;
 
-        image: url($PATH_RESOURCES+'feather/window_undock.png');
+        image: url($PATH_RESOURCES+'feather/window_undock.svg');
 
         &:hover {
-            image: url($PATH_RESOURCES+'feather/window_undock.png');
+            image: url($PATH_RESOURCES+'feather/window_undock.svg');
         }
 
         &:pressed {
-            image: url($PATH_RESOURCES+'feather/window_undock_pressed.png');
+            image: url($PATH_RESOURCES+'feather/window_undock_pressed.svg');
         }
     }
 }
@@ -1900,41 +1900,41 @@ QTreeView {
 
         &:selected,
         &:hover {
-            background: url($PATH_RESOURCES+'feather/transparent.png');
+            background: url($PATH_RESOURCES+'feather/transparent.svg');
         }
 
         &:has-siblings:!adjoins-item {
-            border-image: url($PATH_RESOURCES+'feather/branch_line.png') 0;
+            border-image: url($PATH_RESOURCES+'feather/branch_line.svg') 0;
         }
 
         &:has-siblings:adjoins-item {
-            border-image: url($PATH_RESOURCES+'feather/branch_more.png') 0;
+            border-image: url($PATH_RESOURCES+'feather/branch_more.svg') 0;
         }
 
         &:!has-children:!has-siblings:adjoins-item {
-            border-image: url($PATH_RESOURCES+'feather/branch_end.png') 0;
+            border-image: url($PATH_RESOURCES+'feather/branch_end.svg') 0;
         }
 
         &:has-children:!has-siblings:closed,
         &:closed:has-children:has-siblings {
             border-image: none;
-            image: url($PATH_RESOURCES+'feather/branch_closed.png');
+            image: url($PATH_RESOURCES+'feather/branch_closed.svg');
         }
 
         &:open:has-children:!has-siblings,
         &:open:has-children:has-siblings {
             border-image: none;
-            image: url($PATH_RESOURCES+'feather/branch_open.png');
+            image: url($PATH_RESOURCES+'feather/branch_open.svg');
         }
 
         &:has-children:!has-siblings:closed:hover,
         &:closed:has-children:has-siblings:hover {
-            image: url($PATH_RESOURCES+'feather/branch_closed.png');
+            image: url($PATH_RESOURCES+'feather/branch_closed.svg');
         }
 
         &:open:has-children:!has-siblings:hover,
         &:open:has-children:has-siblings:hover {
-            image: url($PATH_RESOURCES+'feather/branch_open.png');
+            image: url($PATH_RESOURCES+'feather/branch_open.svg');
         }
     }
 }
@@ -1947,32 +1947,32 @@ QColumnView {
     &::indicator {
 
         &:checked {
-            image: url($PATH_RESOURCES+'feather/checkbox_checked.png');
+            image: url($PATH_RESOURCES+'feather/checkbox_checked.svg');
 
             &:hover,
             &:focus,
             &:pressed {
-                image: url($PATH_RESOURCES+'feather/checkbox_checked.png');
+                image: url($PATH_RESOURCES+'feather/checkbox_checked.svg');
             }
         }
 
         &:unchecked {
-            image: url($PATH_RESOURCES+'feather/checkbox_unchecked.png');
+            image: url($PATH_RESOURCES+'feather/checkbox_unchecked.svg');
 
             &:hover,
             &:focus,
             &:pressed {
-                image: url($PATH_RESOURCES+'feather/checkbox_unchecked.png');
+                image: url($PATH_RESOURCES+'feather/checkbox_unchecked.svg');
             }
         }
 
         &:indeterminate {
-            image: url($PATH_RESOURCES+'feather/checkbox_indeterminate.png');
+            image: url($PATH_RESOURCES+'feather/checkbox_indeterminate.svg');
 
             &:hover,
             &:focus,
             &:pressed {
-                image: url($PATH_RESOURCES+'feather/checkbox_indeterminate.png');
+                image: url($PATH_RESOURCES+'feather/checkbox_indeterminate.svg');
             }
         }
     }
@@ -2107,7 +2107,7 @@ QHeaderView {
         width: 12px;
         padding-left: 2px;
         padding-right: 2px;
-        image: url($PATH_RESOURCES+'feather/arrow_down.png');
+        image: url($PATH_RESOURCES+'feather/arrow_down.svg');
     }
 
     &::up-arrow {
@@ -2117,7 +2117,7 @@ QHeaderView {
         width: 12px;
         padding-left: 2px;
         padding-right: 2px;
-        image: url($PATH_RESOURCES+'feather/arrow_up.png');
+        image: url($PATH_RESOURCES+'feather/arrow_up.svg');
     }
 }
 
@@ -2241,12 +2241,12 @@ QSplitter {
 
         &:horizontal {
             width: 5px;
-            image: url($PATH_RESOURCES+'feather/line_vertical.png');
+            image: url($PATH_RESOURCES+'feather/line_vertical.svg');
         }
 
         &:vertical {
             height: 5px;
-            image: url($PATH_RESOURCES+'feather/line_horizontal.png');
+            image: url($PATH_RESOURCES+'feather/line_horizontal.svg');
         }
     }
 }
@@ -2281,14 +2281,14 @@ QDateEdit, QDateTimeEdit {
     }
 
     &::down-arrow {
-        image: url($PATH_RESOURCES+'feather/arrow_down.png');
+        image: url($PATH_RESOURCES+'feather/arrow_down.svg');
         height: 8px;
         width: 8px;
 
         &:on,
         &:hover,
         &:focus {
-            image: url($PATH_RESOURCES+'feather/arrow_down.png');
+            image: url($PATH_RESOURCES+'feather/arrow_down.svg');
         }
 
     }

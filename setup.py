@@ -31,7 +31,6 @@ setup(
     ],
     install_requires=[
         "qtpy",
-        "cairosvg",
         "qtsass",
         "matplotlib",
         "mock",

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DesignerSvgTest</class>
+ <widget class="QWidget" name="DesignerSvgTest">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>556</width>
+    <height>200</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Designer SVG icon test</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="infoLabel">
+     <property name="text">
+      <string>These icons come from Qss/icons/_icons.qrc as SVG. Run main.py once to generate them, then open this file in Qt Designer.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="buttonRow">
+     <item>
+      <widget class="QPushButton" name="saveBtn">
+       <property name="text">
+        <string>Save</string>
+       </property>
+       <property name="icon">
+        <iconset resource="Qss/icons/_icons.qrc">
+         <normaloff>:/feather/icons/feather/save.svg</normaloff>:/feather/icons/feather/save.svg</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="settingsBtn">
+       <property name="text">
+        <string>Settings</string>
+       </property>
+       <property name="icon">
+        <iconset resource="Qss/icons/_icons.qrc">
+         <normaloff>:/feather/icons/feather/settings.svg</normaloff>:/feather/icons/feather/settings.svg</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="deleteBtn">
+       <property name="text">
+        <string>Delete</string>
+       </property>
+       <property name="icon">
+        <iconset resource="Qss/icons/_icons.qrc">
+         <normaloff>:/feather/icons/feather/trash-2.svg</normaloff>:/feather/icons/feather/trash-2.svg</iconset>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButton">
+     <property name="text">
+      <string>PushButton</string>
+     </property>
+     <property name="icon">
+      <iconset resource="Qss/icons/_icons.qrc">
+       <normaloff>:/font_awesome_solid/icons/font_awesome/solid/hand-pointer.svg</normaloff>:/font_awesome_solid/icons/font_awesome/solid/hand-pointer.svg</iconset>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="pixmapLabel">
+     <property name="pixmap">
+      <pixmap resource="Qss/icons/_icons.qrc">:/feather/icons/feather/award.svg</pixmap>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="Qss/icons/_icons.qrc"/>
+ </resources>
+ <connections/>
+</ui>

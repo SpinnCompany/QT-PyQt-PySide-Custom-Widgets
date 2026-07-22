@@ -289,6 +289,58 @@ def show_workflow_instructions(appQtBinding):
 
 project_maker = ProjectMaker()
 
+_BLANK_UI_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>{name}</class>
+ <widget class="QWidget" name="{name}">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>640</width>
+    <height>480</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>{name}</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout"/>
+ </widget>
+ <resources>
+  <include location="{qrc_location}"/>
+ </resources>
+ <connections/>
+</ui>
+"""
+
+def create_ui_file(name):
+    """Create a new blank .ui form pre-wired to the theme icons resource file
+    (Qss/icons/_icons.qrc), so the SVG theme icons are available in the
+    Qt Designer resource browser right away."""
+    name = os.path.splitext(os.path.basename(name))[0]
+
+    ui_dir = os.path.abspath(os.path.join(os.getcwd(), 'ui'))
+    if not os.path.exists(ui_dir):
+        os.makedirs(ui_dir)
+
+    ui_path = os.path.join(ui_dir, f'{name}.ui')
+    if os.path.exists(ui_path):
+        print_error(f"UI file already exists: {ui_path}")
+        return None
+
+    qrc_path = os.path.abspath(os.path.join(os.getcwd(), 'Qss/icons/_icons.qrc'))
+    if not os.path.exists(qrc_path):
+        print_warning("Qss/icons/_icons.qrc not found yet. Run your app once "
+                      "(or apply a theme) to generate the Designer icon set.")
+    qrc_location = os.path.relpath(qrc_path, ui_dir).replace('\\', '/')
+
+    with open(ui_path, 'w', encoding='utf-8') as f:
+        f.write(_BLANK_UI_TEMPLATE.format(name=name, qrc_location=qrc_location))
+
+    print_success(f"Created {os.path.relpath(ui_path, os.getcwd())} (theme icons resource pre-loaded)")
+    print_info("Open it with: Custom_Widgets --start-designer --plugins")
+    return ui_path
+
 def create_project():
     """Main function to create a new project"""
     

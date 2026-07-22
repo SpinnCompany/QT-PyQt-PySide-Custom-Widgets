@@ -34,7 +34,7 @@
     </property>
     <property name="icon">
      <iconset resource="../Qss/icons/_icons.qrc">
-      <normaloff>:/font_awesome_brands/icons/font_awesome/brands/buffer.png</normaloff>:/font_awesome_brands/icons/font_awesome/brands/buffer.png</iconset>
+      <normaloff>:/font_awesome_brands/icons/font_awesome/brands/buffer.svg</normaloff>:/font_awesome_brands/icons/font_awesome/brands/buffer.svg</iconset>
     </property>
     <property name="iconSize">
      <size>

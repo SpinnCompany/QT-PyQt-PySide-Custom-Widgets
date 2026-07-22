@@ -2,7 +2,7 @@
 import argparse
 import textwrap
 
-from Custom_Widgets.ProjectMaker import create_project
+from Custom_Widgets.ProjectMaker import create_project, create_ui_file
 from Custom_Widgets.FileMonitor import start_file_listener, start_ui_conversion
 from Custom_Widgets.Designer import start_designer
 
@@ -12,6 +12,7 @@ def run_command():
     parser.add_argument('--convert-ui', dest='file_to_convert', help='Generate new .py file and other necessary files for the custom widgets.')
     parser.add_argument('--qt-library', dest='qt_library', help='Specify the Qt library (e.g., "PySide6")')
     parser.add_argument('--create-project', action='store_true', help='Create a new project')
+    parser.add_argument('--new-ui', dest='new_ui_name', help='Create a new .ui form in ./ui with the theme icons resource (Qss/icons/_icons.qrc) pre-loaded')
     
     # --- Python source output directory ---
     parser.add_argument('--src-output-dir', dest='src_output_dir', default='src',
@@ -42,6 +43,9 @@ def run_command():
     elif args.create_project:
         create_project()
 
+    elif args.new_ui_name:
+        create_ui_file(args.new_ui_name)
+
     elif args.start_designer:
         start_designer(load_plugins=args.plugins, process_mode=args.process_mode)
 
@@ -61,6 +65,8 @@ def run_command():
             
             Project:
                 --create-project         Create a new project structure
+                --new-ui NAME            Create ui/NAME.ui with the theme icons
+                                        resource (SVG) ready for Qt Designer
             
             Designer:
                 --start-designer         Launch Qt Designer with custom widgets
