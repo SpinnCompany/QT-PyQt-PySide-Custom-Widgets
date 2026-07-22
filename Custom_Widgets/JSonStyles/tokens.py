@@ -418,10 +418,39 @@ def datetime_qss(tokens):
     return "".join(css)
 
 
+def commandpalette_qss(tokens):
+    """Generate QCustomCommandPalette QSS (dim backdrop, panel, search, list)."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+    css.append("QCustomCommandPalette { background-color: rgba(0, 0, 0, 110); }\n")
+    css.append(
+        "#commandPalettePanel {\n"
+        "    background-color: %s; border: 1px solid %s; border-radius: %s;\n"
+        "}\n" % (r("surface"), r("outline"), px("radius.lg")))
+    css.append(
+        "#commandPaletteSearch {\n"
+        "    background-color: transparent; border: none;\n"
+        "    border-bottom: 1px solid %s; color: %s;\n"
+        "    padding: %s; font-size: %s;\n"
+        "}\n" % (r("outline"), r("on-surface"), px("space.3"), px("font.size.lg")))
+    css.append(
+        "#commandPaletteList {\n"
+        "    background-color: %s; color: %s; border: none; outline: 0;\n"
+        "}\n" % (r("surface"), r("on-surface")))
+    css.append("#commandPaletteList::item { padding: %s %s; border-radius: %s; }\n"
+               % (px("space.2"), px("space.3"), px("radius.sm")))
+    css.append("#commandPaletteList::item:selected { background-color: %s; color: %s; }\n"
+               % (r("accent"), r("on-primary")))
+    css.append("#commandPaletteList::item:hover { background-color: %s; }\n" % r("surface-muted"))
+    return "".join(css)
+
+
 def build_component_qss(tokens):
     """All token-driven component QSS. Extend as more widgets adopt tokens."""
     return (button_qss(tokens) + datatable_qss(tokens) + toast_qss(tokens)
-            + combobox_qss(tokens) + datetime_qss(tokens))
+            + combobox_qss(tokens) + datetime_qss(tokens)
+            + commandpalette_qss(tokens))
 
 
 _MARK_START = "/* >>> custom-widgets design tokens >>> */"
