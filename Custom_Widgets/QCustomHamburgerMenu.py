@@ -10,7 +10,7 @@ from Custom_Widgets.Log import *
 from Custom_Widgets.Utils import replace_url_prefix, is_in_designer, get_icon_path
 
 # Import the animation easing curve function
-from Custom_Widgets.QPropertyAnimation import returnAnimationEasingCurve
+from Custom_Widgets.QPropertyAnimation import returnAnimationEasingCurve, easingCurveToInt
 
 # Import the AcrylicEffect class
 from Custom_Widgets.AcrylicEffect import AcrylicEffect
@@ -293,10 +293,12 @@ class QCustomHamburgerMenu(QWidget):
         else:
             raise ValueError("Animation duration must be positive")
     
-    @Property(str)
+    @Property(int)
     def animationEasingCurve(self):
-        return self._animationEasingCurve
-    
+        """Easing as an int (a QEasingCurve.Type value). Accepts
+        QEasingCurve.OutQuad etc.; legacy name strings still work."""
+        return easingCurveToInt(self._animationEasingCurve)
+
     @animationEasingCurve.setter
     def animationEasingCurve(self, value):
         self._animationEasingCurve = value
