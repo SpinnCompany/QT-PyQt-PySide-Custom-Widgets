@@ -329,9 +329,55 @@ def toast_qss(tokens):
     return "".join(css)
 
 
+def combobox_qss(tokens):
+    """Generate QCustomComboBox QSS (field, drop-down, and both popup lists)
+    from tokens."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+    css.append(
+        "QCustomComboBox {\n"
+        "    background-color: %s;\n"
+        "    color: %s;\n"
+        "    border: 1px solid %s;\n"
+        "    border-radius: %s;\n"
+        "    padding: %s %s;\n"
+        "}\n" % (r("surface"), r("on-surface"), r("outline"), px("radius.md"),
+                 px("space.2"), px("space.3")))
+    css.append("QCustomComboBox:focus { border: 2px solid %s; }\n" % r("focus-ring"))
+    css.append("QCustomComboBox:disabled { color: %s; }\n" % r("outline"))
+    css.append("QCustomComboBox QLineEdit { background: transparent; border: none; color: %s; }\n"
+               % r("on-surface"))
+    css.append("QCustomComboBox::drop-down { border: none; width: 22px;"
+               " subcontrol-origin: padding; subcontrol-position: center right; }\n")
+
+    sizes = {"sm": ("space.1", "space.2", "font.size.sm"),
+             "md": ("space.2", "space.3", "font.size.md"),
+             "lg": ("space.3", "space.4", "font.size.lg")}
+    for name, (pad_y, pad_x, fsize) in sizes.items():
+        css.append('QCustomComboBox[sizeVariant="%s"] { padding: %s %s; font-size: %s; }\n'
+                   % (name, px(pad_y), px(pad_x), px(fsize)))
+    css.append('QCustomComboBox[variant="ghost"] { border: none; }\n')
+    css.append('QCustomComboBox[variant="primary"] { border: 1px solid %s; }\n' % r("accent"))
+
+    # both popup lists: the arrow drop-down (#comboDropdown) and the autocomplete
+    # completer popup (#comboCompleterPopup)
+    for oid in ("comboDropdown", "comboCompleterPopup"):
+        css.append(
+            "#%s {\n"
+            "    background-color: %s; color: %s; border: 1px solid %s; outline: 0;\n"
+            "    selection-background-color: %s; selection-color: %s;\n"
+            "}\n" % (oid, r("surface"), r("on-surface"), r("outline"),
+                     r("accent"), r("on-primary")))
+        css.append("#%s::item { padding: %s %s; }\n"
+                   % (oid, px("space.1"), px("space.2")))
+    return "".join(css)
+
+
 def build_component_qss(tokens):
     """All token-driven component QSS. Extend as more widgets adopt tokens."""
-    return button_qss(tokens) + datatable_qss(tokens) + toast_qss(tokens)
+    return (button_qss(tokens) + datatable_qss(tokens) + toast_qss(tokens)
+            + combobox_qss(tokens))
 
 
 _MARK_START = "/* >>> custom-widgets design tokens >>> */"
