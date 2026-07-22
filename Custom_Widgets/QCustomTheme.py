@@ -1131,7 +1131,9 @@ class QCustomTheme(QObject):
                 if name.endswith('.scss'):
                     fp = os.path.join(scss_dir, name)
                     mtimes.append((name, os.path.getmtime(fp)))
-            compile_key = tuple(mtimes)
+            # include the light/dark state: token() values change with the
+            # theme even when no .scss file changed, so a flip must recompile.
+            compile_key = (tuple(mtimes), bool(getattr(self, "_isThemeDark", False)))
         except Exception:
             compile_key = None
 
@@ -1146,8 +1148,26 @@ class QCustomTheme(QObject):
             except Exception:
                 stylesheet = ""
         if not stylesheet:
+            # Expose design tokens to SCSS as token('role'). Bridge the active
+            # theme's colours onto the core semantic roles so token() reflects
+            # the current theme; other roles fall back to the light/dark
+            # defaults. This must never break theme compilation, so any failure
+            # degrades to a plain compile (token() simply unavailable).
+            token_fns = []
             try:
-                qtsass.compile_filename(main_sass_path, css_path)
+                from Custom_Widgets.JSonStyles.tokens import DesignTokens, sass_functions
+                _tname = "dark" if getattr(self, "_isThemeDark", False) else "light"
+                _roles = {"surface": self.COLOR_BACKGROUND_1,
+                          "on-surface": self.COLOR_TEXT_1,
+                          "primary": self.COLOR_ACCENT_1,
+                          "accent": self.COLOR_ACCENT_1}
+                _overrides = {_tname: {k: str(v) for k, v in _roles.items() if v}}
+                token_fns = sass_functions(DesignTokens(theme=_tname, semantic=_overrides))
+            except Exception as e:
+                logError(f"Failed to build design-token SCSS functions: {e}")
+            try:
+                qtsass.compile_filename(main_sass_path, css_path,
+                                        custom_functions=token_fns)
                 self._last_compile_key = compile_key
             except Exception as e:
                 logError(f"Failed to compile SASS: {e}")
