@@ -11,11 +11,13 @@ the "no push until the full commercial product is ready" decision).
 
 | Repo | Location | Branch | Commits (this effort) | Tests |
 |---|---|---|---|---|
-| Free core | `QT-PyQt-PySide-Custom-Widgets` | `feat/qcustom-datatable` | 18 ahead of `main` | 211 passing¹ |
-| Pro (private) | `custom-widgets-pro` (dist `QT-PyQt-PySide-Custom-Widgets-Pro`) | `main` | 9 | 66 passing |
+| Free core | `QT-PyQt-PySide-Custom-Widgets` | `feat/qcustom-datatable` | 21 ahead of `main` | 229 passing¹ |
+| Pro (private) | `custom-widgets-pro` (dist `QT-PyQt-PySide-Custom-Widgets-Pro`) | `main` | 10 (+demo) | 66 passing |
 
-¹ One unrelated pre-existing failure (`test_dev_server.py::test_classify`) comes
-from an uncommitted parallel-session change to `DevServer.py`; excluded from the count.
+¹ Two unrelated failures are excluded: `test_dev_server.py::test_classify` (an
+uncommitted parallel-session change to `DevServer.py`) and
+`test_mcp_server.py::test_expected_tools_registered` (needs `pytest-asyncio`,
+not installed).
 
 ## Design-token system (foundation)
 
@@ -31,7 +33,7 @@ from an uncommitted parallel-session change to `DevServer.py`; excluded from the
   `sass_functions`) bridged into `QCustomTheme`, following the live theme.
 - Every widget below is tokenized; each commit includes a pixel-verified paint test.
 
-## Free widgets added (24 new widgets across 26 classes)
+## Free widgets added (30 new widgets across 32 classes)
 
 | Widget | Notes |
 |---|---|
@@ -59,6 +61,12 @@ from an uncommitted parallel-session change to `DevServer.py`; excluded from the
 | QCustomEmptyState | glyph + title + action |
 | QCustomFileDropZone | drag-drop + browse, extension filter |
 | QCustomRangeSlider | dual-handle range |
+| QCustomSwitch | painted on/off toggle, animated thumb, sizeVariant |
+| QCustomNumberInput | −/field/+ stepper, int/float, clamp, edit-commit |
+| QCustomAlert | inline callout, info/success/warning/destructive variants, dismissible |
+| QCustomStatCard | KPI tile: label + value + trend-coloured delta + caption |
+| QCustomProgressRing | painted determinate circular %, tokenized ring/track |
+| QCustomCard | surface container w/ optional header + body (Designer container) |
 
 Also: `QCustomQPushButton` gained variant/sizeVariant; `QCustomFlowLayout`
 teardown crash fixed; `QCustomTheme` gained the `token()` SCSS integration.
@@ -96,7 +104,9 @@ bar the licence hook + native compile.
 
 ## What's next (open threads)
 
-- More free widgets if desired (number-stepper, switch, stat card, progress ring, ...).
+- ~~More free widgets (switch, number-stepper, alert, stat card, progress ring, card)~~
+  **done** — 6 added (see the table above). Further ideas: badge (modernize the
+  legacy `QBadgeWidget`), splitter, carousel, kbd.
 - **Compliance fixes before any launch** (see THIRD_PARTY_NOTICES.draft.md):
   remove bundled **Product Sans** (proprietary), verify **BlurWindow.py** provenance,
   Font Awesome attribution, `mock` runtime dep.
