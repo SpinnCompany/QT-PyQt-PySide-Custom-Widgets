@@ -20,6 +20,7 @@ import argparse
 import base64
 import json
 import os
+from Custom_Widgets.Project import projectRoot
 import subprocess
 import sys
 
@@ -31,7 +32,7 @@ except ImportError:  # pragma: no cover
 
 mcp = FastMCP("custom_widgets_mcp")
 
-_PROJECT_DIR = os.getcwd()
+_PROJECT_DIR = projectRoot()
 _qt_app = None
 
 
@@ -276,7 +277,7 @@ def project_list_ui_files() -> str:
 def project_new_ui(name: str) -> str:
     """Create ui/<name>.ui pre-wired to the theme icons resource
     (Qss/icons/_icons.qrc), ready to design in Qt Designer."""
-    previous = os.getcwd()
+    previous = projectRoot()
     os.chdir(_projectDir())
     try:
         from Custom_Widgets.ProjectMaker import create_ui_file
@@ -343,10 +344,12 @@ def project_write_style(scss: str, file: str = "") -> str:
 def main():
     global _PROJECT_DIR
     parser = argparse.ArgumentParser(description="Custom Widgets MCP server")
-    parser.add_argument("--project-dir", default=os.getcwd(),
+    parser.add_argument("--project-dir", default=projectRoot(),
                         help="Project folder (where Qss/, ui/ and json-styles/ live)")
     args = parser.parse_args()
     _PROJECT_DIR = os.path.abspath(args.project_dir)
+    from Custom_Widgets.Project import setProjectRoot
+    setProjectRoot(_PROJECT_DIR)
     os.chdir(_PROJECT_DIR)
     mcp.run()
 

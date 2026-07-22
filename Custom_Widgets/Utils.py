@@ -21,9 +21,14 @@ from Custom_Widgets.Log import *
 def get_absolute_path(relative_path):
     """Convert a relative path to an absolute path based on the script's directory."""
     import __main__
-    
+    from Custom_Widgets.Project import projectRoot, hasExplicitRoot
+
     # Try multiple methods to find the main script directory
     possible_dirs = []
+
+    # Method 0: an explicitly configured project root always wins
+    if hasExplicitRoot():
+        possible_dirs.append(projectRoot())
     
     # Method 1: __main__.__file__
     if hasattr(__main__, '__file__'):

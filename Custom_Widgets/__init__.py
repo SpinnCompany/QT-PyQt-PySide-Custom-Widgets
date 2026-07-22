@@ -21,7 +21,8 @@ from Custom_Widgets.QCustomComponentLoader import QCustomComponentLoader
 from Custom_Widgets.QCustomHamburgerMenu import QCustomHamburgerMenu
 from Custom_Widgets.FileMonitor import QSsFileMonitor
 
-script_dir = os.path.dirname(os.path.abspath(sys.argv[0])).replace("\\", "/")
+from Custom_Widgets.Project import projectRoot, setProjectRoot  # noqa: E402
+script_dir = projectRoot().replace("\\", "/")
 
 class QMainWindow(QMainWindow):
     def __init__(self, parent=None):

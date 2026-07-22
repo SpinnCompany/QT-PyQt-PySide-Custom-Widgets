@@ -33,6 +33,7 @@ import glob
 import json
 import os
 
+from Custom_Widgets.Project import projectRoot
 from Custom_Widgets.Log import *
 
 # Designer's IID for the task-menu extension (the string declared by
@@ -47,7 +48,7 @@ def _find_style_json(project_dir=None):
     """Locate the project's style.json under the Designer cwd / project dir.
     Designer runs with cwd = the folder the app was launched from
     (Custom_Widgets --start-designer), and QCustomTheme uses that same cwd."""
-    project_dir = os.path.abspath(project_dir or os.getcwd())
+    project_dir = os.path.abspath(project_dir or projectRoot())
     candidates = [
         os.path.join(project_dir, "json-styles", "style.json"),
         os.path.join(project_dir, "style.json"),
