@@ -627,11 +627,16 @@ class QCustomDataTable(QWidget):
     # ------------------------------------------------------------------ #
     ## Pagination
     # ------------------------------------------------------------------ #
+    def _paginationActive(self):
+        # the pagination proxy lingers once created; it only governs the view
+        # when it is actually the view's model (pagination on + pageSize > 0).
+        return self._pageProxy is not None and self._view.model() is self._pageProxy
+
     def pageCount(self):
-        return self._pageProxy.pageCount() if self._pageProxy is not None else 1
+        return self._pageProxy.pageCount() if self._paginationActive() else 1
 
     def currentPage(self):
-        return self._pageProxy.page() if self._pageProxy is not None else 0
+        return self._pageProxy.page() if self._paginationActive() else 0
 
     def setPage(self, index):
         if self._pageProxy is not None:
