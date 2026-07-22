@@ -170,6 +170,19 @@ for _w, _grp in ((QCustomTreeWidget, "Item Views"), (QCustomStepper, "Display Wi
         logException(e, message="Error registering %s" % _w.__name__)
 
 
+from Custom_Widgets.QCustomRichTextEditor import QCustomRichTextEditor
+from Custom_Widgets.QCustomColorPicker import QCustomColorPicker
+
+for _iw in (QCustomRichTextEditor, QCustomColorPicker):
+    try:
+        logInfo("Registering %s" % _iw.__name__)
+        QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+            _iw, module=_iw.WIDGET_MODULE, tool_tip=_iw.WIDGET_TOOLTIP,
+            xml=_iw.WIDGET_DOM_XML, icon=_iw.WIDGET_ICON, group="Input Widgets")
+    except Exception as e:
+        logException(e, message="Error registering %s" % _iw.__name__)
+
+
 from Custom_Widgets.QCustomThemeList import QCustomThemeList
 
 # Registering QCustomThemeList with error handling
