@@ -616,13 +616,60 @@ def colorpicker_qss(tokens):
     return "".join(css)
 
 
+def breadcrumbs_qss(tokens):
+    """Generate QCustomBreadcrumbs QSS (links, current, separator)."""
+    r = tokens.role
+    css = []
+    css.append("QCustomBreadcrumbs #breadcrumbLink {"
+               " background-color: transparent; border: none; color: %s; padding: 0 2px; }\n"
+               % r("accent"))
+    css.append("QCustomBreadcrumbs #breadcrumbLink:hover { color: %s; }\n" % r("primary-hover"))
+    css.append("QCustomBreadcrumbs #breadcrumbCurrent { color: %s; font-weight: %d; }\n"
+               % (r("on-surface"), int(r("font.weight.semibold"))))
+    css.append("QCustomBreadcrumbs #breadcrumbSep { color: %s; }\n" % r("outline"))
+    return "".join(css)
+
+
+def rating_qss(tokens):
+    """Generate QCustomRating QSS (empty vs filled stars)."""
+    r = tokens.role
+    css = []
+    css.append("QCustomRating #ratingStar { color: %s; font-size: 18px; }\n" % r("outline"))
+    css.append('QCustomRating #ratingStar[filled="true"] { color: %s; }\n' % r("warning"))
+    return "".join(css)
+
+
+def chip_qss(tokens):
+    """Generate QCustomChip QSS (default + selected filter chip)."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+    css.append("QCustomChip {\n"
+               "    background-color: %s; color: %s; border: 1px solid %s;\n"
+               "    border-radius: %s;\n"
+               "}\n" % (r("surface-muted"), r("on-surface"), r("outline"),
+                        px("radius.full")))
+    css.append("QCustomChip #chipLabel { color: %s; background-color: transparent; }\n"
+               % r("on-surface"))
+    css.append('QCustomChip[selected="true"] { background-color: %s; border-color: %s; }\n'
+               % (r("accent"), r("accent")))
+    css.append('QCustomChip[selected="true"] #chipLabel { color: %s; }\n' % r("on-primary"))
+    css.append("QCustomChip #chipClose {\n"
+               "    background-color: transparent; border: none; color: %s; border-radius: %s;\n"
+               "}\n" % (r("on-surface"), px("radius.full")))
+    css.append("QCustomChip #chipClose:hover { background-color: %s; }\n" % r("outline"))
+    css.append('QCustomChip[selected="true"] #chipClose { color: %s; }\n' % r("on-primary"))
+    return "".join(css)
+
+
 def build_component_qss(tokens):
     """All token-driven component QSS. Extend as more widgets adopt tokens."""
     return (button_qss(tokens) + datatable_qss(tokens) + toast_qss(tokens)
             + combobox_qss(tokens) + datetime_qss(tokens)
             + commandpalette_qss(tokens) + tabs_qss(tokens) + accordion_qss(tokens)
             + tree_qss(tokens) + drawer_qss(tokens) + stepper_qss(tokens)
-            + richtext_qss(tokens) + colorpicker_qss(tokens))
+            + richtext_qss(tokens) + colorpicker_qss(tokens)
+            + breadcrumbs_qss(tokens) + rating_qss(tokens) + chip_qss(tokens))
 
 
 _MARK_START = "/* >>> custom-widgets design tokens >>> */"
