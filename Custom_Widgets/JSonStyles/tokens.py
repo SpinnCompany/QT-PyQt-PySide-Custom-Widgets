@@ -446,11 +446,77 @@ def commandpalette_qss(tokens):
     return "".join(css)
 
 
+def tabs_qss(tokens):
+    """Generate QCustomTabWidget QSS with three tab styles (underline / pills /
+    enclosed) and sizeVariant density."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+    css.append("QCustomTabWidget::pane { border: 1px solid %s; border-radius: %s;"
+               " background-color: %s; top: -1px; }\n"
+               % (r("outline"), px("radius.md"), r("surface")))
+    css.append("QCustomTabWidget QTabBar::tab {\n"
+               "    background-color: transparent; color: %s;\n"
+               "    padding: %s %s; border: none; margin-right: 2px;\n"
+               "}\n" % (r("on-surface"), px("space.2"), px("space.3")))
+    css.append("QCustomTabWidget QTabBar::tab:hover { color: %s; }\n" % r("accent"))
+
+    # underline (default): accent underline on the selected tab
+    css.append('QCustomTabWidget[tabStyle="underline"] QTabBar::tab:selected {'
+               ' color: %s; border-bottom: 2px solid %s; }\n'
+               % (r("accent"), r("accent")))
+    # pills: rounded accent background on the selected tab
+    css.append('QCustomTabWidget[tabStyle="pills"] QTabBar::tab {'
+               ' border-radius: %s; }\n' % px("radius.md"))
+    css.append('QCustomTabWidget[tabStyle="pills"] QTabBar::tab:selected {'
+               ' background-color: %s; color: %s; }\n' % (r("accent"), r("on-primary")))
+    # enclosed: bordered tabs merging into the pane
+    css.append('QCustomTabWidget[tabStyle="enclosed"] QTabBar::tab {'
+               ' border: 1px solid %s; border-bottom: none;'
+               ' border-top-left-radius: %s; border-top-right-radius: %s; }\n'
+               % (r("outline"), px("radius.sm"), px("radius.sm")))
+    css.append('QCustomTabWidget[tabStyle="enclosed"] QTabBar::tab:selected {'
+               ' background-color: %s; color: %s; }\n' % (r("surface"), r("accent")))
+
+    sizes = {"sm": ("space.1", "space.2", "font.size.sm"),
+             "md": ("space.2", "space.3", "font.size.md"),
+             "lg": ("space.3", "space.4", "font.size.lg")}
+    for name, (pad_y, pad_x, fsize) in sizes.items():
+        css.append('QCustomTabWidget[sizeVariant="%s"] QTabBar::tab {'
+                   ' padding: %s %s; font-size: %s; }\n'
+                   % (name, px(pad_y), px(pad_x), px(fsize)))
+    return "".join(css)
+
+
+def accordion_qss(tokens):
+    """Generate QCustomAccordion QSS (section headers + content)."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+    css.append("QCustomAccordion #accordionHeader {\n"
+               "    text-align: left; background-color: %s; color: %s;\n"
+               "    border: 1px solid %s; border-radius: %s;\n"
+               "    padding: %s %s; font-weight: %d;\n"
+               "}\n" % (r("surface-muted"), r("on-surface"), r("outline"),
+                        px("radius.md"), px("space.2"), px("space.3"),
+                        int(r("font.weight.semibold"))))
+    css.append("QCustomAccordion #accordionHeader:hover { border-color: %s; }\n" % r("accent"))
+    css.append("QCustomAccordion #accordionHeader:checked { color: %s; border-color: %s; }\n"
+               % (r("accent"), r("accent")))
+    css.append("QCustomAccordion #accordionContent {\n"
+               "    background-color: %s; color: %s;\n"
+               "    border: 1px solid %s; border-top: none;\n"
+               "    border-bottom-left-radius: %s; border-bottom-right-radius: %s;\n"
+               "}\n" % (r("surface"), r("on-surface"), r("outline"),
+                        px("radius.md"), px("radius.md")))
+    return "".join(css)
+
+
 def build_component_qss(tokens):
     """All token-driven component QSS. Extend as more widgets adopt tokens."""
     return (button_qss(tokens) + datatable_qss(tokens) + toast_qss(tokens)
             + combobox_qss(tokens) + datetime_qss(tokens)
-            + commandpalette_qss(tokens))
+            + commandpalette_qss(tokens) + tabs_qss(tokens) + accordion_qss(tokens))
 
 
 _MARK_START = "/* >>> custom-widgets design tokens >>> */"

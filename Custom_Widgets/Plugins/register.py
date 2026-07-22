@@ -143,6 +143,20 @@ for _dtw, _grp in ((QCustomDateEdit, "Input Widgets"),
         logException(e, message="Error registering %s" % _dtw.__name__)
 
 
+from Custom_Widgets.QCustomTabWidget import QCustomTabWidget
+from Custom_Widgets.QCustomAccordion import QCustomAccordion
+
+for _ctr, _cont in ((QCustomTabWidget, True), (QCustomAccordion, False)):
+    try:
+        logInfo("Registering %s" % _ctr.__name__)
+        QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+            _ctr, module=_ctr.WIDGET_MODULE, tool_tip=_ctr.WIDGET_TOOLTIP,
+            xml=_ctr.WIDGET_DOM_XML, icon=_ctr.WIDGET_ICON,
+            container=_cont, group="Containers")
+    except Exception as e:
+        logException(e, message="Error registering %s" % _ctr.__name__)
+
+
 from Custom_Widgets.QCustomThemeList import QCustomThemeList
 
 # Registering QCustomThemeList with error handling
