@@ -53,8 +53,8 @@ _PRIMITIVES = {
     "space": {"1": 4, "2": 8, "3": 12, "4": 16, "6": 24},
     "radius": {"sm": 4, "md": 8, "lg": 12, "full": 9999},
     "font": {
-        "size": {"sm": 13, "md": 14, "lg": 16},
-        "weight": {"regular": 400, "medium": 500, "semibold": 600},
+        "size": {"sm": 13, "md": 14, "lg": 16, "xl": 20, "2xl": 28},
+        "weight": {"regular": 400, "medium": 500, "semibold": 600, "bold": 700},
     },
 }
 
@@ -856,6 +856,56 @@ def alert_qss(tokens):
     return "".join(css)
 
 
+def statcard_qss(tokens):
+    """Generate QCustomStatCard QSS (card + label/value/delta, trend colours)."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+    css.append("QCustomStatCard {\n"
+               "    background-color: %s; border: 1px solid %s; border-radius: %s;\n"
+               "}\n" % (r("surface"), r("outline"), px("radius.md")))
+    css.append("QCustomStatCard #statLabel { color: %s; font-size: %s;"
+               " background: transparent; }\n" % (r("outline"), px("font.size.sm")))
+    css.append("QCustomStatCard #statValue { color: %s; font-size: %s;"
+               " font-weight: %d; background: transparent; }\n"
+               % (r("on-surface"), px("font.size.2xl"), int(r("font.weight.bold"))))
+    css.append("QCustomStatCard #statCaption { color: %s; font-size: %s;"
+               " background: transparent; }\n" % (r("outline"), px("font.size.sm")))
+    css.append("QCustomStatCard #statDelta { font-size: %s; font-weight: %d;"
+               " background: transparent; }\n"
+               % (px("font.size.sm"), int(r("font.weight.medium"))))
+    css.append('QCustomStatCard[trend="up"] #statDelta { color: %s; }\n' % r("success"))
+    css.append('QCustomStatCard[trend="down"] #statDelta { color: %s; }\n' % r("destructive"))
+    css.append('QCustomStatCard[trend="flat"] #statDelta { color: %s; }\n' % r("outline"))
+    return "".join(css)
+
+
+def progressring_qss(tokens):
+    """Feed token colours to the painted QCustomProgressRing via qproperty."""
+    r = tokens.role
+    return ("QCustomProgressRing {\n"
+            "    qproperty-ringColor: %s; qproperty-trackColor: %s;\n"
+            "    qproperty-textColor: %s;\n"
+            "}\n" % (r("accent"), r("surface-muted"), r("on-surface")))
+
+
+def card_qss(tokens):
+    """Generate QCustomCard QSS (surface panel + header title/subtitle)."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+    css.append("QCustomCard {\n"
+               "    background-color: %s; border: 1px solid %s; border-radius: %s;\n"
+               "}\n" % (r("surface"), r("outline"), px("radius.lg")))
+    css.append("QCustomCard #cardTitle { color: %s; font-size: %s; font-weight: %d;"
+               " background: transparent; }\n"
+               % (r("on-surface"), px("font.size.lg"), int(r("font.weight.semibold"))))
+    css.append("QCustomCard #cardSubtitle { color: %s; font-size: %s;"
+               " background: transparent; }\n" % (r("outline"), px("font.size.sm")))
+    css.append("QCustomCard #cardBody { background: transparent; }\n")
+    return "".join(css)
+
+
 def build_component_qss(tokens):
     """All token-driven component QSS. Extend as more widgets adopt tokens."""
     return (button_qss(tokens) + datatable_qss(tokens) + toast_qss(tokens)
@@ -867,7 +917,8 @@ def build_component_qss(tokens):
             + skeleton_qss(tokens) + avatargroup_qss(tokens) + timeline_qss(tokens)
             + pagination_qss(tokens) + popover_qss(tokens) + segmented_qss(tokens)
             + emptystate_qss(tokens) + dropzone_qss(tokens) + rangeslider_qss(tokens)
-            + switch_qss(tokens) + number_qss(tokens) + alert_qss(tokens))
+            + switch_qss(tokens) + number_qss(tokens) + alert_qss(tokens)
+            + statcard_qss(tokens) + progressring_qss(tokens) + card_qss(tokens))
 
 
 _MARK_START = "/* >>> custom-widgets design tokens >>> */"
