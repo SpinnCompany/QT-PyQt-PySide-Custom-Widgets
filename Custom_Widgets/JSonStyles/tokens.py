@@ -374,10 +374,54 @@ def combobox_qss(tokens):
     return "".join(css)
 
 
+def datetime_qss(tokens):
+    """Generate QCustomDateEdit / QCustomTimeEdit field QSS + the (scoped)
+    calendar popup QSS from tokens."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+    sizes = {"sm": ("space.1", "space.2", "font.size.sm"),
+             "md": ("space.2", "space.3", "font.size.md"),
+             "lg": ("space.3", "space.4", "font.size.lg")}
+    for cls in ("QCustomDateEdit", "QCustomTimeEdit"):
+        css.append(
+            "%s {\n"
+            "    background-color: %s; color: %s;\n"
+            "    border: 1px solid %s; border-radius: %s; padding: %s %s;\n"
+            "}\n" % (cls, r("surface"), r("on-surface"), r("outline"),
+                     px("radius.md"), px("space.2"), px("space.3")))
+        css.append("%s:focus { border: 2px solid %s; }\n" % (cls, r("focus-ring")))
+        css.append("%s::drop-down { border: none; width: 22px;"
+                   " subcontrol-origin: padding; subcontrol-position: center right; }\n" % cls)
+        for name, (pad_y, pad_x, fsize) in sizes.items():
+            css.append('%s[sizeVariant="%s"] { padding: %s %s; font-size: %s; }\n'
+                       % (cls, name, px(pad_y), px(pad_x), px(fsize)))
+        css.append('%s[variant="ghost"] { border: none; }\n' % cls)
+        css.append('%s[variant="primary"] { border: 1px solid %s; }\n' % (cls, r("accent")))
+
+    # calendar popup (scoped by objectName so it doesn't restyle other calendars)
+    css.append("#customCalendar { background-color: %s; }\n" % r("surface"))
+    css.append("#customCalendar QWidget#qt_calendar_navigationbar { background-color: %s; }\n"
+               % r("surface-muted"))
+    css.append("#customCalendar QToolButton { color: %s; background-color: transparent;"
+               " border: none; padding: 4px; }\n" % r("on-surface"))
+    css.append("#customCalendar QToolButton:hover { background-color: %s; }\n" % r("surface-muted"))
+    css.append("#customCalendar QMenu { background-color: %s; color: %s; }\n"
+               % (r("surface"), r("on-surface")))
+    css.append(
+        "#customCalendar QAbstractItemView {\n"
+        "    background-color: %s; color: %s; outline: 0;\n"
+        "    selection-background-color: %s; selection-color: %s;\n"
+        "}\n" % (r("surface"), r("on-surface"), r("accent"), r("on-primary")))
+    css.append("#customCalendar QAbstractItemView:disabled { color: %s; }\n" % r("outline"))
+    css.append("QCustomDateRangeEdit #dateRangeSep { color: %s; }\n" % r("on-surface"))
+    return "".join(css)
+
+
 def build_component_qss(tokens):
     """All token-driven component QSS. Extend as more widgets adopt tokens."""
     return (button_qss(tokens) + datatable_qss(tokens) + toast_qss(tokens)
-            + combobox_qss(tokens))
+            + combobox_qss(tokens) + datetime_qss(tokens))
 
 
 _MARK_START = "/* >>> custom-widgets design tokens >>> */"
