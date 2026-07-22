@@ -10,7 +10,7 @@
             "OrginizationDormain": "spinncompany.com"
         },
         "ThemeSettings": {
-            "QtDesignerIconsColor": "#D9DEE7",
+            "QtDesignerIconsColor": "theme",
             "CustomThemes": [
                 {
                     "Theme-name": "Demo Dark",

@@ -76,21 +76,28 @@ class TestThemeIconGeneration:
         assert elapsed < 15
 
 
-class TestDesignerIcons:
+class TestSharedIconSet:
+    """One icons folder (Qss/icons/icons) shared by the app stylesheet,
+    ui files and Qt Designer - recolored in place when the color changes."""
+
     @pytest.fixture
-    def designer_set(self, theme, project_dir):
-        theme.generateDesignerIcons(None)
+    def shared_set(self, theme, project_dir):
+        theme.generateNewIcons(None)
         return project_dir / "Qss" / "icons"
 
-    def test_designer_icons_are_svg_sized_24(self, designer_set):
-        sample = designer_set / "icons" / "feather" / "check.svg"
+    def test_single_folder_only(self, shared_set):
+        subdirs = sorted(d.name for d in shared_set.iterdir() if d.is_dir())
+        assert subdirs == ["icons"], "expected exactly one shared icon folder"
+
+    def test_icons_are_svg_sized_24(self, shared_set):
+        sample = shared_set / "icons" / "feather" / "check.svg"
         content = sample.read_text(encoding="utf-8")
         assert 'width="24"' in content
         assert 'height="24"' in content
         assert "viewBox=" in content  # keeps scalability
 
-    def test_namespaced_material_icons_also_sized_24(self, designer_set):
-        pack = designer_set / "icons" / "material_design"
+    def test_namespaced_material_icons_also_sized_24(self, shared_set):
+        pack = shared_set / "icons" / "material_design"
         sample = next(pack.glob("*.svg"))
         content = sample.read_text(encoding="utf-8")
         # material masters use a namespaced root (<ns0:svg>)
@@ -98,53 +105,68 @@ class TestDesignerIcons:
         assert 'height="24"' in content
         assert 'width="100"' not in content
 
-    def test_qrc_prefixes_use_underscores(self, designer_set):
-        text = (designer_set / "_icons.qrc").read_text(encoding="utf-8")
+    def test_qrc_prefixes_use_underscores(self, shared_set):
+        text = (shared_set / "_icons.qrc").read_text(encoding="utf-8")
         assert 'prefix="font_awesome_solid"' in text
         # nested pack prefixes must never contain path separators
         assert re.search(r'prefix="[^"]*/[^"]*"', text) is None
 
-    def test_designer_color_change_regenerates(self, theme, designer_set):
+    def test_designer_icons_color_applies_to_all_icons(self, theme, shared_set):
         from qtpy.QtCore import QSettings
 
-        sample = designer_set / "icons" / "feather" / "check.svg"
-        old_color = QSettings().value("DESIGNER-ICONS-COLOR")
+        sample = shared_set / "icons" / "feather" / "check.svg"
+        old_color = theme.designerIconsColor
 
         theme.designerIconsColor = "#ab34cd"
         try:
-            theme.generateDesignerIcons(None)
+            theme.generateNewIcons(None)
             assert "#ab34cd" in sample.read_text(encoding="utf-8")
-            assert QSettings().value("DESIGNER-ICONS-COLOR") == "#ab34cd"
+            assert QSettings().value("GENERATED-ICONS-COLOR") == "#ab34cd"
         finally:
-            theme.designerIconsColor = old_color or "#000"
+            theme.designerIconsColor = old_color
 
-    def test_designer_color_theme_mode_follows_active_theme(self, theme, designer_set):
-        sample = designer_set / "icons" / "feather" / "check.svg"
+    def test_theme_mode_follows_active_theme(self, theme, shared_set):
+        sample = shared_set / "icons" / "feather" / "check.svg"
         old_color = theme.designerIconsColor
 
         theme.designerIconsColor = "theme"
         try:
-            theme.generateDesignerIcons(None)
+            theme.generateNewIcons(None)
             active = theme.getCurrentThemeInfo()["icons-color"]
             assert active in sample.read_text(encoding="utf-8")
         finally:
             theme.designerIconsColor = old_color
 
-    def test_qrc_lists_only_svg(self, designer_set):
-        qrc = designer_set / "_icons.qrc"
+    def test_qss_icons_color_override_wins(self, theme, shared_set, project_dir):
+        scss_dir = project_dir / "Qss" / "scss"
+        scss_dir.mkdir(parents=True, exist_ok=True)
+        (scss_dir / "defaultStyle.scss").write_text(
+            "// user styles\n$ICONS_COLOR: #12ef56;\n", encoding="utf-8")
+
+        old_color = theme.designerIconsColor
+        theme.designerIconsColor = "#ab34cd"  # must lose against the QSS var
+        try:
+            theme.generateNewIcons(None)
+            sample = shared_set / "icons" / "feather" / "check.svg"
+            assert "#12ef56" in sample.read_text(encoding="utf-8")
+        finally:
+            theme.designerIconsColor = old_color
+
+    def test_qrc_lists_only_svg(self, shared_set):
+        qrc = shared_set / "_icons.qrc"
         assert qrc.is_file()
         text = qrc.read_text(encoding="utf-8")
         assert ".svg</file>" in text
         assert ".png" not in text
 
-    def test_qrc_is_valid_xml_and_files_exist(self, designer_set):
-        qrc = designer_set / "_icons.qrc"
+    def test_qrc_is_valid_xml_and_files_exist(self, shared_set):
+        qrc = shared_set / "_icons.qrc"
         tree = ET.parse(qrc)
         entries = [el.text for el in tree.iter("file")]
         assert entries
         # qrc <file> entries are relative to the qrc file's directory
         for entry in entries[:50]:
-            assert (designer_set / entry).is_file(), entry
+            assert (shared_set / entry).is_file(), entry
 
 
 class TestSvgHelpers:
@@ -189,6 +211,20 @@ class TestQtRendering:
         QDir.addSearchPath("theme-icons", str(project_dir / "Qss" / "icons") + os.sep)
         pm = QPixmap(f"theme-icons:{THEME_FOLDER}/feather/check.svg")
         assert not pm.isNull()
+
+    def test_material_icons_load_via_qpixmap(self, theme, project_dir):
+        """Designer previews use the QPixmap/QImageReader path, which rejects
+        namespace-prefixed svg roots (<ns0:svg>). Generated icons must be
+        normalized so this path works for every pack."""
+        from qtpy.QtGui import QPixmap
+
+        theme.generateNewIcons(None)
+        pack = project_dir / "Qss" / "icons" / "icons" / "material_design"
+        sample = next(pack.glob("*.svg"))
+        assert sample.read_text(encoding="utf-8").lstrip().startswith("<svg")
+        pm = QPixmap(str(sample))
+        assert not pm.isNull()
+        assert pm.width() > 0
 
     def test_svg_plugin_available(self, qapp):
         from qtpy.QtGui import QImageReader
@@ -247,12 +283,16 @@ class TestFullThemeApplication:
         css = project_dir / "generated-files" / "css" / "main.css"
         assert css.is_file()
         compiled = css.read_text(encoding="utf-8")
-        assert "theme-icons:" in compiled
+        assert "theme-icons:icons/" in compiled
         assert ".svg" in compiled
         assert ".png" not in compiled
 
-        # active theme icons + designer set were generated
+        # exactly one shared icon set - no per-theme color folders
         icons_root = project_dir / "Qss" / "icons"
         assert (icons_root / "icons" / "feather" / "check.svg").is_file()
-        theme_folders = [d for d in icons_root.iterdir() if d.is_dir() and d.name != "icons"]
-        assert theme_folders, "no theme icon folder generated"
+        extra = [d.name for d in icons_root.iterdir() if d.is_dir() and d.name != "icons"]
+        assert extra == [], f"unexpected per-theme folders: {extra}"
+
+        # the icon color is exposed to user stylesheets
+        variables = (project_dir / "Qss" / "scss" / "_variables.scss").read_text(encoding="utf-8")
+        assert "$ICONS_COLOR:" in variables

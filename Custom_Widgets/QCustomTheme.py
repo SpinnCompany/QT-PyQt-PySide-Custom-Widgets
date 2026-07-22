@@ -13,7 +13,7 @@ import matplotlib.colors as mc
 import colorsys
 
 from qtpy.QtWidgets import QApplication, QPushButton, QLabel, QTabWidget, QCheckBox, QToolBox, QMainWindow, QMenu, QTreeWidgetItem
-from qtpy.QtGui import QPalette, QCursor, QFont, QFontDatabase, QIcon, QColor, QPixmap
+from qtpy.QtGui import QPalette, QCursor, QFont, QFontDatabase, QIcon, QColor, QPixmap, QPixmapCache
 from qtpy.QtCore import QCoreApplication, QRect, Signal, QObject, QSettings, Property, QDir, QThreadPool
 
 import qtsass
@@ -72,7 +72,7 @@ class QCustomTheme(QObject):
             self.jsonStyleSheets = [] 
             self.jsonStyleData = {}
 
-            self.designerIconsColor = "#000"
+            self.designerIconsColor = ""  # empty = follow theme / $ICONS_COLOR
             self.themesRead = False
 
             self._isThemeDark = False 
@@ -323,11 +323,9 @@ class QCustomTheme(QObject):
             except Exception as e:
                 logError(f"Failed to write ICONS-COLOR to QSettings: {e}")
 
-            if icons_color is None:
-                logging.warning("Icons color is not set. Skipping icon application.")
-                return
             if not folder:
-                folder = icons_color.replace("#", "")
+                # Single shared icon set
+                folder = "icons"
 
             current_script_folder = os.path.dirname(os.path.realpath(sys.argv[0]))
             jsonFilesFolder = os.path.abspath(os.path.join(current_script_folder, "generated-files/json"))
@@ -687,13 +685,19 @@ class QCustomTheme(QObject):
             theme.CA_3 = self.lightenColor(theme.accent_color, .4)
             theme.CA_4 = self.lightenColor(theme.accent_color, .6)
 
-        if theme.icons_color is not None and theme.icons_color != "":
-            folder = theme.icons_color.replace("#", "")
-        else:
-            folder = theme.accent_color.replace("#", "")
-        
         QDir.addSearchPath('theme-icons', os.path.join(os.getcwd(), 'Qss/icons/'))
-        theme.ICONS = "theme-icons:" + folder + "/"
+        # Single shared icon set: the app stylesheet, ui files and Qt Designer
+        # all read Qss/icons/icons. The set is recolored in place whenever the
+        # resolved icon color changes (theme switch, QtDesignerIconsColor or
+        # a $ICONS_COLOR override in defaultStyle.scss).
+        theme.ICONS = "theme-icons:icons/"
+
+        if theme.icons_color is not None and theme.icons_color != "":
+            self.ICONS_COLOR = theme.icons_color
+        else:
+            self.ICONS_COLOR = theme.accent_color
+        # Apply overrides so $ICONS_COLOR matches the generated set
+        self.ICONS_COLOR = self.resolvedIconsColor()
 
         self.COLOR_BACKGROUND_1 = theme.BG_1
         self.COLOR_BACKGROUND_2 = theme.BG_2
@@ -922,6 +926,7 @@ class QCustomTheme(QObject):
 
     // Paths
     $PATH_RESOURCES: '{theme.ICONS}';
+    $ICONS_COLOR: {self.ICONS_COLOR};
     $RELATIVE_FOLDER: "{self.script_dir}";
     $BASE_DIR: "{self.script_dir}";
 
@@ -940,13 +945,11 @@ class QCustomTheme(QObject):
         except Exception as e:
             logError(f"Failed to write SCSS variables file {scss_path}: {e}")
 
-    def compileSassTheme(self, progress_callback, themeInfo, designerIconsColor, designerIconsForce):
+    def compileSassTheme(self, progress_callback, themeInfo, iconsColor, iconsForce):
         ## Runs on a worker thread: every QSettings-derived value is resolved
         ## by the caller on the main thread, so nothing below touches QSettings.
-        ## GENERATE NEW ICONS FOR CURRENT THEME
-        self.generateNewIcons(progress_callback, themeInfo=themeInfo)
-        ## GENERATE ICONS FOR QT DESIGNER
-        self.generateDesignerIcons(progress_callback, designerIconsColor=designerIconsColor, force=designerIconsForce)
+        ## GENERATE THE SHARED ICON SET (app stylesheet + ui files + Designer)
+        self.generateNewIcons(progress_callback, force=iconsForce, themeInfo=themeInfo, iconsColor=iconsColor)
 
     def makeAllIcons(self, progress_callback):
         ## GENERATE ALL ICONS FOR ALL THEMES
@@ -1152,16 +1155,15 @@ class QCustomTheme(QObject):
             # to use from a worker thread while the main thread also uses it
             # (both block on the settings lock file and deadlock).
             themeInfo = self.getCurrentThemeInfo()  # also persists ICONS-COLOR
-            designerIconsColor, designerIconsForce = self._resolveDesignerIconsColor(themeInfo)
+            iconsColor, iconsForce = self._resolveIconsColor(themeInfo)
             settings = QSettings()
             try:
-                settings.setValue("DESIGNER-ICONS-COLOR", designerIconsColor)
+                settings.setValue("GENERATED-ICONS-COLOR", iconsColor)
             except Exception as e:
-                logError(f"Failed to write DESIGNER-ICONS-COLOR to QSettings: {e}")
+                logError(f"Failed to write GENERATED-ICONS-COLOR to QSettings: {e}")
 
             self.iconsWorker = Worker(self.compileSassTheme, themeInfo=themeInfo,
-                                      designerIconsColor=designerIconsColor,
-                                      designerIconsForce=designerIconsForce)
+                                      iconsColor=iconsColor, iconsForce=iconsForce)
             self.iconsWorker.signals.result.connect(WorkerResponse.print_output)
             self.iconsWorker.signals.finished.connect(lambda: self._themeChangeComplete())
             self.iconsWorker.signals.progress.connect(self.sassCompilationProgress)
@@ -1169,6 +1171,15 @@ class QCustomTheme(QObject):
             self.customWidgetsThreadpool.start(self.iconsWorker)
 
     def _themeChangeComplete(self):
+        # The shared icon set may have been rewritten in place - drop cached
+        # pixmaps and re-apply the stylesheet so QSS urls re-read the files.
+        try:
+            QPixmapCache.clear()
+            app = QApplication.instance()
+            if app is not None and app.styleSheet():
+                app.setStyleSheet(app.styleSheet())
+        except Exception as e:
+            logError(f"Failed to refresh pixmap cache after icon generation: {e}")
         self.onThemeChangeComplete.emit()
         logInfo("all icons have been checked and missing icons generated!")
 
@@ -1193,6 +1204,20 @@ class QCustomTheme(QObject):
         except Exception as e:
             logError(f"Failed to list SVG files in {base_folder}: {e}")
         return svg_files
+
+    def _normalizeSvgNamespace(self, svg_text):
+        """Rewrite namespace-prefixed svg documents (<ns0:svg ...>) to the
+        default-namespace form. Qt's SVG image-format plugin (QPixmap /
+        QImageReader - the path Qt Designer previews use) does not recognize
+        prefixed root tags and yields empty pixmaps, while QIcon renders
+        them. Normalizing keeps every consumer working."""
+        match = re.search(r'<([A-Za-z_][\w.-]*):svg\b', svg_text)
+        if not match:
+            return svg_text
+        prefix = match.group(1)
+        svg_text = svg_text.replace(f'xmlns:{prefix}=', 'xmlns=')
+        svg_text = svg_text.replace(f'<{prefix}:', '<').replace(f'</{prefix}:', '</')
+        return svg_text
 
     def _setSvgSize(self, svg_text, width, height):
         """Force width/height attributes on the root <svg> tag (viewBox is kept).
@@ -1240,6 +1265,7 @@ class QCustomTheme(QObject):
             folder_path = os.path.join(icons_folder_base, folder)
             list_of_files = self.getAllSvgFiles(folder_path)
             total_icons = len(list_of_files)
+            last_pct = -1
 
             for index, file_path in enumerate(list_of_files):
                 file_name = os.path.basename(urlparse(file_path).path).replace(".svg", f"{suffix}.svg")
@@ -1247,7 +1273,10 @@ class QCustomTheme(QObject):
 
                 qrc_content += f'    <file>icons/{folder}/{file_name}</file>\n'
                 if progress_callback is not None:
-                    progress_callback.emit(int((index / total_icons) * 100))
+                    pct = int((index / total_icons) * 100)
+                    if pct != last_pct:
+                        progress_callback.emit(pct)
+                        last_pct = pct
 
                 if not force and os.path.exists(output_path):
                     continue
@@ -1257,6 +1286,7 @@ class QCustomTheme(QObject):
                         content = f.read()
 
                     new_svg = content.replace(svg_color, iconsColor)
+                    new_svg = self._normalizeSvgNamespace(new_svg)
 
                     if output_height is not None and output_width is not None:
                         new_svg = self._setSvgSize(new_svg, output_width, output_height)
@@ -1281,28 +1311,34 @@ class QCustomTheme(QObject):
             except Exception as e:
                 logError(f"Failed to create QRC file {qrc_file_path}: {e}")
 
-    def generateNewIcons(self, progress_callback = None, force = False, themeInfo = None):
+    def generateNewIcons(self, progress_callback = None, force = False, themeInfo = None, iconsColor = None):
         if not self.checkForMissingicons and progress_callback is not None:
                 # emit 100% progress
                 progress_callback.emit(100)
                 return
 
-        # Icons color. May run on a worker thread, so QSettings must not be
-        # touched here: the caller resolves themeInfo on the main thread, and
-        # getCurrentThemeInfo persists ICONS-COLOR there as well.
-        color = themeInfo if themeInfo is not None else self.getCurrentThemeInfo()
-        normal_color = str(color["icons-color"])
+        # Color of the shared icon set. When run on a worker thread the
+        # caller resolves themeInfo/iconsColor on the main thread and passes
+        # them in - QSettings must not be touched off the main thread.
+        if iconsColor is None:
+            iconsColor, resolved_force = self._resolveIconsColor(themeInfo)
+            force = force or resolved_force
+            try:
+                QSettings().setValue("GENERATED-ICONS-COLOR", iconsColor)
+            except Exception as e:
+                logError(f"Failed to write GENERATED-ICONS-COLOR to QSettings: {e}")
 
-        if color["icons-color"] is not None or force:
-            logInfo(("New icons color", normal_color))
+        if iconsColor:
+            if force:
+                logInfo(f"Icons color changed to {iconsColor}, regenerating the shared icon set")
             logInfo("Generating SVG icons for your theme")
 
-            iconsFolderName = normal_color.replace("#", "")
+            # One shared set (Qss/icons/icons): app stylesheet urls, ui files
+            # and Qt Designer all read these, like a web app's single assets
+            # folder. Regenerated in place when the color changes.
+            self.generateIcons(progress_callback, iconsColor, "", "icons", createQrc=True, output_width=24, output_height=24, force=force)
 
-            # Create normal icons
-            self.generateIcons(progress_callback, normal_color, "", iconsFolderName, createQrc = False)
-
-            logInfo(("DONE: Current icons color ", normal_color))
+            logInfo(("DONE: Current icons color ", iconsColor))
 
 
     def generateAllIcons(self, progress_callback = None):
@@ -1313,91 +1349,59 @@ class QCustomTheme(QObject):
             progress_callback.emit(100)
             return
         
-        # Local list to hold all theme names that have been checked
-        checked_themes = []
+        # Icons are a single shared set colored for the active theme, so
+        # this simply ensures that set exists (kept for backward compat).
+        self.generateNewIcons(progress_callback)
 
-        def get_theme_color(theme):
-            if hasattr(theme, "iconsColor") and theme.iconsColor != "":
-                return theme.iconsColor
-            if hasattr(theme, "accentColor") and theme.accentColor != "":
-                return theme.accentColor
-            return ""
-        
-        def make_theme_icons(theme):
-            # Skip if the theme has already been checked
-            if theme.name in checked_themes:
-                return
-        
-            color = get_theme_color(theme)
-            try:
-                if color == "":
-                    return
-            except:
-                pass
+    def iconsColorFromQss(self):
+        """Optional stylesheet override for the icon color: put e.g.
+        `$ICONS_COLOR: #ff5722;` in Qss/scss/defaultStyle.scss and the whole
+        shared icon set is generated in that color."""
+        path = os.path.abspath(os.path.join(os.getcwd(), 'Qss/scss/defaultStyle.scss'))
+        try:
+            if os.path.exists(path):
+                with open(path, encoding='utf-8', errors='ignore') as f:
+                    match = re.search(r'^\s*\$ICONS_COLOR\s*:\s*([^;\n]+);', f.read(), re.MULTILINE)
+                if match:
+                    return match.group(1).strip()
+        except Exception as e:
+            logError(f"Failed to read $ICONS_COLOR from {path}: {e}")
+        return None
 
-            logInfo(f"Checking icons for {theme.name} theme. Icons color: {color}")
+    def resolvedIconsColor(self, themeInfo=None):
+        """The color of the shared icon set. Precedence:
+        1. `$ICONS_COLOR` in Qss/scss/defaultStyle.scss (stylesheet override)
+        2. "QtDesignerIconsColor" in the json style - an explicit color
+           applies to ALL icons; "theme"/"auto"/empty falls through
+        3. the active theme's icons color"""
+        color = self.iconsColorFromQss()
+        if not color:
+            designer_color = str(self.designerIconsColor or "")
+            if designer_color and designer_color.lower() not in ("theme", "auto"):
+                color = designer_color
+        if not color:
+            if themeInfo is not None:
+                color = themeInfo.get("icons-color")
+            else:
+                color = getattr(self, "ICONS_COLOR", None) or self.iconsColor
+        return color
 
-            iconsFolderName = color.replace("#", "")
-            self.generateIcons(progress_callback, color, "", iconsFolderName)
-
-            # Add the theme name to the checked list
-            checked_themes.append(theme.name)
-
-        current_theme = self.currentTheme
-        make_theme_icons(current_theme)
-
-        themes = self.themes
-        
-        for theme in themes:
-            if theme.name == current_theme.name:
-                continue
-            make_theme_icons(theme)
-            
-        # then make icons for qt designer
-        self.generateDesignerIcons(progress_callback)
-
-    def _resolveDesignerIconsColor(self, themeInfo=None):
-        """Resolve the Designer icons color and whether the set must be
+    def _resolveIconsColor(self, themeInfo=None):
+        """Resolve the shared icon set color and whether the set must be
         regenerated. Reads QSettings, so it must run on the main thread."""
-        settings = QSettings()
-        designer_color = self.designerIconsColor or settings.value("DESIGNER-ICONS-COLOR")
-        if str(designer_color).lower() in ("theme", "auto"):
-            if themeInfo is None:
-                themeInfo = self.getCurrentThemeInfo()
-            designer_color = themeInfo.get("icons-color") or self.iconsColor
-
-        force = settings.value("DESIGNER-ICONS-COLOR") != designer_color
-        return designer_color, force
+        if themeInfo is None:
+            themeInfo = self.getCurrentThemeInfo()
+        color = self.resolvedIconsColor(themeInfo)
+        force = QSettings().value("GENERATED-ICONS-COLOR") != color
+        return color, force
 
     def generateDesignerIcons(self, progress_callback=None, designerIconsColor=None, force=False):
-        """Generate the SVG icon set (and .qrc) used inside Qt Designer.
-
-        The color comes from "QtDesignerIconsColor" in the project's json
-        style. The special value "theme" (or "auto") makes the Designer icons
-        follow the active theme's icon color. Whenever the resolved color
-        differs from the one last generated, the whole set is regenerated so
-        Designer always shows icons in the configured color.
-
-        When run on a worker thread, designerIconsColor and force must be
-        resolved beforehand on the main thread (_resolveDesignerIconsColor)
-        and DESIGNER-ICONS-COLOR persisted there too - QSettings must not be
-        used off the main thread. Without them, both are resolved (and the
-        color persisted) here, so direct main-thread calls keep working."""
-        if not self.checkForMissingicons:
-            return
-        logInfo(f"Checking icons for qt designer app.")
-        try:
-            resolved_here = designerIconsColor is None
-            if resolved_here:
-                designerIconsColor, force = self._resolveDesignerIconsColor()
-
-            if force:
-                logInfo(f"Designer icons color changed to {designerIconsColor}, regenerating designer icons")
-            self.generateIcons(progress_callback, designerIconsColor, "", "icons", createQrc=True, output_width=24, output_height=24, force=force)
-            if resolved_here:
-                QSettings().setValue("DESIGNER-ICONS-COLOR", designerIconsColor)
-        except Exception as e:
-            logError(f"Failed to generate designer icons: {e}")
+        """Backward-compatible wrapper: the app and Qt Designer share one icon
+        set (Qss/icons/icons). An explicit designerIconsColor recolors the
+        whole shared set."""
+        if designerIconsColor is not None:
+            self.designerIconsColor = designerIconsColor
+        self.generateNewIcons(progress_callback, force=force)
 
     # Method to create a new theme dynamically
     def createNewTheme(self, name, bg_color, txt_color, accent_color, icons_color, createNewIcons=True, defaultTheme=False, other_variables={}, predefined=False):

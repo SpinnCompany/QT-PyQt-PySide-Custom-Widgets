@@ -19,11 +19,11 @@ def resolve_worker_kwargs(theme):
     """Resolve the settings-derived values on the main thread, exactly like
     applyCompiledSass does before starting the icon worker."""
     theme_info = theme.getCurrentThemeInfo()
-    designer_color, designer_force = theme._resolveDesignerIconsColor(theme_info)
+    icons_color, icons_force = theme._resolveIconsColor(theme_info)
     return {
         "themeInfo": theme_info,
-        "designerIconsColor": designer_color,
-        "designerIconsForce": designer_force,
+        "iconsColor": icons_color,
+        "iconsForce": icons_force,
     }
 
 
@@ -33,7 +33,9 @@ def test_worker_path_never_touches_qsettings(theme, project_dir, monkeypatch):
     # The package __init__ rebinds the QCustomTheme attribute to the class, so
     # "import Custom_Widgets.QCustomTheme as qct" would grab the class here.
     import Custom_Widgets.QCustomTheme  # noqa: F401 - ensure module is loaded
+    import Custom_Widgets.Log
     qct = sys.modules["Custom_Widgets.QCustomTheme"]
+    log_mod = sys.modules["Custom_Widgets.Log"]
 
     offending = []
     real_qsettings = qct.QSettings
@@ -45,6 +47,9 @@ def test_worker_path_never_touches_qsettings(theme, project_dir, monkeypatch):
             super().__init__(*args, **kwargs)
 
     monkeypatch.setattr(qct, "QSettings", RecordingQSettings)
+    # The logging helpers read a QSettings-backed flag on every call and run
+    # on worker threads too - they must use their cache, never QSettings
+    monkeypatch.setattr(log_mod, "QSettings", RecordingQSettings)
 
     kwargs = resolve_worker_kwargs(theme)
 
@@ -80,7 +85,7 @@ theme = QCustomTheme()
 
 # Main thread resolves the settings-derived values, like applyCompiledSass.
 theme_info = theme.getCurrentThemeInfo()
-designer_color, designer_force = theme._resolveDesignerIconsColor(theme_info)
+icons_color, icons_force = theme._resolveIconsColor(theme_info)
 
 deadline = time.monotonic() + 3.0
 done = threading.Event()
@@ -88,8 +93,8 @@ done = threading.Event()
 def spin(progress_callback):
     while time.monotonic() < deadline:
         theme.compileSassTheme(None, themeInfo=theme_info,
-                               designerIconsColor=designer_color,
-                               designerIconsForce=designer_force)
+                               iconsColor=icons_color,
+                               iconsForce=icons_force)
     done.set()
 
 pool = QThreadPool()

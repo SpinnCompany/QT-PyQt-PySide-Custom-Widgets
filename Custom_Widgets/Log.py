@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+import threading
 import traceback
 from logging.handlers import RotatingFileHandler
 from qtpy.QtCore import QSettings
@@ -235,15 +236,28 @@ def cleanup_old_logs(app_name="CustomWidgets", max_log_files=10):
     except Exception as e:
         print(f"Error during log cleanup: {e}")
 
-# Retrieve QSettings
+# The flag is cached: logging happens on worker threads too, and QSettings
+# must never be constructed off the main thread (concurrent main-thread use
+# can deadlock both threads on the settings lock file).
+_show_logs_cache = None
+
 def get_show_custom_widgets_logs():
-    try:
-        settings = QSettings()
-        return settings.value("showCustomWidgetsLogs", True, type=bool)
-    except Exception:
-        return True
+    global _show_logs_cache
+    if _show_logs_cache is None:
+        if threading.current_thread() is not threading.main_thread():
+            # Never touch QSettings from a worker; use the default until the
+            # main thread primes the cache
+            return True
+        try:
+            settings = QSettings()
+            _show_logs_cache = settings.value("showCustomWidgetsLogs", True, type=bool)
+        except Exception:
+            return True
+    return _show_logs_cache
 
 def set_show_custom_widgets_logs(value: bool):
+    global _show_logs_cache
+    _show_logs_cache = bool(value)
     try:
         settings = QSettings()
         settings.setValue("showCustomWidgetsLogs", value)

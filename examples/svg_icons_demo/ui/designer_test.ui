@@ -32,7 +32,7 @@
         <string>Save</string>
        </property>
        <property name="icon">
-        <iconset resource="Qss/icons/_icons.qrc">
+        <iconset resource="../Qss/icons/_icons.qrc">
          <normaloff>:/feather/icons/feather/save.svg</normaloff>:/feather/icons/feather/save.svg</iconset>
        </property>
       </widget>
@@ -43,7 +43,7 @@
         <string>Settings</string>
        </property>
        <property name="icon">
-        <iconset resource="Qss/icons/_icons.qrc">
+        <iconset resource="../Qss/icons/_icons.qrc">
          <normaloff>:/feather/icons/feather/settings.svg</normaloff>:/feather/icons/feather/settings.svg</iconset>
        </property>
       </widget>
@@ -54,7 +54,7 @@
         <string>Delete</string>
        </property>
        <property name="icon">
-        <iconset resource="Qss/icons/_icons.qrc">
+        <iconset resource="../Qss/icons/_icons.qrc">
          <normaloff>:/feather/icons/feather/trash-2.svg</normaloff>:/feather/icons/feather/trash-2.svg</iconset>
        </property>
       </widget>
@@ -67,22 +67,33 @@
       <string>PushButton</string>
      </property>
      <property name="icon">
-      <iconset resource="Qss/icons/_icons.qrc">
+      <iconset resource="../Qss/icons/_icons.qrc">
        <normaloff>:/font_awesome_solid/icons/font_awesome/solid/hand-pointer.svg</normaloff>:/font_awesome_solid/icons/font_awesome/solid/hand-pointer.svg</iconset>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButton_2">
+     <property name="text">
+      <string>PushButton</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../Qss/icons/_icons.qrc">
+       <normaloff>:/material_design/icons/material_design/blur_on.svg</normaloff>:/material_design/icons/material_design/blur_on.svg</iconset>
      </property>
     </widget>
    </item>
    <item>
     <widget class="QLabel" name="pixmapLabel">
      <property name="pixmap">
-      <pixmap resource="Qss/icons/_icons.qrc">:/feather/icons/feather/award.svg</pixmap>
+      <pixmap resource="../Qss/icons/_icons.qrc">:/feather/icons/feather/award.svg</pixmap>
      </property>
     </widget>
    </item>
   </layout>
  </widget>
  <resources>
-  <include location="Qss/icons/_icons.qrc"/>
+  <include location="../Qss/icons/_icons.qrc"/>
  </resources>
  <connections/>
 </ui>

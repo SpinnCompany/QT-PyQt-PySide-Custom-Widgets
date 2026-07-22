@@ -1,33 +1,49 @@
-# SVG Icons Demo — interactive test app
+# SVG Icons Demo — real project layout
 
-Manual test bed for the SVG theme-icon pipeline. Run it whenever you change
-theming or icon code, before commits and releases (alongside `pytest`).
+Manual test bed for the SVG theme-icon pipeline, structured like a real
+Custom_Widgets project:
 
-## Run
-
-```bash
-.venv/bin/python examples/svg_icons_demo/main.py
+```
+ui/            .ui files designed in Qt Designer (icons from ../Qss/icons/_icons.qrc)
+src/           GENERATED Python (ui_*.py) - do not edit
+generated-files/  GENERATED json/ui intermediates - do not edit
+json-styles/   style.json (themes, icon color)
+Qss/           GENERATED shared icon set + scss (created on first run)
+main.py        imports src/ui_mainwindow.py, wires demo logic
 ```
 
-(Any environment with the package + PySide6 works; the app chdirs into its own
-folder so all generated files stay here.)
+## Workflow
+
+```bash
+# 1. Convert ui/ once (or after pulling changes)
+Custom_Widgets --convert-ui ui --src-output-dir src
+
+# 2. Run the app
+python main.py
+
+# 3. During development: live-regenerate on every Designer save
+Custom_Widgets --monitor-ui ui --src-output-dir src   # separate terminal
+
+# 4. Design with the same icons the app uses
+Custom_Widgets --start-designer --plugins             # File > Open ui/mainwindow.ui
+```
 
 ## What to check
 
-1. **Theme switching** — pick a theme in the top bar (`Demo Dark`,
-   `Demo Light`, `Emerald`, plus built-in `Light`/`Dark`). The label reports
-   how long icon generation took; with the SVG pipeline it should be
-   milliseconds, not minutes.
-2. **QSS indicator icons** (left panel) — checkbox/radio/combo/spinbox
-   indicators are loaded from the generated SVGs through the compiled theme
-   stylesheet. They must recolor with every theme.
-3. **Icon browser** (right panel) — every generated SVG of the active theme,
-   filterable per icon pack. Check color and vector sharpness.
-4. **Qt Designer parity** — after running the app once (this generates
-   `Qss/icons/` and `_icons.qrc`), open the test form in Designer:
-
-   ```bash
-   pyside6-designer designer_test.ui
-   ```
-
-   The buttons and pixmap label must show the same SVG icons the app uses.
+1. **Theme switching** — top bar. ONE shared icon set (`Qss/icons/icons/`),
+   recolored in place on every color change; the label reports the timing.
+2. **`.ui` icons** — the save/settings/delete/material buttons and tab icons
+   come from the qrc in Designer and are re-pointed to the shared set at
+   runtime (via `generated-files/json` + `applyIcons`). They must recolor on
+   every theme switch.
+3. **QSS indicator icons** — checkbox/radio/combo/spinbox indicators load
+   from the shared SVGs through the compiled stylesheet.
+4. **Icon browser** — the shared set, filterable per pack.
+5. **Icon color control** — `QtDesignerIconsColor` in
+   `json-styles/style.json` is `"theme"` (icons follow the active theme).
+   Set a hex color to pin ALL icons, or add `$ICONS_COLOR: #ff5722;` to
+   `Qss/scss/defaultStyle.scss` to override from the stylesheet (highest
+   precedence).
+6. **Designer parity** — edit `ui/mainwindow.ui` in Designer (icons visible
+   there too), save; with the monitor running, `src/` regenerates — restart
+   the app to see your change.
