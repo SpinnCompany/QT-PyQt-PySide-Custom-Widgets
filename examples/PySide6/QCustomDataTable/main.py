@@ -9,6 +9,7 @@ import sys
 from PySide6 import QtCore, QtWidgets
 
 from Custom_Widgets.QCustomDataTable import QCustomDataTable, DataTableColumn
+from Custom_Widgets.JSonStyles.tokens import DesignTokens, applyDesignTokens
 
 
 # ---- sample data -----------------------------------------------------------
@@ -65,28 +66,8 @@ class MainWindow(QtWidgets.QMainWindow):
             lambda p: self.statusBar().showMessage("Page %d of %d" %
                                                    (p + 1, self.table.pageCount())))
 
-        self.setStyleSheet("""
-            QMainWindow, QWidget { background-color: #f4f5f7; }
-            QLineEdit {
-                padding: 6px 10px; border: 1px solid #d0d3d9;
-                border-radius: 6px; background: #ffffff;
-            }
-            QTableView {
-                border: 1px solid #d0d3d9; border-radius: 6px;
-                background: #ffffff; gridline-color: #e6e8eb;
-                selection-background-color: #2563eb; selection-color: #ffffff;
-            }
-            QHeaderView::section {
-                background: #eef0f3; padding: 6px; border: none;
-                border-bottom: 1px solid #d0d3d9; font-weight: 600;
-            }
-            QPushButton {
-                background: #2563eb; color: white; border: none;
-                padding: 6px 14px; border-radius: 6px;
-            }
-            QPushButton:disabled { background: #b9c4da; }
-            QLabel { color: #333; }
-        """)
+        # NOTE: the table's own styling (view, header, selection, footer) comes
+        # entirely from the design-token system (applied app-wide in __main__).
 
     def _onRowSelected(self, source_row):
         row = SAMPLE_ROWS[source_row]
@@ -100,6 +81,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
+    # design tokens style the table; add window/line-edit chrome from the
+    # same tokens so everything is consistent
+    tokens = DesignTokens(theme="light")
+    app.setStyleSheet(
+        "QMainWindow, QWidget { background-color: %s; color: %s; }\n"
+        "QLineEdit { padding: 6px 10px; border: 1px solid %s; border-radius: 6px;"
+        " background: %s; }" % (tokens.role("surface"), tokens.role("on-surface"),
+                                tokens.role("outline"), tokens.role("surface")))
+    applyDesignTokens(app, tokens=tokens)
+
     window = MainWindow()
     window.resize(680, 460)
     window.show()
