@@ -116,6 +116,20 @@ QCustomQPushButton[variant="destructive"]       { background: token(destructive)
 QCustomQPushButton:focus                        { outline: 2px solid token(focus-ring); } /* a11y, roadmap #5 */
 ```
 
+### Naming: `sizeVariant`, not `size` (implementation note)
+`size` cannot be used as a property name on a `QWidget` subclass — it shadows
+`QWidget.size()` and breaks it (`'str' object is not callable`). The size prop is
+therefore named **`sizeVariant`** (QSS selector `[sizeVariant="sm"]`). `variant`
+is safe (no such method on QWidget).
+
+### Declared Q_PROPERTY + QSS (implementation note)
+`variant`/`sizeVariant` are **declared** `@Property(str)`. Qt QSS attribute
+selectors read declared properties **via their getter** — so the setter must
+**not** call `self.setProperty("variant", ...)`: for a declared property that
+re-enters the same setter and recurses infinitely. The setter only stores the
+value and calls `_repolish()`. Verified end-to-end: a `variant="primary"` button
+paints exactly the `primary` token colour.
+
 ### Runtime re-style gotcha (important)
 Qt does **not** re-evaluate attribute-selector QSS when a dynamic property
 changes. When `variant`/`size` is set after construction, the widget must
