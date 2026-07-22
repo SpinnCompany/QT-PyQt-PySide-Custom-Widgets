@@ -157,6 +157,19 @@ for _ctr, _cont in ((QCustomTabWidget, True), (QCustomAccordion, False)):
         logException(e, message="Error registering %s" % _ctr.__name__)
 
 
+from Custom_Widgets.QCustomTreeWidget import QCustomTreeWidget
+from Custom_Widgets.QCustomStepper import QCustomStepper
+
+for _w, _grp in ((QCustomTreeWidget, "Item Views"), (QCustomStepper, "Display Widgets")):
+    try:
+        logInfo("Registering %s" % _w.__name__)
+        QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+            _w, module=_w.WIDGET_MODULE, tool_tip=_w.WIDGET_TOOLTIP,
+            xml=_w.WIDGET_DOM_XML, icon=_w.WIDGET_ICON, group=_grp)
+    except Exception as e:
+        logException(e, message="Error registering %s" % _w.__name__)
+
+
 from Custom_Widgets.QCustomThemeList import QCustomThemeList
 
 # Registering QCustomThemeList with error handling

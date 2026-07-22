@@ -512,11 +512,72 @@ def accordion_qss(tokens):
     return "".join(css)
 
 
+def tree_qss(tokens):
+    """Generate QCustomTreeWidget QSS (items, selection, hover)."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+    css.append("QCustomTreeWidget {\n"
+               "    background-color: %s; color: %s; border: 1px solid %s;\n"
+               "    border-radius: %s; outline: 0;\n"
+               "}\n" % (r("surface"), r("on-surface"), r("outline"), px("radius.md")))
+    css.append("QCustomTreeWidget::item { padding: %s %s; }\n"
+               % (px("space.1"), px("space.2")))
+    css.append("QCustomTreeWidget::item:hover { background-color: %s; }\n" % r("surface-muted"))
+    css.append("QCustomTreeWidget::item:selected { background-color: %s; color: %s; }\n"
+               % (r("accent"), r("on-primary")))
+    css.append("QCustomTreeWidget QHeaderView::section {\n"
+               "    background-color: %s; color: %s; border: none;\n"
+               "    border-bottom: 1px solid %s; padding: %s;\n"
+               "}\n" % (r("surface-muted"), r("on-surface"), r("outline"), px("space.2")))
+    sizes = {"sm": "font.size.sm", "md": "font.size.md", "lg": "font.size.lg"}
+    for name, fsize in sizes.items():
+        css.append('QCustomTreeWidget[sizeVariant="%s"] { font-size: %s; }\n'
+                   % (name, px(fsize)))
+    return "".join(css)
+
+
+def drawer_qss(tokens):
+    """Generate QCustomDrawer QSS (dim backdrop + panel)."""
+    r = tokens.role
+    css = []
+    css.append("QCustomDrawer { background-color: rgba(0, 0, 0, 110); }\n")
+    css.append("#drawerPanel { background-color: %s; color: %s; border: 1px solid %s; }\n"
+               % (r("surface"), r("on-surface"), r("outline")))
+    return "".join(css)
+
+
+def stepper_qss(tokens):
+    """Generate QCustomStepper QSS (circles + connectors + labels) driven by
+    the `state` dynamic property: completed / active / pending."""
+    r = tokens.role
+    css = []
+    css.append("QCustomStepper #stepperCircle {\n"
+               "    border-radius: 14px; border: 2px solid %s; color: %s;\n"
+               "    background-color: %s; font-weight: %d;\n"
+               "}\n" % (r("outline"), r("on-surface"), r("surface"),
+                        int(r("font.weight.semibold"))))
+    css.append('QCustomStepper #stepperCircle[state="active"] {'
+               ' border-color: %s; color: %s; }\n' % (r("accent"), r("accent")))
+    css.append('QCustomStepper #stepperCircle[state="completed"] {'
+               ' border-color: %s; background-color: %s; color: %s; }\n'
+               % (r("accent"), r("accent"), r("on-primary")))
+    css.append('QCustomStepper #stepperCircle[state="pending"] {'
+               ' border-color: %s; color: %s; }\n' % (r("outline"), r("outline")))
+    css.append("QCustomStepper #stepperLabel { color: %s; }\n" % r("on-surface"))
+    css.append('QCustomStepper #stepperConnector[state="completed"] { color: %s;'
+               ' background-color: %s; }\n' % (r("accent"), r("accent")))
+    css.append('QCustomStepper #stepperConnector[state="pending"] { color: %s;'
+               ' background-color: %s; }\n' % (r("outline"), r("outline")))
+    return "".join(css)
+
+
 def build_component_qss(tokens):
     """All token-driven component QSS. Extend as more widgets adopt tokens."""
     return (button_qss(tokens) + datatable_qss(tokens) + toast_qss(tokens)
             + combobox_qss(tokens) + datetime_qss(tokens)
-            + commandpalette_qss(tokens) + tabs_qss(tokens) + accordion_qss(tokens))
+            + commandpalette_qss(tokens) + tabs_qss(tokens) + accordion_qss(tokens)
+            + tree_qss(tokens) + drawer_qss(tokens) + stepper_qss(tokens))
 
 
 _MARK_START = "/* >>> custom-widgets design tokens >>> */"
