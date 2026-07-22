@@ -5,7 +5,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication, QMainWindow, QToolBar, QPushButton, QVBoxLayout, QWidget, QLabel
 from Custom_Widgets.QCustomCodeEditor import QCustomCodeEditor
 
-class MainWindow(QMainWindow):
+class MainWindow(QCustomMainWindow):
     def __init__(self):
         super().__init__()
 

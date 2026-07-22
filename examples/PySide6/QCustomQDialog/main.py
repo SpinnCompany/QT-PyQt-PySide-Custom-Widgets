@@ -2,7 +2,7 @@ import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget
 from Custom_Widgets.QCustomQDialog import QCustomQDialog
 
-class MainWindow(QMainWindow):
+class MainWindow(QCustomMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("QCustomQDialog Example")

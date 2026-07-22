@@ -16,15 +16,15 @@ from ui_interface import *
 
 ########################################################################
 # IMPORT Custom widgets
-from Custom_Widgets.QCustomEmbededWindow import QCustomEmbededWindow
+from Custom_Widgets.QCustomEmbeddedWindow import QCustomEmbeddedWindow
 ########################################################################
 from PySide6.QtWidgets import QStyle
 ########################################################################
 ## MAIN WINDOW CLASS
 ########################################################################
-class MainWindow(QMainWindow):
+class MainWindow(QCustomMainWindow):
     def __init__(self):
-        QMainWindow.__init__(self)
+        QCustomMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
@@ -41,14 +41,14 @@ class MainWindow(QMainWindow):
         with open(css_file_path, 'r') as f:
             self.css_style = f.read()
 
-        # Apply the CSS style to the QCustomEmbededWindow instance
+        # Apply the CSS style to the QCustomEmbeddedWindow instance
         self.setStyleSheet(self.css_style)
 
         @self.ui.pushButton.clicked.connect
         def slot():
             label = QLabel("My parent is the top-level widget so I can move anywhere 😎")
             label.setWordWrap(True)
-            self.embededWindow = QCustomEmbededWindow(
+            self.embededWindow = QCustomEmbeddedWindow(
                 self.ui.scrollAreaWidgetContents,
                 icon = QIcon(self.style().standardIcon(QStyle.SP_TitleBarMenuButton))
                 )

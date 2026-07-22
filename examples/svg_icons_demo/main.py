@@ -40,7 +40,7 @@ except ImportError:
 MAX_VISIBLE_ICONS = 300
 
 
-class MainWindow(QMainWindow):
+class MainWindow(QCustomMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.ui = Ui_MainWindow()

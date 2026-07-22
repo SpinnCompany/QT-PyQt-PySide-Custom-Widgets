@@ -1,10 +1,10 @@
 {
 	"QMainWindow":[
 		{
-			"tittle":"My New Tittle",
+			"title":"My New Tittle",
 			"icon":":/icons/icons/github.svg",
 			"frameless": true,
-			"transluscentBg": true,
+			"translucentBg": true,
 			"sizeGrip": "size_grip",
 			"shadow":[
 				{
@@ -27,7 +27,7 @@
 						}
 					],
 					"moveWindow": "header_widget",
-					"tittleBar": "header_widget"
+					"titleBar": "header_widget"
 				}
 			]
 		}

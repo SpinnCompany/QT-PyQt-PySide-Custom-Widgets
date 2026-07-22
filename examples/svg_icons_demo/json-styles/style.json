@@ -5,9 +5,9 @@
     "CheckForMissingicons": true,
     "QSettings": {
         "AppSettings": {
-            "OrginizationName": "CustomWidgets",
+            "OrganizationName": "CustomWidgets",
             "ApplicationName": "SvgIconsDemo",
-            "OrginizationDormain": "spinncompany.com"
+            "OrganizationDomain": "spinncompany.com"
         },
         "ThemeSettings": {
             "QtDesignerIconsColor": "theme",

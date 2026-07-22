@@ -22,9 +22,9 @@ from Custom_Widgets import *
 ########################################################################
 ## MAIN WINDOW CLASS
 ########################################################################
-class MainWindow(QMainWindow):
+class MainWindow(QCustomMainWindow):
     def __init__(self):
-        QMainWindow.__init__(self)
+        QCustomMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
