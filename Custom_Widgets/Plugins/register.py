@@ -256,6 +256,33 @@ for _nw, _ng in ((QCustomSwitch, "Input Widgets"),
         logException(e, message="Error registering %s" % _nw.__name__)
 
 
+from Custom_Widgets.QCustomStatCard import QCustomStatCard
+from Custom_Widgets.QCustomProgressRing import QCustomProgressRing
+
+for _dw2, _dg2 in ((QCustomStatCard, "Display Widgets"),
+                   (QCustomProgressRing, "Progressbars")):
+    try:
+        logInfo("Registering %s" % _dw2.__name__)
+        QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+            _dw2, module=_dw2.WIDGET_MODULE, tool_tip=_dw2.WIDGET_TOOLTIP,
+            xml=_dw2.WIDGET_DOM_XML, icon=_dw2.WIDGET_ICON, group=_dg2)
+    except Exception as e:
+        logException(e, message="Error registering %s" % _dw2.__name__)
+
+
+from Custom_Widgets.QCustomCard import QCustomCard
+
+# QCustomCard is a container (widgets drop into its body)
+try:
+    logInfo("Registering QCustomCard")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomCard, module=QCustomCard.WIDGET_MODULE,
+        tool_tip=QCustomCard.WIDGET_TOOLTIP, xml=QCustomCard.WIDGET_DOM_XML,
+        icon=QCustomCard.WIDGET_ICON, container=True, group="Containers")
+except Exception as e:
+    logException(e, message="Error registering QCustomCard")
+
+
 from Custom_Widgets.QCustomThemeList import QCustomThemeList
 
 # Registering QCustomThemeList with error handling
