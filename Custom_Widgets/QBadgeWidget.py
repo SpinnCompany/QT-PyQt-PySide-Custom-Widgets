@@ -15,6 +15,14 @@ class QBadgeWidget(QFrame):
     """
     WIDGET_MODULE="Custom_Widgets.QBadgeWidget"
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "text", "kind": "str", "group": "Badge"},
+        {"name": "backgroundColor", "kind": "color", "group": "Badge"},
+        {"name": "textColor", "kind": "color", "group": "Badge"},
+    ]
+
     clicked = Signal()
 
     def __init__(

@@ -55,6 +55,22 @@ class QCustomQStackedWidget(QStackedWidget):
     </ui>
     """
     WIDGET_MODULE = "Custom_Widgets.QCustomQStackedWidget"
+
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "fadeTransition", "kind": "bool", "group": "Transition"},
+        {"name": "slideTransition", "kind": "bool", "group": "Transition"},
+        {"name": "transitionTime", "kind": "int", "group": "Transition"},
+        {"name": "transitionEasingCurve", "kind": "easing", "group": "Transition"},
+        {"name": "fadeTime", "kind": "int", "group": "Fade"},
+        {"name": "fadeDelay", "kind": "int", "group": "Fade"},
+        {"name": "fadeInTime", "kind": "int", "group": "Fade"},
+        {"name": "fadeOutTime", "kind": "int", "group": "Fade"},
+        {"name": "fadeEasingCurve", "kind": "easing", "group": "Fade"},
+        {"name": "fadeInCurve", "kind": "easing", "group": "Fade"},
+        {"name": "fadeOutCurve", "kind": "easing", "group": "Fade"},
+    ]
     
     # Signal to indicate transition is complete
     transitionFinished = Signal()

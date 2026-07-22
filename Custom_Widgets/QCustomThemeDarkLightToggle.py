@@ -33,6 +33,13 @@ class QCustomThemeDarkLightToggle(QPushButton):
     """
     WIDGET_MODULE = "Custom_Widgets.QCustomThemeDarkLightToggle"
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "updateLabelText", "kind": "bool", "group": "Toggle"},
+        {"name": "updateButtonIcon", "kind": "bool", "group": "Toggle"},
+    ]
+
     def __init__(self, parent=None, *args, **kwargs):
         super(QCustomThemeDarkLightToggle, self).__init__(parent)
 

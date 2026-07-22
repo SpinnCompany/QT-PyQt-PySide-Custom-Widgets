@@ -25,6 +25,15 @@ class QCustomComponentContainer(QWidget):
     
     WIDGET_MODULE = "Custom_Widgets.QCustomComponentContainer"
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "filePath", "kind": "file",
+         "filter": "Qt UI files (*.ui);;All files (*)", "group": "Component"},
+        {"name": "formClassName", "kind": "str", "group": "Component"},
+        {"name": "previewComponent", "kind": "bool", "group": "Component"},
+    ]
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self._layout = None

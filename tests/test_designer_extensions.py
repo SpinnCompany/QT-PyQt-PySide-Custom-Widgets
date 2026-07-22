@@ -141,6 +141,25 @@ def _spec_widget_classes():
                QCustomHorizontalSeparator, QCustomVerticalSeparator]
     from Custom_Widgets.QCustomCheckBox import QCustomCheckBox
     classes.append(QCustomCheckBox)
+    from Custom_Widgets.QCustomQStackedWidget import QCustomQStackedWidget
+    from Custom_Widgets.QCustomHamburgerMenu import QCustomHamburgerMenu
+    from Custom_Widgets.QCustomFlowWidget import QCustomFlowWidget
+    from Custom_Widgets.QAvatarWidget import QAvatarWidget
+    from Custom_Widgets.QBadgeWidget import QBadgeWidget
+    from Custom_Widgets.AnalogGaugeWidget import AnalogGaugeWidget
+    from Custom_Widgets.QCustomThemeList import QCustomThemeList
+    from Custom_Widgets.QCustomThemeDarkLightToggle import QCustomThemeDarkLightToggle
+    from Custom_Widgets.QCustomComponent import QCustomComponent
+    from Custom_Widgets.QCustomComponentContainer import QCustomComponentContainer
+    classes += [QCustomQStackedWidget, QCustomHamburgerMenu, QCustomFlowWidget,
+                QAvatarWidget, QBadgeWidget, AnalogGaugeWidget,
+                QCustomThemeList, QCustomThemeDarkLightToggle,
+                QCustomComponent, QCustomComponentContainer]
+    try:  # optional dependency: qrcode
+        from Custom_Widgets.QCustomQRGenerator import QCustomQRGenerator
+        classes.append(QCustomQRGenerator)
+    except ImportError:
+        pass
     try:  # charts need qtpy.QtCharts
         from Custom_Widgets.QCustomCharts import (QCustomAreaChart,
                                                   QCustomBarChart,

@@ -27,6 +27,12 @@ class QCustomThemeList(QComboBox):
 
     WIDGET_MODULE="Custom_Widgets.QCustomThemeList"
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "loadPredefinedThemes", "kind": "bool", "group": "Themes"},
+    ]
+
     themeChanged = Signal(str)  # Custom signal for theme change
 
     def __init__(self, parent = None, *args, **kwargs):

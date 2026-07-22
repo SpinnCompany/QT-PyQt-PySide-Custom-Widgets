@@ -931,19 +931,26 @@ class CustomPropertiesDock(QDockWidget):
                 lambda s=spin: self._apply(name, s.value()))
             return spin
         if kind == "easing":
-            # Int property holding a QEasingCurve.Type value - offer the
-            # curve names, store the int.
+            # Property holding a QEasingCurve.Type - offer the curve names.
+            # Stores the int value, or the NAME when the spec sets
+            # "string": True (for str-typed easing properties).
             from qtpy.QtCore import QEasingCurve
+            as_string = bool(spec.get("string"))
             combo = QComboBox()
             members = [(t.name, t.value) for t in QEasingCurve.Type
                        if t.value <= QEasingCurve.Type.OutInBounce.value]
             for label, value in members:
-                combo.addItem(label, value)
-            try:
-                index = combo.findData(int(current))
-                combo.setCurrentIndex(index if index >= 0 else 0)
-            except (TypeError, ValueError):
-                pass
+                combo.addItem(label, label if as_string else value)
+            if as_string:
+                index = combo.findData(str(current))
+                if index >= 0:
+                    combo.setCurrentIndex(index)
+            else:
+                try:
+                    index = combo.findData(int(current))
+                    combo.setCurrentIndex(index if index >= 0 else 0)
+                except (TypeError, ValueError):
+                    pass
             combo.activated.connect(
                 lambda _i, c=combo: self._apply(name, c.currentData()))
             return combo

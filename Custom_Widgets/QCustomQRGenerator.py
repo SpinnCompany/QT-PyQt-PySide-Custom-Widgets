@@ -46,6 +46,30 @@ class QCustomQRGenerator(QWidget):
     </ui>
     """
     WIDGET_MODULE = "Custom_Widgets.QCustomQRGenerator"
+
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "data", "kind": "str", "group": "Content"},
+        {"name": "version", "kind": "int", "group": "Content"},
+        {"name": "errorCorrection", "kind": "choice",
+         "choices": ("L", "M", "Q", "H"), "group": "Content"},
+        {"name": "boxSize", "kind": "int", "group": "Geometry"},
+        {"name": "border", "kind": "int", "group": "Geometry"},
+        {"name": "sizeRatio", "kind": "float", "group": "Geometry"},
+        {"name": "moduleDrawer", "kind": "choice",
+         "choices": ("square", "gapped_square", "circle", "rounded",
+                     "vertical_bars", "horizontal_bars"), "group": "Style"},
+        {"name": "colorMask", "kind": "choice",
+         "choices": ("solid", "radial", "square", "horizontal", "vertical"),
+         "group": "Style"},
+        {"name": "fillColor", "kind": "color", "group": "Style"},
+        {"name": "backgroundColor", "kind": "color", "group": "Style"},
+        {"name": "gradientStartColor", "kind": "color", "group": "Style"},
+        {"name": "gradientEndColor", "kind": "color", "group": "Style"},
+        {"name": "embedImage", "kind": "bool", "group": "Image"},
+        {"name": "cacheEnabled", "kind": "bool", "group": "Advanced"},
+    ]
     
     def __init__(self, parent=None):
         super().__init__(parent)

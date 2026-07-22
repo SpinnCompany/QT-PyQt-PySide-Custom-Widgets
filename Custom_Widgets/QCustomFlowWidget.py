@@ -70,6 +70,25 @@ class QCustomFlowWidget(QWidget):
     """
     WIDGET_MODULE = "Custom_Widgets.QCustomFlowWidget"
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "spacing", "kind": "int", "group": "Layout"},
+        {"name": "horizontalSpacing", "kind": "int", "group": "Layout"},
+        {"name": "verticalSpacing", "kind": "int", "group": "Layout"},
+        {"name": "margin", "kind": "int", "group": "Layout"},
+        {"name": "equalDistribution", "kind": "bool", "group": "Strategy"},
+        {"name": "autoFillWidth", "kind": "bool", "group": "Strategy"},
+        {"name": "autoFillHeight", "kind": "bool", "group": "Strategy"},
+        {"name": "justifySpacing", "kind": "bool", "group": "Strategy"},
+        {"name": "animationEnabled", "kind": "bool", "group": "Animation"},
+        {"name": "animationDuration", "kind": "int", "group": "Animation"},
+        {"name": "animationEasingCurve", "kind": "easing", "string": True,
+         "group": "Animation"},
+        {"name": "orderJsonPath", "kind": "file",
+         "filter": "JSON (*.json);;All files (*)", "group": "Order"},
+    ]
+
     def __init__(self, parent=None):
         super().__init__(parent)
         
