@@ -183,6 +183,20 @@ for _iw in (QCustomRichTextEditor, QCustomColorPicker):
         logException(e, message="Error registering %s" % _iw.__name__)
 
 
+from Custom_Widgets.QCustomBreadcrumbs import QCustomBreadcrumbs
+from Custom_Widgets.QCustomRating import QCustomRating
+from Custom_Widgets.QCustomChip import QCustomChipGroup
+
+for _dw in (QCustomBreadcrumbs, QCustomRating, QCustomChipGroup):
+    try:
+        logInfo("Registering %s" % _dw.__name__)
+        QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+            _dw, module=_dw.WIDGET_MODULE, tool_tip=_dw.WIDGET_TOOLTIP,
+            xml=_dw.WIDGET_DOM_XML, icon=_dw.WIDGET_ICON, group="Display Widgets")
+    except Exception as e:
+        logException(e, message="Error registering %s" % _dw.__name__)
+
+
 from Custom_Widgets.QCustomThemeList import QCustomThemeList
 
 # Registering QCustomThemeList with error handling
