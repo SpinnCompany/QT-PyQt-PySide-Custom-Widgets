@@ -481,8 +481,9 @@ def start_file_listener(file_or_folder, qt_binding="PySide6", src_output_dir="sr
     """Start file listener with specified source output directory."""
     if qt_binding is None:
         qt_binding = "PySide6"
-    if qt_binding not in ["PySide6", "PySide2", "PyQt6", "PyQt5"]:
-        logError(f" {qt_binding} is not a valid Qt binding/API Name")
+    if qt_binding not in ["PySide6", "PyQt6"]:
+        logError(f" {qt_binding} is not a supported Qt binding "
+                 "(Custom_Widgets supports PySide6 and PyQt6)")
         return
 
     qtpy.API_NAME = qt_binding
@@ -542,7 +543,7 @@ def start_file_listener(file_or_folder, qt_binding="PySide6", src_output_dir="sr
     logInfo("⏳ Waiting for file changes...")
     logInfo("")
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 def replace_attributes_values(ui_file_path, replacements, root=None, tree=None, src_output_dir="src"):
     """
@@ -667,8 +668,9 @@ def start_ui_conversion(file_or_folder, qt_binding="PySide6", src_output_dir="sr
     """Start UI conversion with specified source output directory."""
     if qt_binding is None:
         qt_binding = "PySide6"
-    if qt_binding not in ["PySide6", "PySide2", "PyQt6", "PyQt5"]:
-        logError(f" {qt_binding} is not a valid Qt binding/API Name")
+    if qt_binding not in ["PySide6", "PyQt6"]:
+        logError(f" {qt_binding} is not a supported Qt binding "
+                 "(Custom_Widgets supports PySide6 and PyQt6)")
         return
 
     qtpy.API_NAME = qt_binding

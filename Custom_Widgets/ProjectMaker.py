@@ -156,7 +156,6 @@ def register_custom_widgets():
             else:
                 print_warning(f"Registration script not found at: {plugins_path}")
                 print_info("You can manually register widgets later using:")
-                print_command("Custom_Widgets --register-widgets", "Register custom widgets with Qt Designer")
         else:
             print_warning("Could not find site-packages directory")
             
@@ -209,12 +208,8 @@ def start_qt_designer_with_plugins():
         
         # Fallback: Try to find and start Qt Designer directly
         designer_commands = [
-            "designer",
-            "qt5-designer",
-            "qt6-designer",
             "pyside6-designer",
-            "pyside2-designer",
-            "pyqt5-designer"
+            "designer",
         ]
         
         designer_found = False
@@ -235,7 +230,7 @@ def start_qt_designer_with_plugins():
             print_warning("Could not automatically find Qt Designer")
             print_info("Please start Qt Designer manually using:")
             print_command("Custom_Widgets --start-designer", "Launch Qt Designer with plugins")
-            print_command("Custom_Widgets --start-designer --no-plugins", "Launch Qt Designer without plugins")
+            print_command("Custom_Widgets --start-designer", "Launch Qt Designer without plugins")
             print_info("Or install it using your package manager:")
             if platform.system() == "Windows":
                 print_command("winget install Qt.QtDesigner", "Install Qt Designer on Windows")
@@ -277,7 +272,6 @@ def show_workflow_instructions(appQtBinding):
     print("  • Component Container - Layout containers")
     
     print_info("If widgets don't appear in Qt Designer:")
-    print_command("Custom_Widgets --register-widgets", "Re-register widgets with Qt Designer")
     
     print_header("QUICK START COMMANDS")
     print_info("After project setup, you can use these commands anytime:")
@@ -379,7 +373,7 @@ def create_project():
     # Get Qt binding
     print_header("QT BINDING SELECTION")
     print_info("Please enter your Qt binding/API name:")
-    print("Options: PySide6, PySide2, PyQt6, PyQt5")
+    print("Options: PySide6, PyQt6")
     print("Default: PySide6\n")
 
     global appQtBinding
@@ -391,7 +385,7 @@ def create_project():
             print_info(f"Using default Qt binding: {appQtBinding}")
             break
         
-        if appQtBinding not in ["PySide6", "PySide2", "PyQt6", "PyQt5"]:
+        if appQtBinding not in ["PySide6", "PyQt6"]:
             print_error(f"'{appQtBinding}' is not a valid Qt binding")
             continue
             

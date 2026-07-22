@@ -350,4 +350,4 @@ def run():
     browser = Browser()
     browser.show()
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

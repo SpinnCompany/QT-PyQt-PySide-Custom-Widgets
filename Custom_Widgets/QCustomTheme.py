@@ -1055,17 +1055,8 @@ class QCustomTheme(QObject):
         palette = app.palette()
 
         # Set the background color
-        try:
-            # pyside2
-            palette.setColor(QPalette.Background, QColor(self.COLOR_BACKGROUND_1))
-        except AttributeError as e:
-            pass
-        try:
-            # pyside6
-            palette.setColor(QPalette.Window, QColor(self.COLOR_BACKGROUND_1))
-        except AttributeError as e:
-            pass
-        
+        palette.setColor(QPalette.Window, QColor(self.COLOR_BACKGROUND_1))
+
 
         # Set the text color
         try:

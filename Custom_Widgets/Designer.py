@@ -11,99 +11,39 @@ from qtpy.QtWidgets import QApplication
 import Custom_Widgets
 
 def start_designer(load_plugins: bool = False, process_mode: str = "normal"):
-    """Launch Qt Designer from current venv, auto-detecting PySide6/PySide2/PyQt6/PyQt5."""
-    
-    # --- Determine library and designer executable ---
+    """Launch Qt Designer from the current venv.
+
+    Designer integration (custom-widget plugins, bridge, tool docks) is
+    PySide6-only: the Python plugin loader (PYSIDE_DESIGNER_PLUGINS /
+    QPyDesignerCustomWidgetCollection) exists only in PySide6, and PyQt
+    wheels do not ship a designer binary at all. Use PyQt6 for widgets and
+    ui conversion; design forms with pyside6-designer."""
+
     qt_lib = qtpy.API_NAME
-    
-    # Initialize variables
-    qt_plugins_base = None
-    possible_paths = []
-    designer_cmd = None
 
-    if qt_lib == "PySide6":
-        possible_paths.append(
-            pathlib.Path(sys.prefix) / ("Scripts" if sys.platform.startswith("win") else "bin") / "pyside6-designer"
-        )
-        designer_cmd = "pyside6-designer"
-        
-        try:
-            import PySide6
-            pyside6_dir = pathlib.Path(PySide6.__file__).parent
-            
-            if sys.platform.startswith("win"):
-                possible_paths.append(pyside6_dir / "designer.exe")
-            else:
-                possible_paths.append(pyside6_dir / "designer")
-            
-            if sys.platform.startswith("win"):
-                possible_paths.append(pyside6_dir / "Qt" / "bin" / "designer.exe")
-            else:
-                possible_paths.append(pyside6_dir / "Qt" / "bin" / "designer")
-            
-            qt_plugins_base = pyside6_dir / "designer" / "plugins"
-        except ImportError:
-            sys.exit(" PySide6 not found in current venv.")
+    if qt_lib != "PySide6":
+        sys.exit(
+            f" Qt Designer integration requires PySide6 (current binding: "
+            f"{qt_lib}).\n"
+            " PyQt6 is supported for widgets and ui conversion, but Designer\n"
+            " plugins are a PySide6-only feature - install PySide6 and rerun.")
 
-    elif qt_lib == "PySide2":
-        possible_paths.append(
-            pathlib.Path(sys.prefix) / ("Scripts" if sys.platform.startswith("win") else "bin") / "pyside2-designer"
-        )
-        designer_cmd = "pyside2-designer"
-        
-        try:
-            import PySide2
-            pyside2_dir = pathlib.Path(PySide2.__file__).parent
-            
-            if sys.platform.startswith("win"):
-                possible_paths.append(pyside2_dir / "designer.exe")
-            else:
-                possible_paths.append(pyside2_dir / "designer")
-            
-            qt_plugins_base = pyside2_dir / "designer" / "plugins"
-        except ImportError:
-            sys.exit(" PySide2 not found in current venv.")
+    possible_paths = [
+        pathlib.Path(sys.prefix)
+        / ("Scripts" if sys.platform.startswith("win") else "bin")
+        / "pyside6-designer"
+    ]
+    designer_cmd = "pyside6-designer"
 
-    elif qt_lib == "PyQt6":
-        possible_paths.append(
-            pathlib.Path(sys.prefix) / ("Scripts" if sys.platform.startswith("win") else "bin") / "pyqt6-designer"
-        )
-        designer_cmd = "pyqt6-designer"
-        
-        try:
-            import PyQt6
-            pyqt6_dir = pathlib.Path(PyQt6.__file__).parent
-            
-            if sys.platform.startswith("win"):
-                possible_paths.append(pyqt6_dir / "designer.exe")
-            else:
-                possible_paths.append(pyqt6_dir / "designer")
-            
-            qt_plugins_base = None
-        except ImportError:
-            sys.exit(" PyQt6 not found in current venv.")
-
-    elif qt_lib == "PyQt5":
-        possible_paths.append(
-            pathlib.Path(sys.prefix) / ("Scripts" if sys.platform.startswith("win") else "bin") / "pyqt5-designer"
-        )
-        designer_cmd = "pyqt5-designer"
-        
-        try:
-            import PyQt5
-            pyqt5_dir = pathlib.Path(PyQt5.__file__).parent
-            
-            if sys.platform.startswith("win"):
-                possible_paths.append(pyqt5_dir / "designer.exe")
-            else:
-                possible_paths.append(pyqt5_dir / "designer")
-            
-            qt_plugins_base = None
-        except ImportError:
-            sys.exit(" PyQt5 not found in current venv.")
-
-    else:
-        sys.exit(f" Unsupported Qt library: {qt_lib}")
+    try:
+        import PySide6
+        pyside6_dir = pathlib.Path(PySide6.__file__).parent
+        exe = "designer.exe" if sys.platform.startswith("win") else "designer"
+        possible_paths.append(pyside6_dir / exe)
+        possible_paths.append(pyside6_dir / "Qt" / "bin" / exe)
+        qt_plugins_base = pyside6_dir / "designer" / "plugins"
+    except ImportError:
+        sys.exit(" PySide6 not found in current venv.")
 
     # Find designer executable
     designer_exe = None
