@@ -65,9 +65,16 @@ class QCustomFlowLayout(QtWidgets.QLayout):
         self._currentPositions = {}
 
     def __del__(self):
-        item = self.takeAt(0)
-        while item:
+        # Suppress layout scheduling during teardown: the debounce timer's C++
+        # object may already be deleted, and we don't need to reflow while the
+        # layout is being destroyed. Swallow any object-already-deleted errors.
+        self._updatingLayout = True
+        try:
             item = self.takeAt(0)
+            while item:
+                item = self.takeAt(0)
+        except (RuntimeError, AttributeError):
+            pass
 
     def loadOrderFromJson(self):
         """Load widget order from JSON file if path is provided"""
@@ -279,7 +286,12 @@ class QCustomFlowLayout(QtWidgets.QLayout):
         if self._updatingLayout:
             return
         if self._animate:
-            self._updateTimer.start(10)
+            try:
+                self._updateTimer.start(10)
+            except RuntimeError:
+                # the debounce timer's C++ object was already deleted (e.g.
+                # during teardown); there is nothing left to schedule.
+                pass
         else:
             self._performImmediateLayout()
     
