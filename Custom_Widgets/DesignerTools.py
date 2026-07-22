@@ -436,8 +436,15 @@ class WorkspaceDock(QDockWidget):
         self.setObjectName("customWidgetsWorkspaceDock")
         WorkspaceDock._instance = self
         self._project_dir = os.path.abspath(project_dir or projectRoot())
+        # Auto-detect: the project's ui/ folder (project root = the folder
+        # `Custom_Widgets --start-designer` was called from, pinned via
+        # CUSTOM_WIDGETS_PROJECT_ROOT). A folder the user chose earlier for
+        # THIS project is remembered and wins.
         ui_dir = os.path.join(self._project_dir, "ui")
         self._folder = ui_dir if os.path.isdir(ui_dir) else self._project_dir
+        saved = _layoutSettings().value(self._folderSettingsKey())
+        if saved and os.path.isdir(saved):
+            self._folder = saved
         self._extra = []  # files opened/created outside the folder (realpaths)
 
         container = QWidget()
@@ -482,11 +489,17 @@ class WorkspaceDock(QDockWidget):
             inst._extra.append(real)
         inst.refresh()
 
+    def _folderSettingsKey(self):
+        import hashlib
+        digest = hashlib.sha1(self._project_dir.encode("utf-8")).hexdigest()[:12]
+        return f"workspace/folder-{digest}"
+
     def _chooseFolder(self):
         folder = QFileDialog.getExistingDirectory(
             self, "Choose UI folder", self._folder)
         if folder:
             self._folder = folder
+            _layoutSettings().setValue(self._folderSettingsKey(), folder)
             self.refresh()
 
     def _newForm(self):

@@ -60,15 +60,30 @@ def start_designer(load_plugins: bool = False, process_mode: str = "normal"):
     # --- Setup environment variables ---
     env = os.environ.copy()
 
-    # Add Custom_Widgets path to PYTHONPATH
+    # Add Custom_Widgets path to PYTHONPATH, plus THIS interpreter's
+    # site-packages: Designer's embedded Python only inherits the venv's
+    # packages when VIRTUAL_ENV is set (activated shell) - launched from a
+    # script/IDE without activation, qtpy and friends would be missing.
+    import sysconfig
     custom_widgets_dir = pathlib.Path(Custom_Widgets.__file__).parent
-    env["PYTHONPATH"] = str(custom_widgets_dir.parent) + os.pathsep + env.get("PYTHONPATH", "")
+    python_path = [str(custom_widgets_dir.parent),
+                   sysconfig.get_paths().get("purelib", "")]
+    if env.get("PYTHONPATH"):
+        python_path.append(env["PYTHONPATH"])
+    env["PYTHONPATH"] = os.pathsep.join(p for p in python_path if p)
 
     # Pin qtpy to the binding this Designer belongs to. Without this, with
     # several bindings installed qtpy may resolve to a different one (e.g.
     # PyQt5) inside Designer's embedded interpreter and every plugin import
     # crashes (pyqtProperty(notify=None) TypeError).
     env["QT_API"] = qt_lib.lower()
+
+    # Pin the project root to the folder this command was CALLED from, for
+    # the whole Designer session. Everything inside Designer (UI Workspace,
+    # bridge socket name, theme/icon paths) resolves via projectRoot(),
+    # whose cwd fallback breaks the moment anything chdirs the Designer
+    # process (its own file dialogs can) - the env var can't be moved.
+    env["CUSTOM_WIDGETS_PROJECT_ROOT"] = os.getcwd()
 
     # Build plugins paths
     plugins_paths = []
@@ -108,12 +123,14 @@ def start_designer(load_plugins: bool = False, process_mode: str = "normal"):
         
         designer_process = QProcess()
         designer_process.setProcessEnvironment(qenv)
+        designer_process.setWorkingDirectory(os.getcwd())
         designer_process.setProcessChannelMode(QProcess.ProcessChannelMode.ForwardedChannels)
         
         print(f" Launching Qt Designer using QProcess: {designer_cmd}")
         
-        # On Windows, use the full path if available
-        if sys.platform.startswith("win") and designer_exe:
+        # Always prefer the resolved executable - the bare command name on
+        # PATH can belong to a different Python installation entirely.
+        if designer_exe:
             designer_process.start(str(designer_exe), [])
         else:
             designer_process.start(designer_cmd, [])
