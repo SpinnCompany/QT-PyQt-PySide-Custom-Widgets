@@ -197,6 +197,20 @@ for _dw in (QCustomBreadcrumbs, QCustomRating, QCustomChipGroup):
         logException(e, message="Error registering %s" % _dw.__name__)
 
 
+from Custom_Widgets.QCustomSkeleton import QCustomSkeleton
+from Custom_Widgets.QCustomAvatarGroup import QCustomAvatarGroup
+from Custom_Widgets.QCustomTimeline import QCustomTimeline
+
+for _sw in (QCustomSkeleton, QCustomAvatarGroup, QCustomTimeline):
+    try:
+        logInfo("Registering %s" % _sw.__name__)
+        QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+            _sw, module=_sw.WIDGET_MODULE, tool_tip=_sw.WIDGET_TOOLTIP,
+            xml=_sw.WIDGET_DOM_XML, icon=_sw.WIDGET_ICON, group="Display Widgets")
+    except Exception as e:
+        logException(e, message="Error registering %s" % _sw.__name__)
+
+
 from Custom_Widgets.QCustomThemeList import QCustomThemeList
 
 # Registering QCustomThemeList with error handling
