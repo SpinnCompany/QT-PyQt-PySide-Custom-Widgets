@@ -98,12 +98,17 @@ def designer_launch() -> str:
 ## FORMS
 ########################################################################
 @mcp.tool(annotations={"title": "Open .ui files in Designer"})
-def designer_open_files(files: list[str]) -> str:
-    """Open one or more .ui files in the running Qt Designer. Paths may be
-    relative to the project folder."""
+def designer_open_files(files: list[str], new_window: bool = False) -> str:
+    """Open one or more .ui files. Default: create the form in the running
+    Designer process - you can then inspect it (designer_get_object_info,
+    designer_get_ui_code), edit it (designer_set_widget_property) and see it
+    (designer_screenshot), though it is not shown in Designer's visible
+    workspace (a PySide6 limitation). Set new_window=True to launch a
+    Designer window a human can see. Paths may be relative to the project."""
     absolute = [f if os.path.isabs(f) else os.path.join(_projectDir(), f)
                 for f in files]
-    reply = _request({"method": "openFiles", "files": absolute})
+    reply = _request({"method": "openFiles", "files": absolute,
+                      "newWindow": new_window})
     return json.dumps(reply)
 
 

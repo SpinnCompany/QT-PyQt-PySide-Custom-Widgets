@@ -31,6 +31,70 @@ from qtpy.QtWidgets import QApplication, QWidget
 from Custom_Widgets.Log import *
 
 _bridge_server = None
+_form_editor_core = None  # QDesignerFormEditorInterface, captured at plugin init
+
+
+def setFormEditorCore(core):
+    """Called by the core-capture plugin when Designer initializes it.
+    This is the only supported way to reach the form window manager (the
+    core is internal C++, not in the widget tree)."""
+    global _form_editor_core
+    _form_editor_core = core
+    logDebug("Designer bridge: form editor core captured")
+
+
+def registerCoreCapture():
+    """Register a hidden custom-widget plugin whose sole job is to receive
+    the QDesignerFormEditorInterface via initialize(core). Call from the
+    Designer plugin registrars."""
+    try:
+        from qtpy.QtDesigner import (QDesignerCustomWidgetInterface,
+                                     QPyDesignerCustomWidgetCollection)
+        from qtpy.QtWidgets import QWidget
+
+        class _CoreCapturePlugin(QDesignerCustomWidgetInterface):
+            def initialize(self, core):
+                setFormEditorCore(core)
+
+            def isInitialized(self):
+                return _form_editor_core is not None
+
+            def createWidget(self, parent):
+                return QWidget(parent)
+
+            def name(self):
+                return "CustomWidgetsCoreCapture"
+
+            def group(self):
+                return "Custom Widgets (internal)"
+
+            def toolTip(self):
+                return ""
+
+            def whatsThis(self):
+                return ""
+
+            def includeFile(self):
+                return ""
+
+            def isContainer(self):
+                return False
+
+            def icon(self):
+                from qtpy.QtGui import QIcon
+                return QIcon()
+
+            def domXml(self):
+                # empty -> hidden from the widget box
+                return ""
+
+        QPyDesignerCustomWidgetCollection.addCustomWidget(_CoreCapturePlugin())
+    except Exception as e:
+        logException(e, message="Designer bridge: core-capture registration failed")
+
+
+def formEditorCore():
+    return _form_editor_core
 
 
 def bridgeServerName(project_dir=None):
@@ -118,7 +182,9 @@ class DesignerBridgeServer(QObject):
         if method == "reloadForms":
             return {"result": "ok", "reloaded": self._reloadForms()}
         if method == "openFiles":
-            return {"result": "ok", "opened": self.openFiles(message.get("files", []))}
+            return {"result": "ok",
+                    "opened": self.openFiles(message.get("files", []),
+                                             new_process=bool(message.get("newWindow", False)))}
         if method == "closeFiles":
             return {"result": "ok",
                     "closed": self._closeFiles(message.get("files", []),
@@ -208,39 +274,53 @@ class DesignerBridgeServer(QObject):
                 logDebug(f"Designer bridge: reload failed for form: {e}")
         return reloaded
 
-    def _formWindowManager(self):
-        """The form window manager. Reachable through any open form, or by
-        scanning the object tree (works with no forms open)."""
+    def _formEditorCore(self):
+        """The QDesignerFormEditorInterface - captured at plugin init, or
+        reached through an open form."""
+        if _form_editor_core is not None:
+            return _form_editor_core
         for fw in self._formWindows():
             try:
-                return fw.core().formWindowManager()
+                return fw.core()
             except Exception as e:
                 logDebug(f"Designer bridge: core() via form failed: {e}")
-        try:
-            from qtpy.QtDesigner import QDesignerFormWindowManagerInterface
-        except Exception:
-            return None
-        app = QApplication.instance()
-        if app is None:
-            return None
-        roots = [app] + list(app.topLevelWidgets())
-        for root in roots:
-            try:
-                found = root.findChildren(QDesignerFormWindowManagerInterface)
-                if found:
-                    return found[0]
-            except Exception:
-                continue
-        logDebug("Designer bridge: form window manager not found in object tree")
         return None
 
-    def openFiles(self, files):
-        """Open .ui files in this Designer instance when the form window
-        manager is reachable (any form already open); otherwise fall back
-        to a new Designer process."""
+    def _formWindowManager(self):
+        core = self._formEditorCore()
+        if core is None:
+            logDebug("Designer bridge: form editor core unavailable")
+            return None
+        try:
+            return core.formWindowManager()
+        except Exception as e:
+            logDebug(f"Designer bridge: formWindowManager() failed: {e}")
+            return None
+
+    def _noteInWorkspace(self, path):
+        try:
+            from Custom_Widgets.DesignerTools import WorkspaceDock
+            WorkspaceDock.noteFile(path)
+        except Exception:
+            pass
+
+    def openFiles(self, files, new_process=False):
+        """Open .ui files.
+
+        Default (new_process=False): create the form IN THIS Designer process
+        via the captured form editor core. The form is fully manipulable
+        through the bridge (getObjectInfos, getUiCode, setWidgetProperty) and
+        renders in getScreenShot via QWidget.grab() - ideal for agents. It is
+        NOT shown in Designer's central MDI area: PySide6 does not expose the
+        QDesignerWorkbench that tabs a form into the workspace, and forcing a
+        form window to show() crashes Designer.
+
+        new_process=True: launch a Designer window so a human can SEE and edit
+        the form. This is what the UI Workspace uses on double-click."""
         opened = []
         pending = []
-        manager = self._formWindowManager()
+        manager = None if new_process else self._formWindowManager()
+
         for path in files:
             path = os.path.abspath(str(path).replace("\\", "/"))
             if not os.path.exists(path):
@@ -252,8 +332,12 @@ class DesignerBridgeServer(QObject):
                     fw = manager.createFormWindow()
                     fw.setFileName(path)
                     fw.setContents(contents)
-                    manager.setActiveFormWindow(fw)
-                    fw.show()
+                    # Let Designer's workbench (connected to this manager)
+                    # place and show the form; do NOT show()/resize it here -
+                    # doing so on a parentless form window destabilizes
+                    # Designer.
+                    manager.addFormWindow(fw)
+                    self._noteInWorkspace(path)
                     opened.append(os.path.basename(path))
                     continue
                 except Exception as e:
@@ -261,8 +345,6 @@ class DesignerBridgeServer(QObject):
             pending.append(path)
 
         if pending:
-            # No reachable manager (needs at least one open form) - fall back
-            # to opening in a Designer window via the desktop shell
             from qtpy.QtCore import QProcess
             candidates = [
                 os.path.join(os.path.dirname(sys.executable), 'pyside6-designer'),
@@ -273,7 +355,8 @@ class DesignerBridgeServer(QObject):
             program = next((c for c in candidates
                             if os.path.sep not in c or os.path.exists(c)), candidates[-1])
             QProcess.startDetached(program, pending)
-            opened.extend(os.path.basename(p) + " (new window)" for p in pending)
+            suffix = " (new window)" if new_process else " (new process - in-process open unavailable)"
+            opened.extend(os.path.basename(p) + suffix for p in pending)
         return opened
 
     def _closeFiles(self, files, close_all=False):

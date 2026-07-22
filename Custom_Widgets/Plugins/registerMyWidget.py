@@ -11,6 +11,14 @@ import qtpy.QtDesigner as QtDesigner
 
 logInfo("Registering Custom Widgets")
 
+# Capture the form editor core (needed to open forms into this Designer
+# instance) - must be registered before/with the other custom widgets.
+try:
+    from Custom_Widgets.DesignerBridge import registerCoreCapture
+    registerCoreCapture()
+except Exception as e:
+    logException(e, message="Error registering Designer core capture")
+
 from Custom_Widgets.QCustomQMainWindow import QCustomQMainWindow
 
 # Registering QCustomQMainWindow with error handling
