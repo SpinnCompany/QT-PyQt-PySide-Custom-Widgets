@@ -309,7 +309,7 @@ def configure_button_group(self, data, update: bool = False):
             if "Style" in QPushButtonGroup:
                 try:
                     style = QPushButtonGroup["Style"][0]  # Styles are in the first dictionary in the list
-                except:
+                except Exception:
                     style = QPushButtonGroup["Style"]
 
                 # Process the 'Active' and 'NotActive' styles for the group
@@ -325,7 +325,7 @@ def configure_button_group(self, data, update: bool = False):
 
                 try:
                     self.checkButtonGroup(button=btn)
-                except:
+                except Exception:
                     pass
 
 def configure_analog_gauge(self, data, update: bool = False):
@@ -782,7 +782,7 @@ def configure_main_window(self, data, update: bool = False):
             if translucent_bg:
                 # Set main background to transparent
                 self.setAttribute(Qt.WA_TranslucentBackground)
-        except:
+        except Exception:
             pass
 
         if size_grip:
@@ -826,7 +826,7 @@ def configure_main_window(self, data, update: bool = False):
         if restore_button_name:
             try:
                 prevbtn = self.restoreBtn
-            except:
+            except Exception:
                 prevbtn = None
 
             try:

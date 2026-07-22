@@ -77,7 +77,7 @@ class FileMonitor(QObject):
         for watcher in self.fileSystemWatchers:
             try:
                 watcher.fileChanged.disconnect(self.on_file_change)
-            except:
+            except Exception:
                 pass
         self.fileSystemWatchers.clear()
 
@@ -809,7 +809,7 @@ class QSsFileMonitor(QObject):
             try:
                 if self.qss_watcher.connected:
                     self.qss_watcher.fileChanged.disconnect()
-            except:
+            except Exception:
                 pass
 
             self.qss_watcher.fileChanged.connect(self.qss_file_changed)
@@ -847,7 +847,7 @@ class QSsFileMonitor(QObject):
         try:
             self.qss_watcher.fileChanged.disconnect()
             logInfo("Stopped QSS file monitoring")
-        except:
+        except Exception:
             pass
 
         self.qss_watcher = QFileSystemWatcher()

@@ -150,7 +150,7 @@ class QCustomQMainWindow(QMainWindow):
                 if theme.name == value:
                    return True
             return False
-        except:
+        except Exception:
             return False
 
     @Property(bool)
@@ -221,7 +221,7 @@ class QCustomQMainWindow(QMainWindow):
         if hasattr(self, '_qss_file_monitor') and self._qss_file_monitor:
             try:
                 self._qss_file_monitor.stop_qss_file_listener()
-            except:
+            except Exception:
                 pass
         super().closeEvent(event)
 
@@ -230,7 +230,7 @@ class QCustomQMainWindow(QMainWindow):
         if hasattr(self, '_qss_file_monitor') and self._qss_file_monitor:
             try:
                 self._qss_file_monitor.stop_qss_file_listener()
-            except:
+            except Exception:
                 pass
 
     @Property(bool)
