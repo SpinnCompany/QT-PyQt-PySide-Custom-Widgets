@@ -3,23 +3,19 @@ A module for fetching common image libraries and installing them into
 your iconify installation
 """
 
-import distutils.dir_util
 import glob
 import inspect
 import os
 import re
+import shutil
 import sys
 import tempfile
 import zipfile
 from typing import IO, Any, List, Mapping, Optional, Tuple
+from urllib.request import urlretrieve
 
 import Custom_Widgets.iconify as ico
 from Custom_Widgets.iconify.qt import QtCore, QtXml
-
-if sys.version_info[0] == 2:
-    from urllib import urlretrieve
-else:
-    from urllib.request import urlretrieve
 
 
 def fetch():
@@ -145,7 +141,7 @@ class Fetcher(object):
         """
         tmpdir = os.path.join(tempfile.gettempdir(), 'iconifyTempExtraction')
         if os.path.isdir(tmpdir):
-            distutils.dir_util.remove_tree(tmpdir)
+            shutil.rmtree(tmpdir)
 
         print('Extracting to: {}'.format(installLocation))
         print(localFile)
@@ -156,7 +152,7 @@ class Fetcher(object):
 
             for zipFilePath in cls.ZIP_FILE_PATHS:
                 source = os.path.join(tmpdir, zipFilePath)
-                distutils.dir_util.copy_tree(source, installLocation)
+                shutil.copytree(source, installLocation, dirs_exist_ok=True)
 
     @classmethod
     def updateDataHook(cls, installLocation):
@@ -426,7 +422,4 @@ def _openFile(filePath):
     -------
     IO[Any]
     """
-    if sys.version_info[0] == 3:
-        return open(filePath, 'r', encoding='utf-8')
-    else:
-        return open(filePath, 'r')
+    return open(filePath, 'r', encoding='utf-8')
