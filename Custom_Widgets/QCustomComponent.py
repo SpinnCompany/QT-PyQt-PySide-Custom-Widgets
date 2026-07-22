@@ -37,14 +37,19 @@ class QCustomComponent(QWidget):
         self.qss_watcher = None
 
         self.showCustomWidgetsLogs = True
-        self.themeEngine = QCustomTheme()   
-        self.win = self.themeEngine.getMainWindow()  
+        self.themeEngine = QCustomTheme()
         self.shared_data = SharedData()
-
         self._qss_file_monitor = QSsFileMonitor.instance()
 
-        # Start the file monitor
-        self.startFileMonitor()
+        # Lightweight at design time: no main-window lookup, no file watcher,
+        # no JSON loading in Qt Designer. That work happens at app runtime, or
+        # in Designer only when the user opts in via liveCompileStylesheet /
+        # paintQtDesignerUI (compileStylesheet starts the monitor on demand).
+        if is_in_designer(self):
+            self.win = None
+        else:
+            self.win = self.themeEngine.getMainWindow()
+            self.startFileMonitor()
 
     # Property for the JSON stylesheet file path
     @Property(str)
