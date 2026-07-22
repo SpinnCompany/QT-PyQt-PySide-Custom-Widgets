@@ -75,7 +75,7 @@ def run_command():
         
         OPTIONS:
             General:
-                --qt-library LIB         Qt binding to use (PySide6, PySide2, PyQt6, PyQt5)
+                --qt-library LIB         Qt binding to use (PySide6, PyQt6)
                                         (default: PySide6)
             
             Output:
@@ -90,7 +90,7 @@ def run_command():
             Custom_Widgets --monitor-ui ./ui_files --src-output-dir ./generated
             
             # Convert UI files once
-            Custom_Widgets --convert-ui ./ui_files --qt-library PyQt5
+            Custom_Widgets --convert-ui ./ui_files --qt-library PyQt6
             
             # Launch Designer with plugins
             Custom_Widgets --start-designer --plugins

@@ -4,10 +4,16 @@ import re
 import shutil
 import subprocess
 import qtpy
-from qtpy.QtDesigner import QDesignerFormWindowInterface
 from qtpy.QtGui import QIcon
 from qtpy.QtCore import QSettings
 from qtpy.QtWidgets import QApplication
+
+try:
+    # Not available in every binding/deployment (e.g. PyQt6 wheels without
+    # the designer module); is_in_designer degrades gracefully without it.
+    from qtpy.QtDesigner import QDesignerFormWindowInterface
+except Exception:
+    QDesignerFormWindowInterface = None
 
 # Import custom logging module
 from Custom_Widgets.Log import *
@@ -71,9 +77,10 @@ def is_in_designer(self):
     """Check if running in Qt Designer."""
     try:
         # Method 1: Check for QDesignerFormWindowInterface (if widget is in a form)
-        if QDesignerFormWindowInterface.findFormWindow(self) is not None:
+        if QDesignerFormWindowInterface is not None and \
+                QDesignerFormWindowInterface.findFormWindow(self) is not None:
             return True
-    except:
+    except Exception:
         pass
     
     try:
@@ -97,9 +104,10 @@ def is_in_designer(self):
     parent = self.parent()
     while parent is not None:
         try:
-            if QDesignerFormWindowInterface.findFormWindow(parent) is not None:
+            if QDesignerFormWindowInterface is not None and \
+                    QDesignerFormWindowInterface.findFormWindow(parent) is not None:
                 return True
-        except:
+        except Exception:
             pass
         parent = parent.parent()
     
@@ -125,22 +133,20 @@ def qrcToPy(qrcFile, pyFile):
     - py_file (str): Path to the output py file.
     """
     try:
-        if qtpy.API_NAME == "PyQt5":
-            rcc_command = 'pyrcc5'
+        if qtpy.API_NAME == "PySide6":
+            rcc_command = 'pyside6-rcc'
         elif qtpy.API_NAME == "PyQt6":
             rcc_command = 'pyrcc6'
-        elif qtpy.API_NAME == "PySide2":
-            rcc_command = 'pyside2-rcc'
-        elif qtpy.API_NAME == "PySide6":
-            rcc_command = 'pyside6-rcc'
         else:
-            raise Exception("Error: Unknown QT binding/API Name", qtpy.API_NAME)
+            raise RuntimeError(
+                f"Unsupported Qt binding '{qtpy.API_NAME}': Custom_Widgets "
+                "supports PySide6 and PyQt6")
 
-        print(f'{rcc_command} "{qrcFile}" -o "{pyFile}"')
-        subprocess.run(f'{rcc_command} "{qrcFile}" -o "{pyFile}"')
-        
+        logInfo(f'{rcc_command} "{qrcFile}" -o "{pyFile}"')
+        subprocess.run([rcc_command, qrcFile, "-o", pyFile], check=True)
+
     except Exception as e:
-        print("Error converting qrc to py:", e)
+        logError(f"Error converting qrc to py: {e}")
 
 def uiToPy(uiFile, pyFile):
     """
@@ -151,21 +157,19 @@ def uiToPy(uiFile, pyFile):
     - pyFile (str): Path to the output Python file.
     """
     try:
-        if qtpy.API_NAME == "PyQt5":
-            pyuic_command = 'pyuic5'
+        if qtpy.API_NAME == "PySide6":
+            pyuic_command = 'pyside6-uic'
         elif qtpy.API_NAME == "PyQt6":
             pyuic_command = 'pyuic6'
-        elif qtpy.API_NAME == "PySide2":
-            pyuic_command = 'pyside2-uic'
-        elif qtpy.API_NAME == "PySide6":
-            pyuic_command = 'pyside6-uic'
         else:
-            raise Exception("Error: Unknown Qt binding/API Name", qtpy.API_NAME)
+            raise RuntimeError(
+                f"Unsupported Qt binding '{qtpy.API_NAME}': Custom_Widgets "
+                "supports PySide6 and PyQt6")
 
-        os.system(f'{pyuic_command} "{uiFile}" -o "{pyFile}"')
+        subprocess.run([pyuic_command, uiFile, "-o", pyFile], check=True)
 
     except Exception as e:
-        print("Error converting ui to py:", e)
+        logError(f"Error converting ui to py: {e}")
 
 def renameFolder(old_name, new_name):
     try:
