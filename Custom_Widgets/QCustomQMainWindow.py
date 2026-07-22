@@ -90,8 +90,15 @@ class QCustomQMainWindow(QMainWindow):
 
     @Property(str)
     def appTheme(self):
+        """The active theme, by NAME. Theme names are defined at runtime in
+        the project's style.json (built-in "Light"/"Dark" plus any custom
+        themes), so this is a string rather than a fixed enum - a static
+        enum cannot list values that only exist once style.json is read.
+        Use the QCustomThemeList widget for a runtime theme dropdown; a live
+        Designer dropdown is possible via a property-sheet extension (planned).
+        The value is validated against the currently-defined themes."""
         return self._app_theme
-    
+
     @appTheme.setter
     def appTheme(self, value: str):
         if self._app_theme != value and self.isValidTheme(value):
