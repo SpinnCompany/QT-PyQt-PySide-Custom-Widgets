@@ -179,6 +179,79 @@ def designer_refresh_icons() -> str:
 
 
 ########################################################################
+## WINDOW MANAGEMENT (panes, dialogs, actions)
+########################################################################
+@mcp.tool(annotations={"title": "List Designer panes", "readOnlyHint": True})
+def designer_list_docks() -> str:
+    """List Designer's dock panes (Widget Box, Property Editor, Object
+    Inspector, Custom Widgets docks...) with visibility, area and floating
+    state."""
+    return json.dumps(_request({"method": "getDocks"})["result"], indent=2)
+
+
+@mcp.tool(annotations={"title": "Arrange a Designer pane"})
+def designer_arrange_dock(dock: str, visible: bool = True, area: str = "",
+                          floating: bool = False, raise_: bool = False) -> str:
+    """Arrange a Designer dock pane matched by name/title substring:
+    show/hide it, move it to an area ('left'/'right'/'top'/'bottom'),
+    float it, or raise it above tabbed siblings."""
+    message = {"method": "setDock", "dock": dock, "visible": visible,
+               "floating": floating, "raise": raise_}
+    if area:
+        message["area"] = area
+    return json.dumps(_request(message))
+
+
+@mcp.tool(annotations={"title": "List open dialogs", "readOnlyHint": True})
+def designer_list_dialogs() -> str:
+    """List visible dialogs / popups / prompts / error boxes in Designer
+    (e.g. the startup New Form dialog or a save prompt), with their title,
+    message text and buttons. Check this when Designer seems blocked."""
+    return json.dumps(_request({"method": "getDialogs"})["result"], indent=2)
+
+
+@mcp.tool(annotations={"title": "Dismiss a dialog"})
+def designer_dismiss_dialog(match: str = "", button: str = "") -> str:
+    """Close an open dialog matched by title/class substring (empty match =
+    first open dialog). Pass button text to click a specific button
+    instead, e.g. button='Don't Save' on a save prompt, or button='Close'
+    on the startup New Form dialog."""
+    return json.dumps(_request({"method": "dismissDialog",
+                                "match": match, "button": button}))
+
+
+@mcp.tool(annotations={"title": "List Designer actions", "readOnlyHint": True})
+def designer_list_actions(contains: str = "") -> str:
+    """List Designer's menu/toolbar actions (Save, Save All, Preview,
+    Close, ...). Optionally filter by substring. Trigger any of them with
+    designer_trigger_action."""
+    actions = _request({"method": "getActions"})["result"]
+    if contains:
+        needle = contains.lower()
+        actions = [a for a in actions
+                   if needle in a["text"].lower() or needle in a["objectName"].lower()]
+    return json.dumps(actions, indent=2)
+
+
+@mcp.tool(annotations={"title": "Trigger a Designer action"})
+def designer_trigger_action(action: str) -> str:
+    """Trigger a Designer menu/toolbar action by text or objectName
+    (e.g. 'Save Form', 'Save All', 'Preview'). Use it to save forms after
+    edits."""
+    return json.dumps(_request({"method": "triggerAction", "action": action}))
+
+
+@mcp.tool(annotations={"title": "Set a widget property (undoable)"})
+def designer_set_widget_property(widget: str, property_name: str, value) -> str:
+    """Set a property on a widget of the ACTIVE form (matched by
+    objectName) through Designer's undo stack, like a manual edit - e.g.
+    text, geometry, toolTip, checked. NOTE: styleSheet is refused by
+    project rule; persist styles with project_write_style instead."""
+    return json.dumps(_request({"method": "setWidgetProperty", "widget": widget,
+                                "property": property_name, "value": value}))
+
+
+########################################################################
 ## PROJECT WORKFLOW
 ########################################################################
 @mcp.tool(annotations={"title": "List project .ui files", "readOnlyHint": True})
@@ -225,6 +298,41 @@ def project_convert_ui(ui_path: str = "ui", src_output_dir: str = "src") -> str:
     generated = [line for line in proc.stdout.splitlines()
                  if "Python:" in line or "Completed" in line]
     return "\n".join(generated) or "converted"
+
+
+@mcp.tool(annotations={"title": "Write project styles (scss)"})
+def project_write_style(scss: str, file: str = "") -> str:
+    """Persist custom styles the Custom_Widgets way: appended to
+    Qss/scss/defaultStyle.scss, or written to a separate scss file that
+    gets @import-ed into it (pass file='mystyles.scss'). Target widgets
+    with objectName selectors, e.g. '#saveBtn { padding: 6px; }'. This is
+    the ONLY sanctioned way to persist styles - never put styleSheet
+    properties in .ui files. Styles apply on the next app run; for an
+    instant Designer preview also call designer_set_stylesheet."""
+    scss_dir = os.path.join(_projectDir(), "Qss", "scss")
+    os.makedirs(scss_dir, exist_ok=True)
+    default_path = os.path.join(scss_dir, "defaultStyle.scss")
+    if not os.path.exists(default_path):
+        with open(default_path, "w", encoding="utf-8") as f:
+            f.write("// Project default styles (override theme styles)\n")
+
+    if file:
+        name = os.path.basename(file)
+        if not name.endswith(".scss"):
+            name += ".scss"
+        with open(os.path.join(scss_dir, name), "w", encoding="utf-8") as f:
+            f.write(scss.rstrip() + "\n")
+        import_line = f"@import '{name[:-5]}';"
+        with open(default_path, encoding="utf-8") as f:
+            default_content = f.read()
+        if import_line not in default_content:
+            with open(default_path, "a", encoding="utf-8") as f:
+                f.write(f"\n{import_line}\n")
+        return f"wrote Qss/scss/{name} and imported it from defaultStyle.scss"
+
+    with open(default_path, "a", encoding="utf-8") as f:
+        f.write("\n" + scss.rstrip() + "\n")
+    return "appended to Qss/scss/defaultStyle.scss"
 
 
 def main():

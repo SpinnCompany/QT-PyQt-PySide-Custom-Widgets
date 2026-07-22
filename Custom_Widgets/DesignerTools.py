@@ -21,7 +21,7 @@ from qtpy.QtGui import (QColor, QFont, QSyntaxHighlighter, QTextCharFormat,
                         QTextCursor)
 from qtpy.QtWidgets import (QApplication, QCompleter, QDockWidget, QFileDialog,
                             QHBoxLayout, QLineEdit, QListWidget,
-                            QListWidgetItem, QMainWindow, QPlainTextEdit,
+                            QListWidgetItem, QMainWindow, QMenu, QPlainTextEdit,
                             QPushButton, QVBoxLayout, QWidget)
 
 from Custom_Widgets.Log import *
@@ -102,6 +102,8 @@ class WorkspaceDock(QDockWidget):
         layout = QVBoxLayout(container)
         self._list = QListWidget()
         self._list.itemDoubleClicked.connect(self._openItem)
+        self._list.setContextMenuPolicy(Qt.CustomContextMenu)
+        self._list.customContextMenuRequested.connect(self._showContextMenu)
         layout.addWidget(self._list)
         refresh = QPushButton("Refresh")
         refresh.clicked.connect(self.refresh)
@@ -122,12 +124,49 @@ class WorkspaceDock(QDockWidget):
                     self._list.addItem(item)
 
     def _openItem(self, item):
+        self._open(item.toolTip())
+
+    def _showContextMenu(self, pos):
+        item = self._list.itemAt(pos)
+        if item is None:
+            return
+        path = item.toolTip()
+        menu = QMenu(self._list)
+        menu.addAction("Open").triggered.connect(lambda: self._open(path))
+        menu.addAction("Open in New Window").triggered.connect(
+            lambda: self._open(path, new_window=True))
+        menu.addSeparator()
+        menu.addAction("Reveal in File Manager").triggered.connect(
+            lambda: self._reveal(path))
+        menu.addAction("Copy Path").triggered.connect(
+            lambda: QApplication.clipboard().setText(path))
+        menu.addSeparator()
+        menu.addAction("Refresh List").triggered.connect(self.refresh)
+        menu.exec_(self._list.viewport().mapToGlobal(pos))
+
+    def _open(self, path, new_window=False):
         try:
+            if new_window:
+                from qtpy.QtCore import QProcess
+                import sys
+                program = (sys.executable if "designer" in sys.executable.lower()
+                           else "pyside6-designer")
+                QProcess.startDetached(program, [path])
+                logInfo(f"Workspace: opened {os.path.basename(path)} in new window")
+                return
             from Custom_Widgets.DesignerBridge import startDesignerBridge
-            opened = startDesignerBridge().openFiles([item.toolTip()])
+            opened = startDesignerBridge().openFiles([path])
             logInfo(f"Workspace opened: {opened}")
         except Exception as e:
             logException(e, message="Workspace: failed to open form")
+
+    def _reveal(self, path):
+        try:
+            from qtpy.QtGui import QDesktopServices
+            from qtpy.QtCore import QUrl
+            QDesktopServices.openUrl(QUrl.fromLocalFile(os.path.dirname(path)))
+        except Exception as e:
+            logException(e, message="Workspace: failed to reveal path")
 
 
 ########################################################################
@@ -283,6 +322,25 @@ def _designerMainWindow():
     return candidates[0] if candidates else None
 
 
+def _addViewMenu(window):
+    """Put show/hide toggles for the custom panes into the menu bar - in
+    Designer's own View menu when present, else a 'Custom Widgets' menu."""
+    menu_bar = window.menuBar()
+    if menu_bar is None:
+        return
+    target = None
+    for action in menu_bar.actions():
+        if action.text().replace("&", "").strip().lower() in ("view", "views"):
+            target = action.menu()
+            break
+    if target is None:
+        target = menu_bar.addMenu("Custom &Widgets")
+    else:
+        target.addSeparator()
+    for key in ("workspace", "qss", "logs"):
+        target.addAction(_tools[key].toggleViewAction())
+
+
 def _install(attempt=0):
     window = _designerMainWindow()
     if window is None:
@@ -291,6 +349,13 @@ def _install(attempt=0):
         else:
             logWarning("Designer tools: main window not found, docks not installed")
         return
+    # Both registrar plugins call this, and Designer loads them as isolated
+    # module instances (separate _tools globals), so guard on the shared
+    # window itself - set the flag BEFORE the await-free dock creation so two
+    # timers firing in the same tick can't both pass.
+    if window.property("customWidgetsToolsInstalled") or _tools:
+        return
+    window.setProperty("customWidgetsToolsInstalled", True)
     try:
         _tools["logs"] = LogViewDock(window)
         _tools["workspace"] = WorkspaceDock(window)
@@ -299,13 +364,20 @@ def _install(attempt=0):
         window.addDockWidget(Qt.RightDockWidgetArea, _tools["qss"])
         window.addDockWidget(Qt.BottomDockWidgetArea, _tools["logs"])
         _tools["qss"].raise_()
+        _addViewMenu(window)
         logInfo("Designer tools installed: Logs, UI Workspace, QSS Editor")
     except Exception as e:
         logException(e, message="Designer tools installation failed")
 
 
+_scheduled = False
+
+
 def installDesignerTools():
-    """Called from the Designer plugin registrars."""
-    if _tools:
+    """Called from the Designer plugin registrars (both of them - guard
+    against double installation)."""
+    global _scheduled
+    if _scheduled or _tools:
         return
+    _scheduled = True
     QTimer.singleShot(1500, _install)

@@ -114,6 +114,87 @@ def test_screenshot_main_window(qapp, bridge):
         window.close()
 
 
+@pytest.fixture
+def fake_designer_window(qapp):
+    """A QMainWindow with a menu bar, dock, action and dialog - stands in
+    for Designer's main window in the window-management methods."""
+    from qtpy.QtCore import Qt
+    from qtpy.QtGui import QAction
+    from qtpy.QtWidgets import QDialog, QDockWidget, QLabel, QMainWindow, QPushButton, QVBoxLayout
+
+    window = QMainWindow()
+    window.menuBar().addMenu("File")
+    dock = QDockWidget("Property Editor", window)
+    dock.setObjectName("propertyEditorDock")
+    window.addDockWidget(Qt.LeftDockWidgetArea, dock)
+
+    fired = []
+    action = QAction("Save Form", window)
+    action.setObjectName("actionSave")
+    action.triggered.connect(lambda: fired.append("save"))
+    window.addAction(action)
+
+    dialog = QDialog(window)
+    dialog.setWindowTitle("New Form")
+    layout = QVBoxLayout(dialog)
+    layout.addWidget(QLabel("Choose a template"))
+    close_btn = QPushButton("&Close")
+    close_btn.clicked.connect(dialog.reject)
+    layout.addWidget(close_btn)
+
+    window.show()
+    dialog.show()
+    _spin(qapp, 0.1)
+    yield window, dialog, fired
+    dialog.close()
+    window.close()
+
+
+def test_docks_listed_and_arranged(qapp, bridge, fake_designer_window):
+    docks = _request(qapp, bridge, {"method": "getDocks"})["result"]
+    assert any(d["objectName"] == "propertyEditorDock" and d["area"] == "left"
+               for d in docks)
+
+    reply = _request(qapp, bridge, {"method": "setDock", "dock": "property",
+                                    "area": "right", "visible": True})
+    assert reply["result"] == "ok"
+    docks = _request(qapp, bridge, {"method": "getDocks"})["result"]
+    assert any(d["objectName"] == "propertyEditorDock" and d["area"] == "right"
+               for d in docks)
+
+
+def test_dialogs_listed_and_dismissed(qapp, bridge, fake_designer_window):
+    _, dialog, _ = fake_designer_window
+    dialogs = _request(qapp, bridge, {"method": "getDialogs"})["result"]
+    match = [d for d in dialogs if d["title"] == "New Form"]
+    assert match and "Choose a template" in match[0]["text"]
+    assert "Close" in match[0]["buttons"]
+
+    reply = _request(qapp, bridge, {"method": "dismissDialog",
+                                    "match": "new form", "button": "Close"})
+    assert reply["result"] == "ok" and reply["clicked"] == "Close"
+    _spin(qapp, 0.05)
+    assert not dialog.isVisible()
+
+
+def test_actions_listed_and_triggered(qapp, bridge, fake_designer_window):
+    _, _, fired = fake_designer_window
+    actions = _request(qapp, bridge, {"method": "getActions"})["result"]
+    assert any(a["text"] == "Save Form" for a in actions)
+
+    reply = _request(qapp, bridge, {"method": "triggerAction", "action": "save form"})
+    assert reply["result"] == "ok"
+    _spin(qapp, 0.05)
+    assert fired == ["save"]
+
+
+def test_stylesheet_property_refused_by_project_rule(qapp, bridge):
+    reply = _request(qapp, bridge, {"method": "setWidgetProperty",
+                                    "widget": "saveBtn",
+                                    "property": "styleSheet", "value": "x"})
+    assert "defaultStyle.scss" in reply["error"]
+
+
 def test_client_fails_silently_without_server(qapp, tmp_path):
     from Custom_Widgets.DesignerBridge import DesignerBridgeClient
 

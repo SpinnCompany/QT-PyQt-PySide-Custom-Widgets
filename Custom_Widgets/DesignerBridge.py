@@ -129,6 +129,23 @@ class DesignerBridgeServer(QObject):
             return self._uiCode(str(message.get("type", "xml")))
         if method == "getScreenShot":
             return self._screenShot(str(message.get("type", "current")))
+        if method == "getDocks":
+            return {"result": self._getDocks()}
+        if method == "setDock":
+            return self._setDock(message)
+        if method == "getDialogs":
+            return {"result": self._getDialogs()}
+        if method == "dismissDialog":
+            return self._dismissDialog(str(message.get("match", "")),
+                                       str(message.get("button", "")))
+        if method == "getActions":
+            return {"result": self._getActions()}
+        if method == "triggerAction":
+            return self._triggerAction(str(message.get("action", "")))
+        if method == "setWidgetProperty":
+            return self._setWidgetProperty(str(message.get("widget", "")),
+                                           str(message.get("property", "")),
+                                           message.get("value"))
         return {"error": f"unknown method '{method}'"}
 
     ####################################################################
@@ -192,12 +209,29 @@ class DesignerBridgeServer(QObject):
         return reloaded
 
     def _formWindowManager(self):
-        """The form window manager, reachable through any open form."""
+        """The form window manager. Reachable through any open form, or by
+        scanning the object tree (works with no forms open)."""
         for fw in self._formWindows():
             try:
                 return fw.core().formWindowManager()
+            except Exception as e:
+                logDebug(f"Designer bridge: core() via form failed: {e}")
+        try:
+            from qtpy.QtDesigner import QDesignerFormWindowManagerInterface
+        except Exception:
+            return None
+        app = QApplication.instance()
+        if app is None:
+            return None
+        roots = [app] + list(app.topLevelWidgets())
+        for root in roots:
+            try:
+                found = root.findChildren(QDesignerFormWindowManagerInterface)
+                if found:
+                    return found[0]
             except Exception:
                 continue
+        logDebug("Designer bridge: form window manager not found in object tree")
         return None
 
     def openFiles(self, files):
@@ -336,6 +370,211 @@ class DesignerBridgeServer(QObject):
             return {"result": [{"file": fw.fileName(),
                                 "png": grab_b64(fw.mainContainer())} for fw in forms]}
         return {"result": grab_b64(forms[0].mainContainer()), "file": forms[0].fileName()}
+
+
+    ####################################################################
+    ## WINDOW MANAGEMENT (panes, dialogs, actions, properties)
+    ####################################################################
+    _DOCK_AREAS = {"left": 1, "right": 2, "top": 4, "bottom": 8}
+
+    def _mainWindows(self):
+        """All visible QMainWindows - in Designer's multi-window mode every
+        tool window is one, so dock/action lookups aggregate over them."""
+        from qtpy.QtWidgets import QMainWindow
+        app = QApplication.instance()
+        return [w for w in (app.topLevelWidgets() if app else [])
+                if isinstance(w, QMainWindow) and w.isVisible()]
+
+    def _mainWindow(self):
+        windows = self._mainWindows()
+        for window in windows:  # prefer the one carrying the menu bar
+            menu_bar = window.menuBar()
+            if menu_bar is not None and menu_bar.actions():
+                return window
+        return windows[0] if windows else None
+
+    def _getDocks(self):
+        """Every dock pane of the Designer main window."""
+        from qtpy.QtWidgets import QDockWidget
+        area_names = {v: k for k, v in self._DOCK_AREAS.items()}
+        docks = []
+        for window in self._mainWindows():
+            for dock in window.findChildren(QDockWidget):
+                area = window.dockWidgetArea(dock)
+                docks.append({
+                    "objectName": dock.objectName(),
+                    "title": dock.windowTitle(),
+                    "visible": dock.isVisible(),
+                    "floating": dock.isFloating(),
+                    "area": area_names.get(getattr(area, "value", area), "none"),
+                })
+        return docks
+
+    def _setDock(self, message):
+        """Arrange a dock pane: visibility, area (left/right/top/bottom),
+        floating. Matched by objectName or title substring."""
+        from qtpy.QtCore import Qt
+        from qtpy.QtWidgets import QDockWidget
+        needle = str(message.get("dock", "")).lower()
+        pairs = [(window, dock) for window in self._mainWindows()
+                 for dock in window.findChildren(QDockWidget)]
+        if not pairs:
+            return {"error": "no main window"}
+        for window, dock in pairs:
+            if needle in dock.objectName().lower() or needle in dock.windowTitle().lower():
+                if "visible" in message:
+                    dock.setVisible(bool(message["visible"]))
+                if "floating" in message:
+                    dock.setFloating(bool(message["floating"]))
+                area = str(message.get("area", ""))
+                if area in self._DOCK_AREAS:
+                    window.addDockWidget(Qt.DockWidgetArea(self._DOCK_AREAS[area]), dock)
+                if message.get("raise", False):
+                    dock.raise_()
+                return {"result": "ok", "dock": dock.objectName() or dock.windowTitle()}
+        return {"error": f"no dock matching '{needle}' "
+                         f"(see getDocks for available panes)"}
+
+    def _openDialogs(self):
+        from qtpy.QtWidgets import QDialog
+        app = QApplication.instance()
+        return [w for w in (app.topLevelWidgets() if app else [])
+                if isinstance(w, QDialog) and w.isVisible()]
+
+    def _getDialogs(self):
+        """Visible dialogs / popups / prompts / error boxes: class, title,
+        message text and available buttons."""
+        from qtpy.QtWidgets import QLabel, QPushButton
+        dialogs = []
+        for dialog in self._openDialogs():
+            labels = [l.text() for l in dialog.findChildren(QLabel) if l.text()]
+            buttons = [b.text().replace("&", "") for b in dialog.findChildren(QPushButton)]
+            dialogs.append({
+                "class": dialog.metaObject().className(),
+                "title": dialog.windowTitle(),
+                "text": " | ".join(labels)[:300],
+                "buttons": buttons,
+                "modal": dialog.isModal(),
+            })
+        return dialogs
+
+    def _dismissDialog(self, match, button=""):
+        """Close a dialog matched by title/class substring (empty match =
+        first open dialog). With `button`, click that button instead of
+        rejecting - e.g. answer a save prompt with 'Don't Save'."""
+        from qtpy.QtWidgets import QPushButton
+        match = match.lower()
+        for dialog in self._openDialogs():
+            haystack = (dialog.windowTitle() + " " + dialog.metaObject().className()).lower()
+            if match and match not in haystack:
+                continue
+            if button:
+                for btn in dialog.findChildren(QPushButton):
+                    if button.lower() in btn.text().replace("&", "").lower():
+                        btn.click()
+                        return {"result": "ok", "clicked": btn.text().replace("&", ""),
+                                "dialog": dialog.windowTitle()}
+                return {"error": f"dialog '{dialog.windowTitle()}' has no "
+                                 f"button matching '{button}'"}
+            dialog.reject()
+            return {"result": "ok", "dismissed": dialog.windowTitle()
+                                                 or dialog.metaObject().className()}
+        return {"error": "no matching open dialog (see getDialogs)"}
+
+    def _allActions(self):
+        """Actions from every top-level widget - Designer's action tree is
+        not necessarily parented to a visible QMainWindow (multi-window
+        mode, native menu bars)."""
+        from qtpy.QtGui import QAction as _QAction  # Qt6
+        app = QApplication.instance()
+        if app is None:
+            return []
+        actions = []
+        seen = set()
+        for root in app.topLevelWidgets():
+            found = list(root.findChildren(_QAction))
+            try:
+                found += list(root.actions())
+            except Exception:
+                pass
+            for action in found:
+                try:  # Designer deletes actions dynamically - skip dead wrappers
+                    if id(action) not in seen and action.text():
+                        seen.add(id(action))
+                        actions.append(action)
+                except RuntimeError:
+                    continue
+        return actions
+
+    def _getActions(self):
+        """Every action of Designer's menus/toolbars - trigger any of them
+        with triggerAction (Save, Save All, Preview, Close, ...)."""
+        infos = []
+        for a in self._allActions():
+            try:
+                infos.append({"objectName": a.objectName(),
+                              "text": a.text().replace("&", ""),
+                              "shortcut": a.shortcut().toString(),
+                              "enabled": a.isEnabled()})
+            except RuntimeError:
+                continue
+        return infos
+
+    def _triggerAction(self, wanted):
+        wanted_l = wanted.lower()
+        for action in self._allActions():
+            try:
+                matched = wanted_l in (action.objectName().lower(),
+                                       action.text().replace("&", "").lower())
+                if not matched:
+                    continue
+                if not action.isEnabled():
+                    return {"error": f"action '{wanted}' is currently disabled"}
+                action.trigger()
+                return {"result": "ok", "triggered": action.text().replace("&", "")}
+            except RuntimeError:
+                continue
+        return {"error": f"no action matching '{wanted}' (see getActions)"}
+
+    def _setWidgetProperty(self, widget_name, prop, value):
+        """Set a property on a widget of the ACTIVE form through the form
+        cursor - goes through Designer's undo stack and marks the form
+        dirty, exactly like a manual edit (persisted on save)."""
+        if prop == "styleSheet":
+            return {"error": "Project rule: no inline styles in ui files. "
+                             "Persist styles in Qss/scss/defaultStyle.scss "
+                             "(or a file it imports) using an objectName "
+                             "selector like #" + (widget_name or "widgetName") +
+                             " { ... }. For an ephemeral preview use the "
+                             "setStyleSheet method instead."}
+        forms = self._formWindows()
+        if not forms:
+            return {"error": "no open forms"}
+        fw = forms[0]
+        try:
+            manager = self._formWindowManager()
+            if manager is not None and manager.activeFormWindow() is not None:
+                fw = manager.activeFormWindow()
+        except Exception:
+            pass
+        container = fw.mainContainer()
+        if container is None:
+            return {"error": "form has no main container"}
+        target = container if container.objectName() == widget_name else None
+        if target is None:
+            for child in container.findChildren(QWidget):
+                if child.objectName() == widget_name:
+                    target = child
+                    break
+        if target is None:
+            return {"error": f"no widget named '{widget_name}' in the active "
+                             f"form (see getObjectInfos)"}
+        try:
+            cursor = fw.cursor()
+            cursor.setWidgetProperty(target, prop, value)
+            return {"result": "ok", "widget": widget_name, "property": prop}
+        except Exception as e:
+            return {"error": f"setWidgetProperty failed: {e}"}
 
 
 class DesignerBridgeClient:

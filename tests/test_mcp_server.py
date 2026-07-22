@@ -31,6 +31,10 @@ async def test_expected_tools_registered():
         "designer_get_object_info", "designer_set_stylesheet",
         "designer_refresh_icons", "project_list_ui_files",
         "project_new_ui", "project_convert_ui",
+        "designer_list_docks", "designer_arrange_dock",
+        "designer_list_dialogs", "designer_dismiss_dialog",
+        "designer_list_actions", "designer_trigger_action",
+        "designer_set_widget_property", "project_write_style",
     }
     assert expected <= tools
 
@@ -57,3 +61,22 @@ def test_project_new_ui_and_listing(qapp, mcp_project):
 
     with pytest.raises(RuntimeError, match="already exists"):
         McpServer.project_new_ui("AgentForm")
+
+
+def test_project_write_style_appends_to_default(qapp, mcp_project):
+    result = McpServer.project_write_style("#saveBtn { padding: 6px; }")
+    assert "defaultStyle.scss" in result
+    content = (mcp_project / "Qss" / "scss" / "defaultStyle.scss").read_text(encoding="utf-8")
+    assert "#saveBtn { padding: 6px; }" in content
+
+
+def test_project_write_style_separate_file_gets_imported(qapp, mcp_project):
+    McpServer.project_write_style("#x { margin: 0; }", file="agent-styles")
+    scss_dir = mcp_project / "Qss" / "scss"
+    assert (scss_dir / "agent-styles.scss").read_text(encoding="utf-8").strip() == "#x { margin: 0; }"
+    default = (scss_dir / "defaultStyle.scss").read_text(encoding="utf-8")
+    assert "@import 'agent-styles';" in default
+    # idempotent - no duplicate import
+    McpServer.project_write_style("#x { margin: 1px; }", file="agent-styles")
+    default = (scss_dir / "defaultStyle.scss").read_text(encoding="utf-8")
+    assert default.count("@import 'agent-styles';") == 1
