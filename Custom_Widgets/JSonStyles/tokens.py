@@ -749,6 +749,46 @@ def segmented_qss(tokens):
     return "".join(css)
 
 
+def emptystate_qss(tokens):
+    """Generate QCustomEmptyState QSS (icon, title, description)."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+    css.append("QCustomEmptyState #emptyIcon { color: %s; font-size: 44px; }\n" % r("outline"))
+    css.append("QCustomEmptyState #emptyTitle { color: %s; font-weight: %d; font-size: %s; }\n"
+               % (r("on-surface"), int(r("font.weight.semibold")), px("font.size.lg")))
+    css.append("QCustomEmptyState #emptyDesc { color: %s; }\n" % r("outline"))
+    return "".join(css)
+
+
+def dropzone_qss(tokens):
+    """Generate QCustomFileDropZone QSS (dashed zone + drag-active highlight)."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+    css.append("QCustomFileDropZone {\n"
+               "    background-color: %s; border: 2px dashed %s; border-radius: %s;\n"
+               "}\n" % (r("surface"), r("outline"), px("radius.md")))
+    css.append('QCustomFileDropZone[dragActive="true"] {'
+               ' background-color: %s; border-color: %s; }\n'
+               % (r("surface-muted"), r("accent")))
+    css.append("QCustomFileDropZone #dropPrompt { color: %s; font-weight: %d;"
+               " background-color: transparent; }\n"
+               % (r("on-surface"), int(r("font.weight.medium"))))
+    css.append("QCustomFileDropZone #dropDetail { color: %s; background-color: transparent; }\n"
+               % r("accent"))
+    return "".join(css)
+
+
+def rangeslider_qss(tokens):
+    """Feed token colours to the painted QCustomRangeSlider via qproperty."""
+    r = tokens.role
+    return ("QCustomRangeSlider {\n"
+            "    qproperty-trackColor: %s; qproperty-fillColor: %s;\n"
+            "    qproperty-handleColor: %s; qproperty-handleBorderColor: %s;\n"
+            "}\n" % (r("outline"), r("accent"), r("surface"), r("accent")))
+
+
 def build_component_qss(tokens):
     """All token-driven component QSS. Extend as more widgets adopt tokens."""
     return (button_qss(tokens) + datatable_qss(tokens) + toast_qss(tokens)
@@ -758,7 +798,8 @@ def build_component_qss(tokens):
             + richtext_qss(tokens) + colorpicker_qss(tokens)
             + breadcrumbs_qss(tokens) + rating_qss(tokens) + chip_qss(tokens)
             + skeleton_qss(tokens) + avatargroup_qss(tokens) + timeline_qss(tokens)
-            + pagination_qss(tokens) + popover_qss(tokens) + segmented_qss(tokens))
+            + pagination_qss(tokens) + popover_qss(tokens) + segmented_qss(tokens)
+            + emptystate_qss(tokens) + dropzone_qss(tokens) + rangeslider_qss(tokens))
 
 
 _MARK_START = "/* >>> custom-widgets design tokens >>> */"
