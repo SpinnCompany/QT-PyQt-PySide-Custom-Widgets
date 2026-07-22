@@ -789,6 +789,73 @@ def rangeslider_qss(tokens):
             "}\n" % (r("outline"), r("accent"), r("surface"), r("accent")))
 
 
+def switch_qss(tokens):
+    """Feed token colours to the painted QCustomSwitch via qproperty."""
+    r = tokens.role
+    return ("QCustomSwitch {\n"
+            "    qproperty-trackOnColor: %s; qproperty-trackOffColor: %s;\n"
+            "    qproperty-thumbColor: %s;\n"
+            "}\n" % (r("accent"), r("outline"), r("surface")))
+
+
+def number_qss(tokens):
+    """Generate QCustomNumberInput QSS (joined field + step buttons)."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+    css.append("QCustomNumberInput #numberField {\n"
+               "    background-color: %s; color: %s;\n"
+               "    border: 1px solid %s; border-left: none; border-right: none;\n"
+               "    padding: %s %s;\n"
+               "}\n" % (r("surface"), r("on-surface"), r("outline"),
+                        px("space.1"), px("space.2")))
+    css.append("QCustomNumberInput #numberDown, QCustomNumberInput #numberUp {\n"
+               "    background-color: %s; color: %s; border: 1px solid %s;\n"
+               "    min-width: 26px; font-weight: %d; padding: %s;\n"
+               "}\n" % (r("surface-muted"), r("on-surface"), r("outline"),
+                        int(r("font.weight.semibold")), px("space.1")))
+    css.append("QCustomNumberInput #numberDown {"
+               " border-top-left-radius: %s; border-bottom-left-radius: %s; }\n"
+               % (px("radius.md"), px("radius.md")))
+    css.append("QCustomNumberInput #numberUp {"
+               " border-top-right-radius: %s; border-bottom-right-radius: %s; }\n"
+               % (px("radius.md"), px("radius.md")))
+    css.append("QCustomNumberInput #numberDown:hover, QCustomNumberInput #numberUp:hover"
+               " { background-color: %s; color: %s; }\n" % (r("accent"), r("on-primary")))
+    css.append("QCustomNumberInput #numberDown:disabled, QCustomNumberInput #numberUp:disabled"
+               " { color: %s; }\n" % r("outline"))
+    return "".join(css)
+
+
+def alert_qss(tokens):
+    """Generate QCustomAlert QSS: a base card + a coloured left bar / icon /
+    title per semantic variant (info / success / warning / destructive)."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+    css.append("QCustomAlert {\n"
+               "    background-color: %s; border: 1px solid %s; border-radius: %s;\n"
+               "}\n" % (r("surface"), r("outline"), px("radius.md")))
+    css.append("QCustomAlert #alertTitle { font-weight: %d; background: transparent; }\n"
+               % int(r("font.weight.semibold")))
+    css.append("QCustomAlert #alertText { color: %s; background: transparent; }\n"
+               % r("on-surface"))
+    css.append("QCustomAlert #alertIcon { font-size: %s; background: transparent; }\n"
+               % px("font.size.lg"))
+    css.append("QCustomAlert #alertClose { background: transparent; border: none; color: %s; }\n"
+               % r("outline"))
+    css.append("QCustomAlert #alertClose:hover { color: %s; }\n" % r("on-surface"))
+    for name in ("info", "success", "warning", "destructive"):
+        css.append('QCustomAlert[variant="%s"] {'
+                   ' border-color: %s; border-left: 4px solid %s; }\n'
+                   % (name, r(name), r(name)))
+        css.append('QCustomAlert[variant="%s"] #alertIcon { color: %s; }\n'
+                   % (name, r(name)))
+        css.append('QCustomAlert[variant="%s"] #alertTitle { color: %s; }\n'
+                   % (name, r(name)))
+    return "".join(css)
+
+
 def build_component_qss(tokens):
     """All token-driven component QSS. Extend as more widgets adopt tokens."""
     return (button_qss(tokens) + datatable_qss(tokens) + toast_qss(tokens)
@@ -799,7 +866,8 @@ def build_component_qss(tokens):
             + breadcrumbs_qss(tokens) + rating_qss(tokens) + chip_qss(tokens)
             + skeleton_qss(tokens) + avatargroup_qss(tokens) + timeline_qss(tokens)
             + pagination_qss(tokens) + popover_qss(tokens) + segmented_qss(tokens)
-            + emptystate_qss(tokens) + dropzone_qss(tokens) + rangeslider_qss(tokens))
+            + emptystate_qss(tokens) + dropzone_qss(tokens) + rangeslider_qss(tokens)
+            + switch_qss(tokens) + number_qss(tokens) + alert_qss(tokens))
 
 
 _MARK_START = "/* >>> custom-widgets design tokens >>> */"
