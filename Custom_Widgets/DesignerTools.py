@@ -893,6 +893,43 @@ class CustomPropertiesDock(QDockWidget):
 
     def _buildEditor(self, widget, name, kind, spec, current):
         from qtpy.QtWidgets import QSpinBox
+        if kind == "choice":
+            # Fixed choice set: spec["enum"] (an IntEnum class - labels are
+            # member names, stored value is the int) or spec["choices"] (a
+            # list of strings, stored as-is).
+            combo = QComboBox()
+            enum_cls = spec.get("enum")
+            if enum_cls is not None:
+                for member in enum_cls:
+                    combo.addItem(member.name, int(member))
+                try:
+                    index = combo.findData(int(current))
+                    combo.setCurrentIndex(index if index >= 0 else 0)
+                except (TypeError, ValueError):
+                    pass
+            else:
+                for choice in spec.get("choices", []):
+                    combo.addItem(str(choice), str(choice))
+                value = str(current) if current is not None else ""
+                index = combo.findData(value)
+                if index >= 0:
+                    combo.setCurrentIndex(index)
+            combo.activated.connect(
+                lambda _i, c=combo: self._apply(name, c.currentData()))
+            return combo
+        if kind == "float":
+            from qtpy.QtWidgets import QDoubleSpinBox
+            spin = QDoubleSpinBox()
+            spin.setRange(-9999.0, 9999.0)
+            spin.setDecimals(spec.get("decimals", 2))
+            spin.setSingleStep(spec.get("step", 0.1))
+            try:
+                spin.setValue(float(current or 0.0))
+            except (TypeError, ValueError):
+                pass
+            spin.editingFinished.connect(
+                lambda s=spin: self._apply(name, s.value()))
+            return spin
         if kind == "easing":
             # Int property holding a QEasingCurve.Type value - offer the
             # curve names, store the int.

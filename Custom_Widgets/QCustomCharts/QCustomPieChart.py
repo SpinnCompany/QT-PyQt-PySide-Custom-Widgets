@@ -8,6 +8,7 @@ from qtpy.QtWidgets import QGraphicsLayout
 from .QCustomChartBase import QCustomChartBase # This already includes QCustomChartConstants
 from Custom_Widgets.Utils import is_in_designer
 from Custom_Widgets.QCustomCharts.QCustomChartConstants import (
+    QCustomChartEnums as _CE,
     QCustomChartConstants as _CC, chart_str_to_int, chart_int_to_str,
     CHART_THEME_TO_INT, INT_TO_CHART_THEME,
     LEGEND_POSITION_TO_INT, INT_TO_LEGEND_POSITION,
@@ -37,6 +38,43 @@ class QCustomPieChart(QCustomChartBase):
     </ui>
     """
     WIDGET_MODULE = "Custom_Widgets.QCustomCharts"
+
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "chartTitle", "kind": "str", "group": "Titles"},
+        {"name": "theme", "kind": "choice", "enum": _CE.ChartTheme, "group": "Appearance"},
+        {"name": "antialiasing", "kind": "bool", "group": "Appearance"},
+        {"name": "compactMode", "kind": "bool", "group": "Appearance"},
+        {"name": "showLabels", "kind": "bool", "group": "Labels"},
+        {"name": "labelsPosition", "kind": "choice", "enum": _CE.LabelsPosition, "group": "Labels"},
+        {"name": "showPercentages", "kind": "bool", "group": "Labels"},
+        {"name": "showValues", "kind": "bool", "group": "Labels"},
+        {"name": "holeSize", "kind": "float", "group": "Shape"},
+        {"name": "explosionDistance", "kind": "float", "group": "Shape"},
+        {"name": "startAngle", "kind": "float", "group": "Shape"},
+        {"name": "endAngle", "kind": "float", "group": "Shape"},
+        {"name": "semicircleEnabled", "kind": "bool", "group": "Shape"},
+        {"name": "pieAngularSpan", "kind": "float", "group": "Shape"},
+        {"name": "semicircleOrientation", "kind": "choice",
+         "choices": ("right", "top", "left", "bottom"), "group": "Shape"},
+        {"name": "gradientFill", "kind": "bool", "group": "Style"},
+        {"name": "gradientType", "kind": "choice",
+         "choices": ("radial", "conical"), "group": "Style"},
+        {"name": "borderWidth", "kind": "float", "group": "Style"},
+        {"name": "borderColor", "kind": "color", "group": "Style"},
+        {"name": "explodeOnHover", "kind": "bool", "group": "Interaction"},
+        {"name": "hoverExplosionDistance", "kind": "float", "group": "Interaction"},
+        {"name": "showToolbar", "kind": "bool", "group": "Interaction"},
+        {"name": "tooltipsEnabled", "kind": "bool", "group": "Interaction"},
+        {"name": "tooltipDelay", "kind": "int", "group": "Interaction"},
+        {"name": "tooltipDuration", "kind": "int", "group": "Interaction"},
+        {"name": "showLegend", "kind": "bool", "group": "Legend"},
+        {"name": "legendPosition", "kind": "choice", "enum": _CE.LegendPosition, "group": "Legend"},
+        {"name": "legendFontSize", "kind": "int", "group": "Legend"},
+        {"name": "legendBackgroundVisible", "kind": "bool", "group": "Legend"},
+        {"name": "legendMarkerBorderWidth", "kind": "float", "group": "Legend"},
+    ]
     
     # Additional signals for pie chart
     sliceClicked = Signal(str, float)  # slice_name, value

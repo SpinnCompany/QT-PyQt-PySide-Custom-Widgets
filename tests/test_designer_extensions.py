@@ -136,13 +136,25 @@ def _spec_widget_classes():
     from Custom_Widgets.QCustomSidebarContainer import QCustomSidebarContainer
     from Custom_Widgets.QCustomHorizontalSeparator import QCustomHorizontalSeparator
     from Custom_Widgets.QCustomVerticalSeparator import QCustomVerticalSeparator
-    return [QCustomQMainWindow, QCustomSidebar, QCustomSidebarButton,
-            QCustomSidebarLabel, QCustomSidebarContainer,
-            QCustomHorizontalSeparator, QCustomVerticalSeparator]
+    classes = [QCustomQMainWindow, QCustomSidebar, QCustomSidebarButton,
+               QCustomSidebarLabel, QCustomSidebarContainer,
+               QCustomHorizontalSeparator, QCustomVerticalSeparator]
+    from Custom_Widgets.QCustomCheckBox import QCustomCheckBox
+    classes.append(QCustomCheckBox)
+    try:  # charts need qtpy.QtCharts
+        from Custom_Widgets.QCustomCharts import (QCustomAreaChart,
+                                                  QCustomBarChart,
+                                                  QCustomLineChart,
+                                                  QCustomPieChart)
+        classes += [QCustomLineChart, QCustomBarChart, QCustomAreaChart,
+                    QCustomPieChart]
+    except ImportError:
+        pass
+    return classes
 
 
 KNOWN_KINDS = ("theme", "widget-ref", "bool", "int", "str", "color",
-               "easing", "file")
+               "easing", "file", "choice", "float")
 
 
 class TestCustomPropsSpec:

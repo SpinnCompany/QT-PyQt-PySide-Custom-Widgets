@@ -9,6 +9,7 @@ from .QCustomChartDataManager import QCustomChartDataManager
 from .QCustomQLineSeries import QCustomQLineSeries
 from Custom_Widgets.Utils import is_in_designer
 from Custom_Widgets.QCustomCharts.QCustomChartConstants import (
+    QCustomChartEnums as _CE,
     QCustomChartConstants as _CC, chart_str_to_int, chart_int_to_str,
     CHART_THEME_TO_INT, INT_TO_CHART_THEME,
     LEGEND_POSITION_TO_INT, INT_TO_LEGEND_POSITION,
@@ -39,6 +40,43 @@ class QCustomLineChart(QCustomChartBase):
     </ui>
     """
     WIDGET_MODULE = "Custom_Widgets.QCustomCharts"
+
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "chartTitle", "kind": "str", "group": "Titles"},
+        {"name": "xAxisTitle", "kind": "str", "group": "Titles"},
+        {"name": "yAxisTitle", "kind": "str", "group": "Titles"},
+        {"name": "theme", "kind": "choice", "enum": _CE.ChartTheme, "group": "Appearance"},
+        {"name": "showGrid", "kind": "bool", "group": "Appearance"},
+        {"name": "gridColor", "kind": "color", "group": "Appearance"},
+        {"name": "antialiasing", "kind": "bool", "group": "Appearance"},
+        {"name": "compactMode", "kind": "bool", "group": "Appearance"},
+        {"name": "autoScale", "kind": "bool", "group": "Appearance"},
+        {"name": "defaultLineStyle", "kind": "choice", "enum": _CE.LineStyle, "group": "Series"},
+        {"name": "defaultMarkerStyle", "kind": "choice", "enum": _CE.MarkerStyle, "group": "Series"},
+        {"name": "markerSize", "kind": "float", "group": "Series"},
+        {"name": "showDataPoints", "kind": "bool", "group": "Series"},
+        {"name": "fillArea", "kind": "bool", "group": "Series"},
+        {"name": "fillOpacity", "kind": "float", "group": "Series"},
+        {"name": "enableShadow", "kind": "bool", "group": "Series"},
+        {"name": "shadowBlur", "kind": "int", "group": "Series"},
+        {"name": "highlightSize", "kind": "int", "group": "Series"},
+        {"name": "showLegend", "kind": "bool", "group": "Legend"},
+        {"name": "legendPosition", "kind": "choice", "enum": _CE.LegendPosition, "group": "Legend"},
+        {"name": "legendFontSize", "kind": "int", "group": "Legend"},
+        {"name": "legendBackgroundVisible", "kind": "bool", "group": "Legend"},
+        {"name": "showCrosshair", "kind": "bool", "group": "Crosshair"},
+        {"name": "crosshairColor", "kind": "color", "group": "Crosshair"},
+        {"name": "crosshairWidth", "kind": "float", "group": "Crosshair"},
+        {"name": "animationEnabled", "kind": "bool", "group": "Animation"},
+        {"name": "animationDuration", "kind": "int", "group": "Animation"},
+        {"name": "showToolbar", "kind": "bool", "group": "Interaction"},
+        {"name": "showFooter", "kind": "bool", "group": "Interaction"},
+        {"name": "tooltipsEnabled", "kind": "bool", "group": "Interaction"},
+        {"name": "tooltipDelay", "kind": "int", "group": "Interaction"},
+        {"name": "tooltipDuration", "kind": "int", "group": "Interaction"},
+    ]
     
     # Additional signals for line chart
     dataPointClicked = Signal(float, float, str)  # x, y, series_name
