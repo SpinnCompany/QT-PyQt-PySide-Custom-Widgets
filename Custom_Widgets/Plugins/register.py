@@ -113,6 +113,21 @@ except Exception as e:
     logException(e, message="Error registering QCustomDataTable")
 
 
+from Custom_Widgets.QCustomComboBox import QCustomComboBox
+
+# Registering QCustomComboBox with error handling
+try:
+    logInfo("Registering QCustomComboBox")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomComboBox, module=QCustomComboBox.WIDGET_MODULE,
+        tool_tip=QCustomComboBox.WIDGET_TOOLTIP,
+        xml=QCustomComboBox.WIDGET_DOM_XML,
+        icon=QCustomComboBox.WIDGET_ICON, group="Input Widgets"
+    )
+except Exception as e:
+    logException(e, message="Error registering QCustomComboBox")
+
+
 from Custom_Widgets.QCustomThemeList import QCustomThemeList
 
 # Registering QCustomThemeList with error handling
