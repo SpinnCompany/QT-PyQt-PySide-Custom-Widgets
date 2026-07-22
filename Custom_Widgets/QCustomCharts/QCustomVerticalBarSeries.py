@@ -4,6 +4,12 @@ from qtpy.QtGui import QColor
 
 from .QCustomBarChartBase import QCustomBarChartBase
 from Custom_Widgets.Utils import is_in_designer
+from Custom_Widgets.QCustomCharts.QCustomChartConstants import (
+    QCustomChartConstants as _CC, chart_str_to_int, chart_int_to_str,
+    CHART_THEME_TO_INT, INT_TO_CHART_THEME,
+    LEGEND_POSITION_TO_INT, INT_TO_LEGEND_POSITION,
+    BAR_PATTERN_TO_INT, INT_TO_BAR_PATTERN,
+    BAR_SELECTION_TO_INT, INT_TO_BAR_SELECTION)
 
 
 class QCustomVerticalBarSeries(QCustomBarChartBase):
@@ -230,25 +236,23 @@ class QCustomVerticalBarSeries(QCustomBarChartBase):
         """Set bar spacing"""
         self.setBarSpacing(value)
     
-    @Property(str)
+    @Property(int)
     def barPattern(self):
-        """Get bar pattern"""
-        return self._bar_pattern
-    
+        """Bar pattern (int; see QCustomChartEnums.BarPattern)."""
+        return chart_str_to_int(BAR_PATTERN_TO_INT, self._bar_pattern)
+
     @barPattern.setter
-    def barPattern(self, value: str):
-        """Set bar pattern"""
-        self.setBarPattern(value)
-    
-    @Property(str)
+    def barPattern(self, value):
+        self.setBarPattern(chart_int_to_str(INT_TO_BAR_PATTERN, value, _CC.BAR_PATTERN_SOLID))
+
+    @Property(int)
     def barSelectionMode(self):
-        """Get bar selection mode"""
-        return self._bar_selection_mode
-    
+        """Bar selection mode (int; see QCustomChartEnums.BarSelectionMode)."""
+        return chart_str_to_int(BAR_SELECTION_TO_INT, self._bar_selection_mode)
+
     @barSelectionMode.setter
-    def barSelectionMode(self, value: str):
-        """Set bar selection mode"""
-        self.setBarSelectionMode(value)
+    def barSelectionMode(self, value):
+        self.setBarSelectionMode(chart_int_to_str(INT_TO_BAR_SELECTION, value, _CC.BAR_SELECTION_NONE))
     
     @Property(bool)
     def showLegend(self):
@@ -468,25 +472,23 @@ class QCustomVerticalBarSeries(QCustomBarChartBase):
         self._tooltip_duration = value
         self._tooltip_manager.setDuration(value)
     
-    @Property(str)
+    @Property(int)
     def theme(self):
-        """Get current theme"""
-        return self.getTheme()
-    
+        """Current theme (int; see QCustomChartEnums.ChartTheme)."""
+        return chart_str_to_int(CHART_THEME_TO_INT, self.getTheme())
+
     @theme.setter
-    def theme(self, value: str):
-        """Set current theme"""
-        self.setTheme(value)
-    
-    @Property(str)
+    def theme(self, value):
+        self.setTheme(chart_int_to_str(INT_TO_CHART_THEME, value, _CC.THEME_APP_THEME))
+
+    @Property(int)
     def legendPosition(self):
-        """Get legend position"""
-        return self.getLegendPosition()
-    
+        """Legend position (int; see QCustomChartEnums.LegendPosition)."""
+        return chart_str_to_int(LEGEND_POSITION_TO_INT, self.getLegendPosition())
+
     @legendPosition.setter
-    def legendPosition(self, value: str):
-        """Set legend position"""
-        self.setLegendPosition(value)
+    def legendPosition(self, value):
+        self.setLegendPosition(chart_int_to_str(INT_TO_LEGEND_POSITION, value, _CC.LEGEND_BOTTOM))
     
     @Property(int)
     def legendFontSize(self):
