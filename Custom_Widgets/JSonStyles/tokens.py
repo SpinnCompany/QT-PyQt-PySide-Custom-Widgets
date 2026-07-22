@@ -690,6 +690,65 @@ def timeline_qss(tokens):
     return "".join(css)
 
 
+def pagination_qss(tokens):
+    """Generate QCustomPagination QSS (page buttons, current, nav, ellipsis)."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+    for oid in ("pageBtn", "pageNav"):
+        css.append("QCustomPagination #%s {\n"
+                   "    background-color: transparent; color: %s; border: 1px solid %s;\n"
+                   "    border-radius: %s; padding: %s %s; min-width: 16px;\n"
+                   "}\n" % (oid, r("on-surface"), r("outline"), px("radius.md"),
+                            px("space.1"), px("space.2")))
+        css.append("QCustomPagination #%s:hover { background-color: %s; }\n"
+                   % (oid, r("surface-muted")))
+        css.append("QCustomPagination #%s:disabled { color: %s; }\n" % (oid, r("outline")))
+    css.append('QCustomPagination #pageBtn[current="true"] {'
+               ' background-color: %s; color: %s; border-color: %s; }\n'
+               % (r("accent"), r("on-primary"), r("accent")))
+    css.append("QCustomPagination #pageEllipsis { color: %s; padding: 0 2px; }\n" % r("outline"))
+    return "".join(css)
+
+
+def popover_qss(tokens):
+    """Feed token colours to the painted QCustomPopover via qproperty, and
+    colour its content text."""
+    r = tokens.role
+    css = []
+    css.append("QCustomPopover { qproperty-panelColor: %s; qproperty-borderColor: %s; }\n"
+               % (r("surface"), r("outline")))
+    css.append("QCustomPopover, QCustomPopover QLabel { color: %s; }\n" % r("on-surface"))
+    return "".join(css)
+
+
+def segmented_qss(tokens):
+    """Generate QCustomSegmentedControl QSS (joined buttons, rounded ends,
+    selected segment)."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+    css.append("QCustomSegmentedControl #segmentButton {\n"
+               "    background-color: %s; color: %s; border: 1px solid %s;\n"
+               "    padding: %s %s; margin: 0; border-left-width: 0;\n"
+               "}\n" % (r("surface"), r("on-surface"), r("outline"),
+                        px("space.2"), px("space.3")))
+    css.append('QCustomSegmentedControl #segmentButton[seg="first"],'
+               ' QCustomSegmentedControl #segmentButton[seg="only"] {'
+               ' border-left-width: 1px; border-top-left-radius: %s; border-bottom-left-radius: %s; }\n'
+               % (px("radius.md"), px("radius.md")))
+    css.append('QCustomSegmentedControl #segmentButton[seg="last"],'
+               ' QCustomSegmentedControl #segmentButton[seg="only"] {'
+               ' border-top-right-radius: %s; border-bottom-right-radius: %s; }\n'
+               % (px("radius.md"), px("radius.md")))
+    css.append("QCustomSegmentedControl #segmentButton:hover { background-color: %s; }\n"
+               % r("surface-muted"))
+    css.append("QCustomSegmentedControl #segmentButton:checked {"
+               " background-color: %s; color: %s; border-color: %s; }\n"
+               % (r("accent"), r("on-primary"), r("accent")))
+    return "".join(css)
+
+
 def build_component_qss(tokens):
     """All token-driven component QSS. Extend as more widgets adopt tokens."""
     return (button_qss(tokens) + datatable_qss(tokens) + toast_qss(tokens)
@@ -698,7 +757,8 @@ def build_component_qss(tokens):
             + tree_qss(tokens) + drawer_qss(tokens) + stepper_qss(tokens)
             + richtext_qss(tokens) + colorpicker_qss(tokens)
             + breadcrumbs_qss(tokens) + rating_qss(tokens) + chip_qss(tokens)
-            + skeleton_qss(tokens) + avatargroup_qss(tokens) + timeline_qss(tokens))
+            + skeleton_qss(tokens) + avatargroup_qss(tokens) + timeline_qss(tokens)
+            + pagination_qss(tokens) + popover_qss(tokens) + segmented_qss(tokens))
 
 
 _MARK_START = "/* >>> custom-widgets design tokens >>> */"

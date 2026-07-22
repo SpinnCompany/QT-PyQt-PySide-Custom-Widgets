@@ -211,6 +211,19 @@ for _sw in (QCustomSkeleton, QCustomAvatarGroup, QCustomTimeline):
         logException(e, message="Error registering %s" % _sw.__name__)
 
 
+from Custom_Widgets.QCustomPagination import QCustomPagination
+from Custom_Widgets.QCustomSegmentedControl import QCustomSegmentedControl
+
+for _pw in (QCustomPagination, QCustomSegmentedControl):
+    try:
+        logInfo("Registering %s" % _pw.__name__)
+        QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+            _pw, module=_pw.WIDGET_MODULE, tool_tip=_pw.WIDGET_TOOLTIP,
+            xml=_pw.WIDGET_DOM_XML, icon=_pw.WIDGET_ICON, group="Input Widgets")
+    except Exception as e:
+        logException(e, message="Error registering %s" % _pw.__name__)
+
+
 from Custom_Widgets.QCustomThemeList import QCustomThemeList
 
 # Registering QCustomThemeList with error handling
