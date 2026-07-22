@@ -120,7 +120,10 @@ class QCustomComponent(QWidget):
     def resizeEvent(self, e):
         super().resizeEvent(e)
 
-        if self._json_file:
+        # Reloading the JSON style on every resize is only useful at runtime
+        # (or in Designer when the user opts into design-time painting) -
+        # otherwise it needlessly thrashes while resizing in Qt Designer.
+        if self._json_file and (not is_in_designer(self) or self._paint_qt_designer):
             loadJsonStyle(self, self, jsonFiles={self._json_file})
 
     # Paint event for applying QSS
