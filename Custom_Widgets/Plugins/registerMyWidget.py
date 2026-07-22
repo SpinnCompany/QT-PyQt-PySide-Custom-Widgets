@@ -391,24 +391,9 @@ except ImportError as e:
 except Exception as e:
     logException(e, message="Error registering QCustomPieChart")
 
-from Custom_Widgets.QCustomFlowLayout import QCustomFlowLayout
-
-# Registering QCustomFlowLayout with error handling
-try:
-    logInfo("Registering QCustomFlowLayout")
-    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QCustomFlowLayout, 
-        module=QCustomFlowLayout.WIDGET_MODULE,
-        tool_tip=QCustomFlowLayout.WIDGET_TOOLTIP, 
-        xml=QCustomFlowLayout.WIDGET_DOM_XML,
-        icon=QCustomFlowLayout.WIDGET_ICON, 
-        container=True, 
-        group="Layouts",
-        # designable=False  # Marking the layout as non-designable to prevent it from appearing in the widget box
-    )
-    logInfo("QCustomFlowLayout registered successfully")
-except Exception as e:
-    logException(e, message="Error registering QCustomFlowLayout")
+# NOTE: QCustomFlowLayout is a QLayout subclass, not a QWidget, so it cannot be
+# registered as a Designer custom widget. Use QCustomFlowWidget (below), the
+# QWidget container that wraps QCustomFlowLayout, in Designer instead.
 
 from Custom_Widgets.QCustomFlowWidget import QCustomFlowWidget
 

@@ -378,23 +378,26 @@ except ImportError as e:
 except Exception as e:
     logException(e, message="Error registering QCustomPieChart")
 
-from Custom_Widgets.QCustomFlowLayout import QCustomFlowLayout
+# NOTE: QCustomFlowLayout is a QLayout subclass, not a QWidget, so it cannot be
+# registered as a Designer custom widget. Register QCustomFlowWidget instead -
+# the QWidget container that wraps QCustomFlowLayout.
+from Custom_Widgets.QCustomFlowWidget import QCustomFlowWidget
 
-# Registering QCustomFlowLayout with error handling
+# Registering QCustomFlowWidget with error handling
 try:
-    logInfo("Registering QCustomFlowLayout")
+    logInfo("Registering QCustomFlowWidget")
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QCustomFlowLayout, 
-        module=QCustomFlowLayout.WIDGET_MODULE,
-        tool_tip=QCustomFlowLayout.WIDGET_TOOLTIP, 
-        xml=QCustomFlowLayout.WIDGET_DOM_XML,
-        icon=QCustomFlowLayout.WIDGET_ICON, 
-        container=True, 
+        QCustomFlowWidget,
+        module=QCustomFlowWidget.WIDGET_MODULE,
+        tool_tip=QCustomFlowWidget.WIDGET_TOOLTIP,
+        xml=QCustomFlowWidget.WIDGET_DOM_XML,
+        icon=QCustomFlowWidget.WIDGET_ICON,
+        container=True,
         group="Layouts"
     )
-    logInfo("QCustomFlowLayout registered successfully")
+    logInfo("QCustomFlowWidget registered successfully")
 except Exception as e:
-    logException(e, message="Error registering QCustomFlowLayout")
+    logException(e, message="Error registering QCustomFlowWidget")
 
 logInfo(" All chart widgets registered successfully!")
 
