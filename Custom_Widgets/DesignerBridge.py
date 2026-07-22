@@ -164,6 +164,22 @@ class DesignerBridgeServer(QObject):
     def isListening(self):
         return self._server.isListening()
 
+    def rebindProject(self, project_dir):
+        """Re-point the bridge at another project: new socket name (derived
+        from the project path) and themed-icon search path. Used by the
+        Designer workspace switcher."""
+        self._project_dir = os.path.abspath(project_dir)
+        QDir.addSearchPath('theme-icons',
+                           os.path.join(self._project_dir, 'Qss/icons/'))
+        name = bridgeServerName(self._project_dir)
+        self._server.close()
+        QLocalServer.removeServer(name)
+        if self._server.listen(name):
+            logInfo(f"Designer bridge re-bound to '{name}'")
+        else:
+            logWarning(f"Designer bridge could not re-bind to '{name}': "
+                       f"{self._server.errorString()}")
+
     ####################################################################
     ## TRANSPORT
     ####################################################################
@@ -239,6 +255,13 @@ class DesignerBridgeServer(QObject):
             return self._setWidgetProperty(str(message.get("widget", "")),
                                            str(message.get("property", "")),
                                            message.get("value"))
+        if method == "openWorkspace":
+            try:
+                from Custom_Widgets.DesignerTools import switchWorkspace
+                ok = switchWorkspace(str(message.get("path", "")))
+                return {"result": "ok" if ok else "failed"}
+            except Exception as e:
+                return {"error": f"openWorkspace failed: {e}"}
         if method == "runApp":
             return self._runApp("start")
         if method == "stopApp":

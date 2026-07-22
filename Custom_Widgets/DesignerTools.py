@@ -454,7 +454,13 @@ class WorkspaceDock(QDockWidget):
         self._folderLabel = QLabel()
         self._folderLabel.setToolTip("Folder the workspace lists .ui files from")
         header.addWidget(self._folderLabel, 1)
+        ws_btn = QPushButton("Open Workspace...")
+        ws_btn.setToolTip("Switch the WHOLE session to another project "
+                          "folder (ui files, styles, themes, run target)")
+        ws_btn.clicked.connect(lambda: _chooseWorkspace(self))
+        header.addWidget(ws_btn)
         set_btn = QPushButton("Set Folder...")
+        set_btn.setToolTip("Change only which folder's .ui files are listed")
         set_btn.clicked.connect(self._chooseFolder)
         header.addWidget(set_btn)
         layout.addLayout(header)
@@ -475,6 +481,17 @@ class WorkspaceDock(QDockWidget):
         layout.addLayout(row)
 
         self.setWidget(container)
+        self.refresh()
+
+    def setProjectDir(self, root):
+        """Workspace switcher: re-point at another project root."""
+        self._project_dir = os.path.abspath(root)
+        ui_dir = os.path.join(self._project_dir, "ui")
+        self._folder = ui_dir if os.path.isdir(ui_dir) else self._project_dir
+        saved = _layoutSettings().value(self._folderSettingsKey())
+        if saved and os.path.isdir(saved):
+            self._folder = saved
+        self._extra = []
         self.refresh()
 
     @classmethod
@@ -890,6 +907,13 @@ class QssEditorDock(QDockWidget):
         self._loadDefault()  # open the default style by default
 
     # --- file handling --------------------------------------------------
+    def setProjectDir(self, root):
+        """Workspace switcher: edit the new project's default stylesheet."""
+        self._project_dir = os.path.abspath(root)
+        self._scss_dir = os.path.join(self._project_dir, "Qss", "scss")
+        self._path = os.path.join(self._scss_dir, "defaultStyle.scss")
+        self._loadDefault()
+
     def _loadDefault(self):
         os.makedirs(self._scss_dir, exist_ok=True)
         if not os.path.exists(self._path):
@@ -1567,6 +1591,12 @@ def _addRunToolbar(window):
     bar.addWidget(theme_combo)
 
     bar.addSeparator()
+    ws_label = QLabel(f" 📂 {os.path.basename(projectRoot())} ")
+    ws_label.setToolTip(f"Workspace: {projectRoot()}")
+    bar.addWidget(ws_label)
+    _tools["workspace_label"] = ws_label
+
+    bar.addSeparator()
     state = QLabel(" ○ app stopped ")
     state.setToolTip("State of the project app run from Designer")
     bar.addWidget(state)
@@ -1586,6 +1616,110 @@ def _addRunToolbar(window):
     window.addToolBar(bar)
     _tools["runner"] = runner
     _tools["run_toolbar"] = bar
+    _tools["run_action"] = run_act
+    _tools["theme_combo"] = theme_combo
+
+
+########################################################################
+## WORKSPACE SWITCHER - open a different project without restarting
+########################################################################
+def _recentWorkspaces():
+    value = _layoutSettings().value("workspace/recent") or []
+    if isinstance(value, str):
+        value = [value]
+    return [w for w in value if os.path.isdir(w)]
+
+
+def _rememberWorkspace(root):
+    recents = [root] + [w for w in _recentWorkspaces() if w != root]
+    _layoutSettings().setValue("workspace/recent", recents[:8])
+
+
+def switchWorkspace(root):
+    """Re-point the whole Designer session at another project: root (env +
+    Project), workspace listing, QSS editor, bridge socket, theme combo and
+    Run availability. Everything that resolves projectRoot() lazily follows
+    automatically."""
+    root = os.path.abspath(root)
+    if not os.path.isdir(root):
+        logWarning(f"Workspace: not a folder: {root}")
+        return False
+    try:
+        from Custom_Widgets.Project import setProjectRoot
+        setProjectRoot(root)
+        os.environ["CUSTOM_WIDGETS_PROJECT_ROOT"] = root  # child processes
+
+        if "workspace" in _tools:
+            _tools["workspace"].setProjectDir(root)
+        if "qss" in _tools:
+            _tools["qss"].setProjectDir(root)
+
+        try:
+            from Custom_Widgets.DesignerBridge import startDesignerBridge
+            startDesignerBridge().rebindProject(root)
+        except Exception as e:
+            logDebug(f"Workspace: bridge rebind failed: {e}")
+
+        combo = _tools.get("theme_combo")
+        if combo is not None:
+            try:
+                from Custom_Widgets.DesignerExtensions import readThemeNames
+                combo.clear()
+                combo.addItems(readThemeNames(root))
+            except Exception:
+                pass
+
+        runner = _tools.get("runner")
+        run_act = _tools.get("run_action")
+        if runner is not None and run_act is not None and not runner.isRunning():
+            run_act.setEnabled(runner.available())
+            run_act.setToolTip(
+                "Run main.py under the dev server (F5)" if runner.available()
+                else "No main.py found in the project folder")
+        ws_label = _tools.get("workspace_label")
+        if ws_label is not None:
+            ws_label.setText(f" 📂 {os.path.basename(root)} ")
+            ws_label.setToolTip(f"Workspace: {root}")
+
+        _rememberWorkspace(root)
+        _refreshRecentMenu()
+        logInfo(f"Workspace switched to: {root}")
+        return True
+    except Exception as e:
+        logException(e, message="Workspace switch failed")
+        return False
+
+
+def _chooseWorkspace(parent=None):
+    folder = QFileDialog.getExistingDirectory(
+        parent, "Open Workspace (project folder)", projectRoot())
+    if folder:
+        switchWorkspace(folder)
+
+
+_recent_menu = None
+
+
+def _refreshRecentMenu():
+    global _recent_menu
+    if _recent_menu is None:
+        return
+    try:
+        import shiboken6
+        if not shiboken6.isValid(_recent_menu):
+            _recent_menu = None
+            return
+        _recent_menu.clear()
+        recents = _recentWorkspaces()
+        if not recents:
+            _recent_menu.addAction("(empty)").setEnabled(False)
+            return
+        for root in recents:
+            action = _recent_menu.addAction(root)
+            action.triggered.connect(lambda _=False, r=root: switchWorkspace(r))
+    except Exception as e:
+        logDebug(f"Recent workspaces menu refresh failed: {e}")
+        _recent_menu = None
 
 
 ########################################################################
@@ -1699,8 +1833,16 @@ def _addViewMenu(window):
         target.addSeparator()
     for key in ("workspace", "qss", "customprops", "logs"):
         target.addAction(_tools[key].toggleViewAction())
-    target.addSeparator()
-    reset = target.addAction("Reset Custom Widgets Layout")
+    # Workspace actions live in OUR OWN top-level menu: Designer rebuilds
+    # its View menu dynamically, which destroys submenus we parent there.
+    own = menu_bar.addMenu("&Workspace")
+    open_ws = own.addAction("Open Workspace...")
+    open_ws.triggered.connect(lambda: _chooseWorkspace(window))
+    global _recent_menu
+    _recent_menu = own.addMenu("Recent Workspaces")
+    _refreshRecentMenu()
+    own.addSeparator()
+    reset = own.addAction("Reset Custom Widgets Layout")
     reset.triggered.connect(lambda: _resetLayout(window))
 
 
@@ -1766,6 +1908,8 @@ def _install(attempt=0):
         _LayoutSaver(window)
         _addRunToolbar(window)
         _addViewMenu(window)
+        _rememberWorkspace(projectRoot())
+        _refreshRecentMenu()
         _addStatusFooter(window)
         logInfo("Designer tools installed: Logs, UI Workspace, QSS Editor, "
                 "Custom Properties, Run toolbar")
