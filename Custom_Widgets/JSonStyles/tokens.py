@@ -43,6 +43,12 @@ _PRIMITIVES = {
         "red": {
             "400": "#f87171", "500": "#ef4444", "600": "#dc2626", "700": "#b91c1c",
         },
+        "green": {
+            "400": "#4ade80", "500": "#22c55e", "600": "#16a34a", "700": "#15803d",
+        },
+        "amber": {
+            "400": "#fbbf24", "500": "#f59e0b", "600": "#d97706", "700": "#b45309",
+        },
     },
     "space": {"1": 4, "2": 8, "3": 12, "4": 16, "6": 24},
     "radius": {"sm": 4, "md": 8, "lg": 12, "full": 9999},
@@ -71,6 +77,12 @@ _SEMANTIC = {
         "destructive": "{color.red.600}",
         "on-destructive": "{color.white}",
         "destructive-hover": "{color.red.700}",
+        "success": "{color.green.600}",
+        "on-success": "{color.white}",
+        "warning": "{color.amber.600}",
+        "on-warning": "{color.white}",
+        "info": "{color.blue.600}",
+        "on-info": "{color.white}",
         "accent": "{color.blue.600}",
         "focus-ring": "{color.blue.500}",
     },
@@ -88,6 +100,12 @@ _SEMANTIC = {
         "destructive": "{color.red.500}",
         "on-destructive": "{color.white}",
         "destructive-hover": "{color.red.400}",
+        "success": "{color.green.500}",
+        "on-success": "{color.white}",
+        "warning": "{color.amber.500}",
+        "on-warning": "{color.white}",
+        "info": "{color.blue.400}",
+        "on-info": "{color.white}",
         "accent": "{color.blue.400}",
         "focus-ring": "{color.blue.400}",
     },
@@ -279,9 +297,41 @@ def datatable_qss(tokens):
     return "".join(css)
 
 
+def toast_qss(tokens):
+    """Generate QCustomToast QSS from tokens. A surface card with a coloured
+    left accent bar per type (variant)."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+    css.append(
+        "QCustomToast {\n"
+        "    background-color: %s;\n"
+        "    color: %s;\n"
+        "    border: 1px solid %s;\n"
+        "    border-radius: %s;\n"
+        "}\n" % (r("surface"), r("on-surface"), r("outline"), px("radius.md")))
+    css.append("QCustomToast #toastMessage { color: %s; }\n" % r("on-surface"))
+    css.append("QCustomToast #toastTitle { color: %s; font-weight: %d; }\n"
+               % (r("on-surface"), int(r("font.weight.semibold"))))
+    css.append(
+        "QCustomToast #toastClose {\n"
+        "    background-color: transparent; border: none; color: %s;\n"
+        "    border-radius: %s;\n"
+        "}\n" % (r("on-surface"), px("radius.sm")))
+    css.append("QCustomToast #toastClose:hover { background-color: %s; }\n" % r("surface-muted"))
+    # per-type accent bar (variant)
+    for variant, role in (("success", "success"), ("error", "destructive"),
+                          ("warning", "warning"), ("info", "info")):
+        css.append('QCustomToast[variant="%s"] { border-left: 4px solid %s; }\n'
+                   % (variant, r(role)))
+        css.append('QCustomToast[variant="%s"] #toastIcon { color: %s; }\n'
+                   % (variant, r(role)))
+    return "".join(css)
+
+
 def build_component_qss(tokens):
     """All token-driven component QSS. Extend as more widgets adopt tokens."""
-    return button_qss(tokens) + datatable_qss(tokens)
+    return button_qss(tokens) + datatable_qss(tokens) + toast_qss(tokens)
 
 
 _MARK_START = "/* >>> custom-widgets design tokens >>> */"
