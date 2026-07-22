@@ -16,7 +16,7 @@ class QCustomFlowWidget(QWidget):
     
     # Qt Designer integration properties
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    WIDGET_ICON = os.path.join(script_dir, "components/icons/flow_layout.png")
+    WIDGET_ICON = os.path.join(script_dir, "components/icons/layout.png")
     WIDGET_TOOLTIP = "A flow layout container widget with smooth animations"
     WIDGET_DOM_XML = """
     <ui language='c++'>
