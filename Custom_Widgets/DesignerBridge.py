@@ -23,7 +23,7 @@ import json
 import os
 import sys
 
-from qtpy.QtCore import QObject, QDir
+from qtpy.QtCore import QObject, QDir, Qt
 from qtpy.QtGui import QPixmapCache
 from qtpy.QtNetwork import QLocalServer, QLocalSocket
 from qtpy.QtWidgets import QApplication, QWidget
@@ -341,19 +341,55 @@ class DesignerBridgeServer(QObject):
         except Exception:
             pass
 
+    def _openViaDropEvent(self, path):
+        """Open a .ui VISIBLY in THIS Designer instance by synthesizing a
+        file-drop onto its main window - the one route into the workbench
+        that PySide6 doesn't wall off (QDesignerWorkbench handles url drops
+        exactly like File > Open). Returns True when Designer accepted it."""
+        try:
+            from qtpy.QtCore import QMimeData, QUrl, QPointF, QPoint
+            from qtpy.QtGui import QDropEvent, QDragEnterEvent
+            from qtpy.QtWidgets import QMainWindow, QMdiArea
+
+            app = QApplication.instance()
+            targets = []
+            for window in (app.topLevelWidgets() if app else []):
+                if isinstance(window, QMainWindow) and window.isVisible():
+                    for mdi in window.findChildren(QMdiArea):
+                        targets.append(mdi.viewport())
+                        targets.append(mdi)
+                    targets.append(window)
+            mime = QMimeData()
+            mime.setUrls([QUrl.fromLocalFile(path)])
+            for target in targets:
+                if not target.acceptDrops():
+                    continue
+                center = QPoint(target.width() // 2, target.height() // 2)
+                enter = QDragEnterEvent(center, Qt.CopyAction, mime,
+                                        Qt.LeftButton, Qt.NoModifier)
+                QApplication.sendEvent(target, enter)
+                if not enter.isAccepted():
+                    continue
+                drop = QDropEvent(QPointF(center), Qt.CopyAction, mime,
+                                  Qt.LeftButton, Qt.NoModifier)
+                QApplication.sendEvent(target, drop)
+                if drop.isAccepted():
+                    return True
+        except Exception as e:
+            logDebug(f"Designer bridge: drop-open failed: {e}")
+        return False
+
     def openFiles(self, files, new_process=False):
         """Open .ui files.
 
-        Default (new_process=False): create the form IN THIS Designer process
-        via the captured form editor core. The form is fully manipulable
-        through the bridge (getObjectInfos, getUiCode, setWidgetProperty) and
-        renders in getScreenShot via QWidget.grab() - ideal for agents. It is
-        NOT shown in Designer's central MDI area: PySide6 does not expose the
-        QDesignerWorkbench that tabs a form into the workspace, and forcing a
-        form window to show() crashes Designer.
+        Default (new_process=False): first try a synthetic file-drop onto
+        this Designer's window - that opens the form VISIBLY in the current
+        instance (editable, tabbed into the workspace). If Designer refuses
+        the drop, fall back to creating the form invisibly via the captured
+        core (fully bridge-manipulable: getObjectInfos, getUiCode,
+        setWidgetProperty, getScreenShot).
 
-        new_process=True: launch a Designer window so a human can SEE and edit
-        the form. This is what the UI Workspace uses on double-click."""
+        new_process=True: force a separate Designer window instead."""
         opened = []
         pending = []
         manager = None if new_process else self._formWindowManager()
@@ -361,6 +397,10 @@ class DesignerBridgeServer(QObject):
         for path in files:
             path = os.path.abspath(str(path).replace("\\", "/"))
             if not os.path.exists(path):
+                continue
+            if not new_process and self._openViaDropEvent(path):
+                self._noteInWorkspace(path)
+                opened.append(os.path.basename(path))
                 continue
             if manager is not None:
                 try:

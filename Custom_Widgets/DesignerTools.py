@@ -583,13 +583,19 @@ class WorkspaceDock(QDockWidget):
         menu.exec_(self._list.viewport().mapToGlobal(pos))
 
     def _open(self, path):
-        # A human needs to SEE the form. PySide6 cannot display a form in the
-        # running Designer's MDI workspace (the workbench is not exposed, and
-        # forcing it crashes Designer), so open a visible Designer window.
+        # Preferred: a synthetic file-drop onto this Designer's window opens
+        # the form VISIBLY in the current instance (the workbench handles url
+        # drops like File > Open). Falls back to a separate Designer window
+        # only if the drop is refused.
         try:
             from Custom_Widgets.DesignerBridge import startDesignerBridge
-            opened = startDesignerBridge().openFiles([path], new_process=True)
-            logInfo(f"Workspace opened: {opened}")
+            bridge = startDesignerBridge()
+            if bridge._openViaDropEvent(os.path.abspath(path)):
+                logInfo(f"Workspace opened in this window: "
+                        f"{os.path.basename(path)}")
+                return
+            opened = bridge.openFiles([path], new_process=True)
+            logInfo(f"Workspace opened (new window): {opened}")
         except Exception as e:
             logException(e, message="Workspace: failed to open form")
 
