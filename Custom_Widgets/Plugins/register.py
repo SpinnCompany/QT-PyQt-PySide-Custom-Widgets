@@ -389,3 +389,13 @@ except Exception as e:
     logException(e, message="Error registering QCustomFlowLayout")
 
 logInfo(" All chart widgets registered successfully!")
+
+########################################################################
+## DESIGNER BRIDGE - lets a running app push theme changes into Designer
+## (refresh icons / restyle open forms). See Custom_Widgets/DesignerBridge.py
+########################################################################
+try:
+    from Custom_Widgets.DesignerBridge import startDesignerBridge
+    startDesignerBridge()
+except Exception as e:
+    logException(e, message="Error starting Designer bridge")

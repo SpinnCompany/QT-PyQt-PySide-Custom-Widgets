@@ -1173,13 +1173,25 @@ class QCustomTheme(QObject):
     def _themeChangeComplete(self):
         # The shared icon set may have been rewritten in place - drop cached
         # pixmaps and re-apply the stylesheet so QSS urls re-read the files.
+        app = QApplication.instance()
         try:
             QPixmapCache.clear()
-            app = QApplication.instance()
             if app is not None and app.styleSheet():
                 app.setStyleSheet(app.styleSheet())
         except Exception as e:
             logError(f"Failed to refresh pixmap cache after icon generation: {e}")
+
+        # Tell a running Qt Designer about the change so open forms recolor
+        # live (no-op when Designer or the bridge is not running)
+        if not is_in_designer(self):
+            try:
+                from Custom_Widgets.DesignerBridge import DesignerBridgeClient
+                DesignerBridgeClient().notifyThemeChanged(
+                    color=getattr(self, "ICONS_COLOR", None),
+                    qss=app.styleSheet() if app is not None else "")
+            except Exception as e:
+                logDebug(f"Designer bridge notify skipped: {e}")
+
         self.onThemeChangeComplete.emit()
         logInfo("all icons have been checked and missing icons generated!")
 
