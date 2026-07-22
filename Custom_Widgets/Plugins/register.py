@@ -224,6 +224,22 @@ for _pw in (QCustomPagination, QCustomSegmentedControl):
         logException(e, message="Error registering %s" % _pw.__name__)
 
 
+from Custom_Widgets.QCustomEmptyState import QCustomEmptyState
+from Custom_Widgets.QCustomFileDropZone import QCustomFileDropZone
+from Custom_Widgets.QCustomRangeSlider import QCustomRangeSlider
+
+for _xw, _xg in ((QCustomEmptyState, "Display Widgets"),
+                 (QCustomFileDropZone, "Input Widgets"),
+                 (QCustomRangeSlider, "Input Widgets")):
+    try:
+        logInfo("Registering %s" % _xw.__name__)
+        QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+            _xw, module=_xw.WIDGET_MODULE, tool_tip=_xw.WIDGET_TOOLTIP,
+            xml=_xw.WIDGET_DOM_XML, icon=_xw.WIDGET_ICON, group=_xg)
+    except Exception as e:
+        logException(e, message="Error registering %s" % _xw.__name__)
+
+
 from Custom_Widgets.QCustomThemeList import QCustomThemeList
 
 # Registering QCustomThemeList with error handling
