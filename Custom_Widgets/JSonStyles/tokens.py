@@ -572,12 +572,57 @@ def stepper_qss(tokens):
     return "".join(css)
 
 
+def richtext_qss(tokens):
+    """Generate QCustomRichTextEditor QSS (toolbar, buttons, editor)."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+    css.append("QCustomRichTextEditor { border: 1px solid %s; border-radius: %s;"
+               " background-color: %s; }\n"
+               % (r("outline"), px("radius.md"), r("surface")))
+    css.append("#rteToolbar { background-color: %s; border-bottom: 1px solid %s; }\n"
+               % (r("surface-muted"), r("outline")))
+    css.append("#rteSep { background-color: %s; margin: 2px 4px; }\n" % r("outline"))
+    css.append("#rteButton {\n"
+               "    background-color: transparent; color: %s; border: none;\n"
+               "    border-radius: %s; padding: 4px 8px; min-width: 18px;\n"
+               "}\n" % (r("on-surface"), px("radius.sm")))
+    css.append("#rteButton:hover { background-color: %s; }\n" % r("surface"))
+    css.append("#rteButton:checked { background-color: %s; color: %s; }\n"
+               % (r("accent"), r("on-primary")))
+    css.append("#rteEditor { background-color: %s; color: %s; border: none; padding: %s; }\n"
+               % (r("surface"), r("on-surface"), px("space.2")))
+    return "".join(css)
+
+
+def colorpicker_qss(tokens):
+    """Generate QCustomColorPicker QSS (hex field + preset popup)."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+    css.append("#colorHex {\n"
+               "    background-color: %s; color: %s; border: 1px solid %s;\n"
+               "    border-radius: %s; padding: %s %s;\n"
+               "}\n" % (r("surface"), r("on-surface"), r("outline"), px("radius.md"),
+                        px("space.1"), px("space.2")))
+    css.append("#colorHex:focus { border: 2px solid %s; }\n" % r("focus-ring"))
+    css.append("#colorPopup { background-color: %s; border: 1px solid %s; border-radius: %s; }\n"
+               % (r("surface"), r("outline"), px("radius.md")))
+    css.append("#colorCustomBtn {\n"
+               "    background-color: transparent; color: %s; border: 1px solid %s;\n"
+               "    border-radius: %s; padding: %s;\n"
+               "}\n" % (r("on-surface"), r("outline"), px("radius.sm"), px("space.1")))
+    css.append("#colorCustomBtn:hover { background-color: %s; }\n" % r("surface-muted"))
+    return "".join(css)
+
+
 def build_component_qss(tokens):
     """All token-driven component QSS. Extend as more widgets adopt tokens."""
     return (button_qss(tokens) + datatable_qss(tokens) + toast_qss(tokens)
             + combobox_qss(tokens) + datetime_qss(tokens)
             + commandpalette_qss(tokens) + tabs_qss(tokens) + accordion_qss(tokens)
-            + tree_qss(tokens) + drawer_qss(tokens) + stepper_qss(tokens))
+            + tree_qss(tokens) + drawer_qss(tokens) + stepper_qss(tokens)
+            + richtext_qss(tokens) + colorpicker_qss(tokens))
 
 
 _MARK_START = "/* >>> custom-widgets design tokens >>> */"
