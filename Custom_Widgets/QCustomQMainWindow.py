@@ -41,6 +41,39 @@ class QCustomQMainWindow(QMainWindow):
     """
     WIDGET_MODULE="Custom_Widgets.QCustomQMainWindow"
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock). Kinds: theme (dropdown of
+    # style.json theme names), widget-ref (dropdown of matching widgets in
+    # the open form, filtered by `types`), bool / int / str / color.
+    # Properties stay visible in the native property editor too - the dock
+    # is the friendly editor on top, not a replacement.
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "appTheme", "kind": "theme", "group": "Theme"},
+        {"name": "liveCompileStylesheet", "kind": "bool", "group": "Stylesheet"},
+        {"name": "jsonStylesheetFilePath", "kind": "str", "group": "Stylesheet"},
+        {"name": "paintQtDesignerUI", "kind": "bool", "group": "Stylesheet"},
+        {"name": "frameless", "kind": "bool", "group": "Window"},
+        {"name": "translucentBg", "kind": "bool", "group": "Window"},
+        {"name": "windowBorderRadius", "kind": "int", "group": "Window"},
+        {"name": "sizeGrip", "kind": "widget-ref",
+         "types": ("QWidget",), "group": "Window"},
+        {"name": "minimizeBtn", "kind": "widget-ref",
+         "types": ("QPushButton", "QToolButton"), "group": "Navigation"},
+        {"name": "closeBtn", "kind": "widget-ref",
+         "types": ("QPushButton", "QToolButton"), "group": "Navigation"},
+        {"name": "restoreBtn", "kind": "widget-ref",
+         "types": ("QPushButton", "QToolButton"), "group": "Navigation"},
+        {"name": "titleBar", "kind": "widget-ref",
+         "types": ("QWidget", "QFrame"), "group": "Navigation"},
+        {"name": "moveWindow", "kind": "widget-ref",
+         "types": ("QWidget", "QFrame"), "group": "Navigation"},
+        {"name": "shadowColor", "kind": "color", "group": "Shadow"},
+        {"name": "shadowBlurRadius", "kind": "int", "group": "Shadow"},
+        {"name": "shadowXOffset", "kind": "int", "group": "Shadow"},
+        {"name": "shadowYOffset", "kind": "int", "group": "Shadow"},
+        {"name": "customSideDrawers", "kind": "str", "group": "Drawers"},
+    ]
+
     def __init__(self, parent=None, frameless: bool = False, translucentBg: bool = False, minimizeBtn: QPushButton = None, closeBtn: QPushButton = None, restoreBtn: QPushButton = None,
                 restoreBtnNormalIcon: QIcon = None, restoreBtnMaximizedIcon: QIcon = None, tittleBar: QWidget | QFrame = None, moveWindow: QWidget | QFrame = None, sizeGrip: QWidget | QFrame = None):
         super().__init__(parent)
@@ -94,8 +127,13 @@ class QCustomQMainWindow(QMainWindow):
         the project's style.json (built-in "Light"/"Dark" plus any custom
         themes), so this is a string rather than a fixed enum - a static
         enum cannot list values that only exist once style.json is read.
-        Use the QCustomThemeList widget for a runtime theme dropdown; a live
-        Designer dropdown is possible via a property-sheet extension (planned).
+        In Qt Designer, use the "Custom Properties" dock (right-click the
+        window -> Custom Properties...) for a dropdown of the current
+        style.json themes; an inline property-editor dropdown is not
+        reachable from Python (PySide6 6.11 property-sheet extensions can
+        neither wrap nor replace Designer's default sheet - see
+        DesignerExtensions.py). Use the QCustomThemeList widget for a
+        runtime theme dropdown in the app itself.
         The value is validated against the currently-defined themes."""
         return self._app_theme
 

@@ -119,10 +119,16 @@ def start_designer(load_plugins: bool = False, process_mode: str = "normal"):
 
     # --- Setup environment variables ---
     env = os.environ.copy()
-    
+
     # Add Custom_Widgets path to PYTHONPATH
     custom_widgets_dir = pathlib.Path(Custom_Widgets.__file__).parent
     env["PYTHONPATH"] = str(custom_widgets_dir.parent) + os.pathsep + env.get("PYTHONPATH", "")
+
+    # Pin qtpy to the binding this Designer belongs to. Without this, with
+    # several bindings installed qtpy may resolve to a different one (e.g.
+    # PyQt5) inside Designer's embedded interpreter and every plugin import
+    # crashes (pyqtProperty(notify=None) TypeError).
+    env["QT_API"] = qt_lib.lower()
 
     # Build plugins paths
     plugins_paths = []

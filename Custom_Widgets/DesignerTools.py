@@ -9,6 +9,9 @@
 ##   - UI Workspace : the project's .ui files, double-click to open
 ##   - QSS Editor   : syntax highlighting, property autocomplete, basic
 ##                    checks, apply-to-open-forms (live preview styling)
+##   - Custom Properties : selection-following rich editors (dropdowns,
+##                    pickers) for custom widget properties, driven by
+##                    each widget class's DESIGNER_CUSTOM_PROPS spec
 ##
 ## Everything is best-effort and must never break Designer startup.
 ########################################################################
@@ -704,6 +707,303 @@ class QssEditorDock(QDockWidget):
 
 
 ########################################################################
+## CUSTOM PROPERTIES
+##
+## A selection-following dock: click any Custom_Widgets widget on a form
+## and this panel shows its custom properties with RICH editors - theme
+## dropdown (style.json names), widget-reference dropdowns (matching
+## widgets in the open form), color pickers, spin boxes - all applied
+## through the form cursor (undo-aware, persisted to the .ui on save).
+## Driven by the widget class's DESIGNER_CUSTOM_PROPS spec; the native
+## property editor keeps showing the same properties as plain fields.
+########################################################################
+
+def _matchingWidgetNames(container, type_names):
+    """objectNames of widgets under `container` inheriting any of
+    `type_names` - the choices for a widget-ref dropdown."""
+    if container is None:
+        return []
+    names = []
+    for child in container.findChildren(QWidget):
+        name = child.objectName()
+        if not name or name.startswith("qt_"):
+            continue
+        if any(child.inherits(t) for t in type_names):
+            if name not in names:
+                names.append(name)
+    return sorted(names)
+
+
+class CustomPropertiesDock(QDockWidget):
+    """'Custom Properties' pane - one place to edit every custom property
+    of the selected Custom_Widgets widget."""
+
+    def __init__(self, parent=None):
+        super().__init__("Custom Properties", parent)
+        self.setObjectName("CustomWidgetsPropertiesDock")
+        self._widget = None      # the selected custom widget
+        self._connected = set()  # form windows already hooked up (by id)
+
+        from qtpy.QtWidgets import QScrollArea
+        self._scroll = QScrollArea()
+        self._scroll.setWidgetResizable(True)
+        body = QWidget()
+        self._layout = QVBoxLayout(body)
+        self._layout.setContentsMargins(8, 8, 8, 8)
+        self._layout.setSpacing(4)
+        self._scroll.setWidget(body)
+        self.setWidget(self._scroll)
+
+        self._header = QLabel("")
+        self._header.setStyleSheet("font-weight: bold;")
+        self._placeholder = QLabel(
+            "Select a Custom Widgets widget on a form\n"
+            "to edit its custom properties here.")
+        self._placeholder.setWordWrap(True)
+        self._rebuild()
+
+        # The form-editor core is captured by the registrars before the
+        # docks install, but retry briefly in case of ordering surprises.
+        self._attachCore()
+
+    # ------------------------------------------------------------------
+    # Selection tracking
+    # ------------------------------------------------------------------
+    def _core(self):
+        try:
+            from Custom_Widgets.DesignerBridge import formEditorCore
+            return formEditorCore()
+        except Exception:
+            return None
+
+    def _attachCore(self, attempt=0):
+        core = self._core()
+        if core is None:
+            if attempt < 20:
+                QTimer.singleShot(500, lambda: self._attachCore(attempt + 1))
+            else:
+                logWarning("Custom Properties dock: form editor core "
+                           "unavailable; selection tracking disabled")
+            return
+        try:
+            manager = core.formWindowManager()
+            manager.activeFormWindowChanged.connect(self._onFormWindow)
+            for i in range(manager.formWindowCount()):
+                self._onFormWindow(manager.formWindow(i))
+            if manager.activeFormWindow() is not None:
+                self._onFormWindow(manager.activeFormWindow())
+            logInfo("Custom Properties dock: selection tracking active")
+        except Exception as e:
+            logException(e, message="Custom Properties dock: core attach failed")
+
+    def _onFormWindow(self, fw):
+        if fw is None:
+            return
+        if id(fw) not in self._connected:
+            self._connected.add(id(fw))
+            try:
+                fw.selectionChanged.connect(
+                    lambda fw=fw: self._onSelectionChanged(fw))
+                fw.destroyed.connect(
+                    lambda _=None, key=id(fw): self._connected.discard(key))
+            except Exception as e:
+                logDebug(f"Custom Properties dock: connect failed: {e}")
+        self._onSelectionChanged(fw)
+
+    def _onSelectionChanged(self, fw):
+        try:
+            cursor = fw.cursor()
+            target = None
+            for i in range(cursor.selectedWidgetCount()):
+                candidate = cursor.selectedWidget(i)
+                if hasattr(type(candidate), "DESIGNER_CUSTOM_PROPS"):
+                    target = candidate
+                    break
+            if target is None:
+                container = fw.mainContainer()
+                if container is not None and \
+                        hasattr(type(container), "DESIGNER_CUSTOM_PROPS") and \
+                        cursor.selectedWidgetCount() == 0:
+                    target = container
+            self.setTargetWidget(target)
+        except Exception as e:
+            logDebug(f"Custom Properties dock: selection read failed: {e}")
+
+    # ------------------------------------------------------------------
+    # Panel building
+    # ------------------------------------------------------------------
+    def setTargetWidget(self, widget):
+        """Show `widget`'s custom properties (None -> placeholder). Public:
+        the right-click task menu calls this before raising the dock."""
+        self._widget = widget
+        self._rebuild()
+
+    def _clearLayout(self):
+        while self._layout.count():
+            item = self._layout.takeAt(0)
+            child = item.widget()
+            if child is not None and child not in (self._header, self._placeholder):
+                child.deleteLater()
+        self._header.setParent(None)
+        self._placeholder.setParent(None)
+
+    def _rebuild(self):
+        self._clearLayout()
+        widget = self._widget
+        if widget is None or not hasattr(type(widget), "DESIGNER_CUSTOM_PROPS"):
+            self._layout.addWidget(self._placeholder)
+            self._placeholder.show()
+            self._layout.addStretch(1)
+            return
+        name = widget.objectName() or "(unnamed)"
+        self._header.setText(f"{type(widget).__name__}  —  {name}")
+        self._layout.addWidget(self._header)
+        self._header.show()
+
+        groups = {}
+        for spec in type(widget).DESIGNER_CUSTOM_PROPS:
+            groups.setdefault(spec.get("group", "General"), []).append(spec)
+        for group, specs in groups.items():
+            label = QLabel(group)
+            label.setStyleSheet("color: palette(mid); margin-top: 8px;")
+            self._layout.addWidget(label)
+            for spec in specs:
+                row = self._buildRow(widget, spec)
+                if row is not None:
+                    self._layout.addWidget(row)
+        self._layout.addStretch(1)
+
+    def _buildRow(self, widget, spec):
+        try:
+            name = spec["name"]
+            kind = spec.get("kind", "str")
+            current = widget.property(name)
+            row = QWidget()
+            hbox = QHBoxLayout(row)
+            hbox.setContentsMargins(0, 0, 0, 0)
+            title = QLabel(name)
+            title.setMinimumWidth(120)
+            title.setToolTip(name)
+            hbox.addWidget(title)
+            hbox.addWidget(self._buildEditor(widget, name, kind, spec, current), 1)
+            return row
+        except Exception as e:
+            logDebug(f"Custom Properties dock: row for {spec} failed: {e}")
+            return None
+
+    def _buildEditor(self, widget, name, kind, spec, current):
+        from qtpy.QtWidgets import QSpinBox
+        if kind == "theme":
+            from Custom_Widgets.DesignerExtensions import readThemeNames
+            combo = QComboBox()
+            names = readThemeNames()
+            combo.addItems(names)
+            if current in names:
+                combo.setCurrentText(str(current))
+            combo.activated.connect(
+                lambda _i, c=combo: self._apply(name, c.currentText()))
+            return combo
+        if kind == "widget-ref":
+            combo = QComboBox()
+            combo.addItem("")  # = not set
+            for ref in _matchingWidgetNames(self._formContainer(widget),
+                                            spec.get("types", ("QWidget",))):
+                combo.addItem(ref)
+            value = str(current) if current else ""
+            if value and combo.findText(value) < 0:
+                combo.addItem(value)  # keep values not (yet) in this form
+            combo.setCurrentText(value)
+            combo.activated.connect(
+                lambda _i, c=combo: self._apply(name, c.currentText()))
+            return combo
+        if kind == "bool":
+            box = QCheckBox()
+            box.setChecked(bool(current))
+            box.toggled.connect(lambda checked: self._apply(name, checked))
+            return box
+        if kind == "int":
+            spin = QSpinBox()
+            spin.setRange(-9999, 9999)
+            try:
+                spin.setValue(int(current or 0))
+            except (TypeError, ValueError):
+                pass
+            spin.editingFinished.connect(
+                lambda s=spin: self._apply(name, s.value()))
+            return spin
+        if kind == "color":
+            button = QPushButton()
+            color = QColor(current) if current is not None else QColor()
+            self._paintColorButton(button, color)
+            button.clicked.connect(
+                lambda _=False, b=button: self._pickColor(name, b))
+            return button
+        # default: plain string
+        edit = QLineEdit(str(current) if current is not None else "")
+        edit.editingFinished.connect(lambda e=edit: self._apply(name, e.text()))
+        return edit
+
+    def _paintColorButton(self, button, color):
+        text = color.name() if color.isValid() else "(none)"
+        button.setText(text)
+        if color.isValid():
+            luma = 0.299 * color.red() + 0.587 * color.green() + 0.114 * color.blue()
+            fg = "#000" if luma > 128 else "#fff"
+            button.setStyleSheet(
+                f"background-color: {color.name()}; color: {fg};")
+
+    def _pickColor(self, name, button):
+        from qtpy.QtWidgets import QColorDialog
+        current = QColor(self._widget.property(name)) if self._widget else QColor()
+        color = QColorDialog.getColor(current, self, f"{name}")
+        if color.isValid():
+            self._paintColorButton(button, color)
+            self._apply(name, color)
+
+    # ------------------------------------------------------------------
+    # Applying values
+    # ------------------------------------------------------------------
+    def _formContainer(self, widget):
+        try:
+            from qtpy.QtDesigner import QDesignerFormWindowInterface
+            fw = QDesignerFormWindowInterface.findFormWindow(widget)
+            if fw is not None:
+                return fw.mainContainer()
+        except Exception:
+            pass
+        return widget.window() if widget is not None else None
+
+    def _apply(self, name, value):
+        widget = self._widget
+        if widget is None:
+            return
+        try:
+            from qtpy.QtDesigner import QDesignerFormWindowInterface
+            fw = QDesignerFormWindowInterface.findFormWindow(widget)
+            if fw is not None:
+                # Undo-aware, marks the form dirty, saved to the .ui.
+                fw.cursor().setWidgetProperty(widget, name, value)
+            else:
+                widget.setProperty(name, value)
+            logInfo(f"Custom Properties dock: {name} = {value!r}")
+        except Exception as e:
+            logException(e, message=f"Custom Properties dock: applying {name} failed")
+
+
+def raiseCustomProperties(widget=None):
+    """Show + raise the Custom Properties dock, optionally focused on
+    `widget`. Used by the right-click task menu (DesignerExtensions)."""
+    dock = _tools.get("customprops")
+    if dock is None:
+        return False
+    if widget is not None:
+        dock.setTargetWidget(widget)
+    dock.setVisible(True)
+    dock.raise_()
+    return True
+
+
+########################################################################
 ## INSTALLATION
 ########################################################################
 def _designerMainWindow():
@@ -734,7 +1034,7 @@ def _addViewMenu(window):
         target = menu_bar.addMenu("Custom &Widgets")
     else:
         target.addSeparator()
-    for key in ("workspace", "qss", "logs"):
+    for key in ("workspace", "qss", "customprops", "logs"):
         target.addAction(_tools[key].toggleViewAction())
 
 
@@ -791,13 +1091,16 @@ def _install(attempt=0):
         _tools["logs"] = LogViewDock(window)
         _tools["workspace"] = WorkspaceDock(window)
         _tools["qss"] = QssEditorDock(window)
+        _tools["customprops"] = CustomPropertiesDock(window)
         window.addDockWidget(Qt.RightDockWidgetArea, _tools["workspace"])
         window.addDockWidget(Qt.RightDockWidgetArea, _tools["qss"])
+        window.addDockWidget(Qt.RightDockWidgetArea, _tools["customprops"])
         window.addDockWidget(Qt.BottomDockWidgetArea, _tools["logs"])
-        _tools["qss"].raise_()
+        _tools["customprops"].raise_()
         _addViewMenu(window)
         _addStatusFooter(window)
-        logInfo("Designer tools installed: Logs, UI Workspace, QSS Editor")
+        logInfo("Designer tools installed: Logs, UI Workspace, QSS Editor, "
+                "Custom Properties")
     except Exception as e:
         logException(e, message="Designer tools installation failed")
 
