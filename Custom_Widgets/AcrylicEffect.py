@@ -7,21 +7,26 @@ from math import floor
 from io import BytesIO
 from typing import Union
 
-import numpy as np
-from colorthief import ColorThief
-from PIL import Image
+try:
+    # Optional heavy stack for the acrylic blur effect. Install with
+    # `pip install QT-PyQt-PySide-Custom-Widgets[acrylic]`.
+    import numpy as np
+    from colorthief import ColorThief
+    from PIL import Image
+    HAS_ACRYLIC_DEPS = True
+except ImportError:
+    np = ColorThief = Image = None
+    HAS_ACRYLIC_DEPS = False
 from qtpy.QtCore import Qt, QThread, Signal, QRect, QIODevice, QBuffer
 from qtpy.QtGui import QBrush, QColor, QImage, QPainter, QPixmap, QPainterPath, QLinearGradient
 from qtpy.QtWidgets import QLabel, QApplication, QWidget
 
-# Handle scipy import with compatibility
+# scipy is optional; PIL fallback is used for Gaussian blur without it
 try:
     from scipy.ndimage import gaussian_filter
     HAS_SCIPY = True
 except ImportError:
     HAS_SCIPY = False
-    # Fallback using PIL
-    warnings.warn("scipy not found, using PIL fallback for Gaussian blur")
 
 from Custom_Widgets.Log import *
 

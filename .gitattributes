@@ -1,0 +1,18 @@
+# Normalize all text files to LF in the repository.
+* text=auto eol=lf
+
+# Windows scripts keep CRLF on checkout
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary assets
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.gif binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.pyc binary

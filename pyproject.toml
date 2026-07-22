@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "QT-PyQt-PySide-Custom-Widgets"
+version = "2.2.1"
+description = "A comprehensive library of custom Qt widgets, animations, and UI components for PySide and PyQt desktop applications."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "GPL-3.0-only" }
+authors = [{ name = "Khamisi Kibet", email = "kibetkhamisi@gmail.com" }]
+keywords = [
+    "PySide", "PyQt", "Qt", "Custom Widgets", "Animations", "Desktop GUI",
+    "Designer", "Python GUI", "Modern UI", "Component Library",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+# Core install: widgets + SCSS theming + tooling. A Qt binding (PySide6 or
+# PyQt6) must be installed separately; Designer integration needs PySide6.
+dependencies = [
+    "qtpy",
+    "qtsass",
+    "termcolor",
+    "lxml",
+    "rich",
+    "kids-cache",
+]
+
+[project.optional-dependencies]
+# Niche widgets pull their heavy stacks on demand:
+qr = ["qrcode>=8.0", "Pillow"]              # QCustomQRGenerator
+acrylic = ["numpy", "colorthief", "Pillow"] # AcrylicEffect blur (scipy optional upgrade)
+acrylic-hq = ["scipy"]                      # higher-quality acrylic blur
+loaders = ["perlin_noise"]                  # QCustomPerlinLoader
+mcp = ["mcp"]                               # Custom_Widgets-mcp server
+all = [
+    "qrcode>=8.0", "Pillow", "numpy", "colorthief", "scipy",
+    "perlin_noise", "mcp",
+]
+
+[project.urls]
+Homepage = "https://github.com/KhamisiKibet/QT-PyQt-PySide-Custom-Widgets"
+Documentation = "https://khamisikibet.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/"
+
+[project.scripts]
+Custom_Widgets = "Custom_Widgets.CMD:run_command"
+Custom_Widgets-mcp = "Custom_Widgets.McpServer:main"
+
+[tool.setuptools.packages.find]
+include = ["Custom_Widgets*"]
+
+[tool.setuptools]
+include-package-data = true

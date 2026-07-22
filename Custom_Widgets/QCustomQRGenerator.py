@@ -1,5 +1,4 @@
 import os
-import qrcode
 import io
 import tempfile
 from decimal import Decimal
@@ -11,16 +10,24 @@ from Custom_Widgets.Log import *
 from Custom_Widgets.Utils import is_in_designer
 from Custom_Widgets.QCustomTheme import QCustomTheme
 
-# Import advanced QR code features
-from qrcode.image.styledpil import StyledPilImage
-from qrcode.image.styles.moduledrawers.pil import (
-    SquareModuleDrawer, GappedSquareModuleDrawer, CircleModuleDrawer, 
-    RoundedModuleDrawer, VerticalBarsDrawer, HorizontalBarsDrawer
-)
-from qrcode.image.styles.colormasks import (
-    SolidFillColorMask, RadialGradiantColorMask, SquareGradiantColorMask,
-    HorizontalGradiantColorMask, VerticalGradiantColorMask
-)
+# Optional qrcode stack. Install with
+# `pip install QT-PyQt-PySide-Custom-Widgets[qr]`.
+try:
+    import qrcode
+    from qrcode.image.styledpil import StyledPilImage
+    from qrcode.image.styles.moduledrawers.pil import (
+        SquareModuleDrawer, GappedSquareModuleDrawer, CircleModuleDrawer,
+        RoundedModuleDrawer, VerticalBarsDrawer, HorizontalBarsDrawer
+    )
+    from qrcode.image.styles.colormasks import (
+        SolidFillColorMask, RadialGradiantColorMask, SquareGradiantColorMask,
+        HorizontalGradiantColorMask, VerticalGradiantColorMask
+    )
+    HAS_QRCODE = True
+except ImportError:
+    qrcode = None
+    HAS_QRCODE = False
+
 
 class QCustomQRGenerator(QWidget):
     """
@@ -241,6 +248,11 @@ class QCustomQRGenerator(QWidget):
 
     def generateQRCode(self):
         """Generate the QR code pixmap and set it to the QLabel."""
+        if not HAS_QRCODE:
+            self.qrLabel.setText(
+                "qrcode not installed\n(pip install "
+                "QT-PyQt-PySide-Custom-Widgets[qr])")
+            return
         try:
             if not self._data.strip():
                 self._currentQRPixmap = None 

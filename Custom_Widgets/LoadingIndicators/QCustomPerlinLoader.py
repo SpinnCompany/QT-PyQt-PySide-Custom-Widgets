@@ -10,7 +10,11 @@
 import math
 import time
 
-from perlin_noise import PerlinNoise as Noise
+try:
+    # Optional; install with `pip install QT-PyQt-PySide-Custom-Widgets[loaders]`
+    from perlin_noise import PerlinNoise as Noise
+except ImportError:
+    Noise = None
 from typing import Optional
 
 from qtpy.QtCore import QVariantAnimation, QPointF, QRect, QSize
@@ -53,6 +57,10 @@ class QCustomPerlinLoader(QFrame):
         self.circleColor3 = circleColor3
 
         self.animation: Optional[QVariantAnimation] = None
+        if Noise is None:
+            raise ImportError(
+                "QCustomPerlinLoader requires perlin_noise: "
+                "pip install QT-PyQt-PySide-Custom-Widgets[loaders]")
         self.noise_generator1 = Noise(octaves=noiseOctaves, seed=noiseSeed)
         self.noise_generator2 = Noise(octaves=noiseOctaves, seed=noiseSeed + 1)
         self.noise_generator3 = Noise(octaves=noiseOctaves, seed=noiseSeed + 3)
