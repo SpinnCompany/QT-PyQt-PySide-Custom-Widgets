@@ -21,6 +21,14 @@ class QCustomSidebarLabel(QWidget):
     """
     WIDGET_MODULE = "Custom_Widgets.QCustomSidebarLabel"
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "text", "kind": "str", "group": "Label"},
+        {"name": "hideOnCollapse", "kind": "bool", "group": "Sidebar"},
+        {"name": "showOnCollapse", "kind": "bool", "group": "Sidebar"},
+    ]
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self._hideOnCollapse = True

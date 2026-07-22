@@ -127,18 +127,47 @@ class TestAppThemeTaskMenu:
         assert window.property("appTheme") == before
 
 
+def _spec_widget_classes():
+    """Every widget class that declares DESIGNER_CUSTOM_PROPS."""
+    from Custom_Widgets.QCustomQMainWindow import QCustomQMainWindow
+    from Custom_Widgets.QCustomSidebar import QCustomSidebar
+    from Custom_Widgets.QCustomSidebarButton import QCustomSidebarButton
+    from Custom_Widgets.QCustomSidebarLabel import QCustomSidebarLabel
+    from Custom_Widgets.QCustomSidebarContainer import QCustomSidebarContainer
+    from Custom_Widgets.QCustomHorizontalSeparator import QCustomHorizontalSeparator
+    from Custom_Widgets.QCustomVerticalSeparator import QCustomVerticalSeparator
+    return [QCustomQMainWindow, QCustomSidebar, QCustomSidebarButton,
+            QCustomSidebarLabel, QCustomSidebarContainer,
+            QCustomHorizontalSeparator, QCustomVerticalSeparator]
+
+
+KNOWN_KINDS = ("theme", "widget-ref", "bool", "int", "str", "color",
+               "easing", "file")
+
+
 class TestCustomPropsSpec:
     def test_spec_names_are_real_properties(self, qapp, project_dir):
-        """Every DESIGNER_CUSTOM_PROPS entry must name an actual meta
-        property (typo guard for the dock's editors)."""
-        from Custom_Widgets.QCustomQMainWindow import QCustomQMainWindow
-        window = QCustomQMainWindow()
-        mo = window.metaObject()
-        prop_names = {mo.property(i).name() for i in range(mo.propertyCount())}
-        for spec in QCustomQMainWindow.DESIGNER_CUSTOM_PROPS:
-            assert spec["name"] in prop_names, spec["name"]
-            assert spec["kind"] in ("theme", "widget-ref", "bool", "int",
-                                    "str", "color"), spec
+        """Every DESIGNER_CUSTOM_PROPS entry of every widget must name an
+        actual meta property (typo guard for the dock's editors)."""
+        for cls in _spec_widget_classes():
+            widget = cls()
+            mo = widget.metaObject()
+            prop_names = {mo.property(i).name() for i in range(mo.propertyCount())}
+            for spec in cls.DESIGNER_CUSTOM_PROPS:
+                assert spec["name"] in prop_names, (cls.__name__, spec["name"])
+                assert spec["kind"] in KNOWN_KINDS, (cls.__name__, spec)
+
+    def test_every_spec_widget_builds_in_dock(self, qapp, project_dir):
+        """The dock must render editors for each spec'd widget without
+        raising (all kinds implemented)."""
+        from Custom_Widgets.DesignerTools import CustomPropertiesDock
+        dock = CustomPropertiesDock()
+        for cls in _spec_widget_classes():
+            widget = cls()
+            dock.setTargetWidget(widget)
+            # one editor row per spec entry
+            rows = dock._layout.count()
+            assert rows >= len(cls.DESIGNER_CUSTOM_PROPS), cls.__name__
 
     def test_apptheme_uses_theme_kind(self):
         from Custom_Widgets.QCustomQMainWindow import QCustomQMainWindow
