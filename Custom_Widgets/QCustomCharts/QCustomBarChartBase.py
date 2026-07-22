@@ -15,7 +15,8 @@ from Custom_Widgets.QCustomCharts.QCustomChartConstants import (
     CHART_THEME_TO_INT, INT_TO_CHART_THEME,
     LEGEND_POSITION_TO_INT, INT_TO_LEGEND_POSITION,
     BAR_PATTERN_TO_INT, INT_TO_BAR_PATTERN,
-    BAR_SELECTION_TO_INT, INT_TO_BAR_SELECTION)
+    BAR_SELECTION_TO_INT, INT_TO_BAR_SELECTION,
+    BAR_LABELS_TO_INT, INT_TO_BAR_LABELS)
 
 
 class QCustomBarChartBase(QCustomChartBase):
@@ -885,7 +886,7 @@ class QCustomBarChartBase(QCustomChartBase):
         """Set position of value labels"""
         # Map string position to Qt constant
         position_map = {
-            "inside_center": QAbstractBarSeries.LabelsCenter,
+            "center": QAbstractBarSeries.LabelsCenter,
             "inside_end": QAbstractBarSeries.LabelsInsideEnd,
             "inside_base": QAbstractBarSeries.LabelsInsideBase,
             "outside_end": QAbstractBarSeries.LabelsOutsideEnd
@@ -1500,15 +1501,15 @@ class QCustomBarChartBase(QCustomChartBase):
         self._show_value_labels = value
         self.updateChart()
     
-    @Property(str)
+    @Property(int)
     def valueLabelsPosition(self):
-        """Get value labels position"""
-        return self.getValueLabelsPosition()
-    
+        """Get value labels position (int; see QCustomChartEnums.BarLabelsPosition)."""
+        return chart_str_to_int(BAR_LABELS_TO_INT, self.getValueLabelsPosition())
+
     @valueLabelsPosition.setter
-    def valueLabelsPosition(self, value: str):
+    def valueLabelsPosition(self, value):
         """Set value labels position"""
-        self.setValueLabelsPosition(value)
+        self.setValueLabelsPosition(chart_int_to_str(INT_TO_BAR_LABELS, value, _CC.BAR_LABELS_CENTER))
     
     @Property(str)
     def valueLabelsFormat(self):
@@ -1541,15 +1542,15 @@ class QCustomBarChartBase(QCustomChartBase):
         """Set value labels color"""
         self.setCustomValueLabelsColor(value)
     
-    @Property(str)
+    @Property(int)
     def labelsPosition(self):
-        """Get labels position"""
-        return self.getValueLabelsPosition()
-    
+        """Get labels position (int; see QCustomChartEnums.BarLabelsPosition)."""
+        return chart_str_to_int(BAR_LABELS_TO_INT, self.getValueLabelsPosition())
+
     @labelsPosition.setter
-    def labelsPosition(self, value: str):
+    def labelsPosition(self, value):
         """Set labels position"""
-        self.setValueLabelsPosition(value)
+        self.setValueLabelsPosition(chart_int_to_str(INT_TO_BAR_LABELS, value, _CC.BAR_LABELS_CENTER))
     
     @Property(float)
     def customBarBorderWidth(self):
