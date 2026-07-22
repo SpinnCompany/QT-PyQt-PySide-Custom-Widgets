@@ -486,6 +486,8 @@ class QCustomDataTable(QWidget):
     # ------------------------------------------------------------------ #
     def _buildUi(self):
         self.setObjectName("QCustomDataTable")
+        # let QSS background-color paint on these plain QWidget containers
+        self.setAttribute(Qt.WA_StyledBackground, True)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
@@ -499,6 +501,7 @@ class QCustomDataTable(QWidget):
 
         self._footer = QWidget(self)
         self._footer.setObjectName("dataTableFooter")
+        self._footer.setAttribute(Qt.WA_StyledBackground, True)
         foot = QHBoxLayout(self._footer)
         foot.setContentsMargins(8, 4, 8, 4)
         self._prevBtn = QPushButton("Previous", self._footer)

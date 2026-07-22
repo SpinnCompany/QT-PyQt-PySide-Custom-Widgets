@@ -58,6 +58,37 @@ class TestQssGeneration:
         w.setStyleSheet("")                            # clean up shared app state
 
 
+class TestDataTableTokens:
+    def test_datatable_qss_selectors(self, qapp):
+        from Custom_Widgets.JSonStyles.tokens import DesignTokens, datatable_qss
+        qss = datatable_qss(DesignTokens(theme="light"))
+        assert "QCustomDataTable QTableView" in qss
+        assert "QCustomDataTable QHeaderView::section" in qss
+        assert "selection-background-color: #2563eb" in qss   # accent
+        assert '#dataTablePrev' in qss
+
+    def test_header_paints_surface_muted(self, qapp):
+        from qtpy.QtGui import QColor
+        from Custom_Widgets.QCustomDataTable import QCustomDataTable, DataTableColumn
+        from Custom_Widgets.JSonStyles.tokens import applyDesignTokens
+        applyDesignTokens(qapp, theme="light")
+        t = QCustomDataTable()
+        t.setColumns([DataTableColumn("a"), DataTableColumn("b")])
+        t.setData([{"a": "x", "b": 1}])
+        t.pageSize = 0
+        t.resize(300, 200)
+        t.show()
+        t.ensurePolished()
+        hdr = t.view().horizontalHeader()
+        c = QColor(hdr.grab().toImage().pixel(hdr.width() // 2, hdr.height() // 2))
+        assert c.name().lower() == "#f1f5f9"          # light surface-muted
+        applyDesignTokens(qapp, theme="dark")
+        t.ensurePolished()
+        c2 = QColor(hdr.grab().toImage().pixel(hdr.width() // 2, hdr.height() // 2))
+        assert c2.name().lower() == "#1e293b"         # dark surface-muted
+        qapp.setStyleSheet("")
+
+
 class TestButtonVariant:
     def test_defaults_set_dynamic_properties(self, qapp):
         from Custom_Widgets.QCustomQPushButton import QCustomQPushButton

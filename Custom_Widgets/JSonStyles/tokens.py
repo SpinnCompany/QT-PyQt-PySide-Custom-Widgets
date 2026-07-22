@@ -208,9 +208,80 @@ def button_qss(tokens):
     return "".join(css)
 
 
+def datatable_qss(tokens):
+    """Generate QCustomDataTable QSS (view, header, selection, footer) from
+    tokens. Scoped to the widget's class + object names so it never leaks."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+
+    css.append("QCustomDataTable { background-color: %s; }\n" % r("surface"))
+
+    css.append(
+        "QCustomDataTable QTableView {\n"
+        "    background-color: %s;\n"
+        "    alternate-background-color: %s;\n"
+        "    color: %s;\n"
+        "    gridline-color: %s;\n"
+        "    border: 1px solid %s;\n"
+        "    border-radius: %s;\n"
+        "    selection-background-color: %s;\n"
+        "    selection-color: %s;\n"
+        "}\n" % (r("surface"), r("surface-muted"), r("on-surface"),
+                 r("outline"), r("outline"), px("radius.md"),
+                 r("accent"), r("on-primary")))
+
+    css.append("QCustomDataTable QTableView::item { padding: %s %s; }\n"
+               % (px("space.1"), px("space.2")))
+
+    css.append(
+        "QCustomDataTable QHeaderView::section {\n"
+        "    background-color: %s;\n"
+        "    color: %s;\n"
+        "    border: none;\n"
+        "    border-bottom: 1px solid %s;\n"
+        "    padding: %s;\n"
+        "    font-weight: %d;\n"
+        "}\n" % (r("surface-muted"), r("on-surface"), r("outline"),
+                 px("space.2"), int(r("font.weight.semibold"))))
+
+    css.append("QCustomDataTable QTableCornerButton::section { "
+               "background-color: %s; border: none; }\n" % r("surface-muted"))
+
+    css.append("QCustomDataTable #dataTableFooter { background-color: %s; }\n" % r("surface"))
+    css.append("QCustomDataTable #dataTablePageLabel { color: %s; }\n" % r("on-surface"))
+
+    css.append(
+        "QCustomDataTable #dataTablePrev, QCustomDataTable #dataTableNext {\n"
+        "    background-color: transparent; color: %s;\n"
+        "    border: 1px solid %s; border-radius: %s; padding: %s %s;\n"
+        "}\n" % (r("on-surface"), r("outline"), px("radius.md"),
+                 px("space.1"), px("space.3")))
+    css.append("QCustomDataTable #dataTablePrev:hover, QCustomDataTable #dataTableNext:hover "
+               "{ background-color: %s; }\n" % r("surface-muted"))
+    css.append("QCustomDataTable #dataTablePrev:disabled, QCustomDataTable #dataTableNext:disabled "
+               "{ color: %s; }\n" % r("outline"))
+
+    # sizeVariant -> density + font-size
+    dens = {"sm": ("font.size.sm", "space.1"),
+            "md": ("font.size.md", "space.1"),
+            "lg": ("font.size.lg", "space.2")}
+    for name, (fsize, pad_y) in dens.items():
+        css.append('QCustomDataTable[sizeVariant="%s"] QTableView { font-size: %s; }\n'
+                   % (name, px(fsize)))
+        css.append('QCustomDataTable[sizeVariant="%s"] QTableView::item { padding: %s %s; }\n'
+                   % (name, px(pad_y), px("space.2")))
+
+    # variant -> table border emphasis
+    css.append('QCustomDataTable[variant="ghost"] QTableView { border: none; }\n')
+    css.append('QCustomDataTable[variant="primary"] QTableView { border: 1px solid %s; }\n'
+               % r("accent"))
+    return "".join(css)
+
+
 def build_component_qss(tokens):
     """All token-driven component QSS. Extend as more widgets adopt tokens."""
-    return button_qss(tokens)
+    return button_qss(tokens) + datatable_qss(tokens)
 
 
 _MARK_START = "/* >>> custom-widgets design tokens >>> */"
