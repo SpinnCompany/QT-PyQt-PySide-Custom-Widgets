@@ -5,7 +5,9 @@ import threading
 import traceback
 from logging.handlers import RotatingFileHandler
 from qtpy.QtCore import QSettings
-from Custom_Widgets.Utils import is_in_designer
+# NOTE: no module-level import of Custom_Widgets.Utils here - Utils
+# star-imports this module, and a top-level circular import left Utils
+# with an EMPTY snapshot of Log's names (latent NameError on logError).
 
 # Rich for beautiful console output
 try:
@@ -109,6 +111,7 @@ def setupLogger(self=None, designer=False):
         logging.Logger: Configured logger instance
     """
     # Get the log file path
+    from Custom_Widgets.Utils import is_in_designer  # lazy: breaks Log<->Utils cycle
     logFilePath = get_log_file_path(designer=designer or (self is not None and is_in_designer(self)))
     
     # Get the log directory (already created in get_log_file_path, but just in case)

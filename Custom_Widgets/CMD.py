@@ -13,6 +13,11 @@ def run_command():
     parser.add_argument('--qt-library', dest='qt_library', help='Specify the Qt library (e.g., "PySide6")')
     parser.add_argument('--create-project', action='store_true', help='Create a new project')
     parser.add_argument('--new-ui', dest='new_ui_name', help='Create a new .ui form in ./ui with the theme icons resource (Qss/icons/_icons.qrc) pre-loaded')
+    parser.add_argument('--dev', dest='dev', nargs='?', const='main.py',
+                        metavar='SCRIPT',
+                        help='Run the app under the dev server: .ui saves '
+                             'regenerate + restart, .py saves restart, '
+                             'scss/json restyle live (default script: main.py)')
     
     # --- Python source output directory ---
     parser.add_argument('--src-output-dir', dest='src_output_dir', default='src',
@@ -46,6 +51,14 @@ def run_command():
     elif args.new_ui_name:
         create_ui_file(args.new_ui_name)
 
+    elif args.dev:
+        from Custom_Widgets.DevServer import run_dev
+        raise SystemExit(run_dev(
+            script=args.dev,
+            qt_binding=args.qt_library or "PySide6",
+            src_output_dir=args.src_output_dir,
+        ))
+
     elif args.start_designer:
         start_designer(load_plugins=args.plugins, process_mode=args.process_mode)
 
@@ -59,6 +72,12 @@ def run_command():
             Custom_Widgets COMMAND [OPTIONS]
         
         COMMANDS:
+            Dev loop:
+                --dev [SCRIPT]           Run the app with everything hot:
+                                        .ui saves regenerate + restart the app,
+                                        .py saves restart, scss/json restyle
+                                        live (default SCRIPT: main.py)
+
             Monitor & Convert:
                 --monitor-ui PATH       Monitor UI file/folder and auto-generate files on changes
                 --convert-ui PATH        Convert UI file/folder once and exit
@@ -105,3 +124,6 @@ def run_command():
             • Python source files are stored in the directory specified by --src-output-dir
             • If no --qt-library is specified, PySide6 is used by default
         """))
+
+if __name__ == "__main__":
+    run_command()
