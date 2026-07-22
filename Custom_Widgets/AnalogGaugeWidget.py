@@ -50,6 +50,35 @@ class AnalogGaugeWidget(QWidget):
     """
     WIDGET_MODULE="Custom_Widgets.AnalogGaugeWidget"
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "value", "kind": "int", "group": "Values"},
+        {"name": "minValue", "kind": "int", "group": "Values"},
+        {"name": "maxValue", "kind": "int", "group": "Values"},
+        {"name": "units", "kind": "str", "group": "Values"},
+        {"name": "themeNumber", "kind": "int", "group": "Appearance"},
+        {"name": "needleColor", "kind": "color", "group": "Colors"},
+        {"name": "needleColorOnDrag", "kind": "color", "group": "Colors"},
+        {"name": "scaleValueColor", "kind": "color", "group": "Colors"},
+        {"name": "displayValueColor", "kind": "color", "group": "Colors"},
+        {"name": "bigScaleColor", "kind": "color", "group": "Colors"},
+        {"name": "fineScaleColor", "kind": "color", "group": "Colors"},
+        {"name": "centerPointColor", "kind": "color", "group": "Colors"},
+        {"name": "enableNeedlePolygon", "kind": "bool", "group": "Elements"},
+        {"name": "enableScaleText", "kind": "bool", "group": "Elements"},
+        {"name": "enableBarGraph", "kind": "bool", "group": "Elements"},
+        {"name": "enableValueText", "kind": "bool", "group": "Elements"},
+        {"name": "enableCenterPoint", "kind": "bool", "group": "Elements"},
+        {"name": "enableScalePolygon", "kind": "bool", "group": "Elements"},
+        {"name": "enableBigScaleGrid", "kind": "bool", "group": "Elements"},
+        {"name": "enableFineScaleGrid", "kind": "bool", "group": "Elements"},
+        {"name": "scalaCount", "kind": "int", "group": "Scale"},
+        {"name": "scaleStartAngle", "kind": "float", "group": "Scale"},
+        {"name": "totalScaleAngleSize", "kind": "float", "group": "Scale"},
+        {"name": "angleOffset", "kind": "float", "group": "Scale"},
+    ]
+
     valueChanged = Signal(int)
 
     def __init__(self, parent=None, min_value: int = 0, max_value: int = 1000, 

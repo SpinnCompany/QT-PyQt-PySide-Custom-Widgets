@@ -27,6 +27,15 @@ class QCustomComponent(QWidget):
     """
     WIDGET_MODULE = "Custom_Widgets.QCustomComponent"
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "jsonStylesheetFilePath", "kind": "file",
+         "filter": "JSON (*.json);;All files (*)", "group": "Stylesheet"},
+        {"name": "liveCompileStylesheet", "kind": "bool", "group": "Stylesheet"},
+        {"name": "paintQtDesignerUI", "kind": "bool", "group": "Stylesheet"},
+    ]
+
     def __init__(self, parent=None):
         super().__init__(parent)
 

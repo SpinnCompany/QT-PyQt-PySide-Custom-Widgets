@@ -17,6 +17,13 @@ class QAvatarWidget(QFrame):
     """
     WIDGET_MODULE = "Custom_Widgets.QAvatarWidget"
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "borderColor", "kind": "color", "group": "Border"},
+        {"name": "borderWidth", "kind": "int", "group": "Border"},
+    ]
+
     clicked = Signal()
 
     def __init__(self, parent=None, avatarPath=""):

@@ -57,6 +57,36 @@ class QCustomHamburgerMenu(QWidget):
     _POSITION_TO_INT = {POSITION_LEFT: 0, POSITION_RIGHT: 1,
                         POSITION_TOP: 2, POSITION_BOTTOM: 3}
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "position", "kind": "choice", "enum": Position, "group": "Menu"},
+        {"name": "menuWidth", "kind": "int", "group": "Menu"},
+        {"name": "menuHeight", "kind": "int", "group": "Menu"},
+        {"name": "sizeWrap", "kind": "bool", "group": "Menu"},
+        {"name": "center", "kind": "bool", "group": "Menu"},
+        {"name": "margin", "kind": "int", "group": "Menu"},
+        {"name": "cornerRadius", "kind": "int", "group": "Menu"},
+        {"name": "autoHide", "kind": "bool", "group": "Menu"},
+        {"name": "toggleButtonName", "kind": "widget-ref",
+         "types": ("QPushButton", "QToolButton"), "group": "Buttons"},
+        {"name": "showButtonName", "kind": "widget-ref",
+         "types": ("QPushButton", "QToolButton"), "group": "Buttons"},
+        {"name": "hideButtonName", "kind": "widget-ref",
+         "types": ("QPushButton", "QToolButton"), "group": "Buttons"},
+        {"name": "animationDuration", "kind": "int", "group": "Animation"},
+        {"name": "animationEasingCurve", "kind": "easing", "group": "Animation"},
+        {"name": "backgroundColor", "kind": "color", "group": "Style"},
+        {"name": "overlayColor", "kind": "color", "group": "Style"},
+        {"name": "shadowColor", "kind": "color", "group": "Style"},
+        {"name": "shadowBlurRadius", "kind": "int", "group": "Style"},
+        {"name": "acrylicEnabled", "kind": "bool", "group": "Acrylic"},
+        {"name": "acrylicBlurRadius", "kind": "int", "group": "Acrylic"},
+        {"name": "acrylicTintColor", "kind": "color", "group": "Acrylic"},
+        {"name": "acrylicLuminosityColor", "kind": "color", "group": "Acrylic"},
+        {"name": "acrylicNoiseOpacity", "kind": "float", "group": "Acrylic"},
+    ]
+
     def __init__(self, parent=None):
         super().__init__(parent)
         
