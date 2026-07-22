@@ -22,6 +22,16 @@ class QCustomCheckBox(QCheckBox):
     </ui>
     """
     WIDGET_MODULE="Custom_Widgets.QCustomCheckBox"
+
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "backgroundColor", "kind": "color", "group": "Colors"},
+        {"name": "circleColor", "kind": "color", "group": "Colors"},
+        {"name": "activeColor", "kind": "color", "group": "Colors"},
+        {"name": "animationDuration", "kind": "int", "group": "Animation"},
+        {"name": "animationEasingCurve", "kind": "easing", "group": "Animation"},
+    ]
     
     def __init__(self, parent=None):
         super().__init__(parent)
