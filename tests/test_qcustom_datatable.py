@@ -111,6 +111,19 @@ class TestWidget:
         assert t.pageCount() == 1
         assert t.view().model().rowCount() == 23
 
+    def test_page_count_one_when_pagination_disabled(self, qapp):
+        # pageCount()/currentPage() must reflect ACTIVE pagination, not a stale
+        # value from the lingering pagination proxy.
+        from Custom_Widgets.QCustomDataTable import QCustomDataTable, DataTableColumn
+        t = QCustomDataTable()
+        t.setColumns([DataTableColumn("n", type="number")])
+        t.setData([{"n": i} for i in range(100)])
+        t.pageSize = 10
+        assert t.pageCount() == 10
+        t.showPagination = False        # disable -> must report 1, not stale 10
+        assert t.pageCount() == 1
+        assert t.currentPage() == 0
+
     def test_selection_maps_to_source(self, qapp):
         from qtpy.QtCore import QItemSelectionModel
         t = self._table()
