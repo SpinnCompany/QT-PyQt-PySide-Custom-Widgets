@@ -662,6 +662,34 @@ def chip_qss(tokens):
     return "".join(css)
 
 
+def skeleton_qss(tokens):
+    """Feed token colours to the painted QCustomSkeleton via qproperty."""
+    r = tokens.role
+    return ("QCustomSkeleton { qproperty-baseColor: %s; qproperty-highlightColor: %s; }\n"
+            % (r("surface-muted"), r("surface")))
+
+
+def avatargroup_qss(tokens):
+    """Separating ring colour for QCustomAvatarGroup (matches the surface)."""
+    r = tokens.role
+    return "QCustomAvatarGroup { qproperty-ringColor: %s; }\n" % r("surface")
+
+
+def timeline_qss(tokens):
+    """Rail colours (qproperty) + content text for QCustomTimeline."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+    css.append("QCustomTimeline { qproperty-lineColor: %s; qproperty-dotColor: %s; }\n"
+               % (r("outline"), r("accent")))
+    css.append("QCustomTimeline #timelineTitle { color: %s; font-weight: %d; }\n"
+               % (r("on-surface"), int(r("font.weight.semibold"))))
+    css.append("QCustomTimeline #timelineTime { color: %s; font-size: %s; }\n"
+               % (r("accent"), px("font.size.sm")))
+    css.append("QCustomTimeline #timelineDesc { color: %s; }\n" % r("outline"))
+    return "".join(css)
+
+
 def build_component_qss(tokens):
     """All token-driven component QSS. Extend as more widgets adopt tokens."""
     return (button_qss(tokens) + datatable_qss(tokens) + toast_qss(tokens)
@@ -669,7 +697,8 @@ def build_component_qss(tokens):
             + commandpalette_qss(tokens) + tabs_qss(tokens) + accordion_qss(tokens)
             + tree_qss(tokens) + drawer_qss(tokens) + stepper_qss(tokens)
             + richtext_qss(tokens) + colorpicker_qss(tokens)
-            + breadcrumbs_qss(tokens) + rating_qss(tokens) + chip_qss(tokens))
+            + breadcrumbs_qss(tokens) + rating_qss(tokens) + chip_qss(tokens)
+            + skeleton_qss(tokens) + avatargroup_qss(tokens) + timeline_qss(tokens))
 
 
 _MARK_START = "/* >>> custom-widgets design tokens >>> */"
