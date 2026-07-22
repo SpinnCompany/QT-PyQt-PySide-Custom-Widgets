@@ -121,20 +121,20 @@ def configure_settings(self, data, update: bool = False):
         settings = data['QSettings']  # Directly access the dictionary
         if "AppSettings" in settings:
             appSettings = settings['AppSettings']
-            if "OrginizationName" in appSettings and len(str(appSettings["OrginizationName"])) > 0:
-                self.themeEngine.orginazationName = str(appSettings["OrginizationName"])
+            if "OrganizationName" in appSettings and len(str(appSettings["OrganizationName"])) > 0:
+                self.themeEngine.organizationName = str(appSettings["OrganizationName"])
             else:
-                self.themeEngine.orginazationName = ""
+                self.themeEngine.organizationName = ""
 
             if "ApplicationName" in appSettings and len(str(appSettings["ApplicationName"])) > 0:
                 self.themeEngine.applicationName = str(appSettings["ApplicationName"])
             else:
                 self.themeEngine.applicationName = ""
 
-            if "OrginizationDormain" in appSettings and len(str(appSettings["OrginizationDormain"])) > 0:
-                self.themeEngine.orginazationDomain = str(appSettings["OrginizationDormain"]).replace(" ", "")
+            if "OrganizationDomain" in appSettings and len(str(appSettings["OrganizationDomain"])) > 0:
+                self.themeEngine.organizationDomain = str(appSettings["OrganizationDomain"]).replace(" ", "")
             else:
-                self.themeEngine.orginazationDomain = ""
+                self.themeEngine.organizationDomain = ""
 
         if "ThemeSettings" in settings:
             setngs = QSettings()
@@ -730,10 +730,10 @@ def configure_main_window(self, data, update: bool = False):
         qmainwindow = data.get("QMainWindow", {})
 
         self.customSideDrawers = qmainwindow.get("customSideDrawers", "")
-        title = qmainwindow.get("tittle", "")
+        title = qmainwindow.get("title", "")
         icon = qmainwindow.get("icon", "")
         frameless = qmainwindow.get("frameless", False)
-        translucent_bg = qmainwindow.get("transluscentBg", False)
+        translucent_bg = qmainwindow.get("translucentBg", False)
         size_grip = qmainwindow.get("sizeGrip", "")
         border_radius = qmainwindow.get("borderRadius", 0)
         self.borderRadius = border_radius
@@ -758,7 +758,7 @@ def configure_main_window(self, data, update: bool = False):
         restore_maximized_icon = restore.get("maximizedIcon", "")
 
         move_window = navigation.get("moveWindow", "")
-        title_bar = navigation.get("tittleBar", "")
+        title_bar = navigation.get("titleBar", "")
 
         # Add customSideDrawers support
         if "customSideDrawers" in qmainwindow:

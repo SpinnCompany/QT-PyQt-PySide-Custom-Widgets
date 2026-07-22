@@ -75,7 +75,7 @@ class QCustomQMainWindow(QMainWindow):
     ]
 
     def __init__(self, parent=None, frameless: bool = False, translucentBg: bool = False, minimizeBtn: QPushButton = None, closeBtn: QPushButton = None, restoreBtn: QPushButton = None,
-                restoreBtnNormalIcon: QIcon = None, restoreBtnMaximizedIcon: QIcon = None, tittleBar: QWidget | QFrame = None, moveWindow: QWidget | QFrame = None, sizeGrip: QWidget | QFrame = None):
+                restoreBtnNormalIcon: QIcon = None, restoreBtnMaximizedIcon: QIcon = None, titleBar: QWidget | QFrame = None, moveWindow: QWidget | QFrame = None, sizeGrip: QWidget | QFrame = None):
         super().__init__(parent)
 
         self._frameless = frameless
@@ -85,7 +85,7 @@ class QCustomQMainWindow(QMainWindow):
         self._restore_btn = restoreBtn
         self._restore_btn_normal_icon = restoreBtnNormalIcon
         self._restore_btn_maximized_icon = restoreBtnMaximizedIcon
-        self._title_bar = tittleBar
+        self._title_bar = titleBar
         self._move_window = moveWindow
         self._size_grip = sizeGrip
         self._designer_prev = True
@@ -273,7 +273,7 @@ class QCustomQMainWindow(QMainWindow):
 
         updateJson(
             self._json_file,
-            "QMainWindow.transluscentBg",
+            "QMainWindow.translucentBg",
             value,
             self = self
         )
@@ -381,7 +381,7 @@ class QCustomQMainWindow(QMainWindow):
 
         updateJson(
             self._json_file,
-            "QMainWindow.navigation.tittleBar",
+            "QMainWindow.navigation.titleBar",
             widget,
             self = self
         )

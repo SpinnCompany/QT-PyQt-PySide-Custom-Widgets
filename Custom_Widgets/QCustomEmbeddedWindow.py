@@ -46,7 +46,7 @@ class LoadForm(QWidget):
         painter.setRenderHint(QPainter.Antialiasing)
         self.style().drawPrimitive(QStyle.PE_Widget, opt, painter, self)
 
-class QCustomEmbededWindow(QWidget):
+class QCustomEmbeddedWindow(QWidget):
 
     closed = Signal()
 
@@ -204,7 +204,7 @@ class QCustomEmbededWindow(QWidget):
         self.setGraphicsEffect(self.shadow)
 
     def __repr__(self):
-        return f"<Custom.QCustomEmbededWindow(parent={self.parent()})>"
+        return f"<Custom.QCustomEmbeddedWindow(parent={self.parent()})>"
 
     def setTitle(self, text):
         self.titleTxt = text

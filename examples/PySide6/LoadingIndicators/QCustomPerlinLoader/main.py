@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout
 from PySide6.QtGui import QColor
 from Custom_Widgets.QCustomLoadingIndicators import QCustomPerlinLoader
 
-class MainWindow(QMainWindow):
+class MainWindow(QCustomMainWindow):
     def __init__(self):
         super().__init__()
         # Create a loader widget with the main window as parent

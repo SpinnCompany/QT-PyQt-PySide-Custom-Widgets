@@ -27,9 +27,9 @@ from Custom_Widgets.QAppSettings import QAppSettings
 ########################################################################
 ## MAIN WINDOW CLASS
 ########################################################################
-class MainWindow(QMainWindow):
+class MainWindow(QCustomMainWindow):
     def __init__(self, parent=None):
-        QMainWindow.__init__(self)
+        QCustomMainWindow.__init__(self)
         self.ui = Ui_CustomMainWindow()
         self.ui.setupUi(self)
 

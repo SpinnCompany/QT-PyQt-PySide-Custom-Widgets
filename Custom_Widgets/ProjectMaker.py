@@ -529,9 +529,9 @@ def create_project():
         # Update QSettings
         data["QSettings"] = {
             "AppSettings": {
-                "OrginizationName": org_name,
+                "OrganizationName": org_name,
                 "ApplicationName": appName,
-                "OrginizationDormain": domain_name
+                "OrganizationDomain": domain_name
             },
             "ThemeSettings": {
                 "QtDesignerIconsColor": qt_normal_color,

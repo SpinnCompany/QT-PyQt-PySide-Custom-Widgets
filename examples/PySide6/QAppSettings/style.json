@@ -2,16 +2,16 @@
     "ShowLogs": false,
     "QMainWindow": [
         {
-            "tittle": "QT Settings Session",
+            "title": "QT Settings Session",
             "icon":":/icons/icons/tiktok_logo_icon_134006.png",
             "frameless": true,
-            "transluscentBg": true,
+            "translucentBg": true,
             "sizeGrip": "sizeGrip",
             "navigation":[
                 {
                     "close": "exit",
                     "moveWindow": "header",
-                    "tittleBar": "header"
+                    "titleBar": "header"
                 }
             ]
         }
@@ -41,9 +41,9 @@
                 }
             ],
             "AppSettings": {
-                "OrginizationName": "QT Settings Session",
+                "OrganizationName": "QT Settings Session",
                 "ApplicationName": "QT Settings Session Company",
-                "OrginizationDormain": "QT Settings Session.org"
+                "OrganizationDomain": "QT Settings Session.org"
             }
         }
     ],

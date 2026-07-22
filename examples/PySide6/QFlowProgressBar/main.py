@@ -6,7 +6,7 @@ from PySide6.QtGui import QColor
 from Custom_Widgets.QFlowProgressBar import QFlowProgressBar
 
 
-class MainWindow(QMainWindow):
+class MainWindow(QCustomMainWindow):
     def __init__(self):
         super().__init__()
 

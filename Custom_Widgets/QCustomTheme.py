@@ -59,7 +59,11 @@ class QCustomTheme(QObject):
 
     def __init__(self, parent=None):
         if not hasattr(self, "_initialized"):  # To prevent reinitialization
-            super().__init__(parent)
+            # NEVER adopt a QObject parent: the theme engine is a process
+            # singleton and a parent (e.g. the first QCustomQMainWindow)
+            # would let Qt destroy it with that widget, leaving every later
+            # QCustomTheme() caller a dead C++ wrapper.
+            super().__init__(None)
             self._theme = "default"
             self._themes = []
             self._last_variables_scss = None

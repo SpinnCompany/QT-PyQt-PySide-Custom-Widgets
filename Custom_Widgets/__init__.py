@@ -24,7 +24,11 @@ from Custom_Widgets.FileMonitor import QSsFileMonitor
 from Custom_Widgets.Project import projectRoot, setProjectRoot  # noqa: E402
 script_dir = projectRoot().replace("\\", "/")
 
-class QMainWindow(QMainWindow):
+class QCustomMainWindow(QMainWindow):
+    """Frameless-capable main window with the Custom_Widgets theme engine,
+    drag/resize, side drawers and live QSS. v3 rename: this class used to
+    SHADOW Qt's QMainWindow when star-importing Custom_Widgets - subclass
+    QCustomMainWindow explicitly instead."""
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -33,9 +37,9 @@ class QMainWindow(QMainWindow):
         self.iconsWorker = None
         self.allIconsWorker = None
         
-        self.orginazationName = ""
+        self.organizationName = ""
         self.applicationName = ""
-        self.orginazationDomain = ""
+        self.organizationDomain = ""
 
         self._border_width = 5 #for resizing
         self.borderWidth = self._border_width
@@ -152,7 +156,7 @@ class QMainWindow(QMainWindow):
     def restore_or_maximize_window(self):
         self.toggleWindowSize("")
 
-    # Function to Move window on mouse drag event on the tittle bar
+    # Function to Move window on mouse drag event on the title bar
     def moveWindow(self, e):
         # Detect if the window is  normal size
         if not self.isMaximized(): #Not maximized
