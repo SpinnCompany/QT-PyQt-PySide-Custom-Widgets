@@ -129,6 +129,18 @@ def createQrcFile(contents, filePath):
 
     # print(f'QRC file generated: {filePath}')
 
+def _qtToolPath(tool):
+    """Resolve a Qt CLI tool (pyside6-uic, pyside6-rcc, ...) preferring the
+    running interpreter's environment over whatever is first on PATH - the
+    PATH copy may belong to a different Python without the binding."""
+    exe_dir = os.path.dirname(sys.executable)
+    for candidate in (os.path.join(exe_dir, tool),
+                      os.path.join(exe_dir, tool + ".exe")):
+        if os.path.isfile(candidate):
+            return candidate
+    return tool  # fall back to PATH
+
+
 def qrcToPy(qrcFile, pyFile):
     """
     Convert a Qt Resource Collection (qrc) file to a Python file.
@@ -148,7 +160,7 @@ def qrcToPy(qrcFile, pyFile):
                 "supports PySide6 and PyQt6")
 
         logInfo(f'{rcc_command} "{qrcFile}" -o "{pyFile}"')
-        subprocess.run([rcc_command, qrcFile, "-o", pyFile], check=True)
+        subprocess.run([_qtToolPath(rcc_command), qrcFile, "-o", pyFile], check=True)
 
     except Exception as e:
         logError(f"Error converting qrc to py: {e}")
@@ -171,7 +183,7 @@ def uiToPy(uiFile, pyFile):
                 f"Unsupported Qt binding '{qtpy.API_NAME}': Custom_Widgets "
                 "supports PySide6 and PyQt6")
 
-        subprocess.run([pyuic_command, uiFile, "-o", pyFile], check=True)
+        subprocess.run([_qtToolPath(pyuic_command), uiFile, "-o", pyFile], check=True)
 
     except Exception as e:
         logError(f"Error converting ui to py: {e}")
