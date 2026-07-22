@@ -240,6 +240,22 @@ for _xw, _xg in ((QCustomEmptyState, "Display Widgets"),
         logException(e, message="Error registering %s" % _xw.__name__)
 
 
+from Custom_Widgets.QCustomSwitch import QCustomSwitch
+from Custom_Widgets.QCustomNumberInput import QCustomNumberInput
+from Custom_Widgets.QCustomAlert import QCustomAlert
+
+for _nw, _ng in ((QCustomSwitch, "Input Widgets"),
+                 (QCustomNumberInput, "Input Widgets"),
+                 (QCustomAlert, "Display Widgets")):
+    try:
+        logInfo("Registering %s" % _nw.__name__)
+        QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+            _nw, module=_nw.WIDGET_MODULE, tool_tip=_nw.WIDGET_TOOLTIP,
+            xml=_nw.WIDGET_DOM_XML, icon=_nw.WIDGET_ICON, group=_ng)
+    except Exception as e:
+        logException(e, message="Error registering %s" % _nw.__name__)
+
+
 from Custom_Widgets.QCustomThemeList import QCustomThemeList
 
 # Registering QCustomThemeList with error handling
