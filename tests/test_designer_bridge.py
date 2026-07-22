@@ -84,6 +84,36 @@ def test_unknown_method_reports_error(qapp, bridge):
     assert "error" in _request(qapp, bridge, {"method": "nope"})
 
 
+def test_extended_protocol_without_forms(qapp, bridge):
+    """The reference-parity methods respond sanely outside Designer."""
+    assert _request(qapp, bridge, {"method": "getObjectInfos"})["result"] == []
+    assert "error" in _request(qapp, bridge, {"method": "getUiCode", "type": "xml"})
+    assert "error" in _request(qapp, bridge, {"method": "getScreenShot", "type": "current"})
+    reply = _request(qapp, bridge, {"method": "closeFiles", "all": True})
+    assert reply == {"result": "ok", "closed": []}
+
+
+def test_open_files_ignores_missing(qapp, bridge, project_dir):
+    reply = _request(qapp, bridge, {"method": "openFiles",
+                                    "files": [str(project_dir / "missing.ui")]})
+    assert reply == {"result": "ok", "opened": []}
+
+
+def test_screenshot_main_window(qapp, bridge):
+    """'main' grabs any visible QMainWindow - create one for the test."""
+    from qtpy.QtWidgets import QMainWindow
+
+    window = QMainWindow()
+    window.resize(120, 80)
+    window.show()
+    _spin(qapp, 0.1)
+    try:
+        reply = _request(qapp, bridge, {"method": "getScreenShot", "type": "main"})
+        assert isinstance(reply.get("result"), str) and len(reply["result"]) > 100
+    finally:
+        window.close()
+
+
 def test_client_fails_silently_without_server(qapp, tmp_path):
     from Custom_Widgets.DesignerBridge import DesignerBridgeClient
 

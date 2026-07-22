@@ -399,3 +399,10 @@ try:
     startDesignerBridge()
 except Exception as e:
     logException(e, message="Error starting Designer bridge")
+
+## Tool docks: Log View, UI Workspace, QSS Editor (see DesignerTools.py)
+try:
+    from Custom_Widgets.DesignerTools import installDesignerTools
+    installDesignerTools()
+except Exception as e:
+    logException(e, message="Error installing Designer tools")

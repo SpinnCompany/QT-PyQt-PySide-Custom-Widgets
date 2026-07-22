@@ -21,6 +21,7 @@
 import hashlib
 import json
 import os
+import sys
 
 from qtpy.QtCore import QObject, QDir
 from qtpy.QtGui import QPixmapCache
@@ -116,6 +117,18 @@ class DesignerBridgeServer(QObject):
             return {"result": "ok"}
         if method == "reloadForms":
             return {"result": "ok", "reloaded": self._reloadForms()}
+        if method == "openFiles":
+            return {"result": "ok", "opened": self.openFiles(message.get("files", []))}
+        if method == "closeFiles":
+            return {"result": "ok",
+                    "closed": self._closeFiles(message.get("files", []),
+                                               bool(message.get("all", False)))}
+        if method == "getObjectInfos":
+            return {"result": self._objectInfos()}
+        if method == "getUiCode":
+            return self._uiCode(str(message.get("type", "xml")))
+        if method == "getScreenShot":
+            return self._screenShot(str(message.get("type", "current")))
         return {"error": f"unknown method '{method}'"}
 
     ####################################################################
@@ -177,6 +190,144 @@ class DesignerBridgeServer(QObject):
             except Exception as e:
                 logDebug(f"Designer bridge: reload failed for form: {e}")
         return reloaded
+
+    def _formWindowManager(self):
+        """The form window manager, reachable through any open form."""
+        for fw in self._formWindows():
+            try:
+                return fw.core().formWindowManager()
+            except Exception:
+                continue
+        return None
+
+    def openFiles(self, files):
+        """Open .ui files in this Designer instance when the form window
+        manager is reachable (any form already open); otherwise fall back
+        to a new Designer process."""
+        opened = []
+        pending = []
+        manager = self._formWindowManager()
+        for path in files:
+            path = os.path.abspath(str(path).replace("\\", "/"))
+            if not os.path.exists(path):
+                continue
+            if manager is not None:
+                try:
+                    with open(path, encoding="utf-8") as f:
+                        contents = f.read()
+                    fw = manager.createFormWindow()
+                    fw.setFileName(path)
+                    fw.setContents(contents)
+                    manager.setActiveFormWindow(fw)
+                    fw.show()
+                    opened.append(os.path.basename(path))
+                    continue
+                except Exception as e:
+                    logDebug(f"Designer bridge: in-process open failed: {e}")
+            pending.append(path)
+
+        if pending:
+            # No reachable manager - open in a fresh Designer window
+            from qtpy.QtCore import QProcess
+            program = sys.executable if 'designer' in sys.executable.lower() else 'pyside6-designer'
+            QProcess.startDetached(program, pending)
+            opened.extend(os.path.basename(p) + " (new window)" for p in pending)
+        return opened
+
+    def _closeFiles(self, files, close_all=False):
+        wanted = {os.path.abspath(str(f).replace("\\", "/")) for f in files}
+        closed = []
+        for fw in self._formWindows():
+            try:
+                path = os.path.abspath(fw.fileName() or "")
+                if not close_all and path not in wanted:
+                    continue
+                # close the MDI subwindow / top level holding the form
+                holder = fw.parentWidget()
+                while holder is not None and not holder.inherits("QMdiSubWindow") \
+                        and holder.parentWidget() is not None:
+                    holder = holder.parentWidget()
+                (holder or fw).close()
+                closed.append(os.path.basename(path))
+            except Exception as e:
+                logDebug(f"Designer bridge: close failed: {e}")
+        return closed
+
+    def _objectInfos(self):
+        """Widget tree of every open form: class, objectName, geometry."""
+        def info(widget):
+            geo = widget.geometry()
+            return {
+                "class": widget.metaObject().className(),
+                "name": widget.objectName(),
+                "geometry": [geo.x(), geo.y(), geo.width(), geo.height()],
+                "children": [info(c) for c in widget.children()
+                             if isinstance(c, QWidget)],
+            }
+        return [{"file": fw.fileName(), "tree": info(fw.mainContainer())}
+                for fw in self._formWindows() if fw.mainContainer() is not None]
+
+    def _uiCode(self, code_type):
+        """Current (dirty-aware) contents of the active form, as ui XML or
+        generated Python."""
+        forms = self._formWindows()
+        if not forms:
+            return {"error": "no open forms"}
+        fw = forms[0]
+        try:
+            manager = self._formWindowManager()
+            if manager is not None and manager.activeFormWindow() is not None:
+                fw = manager.activeFormWindow()
+        except Exception:
+            pass
+        xml = fw.contents()
+        if code_type in ("xml", "ui", ""):
+            return {"result": xml, "file": fw.fileName()}
+        if code_type in ("pyside6", "python", "py"):
+            import subprocess
+            import tempfile
+            with tempfile.NamedTemporaryFile("w", suffix=".ui", delete=False,
+                                             encoding="utf-8") as tmp:
+                tmp.write(xml)
+                tmp_path = tmp.name
+            try:
+                proc = subprocess.run(["pyside6-uic", tmp_path],
+                                      capture_output=True, text=True, timeout=30)
+                if proc.returncode != 0:
+                    return {"error": proc.stderr[:2000]}
+                return {"result": proc.stdout, "file": fw.fileName()}
+            finally:
+                os.unlink(tmp_path)
+        return {"error": f"unknown code type '{code_type}'"}
+
+    def _screenShot(self, shot_type):
+        """Base64 PNG of the active form ('current'), every form ('all') or
+        the Designer main window ('main')."""
+        import base64
+        from qtpy.QtCore import QBuffer, QIODevice
+
+        def grab_b64(widget):
+            pixmap = widget.grab()
+            buffer = QBuffer()
+            buffer.open(QIODevice.WriteOnly)
+            pixmap.save(buffer, "PNG")
+            return base64.b64encode(bytes(buffer.data())).decode("ascii")
+
+        app = QApplication.instance()
+        if shot_type == "main":
+            windows = [w for w in (app.topLevelWidgets() if app else [])
+                       if w.inherits("QMainWindow") and w.isVisible()]
+            if not windows:
+                return {"error": "no main window"}
+            return {"result": grab_b64(windows[0])}
+
+        forms = [fw for fw in self._formWindows() if fw.mainContainer() is not None]
+        if not forms:
+            return {"error": "no open forms"}
+        if shot_type == "all":
+            return {"result": [{"file": fw.fileName(),
+                                "png": grab_b64(fw.mainContainer())} for fw in forms]}
+        return {"result": grab_b64(forms[0].mainContainer()), "file": forms[0].fileName()}
 
 
 class DesignerBridgeClient:
