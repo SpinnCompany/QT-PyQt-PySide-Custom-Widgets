@@ -143,52 +143,22 @@ class QCustomQStackedWidget(QStackedWidget):
         else:
             raise Exception("slideTransition only accepts boolean variables")
 
-    @Property(str)
+    @Property(Qt.Orientation)
     def transitionDirection(self):
-        """Get the current transition direction as a string."""
-        # Always return string for Qt Designer compatibility
-        return self._transitionDirection
+        """Slide transition direction. Exposed as Qt.Orientation so Qt
+        Designer shows a Horizontal/Vertical dropdown."""
+        return Qt.Vertical if self._transitionDirection == 'vertical' else Qt.Horizontal
 
     @transitionDirection.setter
     def transitionDirection(self, direction):
-        """
-        Set the transition direction.
-        
-        Args:
-            direction (str or Qt.Orientation): Either 'horizontal', 'vertical', 
-                                               or Qt.Horizontal/Qt.Vertical.
-                                               
-        Raises:
-            Exception: If direction is not a valid string or Qt.Orientation.
-        """
-        if is_in_designer(self):
-            # In Qt Designer, always accept string and store as-is
-            if isinstance(direction, str):
-                self._transitionDirection = direction
-            else:
-                # Convert Qt.Orientation to string for designer
-                if direction == Qt.Horizontal:
-                    self._transitionDirection = "horizontal"
-                elif direction == Qt.Vertical:
-                    self._transitionDirection = "vertical"
+        """Accepts Qt.Orientation (Qt.Horizontal/Qt.Vertical). Legacy string
+        values ('horizontal'/'vertical'/'h'/'v') are still coerced so older
+        .ui files keep loading."""
+        if isinstance(direction, str):
+            self._transitionDirection = 'vertical' \
+                if direction.lower().strip() in ('vertical', 'v', 'vert') else 'horizontal'
         else:
-            # At runtime, normalize the string
-            if isinstance(direction, str):
-                # Normalize the string
-                direction_lower = direction.lower().strip()
-                if direction_lower in ['horizontal', 'h', 'horiz']:
-                    self._transitionDirection = 'horizontal'
-                elif direction_lower in ['vertical', 'v', 'vert']:
-                    self._transitionDirection = 'vertical'
-                else:
-                    # Default to horizontal for invalid strings
-                    self._transitionDirection = 'horizontal'
-            elif isinstance(direction, Qt.Orientation):
-                # Convert Qt.Orientation to string
-                if direction == Qt.Horizontal:
-                    self._transitionDirection = 'horizontal'
-                elif direction == Qt.Vertical:
-                    self._transitionDirection = 'vertical'
+            self._transitionDirection = 'vertical' if direction == Qt.Vertical else 'horizontal'
 
     @Property(int)
     def transitionTime(self):

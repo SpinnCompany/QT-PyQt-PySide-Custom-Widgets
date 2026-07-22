@@ -91,67 +91,88 @@ class QCustomSidebar(QCustomSlideMenu):
             # If conversion fails, return the original string
             return s
 
+    # Size properties are typed as int for Qt Designer. A value of -1 means
+    # "match the parent's size" (stored internally as the "parent" sentinel
+    # the slide menu understands). Legacy string values ("parent"/"250")
+    # are still accepted so older .ui files keep loading.
+    MATCH_PARENT = -1
+
+    def _sizeToInt(self, value):
+        """internal storage (int or 'parent') -> public int (-1 == parent)"""
+        if value == "parent":
+            return self.MATCH_PARENT
+        return self.convert_to_int(value)
+
+    def _intToSize(self, value):
+        """public value (int/-1 or legacy string) -> internal storage"""
+        if isinstance(value, str) and value.strip().lower() == "parent":
+            return "parent"
+        value = self.convert_to_int(value)
+        if value == self.MATCH_PARENT:
+            return "parent"
+        return value
+
     # Properties for default size (separate width and height)
-    @Property(str)
+    @Property(int)
     def defaultWidth(self):
-        return str(self._defaultWidth)
+        return self._sizeToInt(self._defaultWidth)
 
     @defaultWidth.setter
     def defaultWidth(self, width):
-        self._defaultWidth = self.convert_to_int(width)
+        self._defaultWidth = self._intToSize(width)
         self.setMinSize()
         self.customizeQCustomSlideMenu(update=False, defaultWidth=self._defaultWidth)
 
-    @Property(str)
+    @Property(int)
     def defaultHeight(self):
-        return str(self._defaultHeight)
+        return self._sizeToInt(self._defaultHeight)
 
     @defaultHeight.setter
     def defaultHeight(self, height):
-        self._defaultHeight = self.convert_to_int(height)
+        self._defaultHeight = self._intToSize(height)
         self.setMinSize()
         self.customizeQCustomSlideMenu(update=False, defaultHeight=self._defaultHeight)
 
 
     # Properties for collapsed size (separate width and height)
-    @Property(str)
+    @Property(int)
     def collapsedWidth(self):
-        return str(self._collapsedWidth)
+        return self._sizeToInt(self._collapsedWidth)
 
     @collapsedWidth.setter
     def collapsedWidth(self, width):
-        self._collapsedWidth = self.convert_to_int(width)
+        self._collapsedWidth = self._intToSize(width)
         self.customizeQCustomSlideMenu(update=False, collapsedWidth=self._collapsedWidth, collapsedHeight=self._collapsedHeight)
 
-    @Property(str)
+    @Property(int)
     def collapsedHeight(self):
-        return str(self._collapsedHeight)
+        return self._sizeToInt(self._collapsedHeight)
 
     @collapsedHeight.setter
     def collapsedHeight(self, height):
-        self._collapsedHeight = self.convert_to_int(height)
+        self._collapsedHeight = self._intToSize(height)
         self.customizeQCustomSlideMenu(update=False, collapsedWidth=self._collapsedWidth, collapsedHeight=self._collapsedHeight)
 
     # Properties for expanded size (separate width and height)
-    @Property(str)
+    @Property(int)
     def expandedWidth(self):
-        return str(self._expandedWidth)
+        return self._sizeToInt(self._expandedWidth)
 
     @expandedWidth.setter
     def expandedWidth(self, width):
-        self._expandedWidth = self.convert_to_int(width)
+        self._expandedWidth = self._intToSize(width)
         self.customizeQCustomSlideMenu(update=False, expandedWidth=self._expandedWidth, expandedHeight=self._expandedHeight)
-        
 
-    @Property(str)
+
+    @Property(int)
     def expandedHeight(self):
-        return str(self._expandedHeight)
+        return self._sizeToInt(self._expandedHeight)
 
     @expandedHeight.setter
     def expandedHeight(self, height):
-        self._expandedHeight = self.convert_to_int(height)
+        self._expandedHeight = self._intToSize(height)
         self.customizeQCustomSlideMenu(update=False, expandedWidth=self._expandedWidth, expandedHeight=self._expandedHeight)
-        
+
 
     # Toggle button properties
     @Property(str)

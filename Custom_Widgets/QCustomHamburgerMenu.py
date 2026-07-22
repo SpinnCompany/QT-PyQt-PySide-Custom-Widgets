@@ -1,4 +1,5 @@
 import os
+from enum import IntEnum
 from qtpy.QtCore import Qt, QPropertyAnimation, QSize, QEvent, Property, QEasingCurve, QRect, QPoint
 from qtpy.QtWidgets import (QMdiSubWindow, QWidget, QGraphicsDropShadowEffect, QGraphicsBlurEffect,
                               QVBoxLayout, QHBoxLayout, QPushButton, QStyleOption, 
@@ -38,11 +39,23 @@ class QCustomHamburgerMenu(QWidget):
     """
     WIDGET_MODULE = "Custom_Widgets.QCustomHamburgerMenu"
     
-    # String constants for position property
+    # String constants for position property (used internally + for QSS)
     POSITION_LEFT = "Left"
     POSITION_RIGHT = "Right"
     POSITION_TOP = "Top"
     POSITION_BOTTOM = "Bottom"
+
+    # Typed position for Qt Designer (an int-backed enum - developers write
+    # QCustomHamburgerMenu.Position.Left; Designer shows a spin box, not a
+    # free-form string). Values match _stringToPosition's numeric aliases.
+    class Position(IntEnum):
+        Left = 0
+        Right = 1
+        Top = 2
+        Bottom = 3
+
+    _POSITION_TO_INT = {POSITION_LEFT: 0, POSITION_RIGHT: 1,
+                        POSITION_TOP: 2, POSITION_BOTTOM: 3}
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -161,10 +174,15 @@ class QCustomHamburgerMenu(QWidget):
     def acrylicNoiseOpacity(self, value):
         self._acrylicNoiseOpacity = max(0.0, min(1.0, value))
     
-    def _stringToPosition(self, position_str):
-        """Convert string position to normalized format."""
-        position_str = str(position_str).lower().strip()
-        
+    def _stringToPosition(self, position):
+        """Normalize a position given as the Position enum, an int, or a
+        legacy string ('Left'/'Right'/'Top'/'Bottom') to the internal
+        string constant."""
+        if isinstance(position, (int, IntEnum)) and not isinstance(position, bool):
+            by_int = {0: self.POSITION_LEFT, 1: self.POSITION_RIGHT,
+                      2: self.POSITION_TOP, 3: self.POSITION_BOTTOM}
+            return by_int.get(int(position), self.POSITION_LEFT)
+        position_str = str(position).lower().strip()
         if position_str in ["left", "0"]:
             return self.POSITION_LEFT
         elif position_str in ["right", "1"]:
@@ -251,20 +269,18 @@ class QCustomHamburgerMenu(QWidget):
         return QRect(0, 0, actual_width, actual_height)
 
     # Property getters and setters
-    @Property(str)
+    @Property(int)
     def position(self):
-        return self._position
-    
+        """Menu edge as an int (see QCustomHamburgerMenu.Position:
+        Left=0, Right=1, Top=2, Bottom=3). Legacy string values are still
+        accepted for backward compatibility."""
+        return self._POSITION_TO_INT.get(self._position, 0)
+
     @position.setter
     def position(self, value):
-        normalized_position = self._stringToPosition(value)
-        
-        if normalized_position in [self.POSITION_LEFT, self.POSITION_RIGHT, 
-                                 self.POSITION_TOP, self.POSITION_BOTTOM]:
-            self._position = normalized_position
-            self._updatePosition()
-        else:
-            raise ValueError('Position must be "Left", "Right", "Top", or "Bottom"')
+        # Accept the Position enum / int (from Designer) or a legacy string.
+        self._position = self._stringToPosition(value)
+        self._updatePosition()
     
     @Property(int)
     def animationDuration(self):
