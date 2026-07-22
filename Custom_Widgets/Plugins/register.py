@@ -128,6 +128,21 @@ except Exception as e:
     logException(e, message="Error registering QCustomComboBox")
 
 
+from Custom_Widgets.QCustomDateTimeEdit import (QCustomDateEdit, QCustomTimeEdit,
+                                                QCustomDateRangeEdit)
+
+for _dtw, _grp in ((QCustomDateEdit, "Input Widgets"),
+                   (QCustomTimeEdit, "Input Widgets"),
+                   (QCustomDateRangeEdit, "Input Widgets")):
+    try:
+        logInfo("Registering %s" % _dtw.__name__)
+        QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+            _dtw, module=_dtw.WIDGET_MODULE, tool_tip=_dtw.WIDGET_TOOLTIP,
+            xml=_dtw.WIDGET_DOM_XML, icon=_dtw.WIDGET_ICON, group=_grp)
+    except Exception as e:
+        logException(e, message="Error registering %s" % _dtw.__name__)
+
+
 from Custom_Widgets.QCustomThemeList import QCustomThemeList
 
 # Registering QCustomThemeList with error handling
