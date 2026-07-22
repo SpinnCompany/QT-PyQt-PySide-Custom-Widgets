@@ -408,7 +408,7 @@ class QCustomDataTable(QWidget):
         {"name": "showGrid", "kind": "bool", "group": "Appearance"},
         {"name": "showHeader", "kind": "bool", "group": "Appearance"},
         {"name": "variant", "kind": "str", "group": "Appearance"},
-        {"name": "size", "kind": "str", "group": "Appearance"},
+        {"name": "sizeVariant", "kind": "str", "group": "Appearance"},
     ]
 
     # -- Machine-readable catalog (MCP / agent introspection) --
@@ -422,7 +422,8 @@ class QCustomDataTable(QWidget):
             "variant": {"type": "enum",
                         "values": ["primary", "secondary", "outline", "ghost"],
                         "default": "outline"},
-            "size": {"type": "enum", "values": ["sm", "md", "lg"], "default": "md"},
+            "sizeVariant": {"type": "enum", "values": ["sm", "md", "lg"],
+                            "default": "md"},
         },
         "signals": ["rowSelected", "cellClicked", "sortChanged", "pageChanged"],
         "tokens_used": ["surface", "on-surface", "surface-muted", "outline",
@@ -453,7 +454,7 @@ class QCustomDataTable(QWidget):
         self._showGrid = False
         self._showHeader = True
         self._variant = "outline"
-        self._size = "md"
+        self._sizeVariant = "md"
         self._pageProxy = None
         self._selModel = None
         self._lastPage = -1
@@ -700,7 +701,7 @@ class QCustomDataTable(QWidget):
             self.setData(customValues["rows"])
         for name in ("pageSize", "showPagination", "selectionMode", "sortable",
                      "filterable", "alternatingRowColors", "showGrid", "showHeader",
-                     "variant", "size"):
+                     "variant", "sizeVariant"):
             if name in customValues:
                 setattr(self, name, customValues[name])
         if "filterText" in customValues:
@@ -787,16 +788,16 @@ class QCustomDataTable(QWidget):
 
     @variant.setter
     def variant(self, value):
+        # declared Qt property: QSS [variant="..."] reads the getter directly,
+        # so we must NOT call setProperty("variant") here (it would recurse).
         self._variant = str(value)
-        self.setProperty("variant", self._variant)  # for QSS attribute selectors
         self._repolish()
 
     @Property(str)
-    def size(self):
-        return self._size
+    def sizeVariant(self):
+        return self._sizeVariant
 
-    @size.setter
-    def size(self, value):
-        self._size = str(value)
-        self.setProperty("size", self._size)
+    @sizeVariant.setter
+    def sizeVariant(self, value):
+        self._sizeVariant = str(value)
         self._repolish()

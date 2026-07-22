@@ -13,7 +13,7 @@ from Custom_Widgets import iconify as ico
 ########################################################################
 ## MODULE UPDATED TO USE QT.PY
 ########################################################################
-from qtpy.QtCore import QVariantAnimation, QAbstractAnimation, QSize
+from qtpy.QtCore import QVariantAnimation, QAbstractAnimation, QSize, Property
 from qtpy.QtGui import QColor
 from qtpy.QtWidgets import QPushButton, QGraphicsDropShadowEffect
 
@@ -69,7 +69,56 @@ class QCustomQPushButton(QPushButton):
         # SET DEFAULT SHADOW EVENT TO NONE
         self.applyShadowOn = None
 
+        # DESIGN-TOKEN VARIANT / SIZE. These are declared Qt properties, which
+        # QSS attribute selectors (QCustomQPushButton[variant="..."]) read via
+        # the getter - so we never call setProperty(name) for them (that would
+        # re-enter the setter and recurse). sizeVariant is used rather than
+        # "size" to avoid shadowing QWidget.size().
+        self._variant = "primary"
+        self._sizeVariant = "md"
 
+    # -- Machine-readable catalog (MCP / agent introspection) --
+    __catalog__ = {
+        "name": "QCustomQPushButton",
+        "props": {
+            "variant": {"type": "enum",
+                        "values": ["primary", "secondary", "outline", "ghost",
+                                   "destructive"],
+                        "default": "primary"},
+            "sizeVariant": {"type": "enum", "values": ["sm", "md", "lg"],
+                            "default": "md"},
+        },
+        "signals": ["clicked"],
+        "tokens_used": ["primary", "on-primary", "primary-hover", "secondary",
+                        "on-secondary", "secondary-hover", "outline",
+                        "surface-muted", "destructive", "on-destructive",
+                        "destructive-hover", "on-surface", "focus-ring"],
+    }
+
+    def _repolish(self):
+        """Re-evaluate QSS attribute selectors after a dynamic property change
+        (Qt does not do this automatically)."""
+        self.style().unpolish(self)
+        self.style().polish(self)
+        self.update()
+
+    @Property(str)
+    def variant(self):
+        return self._variant
+
+    @variant.setter
+    def variant(self, value):
+        self._variant = str(value)
+        self._repolish()
+
+    @Property(str)
+    def sizeVariant(self):
+        return self._sizeVariant
+
+    @sizeVariant.setter
+    def sizeVariant(self, value):
+        self._sizeVariant = str(value)
+        self._repolish()
 
     ########################################################################
     ## BUTTON THEMES
