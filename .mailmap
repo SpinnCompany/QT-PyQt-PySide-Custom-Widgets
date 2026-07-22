@@ -1,0 +1,8 @@
+# .mailmap — consolidate maintainer identities so authorship/copyright is
+# unambiguous (Khamisi Kibet / SpinnCompany are the same project owner).
+# Canonical: Khamisi Kibet <kibetkhamisi@gmail.com>
+# Verify with:  git shortlog -sne
+Khamisi Kibet <kibetkhamisi@gmail.com> <82152373+KhamisiKibet@users.noreply.github.com>
+Khamisi Kibet <kibetkhamisi@gmail.com> <spinncompany@gmail.com>
+Khamisi Kibet <kibetkhamisi@gmail.com> KhamisiKibet <kibetkhamisi@gmail.com>
+Khamisi Kibet <kibetkhamisi@gmail.com> SpinnCompany <spinncompany@gmail.com>
