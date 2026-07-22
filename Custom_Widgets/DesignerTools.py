@@ -18,6 +18,7 @@
 import logging
 import os
 import re
+import sys
 
 from qtpy.QtCore import Qt, QObject, QTimer, Signal, QStringListModel
 from qtpy.QtGui import (QColor, QFont, QSyntaxHighlighter, QTextCharFormat,
@@ -182,6 +183,244 @@ class LogViewDock(QDockWidget):
 
 
 ########################################################################
+## FORM TEMPLATES - "New Form..." starting points
+########################################################################
+def _tmpl_dashboard(cls_name):
+    return f"""<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>{cls_name}</class>
+ <widget class="QCustomQMainWindow" name="{cls_name}">
+  <property name="geometry">
+   <rect><x>0</x><y>0</y><width>960</width><height>640</height></rect>
+  </property>
+  <property name="windowTitle"><string>{cls_name}</string></property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="mainLayout">
+    <property name="spacing"><number>0</number></property>
+    <item>
+     <widget class="QCustomSidebar" name="leftMenu">
+      <layout class="QVBoxLayout" name="menuLayout">
+       <item>
+        <widget class="QPushButton" name="menuBtn">
+         <property name="text"><string>MENU</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomSidebarButton" name="homeBtn">
+         <property name="text"><string>Home</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomSidebarButton" name="settingsBtn">
+         <property name="text"><string>Settings</string></property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="menuSpacer">
+         <property name="orientation"><enum>Qt::Vertical</enum></property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCustomQStackedWidget" name="mainPages">
+      <widget class="QWidget" name="homePage">
+       <layout class="QVBoxLayout" name="homeLayout">
+        <item>
+         <widget class="QLabel" name="homeTitle">
+          <property name="text"><string>Home</string></property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="settingsPage">
+       <layout class="QVBoxLayout" name="settingsLayout">
+        <item>
+         <widget class="QLabel" name="settingsTitle">
+          <property name="text"><string>Settings</string></property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomQMainWindow</class><extends>QMainWindow</extends>
+   <header>Custom_Widgets.QCustomQMainWindow</header><container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomSidebar</class><extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomSidebar</header><container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomSidebarButton</class><extends>QPushButton</extends>
+   <header>Custom_Widgets.QCustomSidebarButton</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomQStackedWidget</class><extends>QStackedWidget</extends>
+   <header>Custom_Widgets.QCustomQStackedWidget</header><container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
+"""
+
+
+def _tmpl_login(cls_name):
+    return f"""<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>{cls_name}</class>
+ <widget class="QWidget" name="{cls_name}">
+  <property name="geometry">
+   <rect><x>0</x><y>0</y><width>420</width><height>520</height></rect>
+  </property>
+  <property name="windowTitle"><string>Sign in</string></property>
+  <layout class="QVBoxLayout" name="outerLayout">
+   <item>
+    <spacer name="topSpacer">
+     <property name="orientation"><enum>Qt::Vertical</enum></property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QFrame" name="loginCard">
+     <layout class="QVBoxLayout" name="cardLayout">
+      <item>
+       <widget class="QLabel" name="titleLabel">
+        <property name="text"><string>Welcome back</string></property>
+        <property name="alignment"><set>Qt::AlignCenter</set></property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="emailEdit">
+        <property name="placeholderText"><string>Email</string></property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="passwordEdit">
+        <property name="placeholderText"><string>Password</string></property>
+        <property name="echoMode"><enum>QLineEdit::Password</enum></property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomCheckBox" name="rememberCheck">
+        <property name="text"><string>Remember me</string></property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="signInBtn">
+        <property name="text"><string>Sign in</string></property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="bottomSpacer">
+     <property name="orientation"><enum>Qt::Vertical</enum></property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomCheckBox</class><extends>QCheckBox</extends>
+   <header>Custom_Widgets.QCustomCheckBox</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
+"""
+
+
+def _tmpl_settings(cls_name):
+    return f"""<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>{cls_name}</class>
+ <widget class="QWidget" name="{cls_name}">
+  <property name="geometry">
+   <rect><x>0</x><y>0</y><width>560</width><height>480</height></rect>
+  </property>
+  <property name="windowTitle"><string>Settings</string></property>
+  <layout class="QVBoxLayout" name="outerLayout">
+   <item>
+    <widget class="QLabel" name="pageTitle">
+     <property name="text"><string>Settings</string></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCustomHorizontalSeparator" name="titleSeparator"/>
+   </item>
+   <item>
+    <layout class="QFormLayout" name="formLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="nameLabel">
+       <property name="text"><string>Display name</string></property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="nameEdit"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="notifyLabel">
+       <property name="text"><string>Notifications</string></property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QCustomCheckBox" name="notifyCheck"/>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="themeLabel">
+       <property name="text"><string>Theme</string></property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QCustomThemeList" name="themeList"/>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <spacer name="bottomSpacer">
+     <property name="orientation"><enum>Qt::Vertical</enum></property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomCheckBox</class><extends>QCheckBox</extends>
+   <header>Custom_Widgets.QCustomCheckBox</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomHorizontalSeparator</class><extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomHorizontalSeparator</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomThemeList</class><extends>QComboBox</extends>
+   <header>Custom_Widgets.QCustomThemeList</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
+"""
+
+
+FORM_TEMPLATES = {
+    "Blank (icons prewired)": None,  # -> ProjectMaker.create_ui_file
+    "Dashboard (sidebar + pages)": _tmpl_dashboard,
+    "Login": _tmpl_login,
+    "Settings page": _tmpl_settings,
+}
+
+
+########################################################################
 ## UI FILES WORKSPACE
 ########################################################################
 class WorkspaceDock(QDockWidget):
@@ -251,19 +490,43 @@ class WorkspaceDock(QDockWidget):
             self.refresh()
 
     def _newForm(self):
-        name, _ = QFileDialog.getSaveFileName(
-            self, "New form", os.path.join(self._folder, "untitled.ui"),
-            "UI files (*.ui)")
-        if not name:
+        from qtpy.QtWidgets import (QDialog, QDialogButtonBox, QFormLayout)
+        dialog = QDialog(self)
+        dialog.setWindowTitle("New Form")
+        form = QFormLayout(dialog)
+        name_edit = QLineEdit("untitled")
+        form.addRow("Form name:", name_edit)
+        tmpl_combo = QComboBox()
+        tmpl_combo.addItems(list(FORM_TEMPLATES))
+        form.addRow("Template:", tmpl_combo)
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttons.accepted.connect(dialog.accept)
+        buttons.rejected.connect(dialog.reject)
+        form.addRow(buttons)
+        if dialog.exec() != QDialog.Accepted:
             return
+        base = "".join(c if c.isalnum() or c in "-_" else "_"
+                       for c in name_edit.text().strip()) or "untitled"
+        builder = FORM_TEMPLATES[tmpl_combo.currentText()]
         try:
-            from Custom_Widgets.ProjectMaker import create_ui_file
-            prev = projectRoot()
-            os.chdir(self._project_dir)
-            try:
-                create_ui_file(os.path.splitext(os.path.basename(name))[0])
-            finally:
-                os.chdir(prev)
+            if builder is None:
+                from Custom_Widgets.ProjectMaker import create_ui_file
+                prev = os.getcwd()
+                os.chdir(self._project_dir)
+                try:
+                    create_ui_file(base)
+                finally:
+                    os.chdir(prev)
+            else:
+                os.makedirs(self._folder, exist_ok=True)
+                path = os.path.join(self._folder, base + ".ui")
+                if os.path.exists(path):
+                    logWarning(f"Workspace: {path} already exists")
+                    return
+                with open(path, "w", encoding="utf-8") as f:
+                    f.write(builder(base))
+                logInfo(f"Workspace: created {os.path.basename(path)} "
+                        f"({tmpl_combo.currentText()})")
             self.refresh()
         except Exception as e:
             logException(e, message="Workspace: failed to create form")
@@ -309,6 +572,8 @@ class WorkspaceDock(QDockWidget):
         act.setToolTip("Opens in a Designer window (Qt cannot open a form "
                        "into the already-running instance)")
         menu.addSeparator()
+        menu.addAction("Open in Editor").triggered.connect(
+            lambda: self._openInEditor(path))
         menu.addAction("Reveal in File Manager").triggered.connect(
             lambda: self._reveal(path))
         menu.addAction("Copy Path").triggered.connect(
@@ -327,6 +592,21 @@ class WorkspaceDock(QDockWidget):
             logInfo(f"Workspace opened: {opened}")
         except Exception as e:
             logException(e, message="Workspace: failed to open form")
+
+    def _openInEditor(self, path):
+        """VS Code when available, else the OS default handler."""
+        import shutil as _shutil
+        import subprocess as _subprocess
+        code = _shutil.which("code") or _shutil.which("codium")
+        try:
+            if code:
+                _subprocess.Popen([code, path])
+            else:
+                from qtpy.QtGui import QDesktopServices
+                from qtpy.QtCore import QUrl
+                QDesktopServices.openUrl(QUrl.fromLocalFile(path))
+        except Exception as e:
+            logException(e, message="Workspace: open in editor failed")
 
     def _reveal(self, path):
         try:
@@ -1090,6 +1370,284 @@ def raiseCustomProperties(widget=None):
 
 
 ########################################################################
+## RUN CONTROLLER - the project's app, from inside Designer
+##
+## Runs `main.py` under the DevServer supervisor (Custom_Widgets --dev)
+## as a QProcess, so while the app is running every form save in Designer
+## regenerates src/ui_*.py and hot-restarts the app. Output streams into
+## the Logs dock as "[app]" lines; a crash raises the dock.
+########################################################################
+class RunController(QObject):
+    stateChanged = Signal(bool)  # running?
+
+    _instance = None
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        RunController._instance = self
+        self._proc = None
+        self._tail = []  # last app-output lines for the MCP bridge
+
+    # -- helpers --------------------------------------------------------
+    def script(self):
+        return os.path.join(projectRoot(), "main.py")
+
+    def available(self):
+        return os.path.isfile(self.script())
+
+    def isRunning(self):
+        from qtpy.QtCore import QProcess
+        return self._proc is not None and \
+            self._proc.state() != QProcess.NotRunning
+
+    @staticmethod
+    def _pythonPath():
+        """A real python interpreter. Inside pyside6-designer sys.executable
+        is the designer binary, so look next to it, then fall back to PATH."""
+        import shutil as _shutil
+        exe_dir = os.path.dirname(sys.executable)
+        for name in ("python3", "python", "python.exe"):
+            candidate = os.path.join(exe_dir, name)
+            if os.path.isfile(candidate):
+                return candidate
+        return _shutil.which("python3") or _shutil.which("python") or "python3"
+
+    # -- lifecycle ------------------------------------------------------
+    def start(self):
+        if self.isRunning():
+            return True
+        if not self.available():
+            logWarning(f"Run: no main.py in {projectRoot()}")
+            return False
+        from qtpy.QtCore import QProcess, QProcessEnvironment
+        proc = QProcess(self)
+        proc.setWorkingDirectory(projectRoot())
+        env = QProcessEnvironment.systemEnvironment()
+        env.insert("CUSTOM_WIDGETS_PROJECT_ROOT", projectRoot())
+        proc.setProcessEnvironment(env)
+        proc.setProcessChannelMode(QProcess.MergedChannels)
+        proc.readyReadStandardOutput.connect(self._onOutput)
+        proc.finished.connect(self._onFinished)
+        proc.start(self._pythonPath(),
+                   ["-m", "Custom_Widgets.CMD", "--dev", self.script()])
+        if not proc.waitForStarted(5000):
+            logError("Run: could not start the dev server process")
+            return False
+        self._proc = proc
+        logInfo("Run: app started under the dev server (form saves "
+                "hot-restart it)")
+        self.stateChanged.emit(True)
+        return True
+
+    def stop(self):
+        if not self.isRunning():
+            return
+        logInfo("Run: stopping app")
+        self._proc.terminate()  # SIGTERM -> DevServer tears down the app
+        if not self._proc.waitForFinished(4000):
+            self._proc.kill()
+            self._proc.waitForFinished(2000)
+
+    def restart(self):
+        self.stop()
+        self.start()
+
+    # -- plumbing -------------------------------------------------------
+    def _onOutput(self):
+        if self._proc is None:
+            return
+        data = bytes(self._proc.readAllStandardOutput()).decode(
+            "utf-8", errors="replace")
+        logs = _tools.get("logs")
+        for line in data.splitlines():
+            if not line.strip():
+                continue
+            self._tail.append(line)
+            if len(self._tail) > 500:
+                self._tail = self._tail[-500:]
+            if logs is not None:
+                level = logging.ERROR if ("Traceback" in line or
+                                          "Error" in line) else logging.INFO
+                logs._onRecord(level, f"[app] {line}")
+
+    def _onFinished(self, code, _status):
+        logInfo(f"Run: dev server exited (code {code})")
+        self._proc = None
+        self.stateChanged.emit(False)
+        if code not in (0,):  # crash -> surface the logs
+            logs = _tools.get("logs")
+            if logs is not None:
+                logs.setVisible(True)
+                logs.raise_()
+
+    def appLogs(self, lines=100):
+        return self._tail[-lines:]
+
+
+def _applyPreviewTheme(name):
+    """Toolbar theme switch: apply `appTheme` on an open QCustomQMainWindow
+    form through the form cursor (undo-aware, same as the Custom Properties
+    dock). Never restyles Designer's own chrome."""
+    try:
+        from Custom_Widgets.DesignerBridge import formEditorCore
+        core = formEditorCore()
+        if core is None:
+            logWarning("Theme: form editor core unavailable")
+            return
+        manager = core.formWindowManager()
+        for i in range(manager.formWindowCount()):
+            fw = manager.formWindow(i)
+            container = fw.mainContainer()
+            if container is not None and \
+                    container.metaObject().indexOfProperty("appTheme") >= 0:
+                fw.cursor().setWidgetProperty(container, "appTheme", name)
+                logInfo(f"Theme: '{name}' applied to "
+                        f"{os.path.basename(fw.fileName() or 'form')}")
+                return
+        logWarning("Theme: open a QCustomQMainWindow form to preview themes")
+    except Exception as e:
+        logException(e, message="Theme: preview switch failed")
+
+
+def _addRunToolbar(window):
+    """'Custom Widgets' toolbar: Run/Stop/Restart the project app under the
+    dev server, live theme preview combo, and a state indicator."""
+    from qtpy.QtWidgets import QToolBar
+    from qtpy.QtGui import QKeySequence
+
+    runner = RunController(window)
+    bar = QToolBar("Custom Widgets", window)
+    bar.setObjectName("customWidgetsRunToolbar")
+
+    run_act = bar.addAction("▶ Run")
+    run_act.setToolTip("Run main.py under the dev server (F5).\n"
+                       "Form saves regenerate + hot-restart the app.")
+    run_act.setShortcut(QKeySequence("F5"))
+    run_act.triggered.connect(runner.start)
+
+    stop_act = bar.addAction("⏹ Stop")
+    stop_act.setToolTip("Stop the running app (Shift+F5)")
+    stop_act.setShortcut(QKeySequence("Shift+F5"))
+    stop_act.triggered.connect(runner.stop)
+
+    restart_act = bar.addAction("↻ Restart")
+    restart_act.setToolTip("Restart the running app")
+    restart_act.triggered.connect(runner.restart)
+
+    bar.addSeparator()
+    bar.addWidget(QLabel(" Theme: "))
+    theme_combo = QComboBox()
+    theme_combo.setToolTip("Preview a style.json theme on the open form")
+    try:
+        from Custom_Widgets.DesignerExtensions import readThemeNames
+        theme_combo.addItems(readThemeNames())
+    except Exception:
+        pass
+    theme_combo.activated.connect(
+        lambda _i: _applyPreviewTheme(theme_combo.currentText()))
+    bar.addWidget(theme_combo)
+
+    bar.addSeparator()
+    state = QLabel(" ○ app stopped ")
+    state.setToolTip("State of the project app run from Designer")
+    bar.addWidget(state)
+
+    def on_state(running):
+        state.setText(" ● app running " if running else " ○ app stopped ")
+        run_act.setEnabled(not running)
+        stop_act.setEnabled(running)
+        restart_act.setEnabled(running)
+
+    runner.stateChanged.connect(on_state)
+    on_state(False)
+    if not runner.available():
+        run_act.setEnabled(False)
+        run_act.setToolTip("No main.py found in the project folder")
+
+    window.addToolBar(bar)
+    _tools["runner"] = runner
+    _tools["run_toolbar"] = bar
+
+
+########################################################################
+## DOCK LAYOUT - defaults + persistence
+########################################################################
+_LAYOUT_VERSION = 1
+
+
+def _layoutSettings():
+    from qtpy.QtCore import QSettings
+    return QSettings("CustomWidgets", "DesignerTools")
+
+
+def _nativePropertyEditorDock(window):
+    for dock in window.findChildren(QDockWidget):
+        title = dock.windowTitle().replace("&", "").strip().lower()
+        if title.startswith("property editor"):
+            return dock
+    return None
+
+
+def _applyDefaultLayout(window):
+    """Uncongested defaults: Custom Properties tabs NEXT TO Designer's own
+    Property Editor; Workspace+QSS share one tabbed slot; Logs hidden (the
+    status-bar footer reopens it, and it auto-raises on errors)."""
+    native_prop = _nativePropertyEditorDock(window)
+    if native_prop is not None:
+        window.tabifyDockWidget(native_prop, _tools["customprops"])
+    else:
+        window.addDockWidget(Qt.RightDockWidgetArea, _tools["customprops"])
+    window.addDockWidget(Qt.RightDockWidgetArea, _tools["workspace"])
+    window.tabifyDockWidget(_tools["workspace"], _tools["qss"])
+    window.addDockWidget(Qt.BottomDockWidgetArea, _tools["logs"])
+    _tools["logs"].hide()
+    _tools["customprops"].raise_()
+
+
+def _saveLayout(window):
+    try:
+        settings = _layoutSettings()
+        settings.setValue("layout/state", window.saveState(_LAYOUT_VERSION))
+        settings.setValue("layout/version", _LAYOUT_VERSION)
+    except Exception as e:
+        logDebug(f"Designer tools: layout save failed: {e}")
+
+
+def _restoreLayout(window):
+    """True when a previously saved arrangement was restored."""
+    try:
+        settings = _layoutSettings()
+        if int(settings.value("layout/version", -1)) != _LAYOUT_VERSION:
+            return False
+        state = settings.value("layout/state")
+        return bool(state) and window.restoreState(state, _LAYOUT_VERSION)
+    except Exception:
+        return False
+
+
+def _resetLayout(window):
+    _layoutSettings().remove("layout/state")
+    _applyDefaultLayout(window)
+    for key in ("workspace", "qss", "customprops"):
+        _tools[key].show()
+
+
+class _LayoutSaver(QObject):
+    """Persists the dock arrangement when Designer's main window closes."""
+
+    def __init__(self, window):
+        super().__init__(window)
+        self._window = window
+        window.installEventFilter(self)
+
+    def eventFilter(self, obj, event):
+        from qtpy.QtCore import QEvent
+        if obj is self._window and event.type() == QEvent.Close:
+            _saveLayout(self._window)
+        return False
+
+
+########################################################################
 ## INSTALLATION
 ########################################################################
 def _designerMainWindow():
@@ -1122,6 +1680,9 @@ def _addViewMenu(window):
         target.addSeparator()
     for key in ("workspace", "qss", "customprops", "logs"):
         target.addAction(_tools[key].toggleViewAction())
+    target.addSeparator()
+    reset = target.addAction("Reset Custom Widgets Layout")
+    reset.triggered.connect(lambda: _resetLayout(window))
 
 
 def _addStatusFooter(window):
@@ -1178,15 +1739,17 @@ def _install(attempt=0):
         _tools["workspace"] = WorkspaceDock(window)
         _tools["qss"] = QssEditorDock(window)
         _tools["customprops"] = CustomPropertiesDock(window)
-        window.addDockWidget(Qt.RightDockWidgetArea, _tools["workspace"])
-        window.addDockWidget(Qt.RightDockWidgetArea, _tools["qss"])
-        window.addDockWidget(Qt.RightDockWidgetArea, _tools["customprops"])
-        window.addDockWidget(Qt.BottomDockWidgetArea, _tools["logs"])
-        _tools["customprops"].raise_()
+        # Uncongested defaults (Custom Properties tabs beside Designer's own
+        # Property Editor); a saved user arrangement wins when present.
+        _applyDefaultLayout(window)
+        if _restoreLayout(window):
+            logInfo("Designer tools: restored saved dock layout")
+        _LayoutSaver(window)
+        _addRunToolbar(window)
         _addViewMenu(window)
         _addStatusFooter(window)
         logInfo("Designer tools installed: Logs, UI Workspace, QSS Editor, "
-                "Custom Properties")
+                "Custom Properties, Run toolbar")
     except Exception as e:
         logException(e, message="Designer tools installation failed")
 

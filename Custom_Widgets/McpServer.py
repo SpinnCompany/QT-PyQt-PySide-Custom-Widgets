@@ -185,6 +185,43 @@ def designer_refresh_icons() -> str:
 
 
 ########################################################################
+## APP RUN (the project's main.py under the dev server, inside Designer)
+########################################################################
+@mcp.tool(annotations={"title": "Run the project app"})
+def designer_run_app() -> dict:
+    """Start the project's main.py under the dev-server supervisor from
+    inside Designer. While running, saving a form in Designer regenerates
+    src/ui_*.py and hot-restarts the app. Output streams into Designer's
+    Logs dock and is readable via designer_app_logs."""
+    return _request({"method": "runApp"})
+
+
+@mcp.tool(annotations={"title": "Stop the project app"})
+def designer_stop_app() -> dict:
+    """Stop the app started with designer_run_app."""
+    return _request({"method": "stopApp"})
+
+
+@mcp.tool(annotations={"title": "Restart the project app"})
+def designer_restart_app() -> dict:
+    """Restart the app started with designer_run_app."""
+    return _request({"method": "restartApp"})
+
+
+@mcp.tool(annotations={"title": "Project app status", "readOnlyHint": True})
+def designer_app_status() -> dict:
+    """Whether the project app is running, and which script it runs."""
+    return _request({"method": "appStatus"})
+
+
+@mcp.tool(annotations={"title": "Read project app output", "readOnlyHint": True})
+def designer_app_logs(lines: int = 100) -> dict:
+    """The last stdout/stderr lines of the running (or last-run) app -
+    includes crash tracebacks."""
+    return _request({"method": "appLogs", "lines": lines})
+
+
+########################################################################
 ## WINDOW MANAGEMENT (panes, dialogs, actions)
 ########################################################################
 @mcp.tool(annotations={"title": "List Designer panes", "readOnlyHint": True})

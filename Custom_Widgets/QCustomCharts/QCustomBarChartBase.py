@@ -45,6 +45,8 @@ class QCustomBarChartBase(QCustomChartBase):
         
         # Bar chart specific properties
         self._bar_series_dict = {}  # {series_name: QBarSeries}
+        self._crosshair_color = QColor(120, 120, 120)
+        self._crosshair_width = 1.0
         self._bar_sets_dict = {}    # {series_name: QBarSet}
         self._orientation = orientation  # "vertical" or "horizontal"
         
@@ -1609,6 +1611,45 @@ class QCustomBarChartBase(QCustomChartBase):
         """Set batch size"""
         self.setBatchSize(value)
     
+    def _addDummyBarData(self, num_series=3, num_categories=5):
+        """Add dummy bar chart data"""
+        import random
+        
+        # Clear existing data first
+        self.clearAllData()
+        
+        # Generate categories
+        categories = [f"Category {i+1}" for i in range(num_categories)]
+        
+        # Add series
+        for i in range(num_series):
+            series_name = f"Series {i+1}"
+            data = []
+            
+            # Generate random values for each category
+            for j, category in enumerate(categories):
+                value = random.uniform(10, 100) + i * 20
+                # For bar chart, we store data as (category_index, value)
+                data.append((j, value))
+            
+            # Get color from default colors
+            color_idx = i % len(self.DEFAULT_BAR_COLORS)
+            
+            # Add series to data manager
+            self._data_manager.addSeries(
+                name=series_name,
+                data=data,
+                color=self.DEFAULT_BAR_COLORS[color_idx],
+                visible=True,
+                line_style=self.LINE_NONE,
+                line_width=1.0,
+                marker_style=self.MARKER_NONE,
+                marker_size=0.0
+            )
+        
+        # Store categories in data manager for reference
+        self._data_manager._categories = categories
+
     @Property(QColor)
     def crosshairColor(self):
         """Get crosshair color"""
