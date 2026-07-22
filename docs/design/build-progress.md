@@ -11,7 +11,7 @@ the "no push until the full commercial product is ready" decision).
 
 | Repo | Location | Branch | Commits (this effort) | Tests |
 |---|---|---|---|---|
-| Free core | `QT-PyQt-PySide-Custom-Widgets` | `feat/qcustom-datatable` | 21 ahead of `main` | 229 passing¹ |
+| Free core | `QT-PyQt-PySide-Custom-Widgets` | `feat/qcustom-datatable` | 23 ahead of `main` | 238 passing¹ |
 | Pro (private) | `custom-widgets-pro` (dist `QT-PyQt-PySide-Custom-Widgets-Pro`) | `main` | 10 (+demo) | 66 passing |
 
 ¹ Two unrelated failures are excluded: `test_dev_server.py::test_classify` (an
@@ -67,6 +67,7 @@ not installed).
 | QCustomStatCard | KPI tile: label + value + trend-coloured delta + caption |
 | QCustomProgressRing | painted determinate circular %, tokenized ring/track |
 | QCustomCard | surface container w/ optional header + body (Designer container) |
+| QCustomBadge | pill/count/dot, 8 variants, overlay attach (replaces legacy QBadgeWidget) |
 
 Also: `QCustomQPushButton` gained variant/sizeVariant; `QCustomFlowLayout`
 teardown crash fixed; `QCustomTheme` gained the `token()` SCSS integration.
@@ -104,9 +105,12 @@ bar the licence hook + native compile.
 
 ## What's next (open threads)
 
-- ~~More free widgets (switch, number-stepper, alert, stat card, progress ring, card)~~
-  **done** — 6 added (see the table above). Further ideas: badge (modernize the
-  legacy `QBadgeWidget`), splitter, carousel, kbd.
+- ~~More free widgets (switch, number-stepper, alert, stat card, progress ring,
+  card, badge)~~ **done** — 6 added + `QBadgeWidget` modernized into
+  `QCustomBadge` (clean break; legacy file removed). Further ideas: splitter,
+  carousel, kbd. **Migration note owed in the docs repo** (QBadgeWidget →
+  QCustomBadge: `variant`/`sizeVariant`/count/dot instead of
+  `backgroundColor`/`textColor`).
 - **Compliance fixes before any launch** (see THIRD_PARTY_NOTICES.draft.md):
   remove bundled **Product Sans** (proprietary), verify **BlurWindow.py** provenance,
   Font Awesome attribution, `mock` runtime dep.
