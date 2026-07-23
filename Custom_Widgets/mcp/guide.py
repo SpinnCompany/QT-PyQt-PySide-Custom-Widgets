@@ -262,6 +262,25 @@ THEMING
   &:hover/&:pressed states. NEVER edit _variables.scss (generated) or
   _styles.scss (base), and never hard-code hex in .ui. Persist via
   project_write_style.
+- ICONS/PIXMAPS ARE SET IN DESIGNER OR QSS, NEVER FROM PYTHON. Declare each icon
+  in the .scss by objectName: `#navHome { qproperty-icon:
+  url(theme-icons:icons/feather/home.svg); }` on an icon-bearing widget
+  (QToolButton/QPushButton/QCustomSidebarButton, iconSize in the .ui). The
+  `theme-icons:` search path recolours the asset to the theme's Icons-color
+  automatically. On a theme switch Python ONLY re-polishes to reload the
+  recoloured icons — `w.style().unpolish(w); w.style().polish(w)` — it must NOT
+  call setIcon()/setPixmap(). (A QLabel pixmap you must use: set it in Designer
+  with scaledContents.) Because icons take ONE Icons-color per theme, a rail that
+  must stay dark in a light theme can't use theme-icons — make the rail a themed
+  QCustomSidebar so the single Icons-color contrasts everywhere. This does NOT
+  cover delegate/chart PAINT colours (DataTable setCellAccentColor, chart series):
+  those come from theme roles in code and are reapplied on onThemeChangeComplete.
+- DataTable/Toolbar in the pipeline: place them in the .ui (objectNames only) and
+  configure DataTable COLUMNS + Toolbar STATUSES in the Manager in code (Designer
+  can't set them, like chart series). Style the internal view via #dataTableView
+  selectors. Row separators must come from the delegate
+  (table.setRowSeparatorColor) — rich cells are custom-painted and miss a QSS
+  ::item border, so some cells get a separator and some don't.
 
 APP WIRING
 - Boot order (each step guarded): setupUi -> loadJsonStyle(self, self.ui,
