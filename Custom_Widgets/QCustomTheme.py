@@ -73,7 +73,7 @@ class QCustomTheme(QObject):
 
             self.initializeThemeVars()
             self.defineThemeVarMapping()
-            self.loadProductSansFont()
+            self.loadAppFont()
 
             QCoreApplication.instance().aboutToQuit.connect(self.stopWorkers)
 
@@ -998,13 +998,13 @@ class QCustomTheme(QObject):
         loadJsonStyle(self, jsonFiles = self.jsonStyleSheets, update = update)
 
     # apply custom font
-    def loadProductSansFont(self):
-        """Load and apply product sans font"""
+    def loadAppFont(self):
+        """Load and register the bundled app font (Rosario, SIL OFL 1.1)."""
         try:
             font_id = QFontDatabase.addApplicationFont(os.path.join(self.script_dir, "Qss/fonts/Rosario/Rosario-VariableFont_wght.ttf"))
             # if font loaded
             if font_id == -1:
-                logDebug("Failed to load Product Sans font")
+                logDebug("Failed to load the bundled Rosario font")
         except Exception as e:
             logError(f"Error loading font: {e}")
 
