@@ -84,14 +84,26 @@
           </size>
          </property>
          <property name="text">
-          <string>≡</string>
+          <string />
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QCustomSidebarLabel" name="brandLabel">
          <property name="text" stdset="0">
-          <string>✦ AURORA</string>
+          <string>AURORA</string>
+         </property>
+         <property name="iconSize" stdset="0">
+          <size>
+           <width>22</width>
+           <height>22</height>
+          </size>
          </property>
         </widget>
        </item>
@@ -113,9 +125,9 @@
           <bool>true</bool>
          </property>
          <property name="labelText" stdset="0">
-          <string>◉   Overview</string>
+          <string>Overview</string>
          </property>
-        </widget>
+        <property name="iconSize"><size><width>20</width><height>20</height></size></property></widget>
        </item>
        <item>
         <widget class="QCustomSidebarButton" name="navStations">
@@ -132,9 +144,9 @@
           <bool>true</bool>
          </property>
          <property name="labelText" stdset="0">
-          <string>▤   Stations</string>
+          <string>Stations</string>
          </property>
-        </widget>
+        <property name="iconSize"><size><width>20</width><height>20</height></size></property></widget>
        </item>
        <item>
         <widget class="QCustomSidebarButton" name="navForecast">
@@ -151,9 +163,9 @@
           <bool>true</bool>
          </property>
          <property name="labelText" stdset="0">
-          <string>◈   Forecast</string>
+          <string>Forecast</string>
          </property>
-        </widget>
+        <property name="iconSize"><size><width>20</width><height>20</height></size></property></widget>
        </item>
        <item>
         <widget class="QCustomSidebarButton" name="navAnalytics">
@@ -170,9 +182,9 @@
           <bool>true</bool>
          </property>
          <property name="labelText" stdset="0">
-          <string>◔   Analytics</string>
+          <string>Analytics</string>
          </property>
-        </widget>
+        <property name="iconSize"><size><width>20</width><height>20</height></size></property></widget>
        </item>
        <item>
         <widget class="QCustomSidebarButton" name="navGallery">
@@ -189,9 +201,9 @@
           <bool>true</bool>
          </property>
          <property name="labelText" stdset="0">
-          <string>▧   Gallery</string>
+          <string>Gallery</string>
          </property>
-        </widget>
+        <property name="iconSize"><size><width>20</width><height>20</height></size></property></widget>
        </item>
        <item>
         <widget class="QCustomSidebarButton" name="navSettings">
@@ -208,9 +220,9 @@
           <bool>true</bool>
          </property>
          <property name="labelText" stdset="0">
-          <string>⚙   Settings</string>
+          <string>Settings</string>
          </property>
-        </widget>
+        <property name="iconSize"><size><width>20</width><height>20</height></size></property></widget>
        </item>
        <item>
         <spacer name="sidebarSpacer">

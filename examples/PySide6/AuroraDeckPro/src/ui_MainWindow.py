@@ -51,11 +51,13 @@ class Ui_MainWindow(object):
         self.sidebarToggle = QPushButton(self.sidebar)
         self.sidebarToggle.setObjectName(u"sidebarToggle")
         self.sidebarToggle.setMinimumSize(QSize(0, 34))
+        self.sidebarToggle.setIconSize(QSize(20, 20))
 
         self.sidebarLayout.addWidget(self.sidebarToggle)
 
         self.brandLabel = QCustomSidebarLabel(self.sidebar)
         self.brandLabel.setObjectName(u"brandLabel")
+        self.brandLabel.setProperty(u"iconSize", QSize(22, 22))
 
         self.sidebarLayout.addWidget(self.brandLabel)
 
@@ -65,6 +67,7 @@ class Ui_MainWindow(object):
         self.navOverview.setCheckable(True)
         self.navOverview.setAutoExclusive(True)
         self.navOverview.setChecked(True)
+        self.navOverview.setIconSize(QSize(20, 20))
 
         self.sidebarLayout.addWidget(self.navOverview)
 
@@ -73,6 +76,7 @@ class Ui_MainWindow(object):
         self.navStations.setMinimumSize(QSize(0, 40))
         self.navStations.setCheckable(True)
         self.navStations.setAutoExclusive(True)
+        self.navStations.setIconSize(QSize(20, 20))
 
         self.sidebarLayout.addWidget(self.navStations)
 
@@ -81,6 +85,7 @@ class Ui_MainWindow(object):
         self.navForecast.setMinimumSize(QSize(0, 40))
         self.navForecast.setCheckable(True)
         self.navForecast.setAutoExclusive(True)
+        self.navForecast.setIconSize(QSize(20, 20))
 
         self.sidebarLayout.addWidget(self.navForecast)
 
@@ -89,6 +94,7 @@ class Ui_MainWindow(object):
         self.navAnalytics.setMinimumSize(QSize(0, 40))
         self.navAnalytics.setCheckable(True)
         self.navAnalytics.setAutoExclusive(True)
+        self.navAnalytics.setIconSize(QSize(20, 20))
 
         self.sidebarLayout.addWidget(self.navAnalytics)
 
@@ -97,6 +103,7 @@ class Ui_MainWindow(object):
         self.navGallery.setMinimumSize(QSize(0, 40))
         self.navGallery.setCheckable(True)
         self.navGallery.setAutoExclusive(True)
+        self.navGallery.setIconSize(QSize(20, 20))
 
         self.sidebarLayout.addWidget(self.navGallery)
 
@@ -105,6 +112,7 @@ class Ui_MainWindow(object):
         self.navSettings.setMinimumSize(QSize(0, 40))
         self.navSettings.setCheckable(True)
         self.navSettings.setAutoExclusive(True)
+        self.navSettings.setIconSize(QSize(20, 20))
 
         self.sidebarLayout.addWidget(self.navSettings)
 
@@ -167,14 +175,14 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Aurora Deck Pro", None))
         self.sidebar.setProperty(u"toggleButtonName", QCoreApplication.translate("MainWindow", u"sidebarToggle", None))
-        self.sidebarToggle.setText(QCoreApplication.translate("MainWindow", u"\u2261", None))
-        self.brandLabel.setProperty(u"text", QCoreApplication.translate("MainWindow", u"\u2726 AURORA", None))
-        self.navOverview.setProperty(u"labelText", QCoreApplication.translate("MainWindow", u"\u25c9   Overview", None))
-        self.navStations.setProperty(u"labelText", QCoreApplication.translate("MainWindow", u"\u25a4   Stations", None))
-        self.navForecast.setProperty(u"labelText", QCoreApplication.translate("MainWindow", u"\u25c8   Forecast", None))
-        self.navAnalytics.setProperty(u"labelText", QCoreApplication.translate("MainWindow", u"\u25d4   Analytics", None))
-        self.navGallery.setProperty(u"labelText", QCoreApplication.translate("MainWindow", u"\u25a7   Gallery", None))
-        self.navSettings.setProperty(u"labelText", QCoreApplication.translate("MainWindow", u"\u2699   Settings", None))
+        self.sidebarToggle.setText("")
+        self.brandLabel.setProperty(u"text", QCoreApplication.translate("MainWindow", u"AURORA", None))
+        self.navOverview.setProperty(u"labelText", QCoreApplication.translate("MainWindow", u"Overview", None))
+        self.navStations.setProperty(u"labelText", QCoreApplication.translate("MainWindow", u"Stations", None))
+        self.navForecast.setProperty(u"labelText", QCoreApplication.translate("MainWindow", u"Forecast", None))
+        self.navAnalytics.setProperty(u"labelText", QCoreApplication.translate("MainWindow", u"Analytics", None))
+        self.navGallery.setProperty(u"labelText", QCoreApplication.translate("MainWindow", u"Gallery", None))
+        self.navSettings.setProperty(u"labelText", QCoreApplication.translate("MainWindow", u"Settings", None))
         self.themeToggle.setText(QCoreApplication.translate("MainWindow", u"Theme", None))
         self.overviewContainer.setProperty(u"filePath", QCoreApplication.translate("MainWindow", u"ui/OverviewComponent.ui", None))
         self.stationsContainer.setProperty(u"filePath", QCoreApplication.translate("MainWindow", u"ui/StationsComponent.ui", None))

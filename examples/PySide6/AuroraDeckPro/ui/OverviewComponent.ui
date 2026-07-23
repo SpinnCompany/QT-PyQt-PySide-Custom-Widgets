@@ -59,7 +59,7 @@
                <item>
                 <widget class="QLabel" name="heroTitle">
                  <property name="role" stdset="0"><string>h1</string></property>
-                 <property name="text"><string>✦  Good evening, Operator</string></property>
+                 <property name="text"><string>Good evening, Operator</string></property>
                 </widget>
                </item>
                <item>
