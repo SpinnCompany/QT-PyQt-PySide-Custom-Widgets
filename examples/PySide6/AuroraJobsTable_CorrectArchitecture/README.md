@@ -27,13 +27,22 @@ main.py                 minimal boot (QCustomMainWindow + loadJsonStyle + QAppSe
 
 Key architectural choices:
 
+- **Icons are set in QSS, never from Python.** Every glyph (rail nav, hamburger,
+  topbar search/help/bell, add-job plus, avatar caret) is declared in
+  `chrome.scss` as `qproperty-icon: url(theme-icons:icons/feather/<name>.svg)` and
+  recolours to the theme's Icons-color automatically. On a theme switch Python
+  only **re-polishes** (`style().unpolish()/polish()`) so the widgets reload the
+  recoloured icons — no `setIcon`/`setPixmap`. (Set pixmaps in Designer with
+  `scaledContents` if you must use a `QLabel`.)
 - **No hard-coded hex** in code, `.ui`, or `.scss`. Chrome uses `$COLOR_*` tokens;
-  the delegate/toolbar colours are read from the theme roles + `StatusPalette` and
-  re-applied on `themeEngine.onThemeChangeComplete`, so a theme switch recolours the
-  table too.
+  the DataTable delegate/toolbar *paint* colours (not icons) are read from the
+  theme roles + `StatusPalette` and re-applied on `onThemeChangeComplete`.
 - **Theme switch BY NAME** (`themeEngine.setTheme("Aurora Dark")`), never the generic
   Light/Dark toggle — required for the custom themes' icon sets to recolour.
-- Library widgets that Designer cannot configure (DataTable **columns**, Toolbar
+- **Collapsible icon rail** (`QCustomSidebar`): starts collapsed at 72px (icons
+  only); the hamburger `sidebarToggle` expands it to 240px to reveal labels
+  (`collapsedWidth`/`expandedWidth` must differ or the width animation is skipped).
+- Library widgets Designer cannot configure (DataTable **columns**, Toolbar
   **statuses**) are set in the Manager in code — exactly like chart series.
 - The DataTable's internal view is themed via `#dataTableView` selectors in
   `chrome.scss` (no inline `setStyleSheet`).

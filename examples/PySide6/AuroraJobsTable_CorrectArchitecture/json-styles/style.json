@@ -4,7 +4,8 @@
     "LiveCompileQss": true,
     "CheckForMissingicons": true,
     "QMainWindow": {
-        "title": "Aurora — Work · Jobs (Correct Architecture)"
+        "title": "Aurora \u2014 Work \u00b7 Jobs (Correct Architecture)",
+        "borderRadius": -4
     },
     "QSettings": {
         "AppSettings": {
@@ -36,18 +37,17 @@
             ]
         }
     },
-    "_comment_StatusPalette": "Semantic DATA colours (job status hues, link/schedule colours). Read in code by gui/theme.py — these are the same in both themes (a status has one meaning), so they live outside the token roles.",
+    "_comment_StatusPalette": "Semantic DATA colours (job status hues, link/schedule colours). Read in code by gui/theme.py \u2014 these are the same in both themes (a status has one meaning), so they live outside the token roles.",
     "StatusPalette": {
-        "pending": "#06b6d4", "scheduled": "#f59e0b", "travelling": "#3b82f6",
-        "onhold": "#ef4444", "completed": "#10b981", "external": "#8b5cf6",
-        "inprogress": "#22c55e", "requested": "#f59e0b",
-        "jobLink": "#22c55e", "scheduleTime": "#f97316"
-    },
-    "_comment_Brand": "Brand-constant chrome that is INTENTIONALLY theme-independent (the dark icon rail stays dark in the light UI too, per the reference). Read in code and applied to #railBar so it does not follow the theme.",
-    "Brand": {
-        "rail": "#0f172a",
-        "railText": "#ffffff",
-        "railMuted": "#8a94a8",
-        "accent": "#f97316"
+        "pending": "#06b6d4",
+        "scheduled": "#f59e0b",
+        "travelling": "#3b82f6",
+        "onhold": "#ef4444",
+        "completed": "#10b981",
+        "external": "#8b5cf6",
+        "inprogress": "#22c55e",
+        "requested": "#f59e0b",
+        "jobLink": "#22c55e",
+        "scheduleTime": "#f97316"
     }
 }
