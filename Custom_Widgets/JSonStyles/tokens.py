@@ -944,6 +944,61 @@ def badge_qss(tokens):
     return "".join(css)
 
 
+def kbd_qss(tokens):
+    """Generate QCustomKbd QSS: small keycaps + '+' separators."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+    css.append("QCustomKbd #kbdKey {\n"
+               "    background-color: %s; color: %s; border: 1px solid %s;\n"
+               "    border-radius: %s; padding: 1px %s; min-width: %s;\n"
+               "    font-family: monospace; font-size: %s; font-weight: %d;\n"
+               "}\n" % (r("surface-muted"), r("on-surface"), r("outline"),
+                        px("radius.sm"), px("space.2"), px("space.3"),
+                        px("font.size.sm"), int(r("font.weight.medium"))))
+    css.append("QCustomKbd #kbdPlus { color: %s; background: transparent;"
+               " font-size: %s; }\n" % (r("outline"), px("font.size.sm")))
+    return "".join(css)
+
+
+def splitter_qss(tokens):
+    """Generate QCustomSplitter QSS: a subtle handle that accents on hover."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+    css.append("QCustomSplitter::handle { background-color: %s;"
+               " border-radius: %s; }\n" % (r("surface-muted"), px("radius.sm")))
+    css.append("QCustomSplitter::handle:hover { background-color: %s; }\n"
+               % r("accent"))
+    css.append("QCustomSplitter::handle:pressed { background-color: %s; }\n"
+               % r("accent"))
+    return "".join(css)
+
+
+def carousel_qss(tokens):
+    """Generate QCustomCarousel QSS: nav buttons + dot indicators (active dot
+    uses the accent). The dot radius is a concrete half-size (not radius.full,
+    which Qt renders square instead of a circle)."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+    css.append("QCustomCarousel #carouselNav {\n"
+               "    background-color: %s; color: %s; border: 1px solid %s;\n"
+               "    border-radius: %s; font-size: %s; font-weight: %d;\n"
+               "}\n" % (r("surface"), r("on-surface"), r("outline"),
+                        px("radius.md"), px("font.size.lg"),
+                        int(r("font.weight.semibold"))))
+    css.append("QCustomCarousel #carouselNav:hover { background-color: %s; }\n"
+               % r("surface-muted"))
+    css.append("QCustomCarousel #carouselNav:disabled { color: %s; }\n"
+               % r("outline"))
+    css.append("QCustomCarousel #carouselDot { background-color: %s;"
+               " border: none; border-radius: 5px; }\n" % r("outline"))
+    css.append('QCustomCarousel #carouselDot[active="true"] {'
+               " background-color: %s; }\n" % r("accent"))
+    return "".join(css)
+
+
 def build_component_qss(tokens):
     """All token-driven component QSS. Extend as more widgets adopt tokens."""
     return (button_qss(tokens) + datatable_qss(tokens) + toast_qss(tokens)
@@ -957,7 +1012,8 @@ def build_component_qss(tokens):
             + emptystate_qss(tokens) + dropzone_qss(tokens) + rangeslider_qss(tokens)
             + switch_qss(tokens) + number_qss(tokens) + alert_qss(tokens)
             + statcard_qss(tokens) + progressring_qss(tokens) + card_qss(tokens)
-            + badge_qss(tokens))
+            + badge_qss(tokens) + kbd_qss(tokens) + splitter_qss(tokens)
+            + carousel_qss(tokens))
 
 
 _MARK_START = "/* >>> custom-widgets design tokens >>> */"
