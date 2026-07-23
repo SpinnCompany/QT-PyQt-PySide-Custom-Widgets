@@ -3,6 +3,34 @@
 Continuity for the next MCP-mounted session. Everything here is committed on
 `feat/qcustom-datatable` (per the commit-locally rule; nothing pushed).
 
+## ⏩ SESSION 4 STATUS (2026-07-23) — responsive layout pass DONE (commit 5625060)
+
+Phase 5 verified clean (no "Error instantiating" lines; Kbd/Badge fix good).
+User feedback: **content stretched edge-to-edge on wide windows.** Fixed by
+adopting the ATS-Project layout conventions (see
+[[ats-responsive-layout-conventions]] in memory + `ATS-Project/ui/Dashboard.ui`):
+
+- **All six pages** now: `QScrollArea` (widgetResizable, h-bar AlwaysOff) →
+  centered **max-width content column** (1320px; 900 for Settings). Centering =
+  flanking expanding spacers + the column's `sizePolicy` **horstretch=20**.
+  ⚠️ The `.ui` layout `stretch` property is MIS-COMPILED by this converter
+  (`setStretch expected 2 arguments, got 1`) — drive per-item stretch via
+  sizepolicy horstretch, never the layout `stretch` property.
+- **Overview** stat row and **Gallery** grid are now `QCustomFlowWidget`s of
+  fixed-size cards (300×112 / 300×160) that pack + wrap responsively. Flow props
+  match ATS; children are DIRECT `<widget>` kids (container=1), no inner layout;
+  omit `orderJsonPath` (Deck Pro style.json has no order key — flow keeps
+  declared order). All objectNames preserved; GuiFunctions/managers untouched.
+- Verified in the running app: all 6 pages, both themes, data intact.
+
+**⚠️ OPEN — card chrome contrast (theming, NOT layout):** `QFrame[role="card"]`
+renders but doesn't visibly lift off the canvas because the **theme background
+ramp is too tight**: dark `BACKGROUND_1 #0d1117` (card) vs `_3 #080a0e` (canvas)
+— ~5 hex units apart — and `BORDER_1` is set to the card color (useless border).
+`role="panel"` (`_2`) is only slightly better. Fix is in **json-styles/style.json**
+(widen the Background ramp per theme) and/or **chrome.scss** (borders/elevation
+with real contrast). Palette is the user's design call — ASK before changing.
+
 ## ⏩ SESSION 3 STATUS (2026-07-23) — Phases 1–4 DONE, Phase 5 mid-flight
 
 Committed through `acc2cb7`. Built entirely via MCP:
