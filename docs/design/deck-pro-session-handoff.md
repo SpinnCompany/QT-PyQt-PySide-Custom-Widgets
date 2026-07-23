@@ -3,6 +3,25 @@
 Continuity for the next MCP-mounted session. Everything here is committed on
 `feat/qcustom-datatable` (per the commit-locally rule; nothing pushed).
 
+## ⏩ SESSION 5 STATUS (2026-07-23) — modern theming pass (commits 002e047, c587cc1)
+
+Drove the UI to the modern design bar ([[modern-ui-design-bar]]): deep canvas +
+lifted big-radius cards, soft `QGraphicsDropShadowEffect` elevation, hero accent
+gradient block, pill controls, slim accent scrollbars; library default radius
+4px→8px; **real themed feather icons** on the sidebar (nav+brand+toggle) that
+collapse to a clean **icon-only rail** — no glyph/encoded-string icons. Also
+fixed the dev loop: `FileMonitor` now live-recompiles on ANY `.scss` change (was
+only defaultStyle.scss). **Default DARK theme looks great and is stable.**
+
+**⚠️ BLOCKER for light theme / theme-toggle — icon-recolor mass-regen HANG.**
+Any theme change that changes the resolved Icons-color makes `QCustomTheme`
+re-write the whole icon set (thousands of SVGs) synchronously on the UI thread →
+the app hangs (took down Designer too). A naive `getCurrentThemeInfo` fix (map
+custom light/dark by luminance) made icons resolve correctly but hung boot → was
+reverted. Full analysis + the proper fix plan is in memory
+[[custom-widgets-modern-dev-notes]] and task "Fix icon-recolor mass-regen hang".
+Until fixed: keep Deck Pro in dark; don't toggle theme.
+
 ## ⏩ SESSION 4 STATUS (2026-07-23) — responsive layout pass DONE (commit 5625060)
 
 Phase 5 verified clean (no "Error instantiating" lines; Kbd/Badge fix good).
