@@ -3,65 +3,28 @@
 A single GuiFunctions orchestrator owns nav + theming and holds one Manager per
 page. The JobsManager reaches its embedded component via ``container.component``
 and configures the library widgets that Designer cannot set (DataTable columns,
-Toolbar statuses) IN CODE — exactly like charts. All colours come from
-json-styles/style.json (theme roles + StatusPalette + Brand), never hard-coded,
-and are re-applied on ``themeEngine.onThemeChangeComplete`` so a theme switch
-recolours the delegate/toolbar too. Data lives in gui/data.py; the rows arrive
-from a background Worker->Signal->GUI loader.
+Toolbar statuses) IN CODE — exactly like charts. Data lives in gui/data.py; the
+rows arrive from a background Worker->Signal->GUI loader.
+
+ICONS ARE NOT SET FROM PYTHON. Every icon is declared in Qss/scss/chrome.scss
+(``qproperty-icon: url(theme-icons:icons/feather/<name>.svg)``) and recolours to
+the theme's Icons-color automatically. On a theme switch Python only RE-POLISHES
+(``style().unpolish``/``polish``) so the widgets reload their recoloured icons —
+never ``setIcon``/``setPixmap``. Theme switching goes BY NAME (Aurora Light/Dark).
 """
 
-import os
-
-from qtpy.QtCore import QObject, Qt, QByteArray, QThread, QTimer
-from qtpy.QtGui import QColor, QPainter, QPixmap, QIcon
+from qtpy.QtCore import QObject, Qt, QThread, QTimer
 from qtpy.QtWidgets import QApplication
-from qtpy.QtSvg import QSvgRenderer
 
-import Custom_Widgets
 from Custom_Widgets.QCustomDataTable import DataTableColumn
 
 from gui import theme as T
 from gui import data as D
 from gui.workers import JobsLoaderWorker
 
-_ICON_DIR = os.path.join(os.path.dirname(Custom_Widgets.__file__), "Qss", "icons", "feather")
-_PM_CACHE = {}
-
-RAIL_ICONS = [
-    ("navWork", "briefcase"), ("navCalendar", "calendar"), ("navClock", "clock"),
-    ("navUsers", "users"), ("navInvoice", "file-text"), ("navNote", "edit-3"),
-    ("navBox", "archive"), ("navChart", "bar-chart-2"), ("navSettings", "settings"),
-]
-
-
-def feather_pixmap(name, color, size=20):
-    key = (name, color, size)
-    if key in _PM_CACHE:
-        return _PM_CACHE[key]
-    path = os.path.join(_ICON_DIR, name + ".svg")
-    pm = QPixmap(int(size * 2), int(size * 2))
-    pm.setDevicePixelRatio(2)
-    pm.fill(QColor(0, 0, 0, 0))
-    if os.path.exists(path):
-        svg = open(path, "r", encoding="utf-8").read()
-        svg = svg.replace('stroke="#ffffff"', 'stroke="%s"' % color)
-        svg = svg.replace('stroke="#000000"', 'stroke="%s"' % color)
-        r = QSvgRenderer(QByteArray(svg.encode("utf-8")))
-        p = QPainter(pm)
-        p.setRenderHint(QPainter.Antialiasing, True)
-        r.render(p)
-        p.end()
-    _PM_CACHE[key] = pm
-    return pm
-
-
-def feather_icon(name, color, size=20):
-    return QIcon(feather_pixmap(name, color, size))
-
-
-def _rgba(color, alpha):
-    c = QColor(color)
-    return "rgba(%d,%d,%d,%.3f)" % (c.red(), c.green(), c.blue(), alpha)
+# Rail nav buttons (icons are assigned in chrome.scss by objectName).
+NAV_NAMES = ["navWork", "navCalendar", "navClock", "navUsers", "navInvoice",
+             "navNote", "navBox", "navChart", "navSettings"]
 
 
 # --------------------------------------------------------------------------- #
@@ -100,9 +63,6 @@ class JobsManager(QObject):
         self.toolbar = comp.tableToolbar
         self.table = comp.jobsTable
         pal = T.status_palette()
-
-        # Add-job button: white plus glyph on the accent fill (styled in chrome.scss)
-        comp.addJobBtn.setIcon(feather_icon("plus", T.brand().get("railText", "#ffffff"), 16))
 
         # -- toolbar (statuses + chips come from data.py; hues from StatusPalette)
         self.toolbar.setSearchPlaceholder("Search jobs")
@@ -171,6 +131,8 @@ class JobsManager(QObject):
         self.table.setFilterText("")
 
     # -- theme colours (delegate + toolbar track the active theme) --------- #
+    # These are PAINT colours (like chart series), not icons/pixmaps — read from
+    # the theme roles and re-applied on theme switch.
     def _applyThemeColors(self):
         r = T.roles(self._theme_name())
         self.table.setCellAccentColor(r["accent"])
@@ -209,26 +171,22 @@ class GuiFunctions:
 
     def initialize(self):
         ui = self.ui
-        # Pin the icon rail to 72px. QCustomSidebar starts at its 300px default;
-        # collapse it to 72. NOTE: the width animation is SKIPPED when
-        # collapsedWidth == expandedWidth, so expandedWidth must differ (240) for
-        # the collapse to actually resize. defaultWidth=72 makes it start collapsed.
+        # The rail starts collapsed (72px icons); the sidebarToggle expands it to
+        # 240px to reveal labels. NOTE: the width animation is SKIPPED when
+        # collapsedWidth == expandedWidth, so they must differ for collapse/expand
+        # to resize at all. defaultWidth=72 makes it start collapsed.
         rail = ui.railBar
         rail.customizeQCustomSlideMenu(defaultWidth=72, collapsedWidth=72, expandedWidth=240)
-
-        def _pin_rail():
-            rail.setMinimumWidth(72)
-            rail.setMaximumWidth(72)
-        QTimer.singleShot(600, _pin_rail)
+        ui.sidebarToggle.clicked.connect(rail.toggleMenu)
 
         self.pages = {"jobs": ui.jobsContainer}
-        self.railButtons = {name: getattr(ui, name) for name, _ in RAIL_ICONS}
+        self.railButtons = {name: getattr(ui, name) for name in NAV_NAMES}
         self.managers = {"jobs": JobsManager(self.win, ui.jobsContainer)}
 
         for name, btn in self.railButtons.items():
             btn.clicked.connect(lambda _=False, n=name: self.navigateTo(n))
 
-        # avatar doubles as the light/dark toggle (matches the reference chrome)
+        # avatar doubles as the light/dark toggle
         self.themeEngine = getattr(self.win, "themeEngine", None)
         ui.avatar.clicked.connect(self.toggleTheme)
         if self.themeEngine is not None:
@@ -237,7 +195,6 @@ class GuiFunctions:
             except Exception:
                 pass
 
-        self._paintChrome()
         self.navigateTo("jobs")
 
     # -- theme ------------------------------------------------------------- #
@@ -251,64 +208,38 @@ class GuiFunctions:
         self.themeEngine.setTheme(target)          # async icon regen, by NAME
 
     def _onThemeReady(self):
-        self._paintChrome()
+        # Async icon regen finished: RE-POLISH so the QSS qproperty-icons reload
+        # in their new theme colour (no setIcon here), then refresh delegate paint.
+        self._repolishChrome()
         for mgr in self.managers.values():
             try:
                 mgr.recolor()
             except Exception:
                 pass
 
-    # -- chrome (icons + brand-constant dark rail) ------------------------- #
-    def _paintChrome(self):
-        theme = self._currentTheme()
-        brand = T.brand()
-        icon_col = T.roles(theme)["iconStrong"]     # crisp topbar glyphs (tracks theme)
-        rail_text = brand.get("railText", "#ffffff")
-        rail_muted = brand.get("railMuted", "#8a94a8")
-
-        # dark rail is INTENTIONALLY theme-independent: styled from the Brand
-        # palette (read from style.json), not from the flipping theme tokens.
-        self._styleRail(brand)
-        for name, icon in RAIL_ICONS:
-            btn = self.railButtons.get(name)
-            if btn is None:
-                continue
-            on = btn.isChecked()
-            btn.setIcon(feather_icon(icon, rail_text if on else rail_muted, 22))
-
-        # topbar glyphs track the theme icon colour
-        for obj, icon in (("searchIcon", "search"), ("helpIcon", "help-circle"),
-                          ("bellIcon", "bell")):
-            lbl = getattr(self.ui, obj, None)
-            if lbl is not None:
-                lbl.setPixmap(feather_pixmap(icon, icon_col, 19))
-        if hasattr(self.ui, "avatarCaret"):
-            self.ui.avatarCaret.setPixmap(feather_pixmap("chevron-down", icon_col, 14))
-
-    def _styleRail(self, brand):
-        # brand-constant dark rail — colours read from style.json's Brand section
-        # (not the theme tokens), because the rail stays dark in the light UI too.
-        rail = brand.get("rail", "#0f172a")
-        accent = brand.get("accent", "#f97316")
-        text = brand.get("railText", "#ffffff")
-        hover = _rgba(text, 0.08)
-        self.ui.railLogo.setStyleSheet(
-            "QLabel{background:%s; color:%s; border-radius:10px;"
-            " font-weight:800; font-size:18px;}" % (accent, text))
-        self.ui.railBar.setStyleSheet(
-            "#railBar{background:%s;}"
-            "QCustomSidebarButton{background:transparent; border:0; border-radius:12px;}"
-            "QCustomSidebarButton:hover{background:%s;}"
-            "QCustomSidebarButton:checked{background:%s;}" % (rail, hover, accent))
+    def _repolishChrome(self):
+        widgets = list(self.railButtons.values())
+        for obj in ("sidebarToggle", "searchIcon", "helpIcon", "bellIcon",
+                    "avatarCaret", "avatar", "railLogo"):
+            w = getattr(self.ui, obj, None)
+            if w is not None:
+                widgets.append(w)
+        for w in widgets:
+            w.style().unpolish(w)
+            w.style().polish(w)
 
     # -- navigation -------------------------------------------------------- #
     def navigateTo(self, name):
         page = self.pages.get("jobs")               # single page in this example
         if page is not None:
             self.ui.pageStack.setCurrentWidget(page)
-        # keep Work highlighted as the active section (rail is otherwise inert)
+        # keep Work highlighted as the active section (rail is otherwise inert);
+        # setChecked makes Qt re-apply the :checked QSS automatically.
         active = name if name in self.railButtons else "navWork"
+        # autoExclusive ignores setChecked(False), so toggle it off per-button to
+        # force exactly one active pill.
         for n, btn in self.railButtons.items():
+            btn.setAutoExclusive(False)
             btn.setChecked(n == active)
-        self._paintChrome()
+            btn.setAutoExclusive(True)
         self.managers["jobs"].onShown()

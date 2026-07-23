@@ -16,8 +16,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QLabel,
-    QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout,
-    QWidget)
+    QPushButton, QSizePolicy, QSpacerItem, QToolButton,
+    QVBoxLayout, QWidget)
 
 from Custom_Widgets.QCustomComponentContainer import QCustomComponentContainer
 from Custom_Widgets.QCustomQMainWindow import QCustomQMainWindow
@@ -53,13 +53,21 @@ class Ui_MainWindow(object):
 
         self.railLayout.addWidget(self.railLogo)
 
+        self.sidebarToggle = QPushButton(self.railBar)
+        self.sidebarToggle.setObjectName(u"sidebarToggle")
+        self.sidebarToggle.setMinimumSize(QSize(0, 40))
+        self.sidebarToggle.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.sidebarToggle.setIconSize(QSize(20, 20))
+
+        self.railLayout.addWidget(self.sidebarToggle)
+
         self.navWork = QCustomSidebarButton(self.railBar)
         self.navWork.setObjectName(u"navWork")
         self.navWork.setMinimumSize(QSize(0, 44))
         self.navWork.setCheckable(True)
         self.navWork.setAutoExclusive(True)
         self.navWork.setChecked(True)
-        self.navWork.setIconSize(QSize(22, 22))
+        self.navWork.setIconSize(QSize(20, 20))
 
         self.railLayout.addWidget(self.navWork)
 
@@ -68,7 +76,7 @@ class Ui_MainWindow(object):
         self.navCalendar.setMinimumSize(QSize(0, 44))
         self.navCalendar.setCheckable(True)
         self.navCalendar.setAutoExclusive(True)
-        self.navCalendar.setIconSize(QSize(22, 22))
+        self.navCalendar.setIconSize(QSize(20, 20))
 
         self.railLayout.addWidget(self.navCalendar)
 
@@ -77,7 +85,7 @@ class Ui_MainWindow(object):
         self.navClock.setMinimumSize(QSize(0, 44))
         self.navClock.setCheckable(True)
         self.navClock.setAutoExclusive(True)
-        self.navClock.setIconSize(QSize(22, 22))
+        self.navClock.setIconSize(QSize(20, 20))
 
         self.railLayout.addWidget(self.navClock)
 
@@ -86,7 +94,7 @@ class Ui_MainWindow(object):
         self.navUsers.setMinimumSize(QSize(0, 44))
         self.navUsers.setCheckable(True)
         self.navUsers.setAutoExclusive(True)
-        self.navUsers.setIconSize(QSize(22, 22))
+        self.navUsers.setIconSize(QSize(20, 20))
 
         self.railLayout.addWidget(self.navUsers)
 
@@ -95,7 +103,7 @@ class Ui_MainWindow(object):
         self.navInvoice.setMinimumSize(QSize(0, 44))
         self.navInvoice.setCheckable(True)
         self.navInvoice.setAutoExclusive(True)
-        self.navInvoice.setIconSize(QSize(22, 22))
+        self.navInvoice.setIconSize(QSize(20, 20))
 
         self.railLayout.addWidget(self.navInvoice)
 
@@ -104,7 +112,7 @@ class Ui_MainWindow(object):
         self.navNote.setMinimumSize(QSize(0, 44))
         self.navNote.setCheckable(True)
         self.navNote.setAutoExclusive(True)
-        self.navNote.setIconSize(QSize(22, 22))
+        self.navNote.setIconSize(QSize(20, 20))
 
         self.railLayout.addWidget(self.navNote)
 
@@ -113,7 +121,7 @@ class Ui_MainWindow(object):
         self.navBox.setMinimumSize(QSize(0, 44))
         self.navBox.setCheckable(True)
         self.navBox.setAutoExclusive(True)
-        self.navBox.setIconSize(QSize(22, 22))
+        self.navBox.setIconSize(QSize(20, 20))
 
         self.railLayout.addWidget(self.navBox)
 
@@ -122,7 +130,7 @@ class Ui_MainWindow(object):
         self.navChart.setMinimumSize(QSize(0, 44))
         self.navChart.setCheckable(True)
         self.navChart.setAutoExclusive(True)
-        self.navChart.setIconSize(QSize(22, 22))
+        self.navChart.setIconSize(QSize(20, 20))
 
         self.railLayout.addWidget(self.navChart)
 
@@ -135,7 +143,7 @@ class Ui_MainWindow(object):
         self.navSettings.setMinimumSize(QSize(0, 44))
         self.navSettings.setCheckable(True)
         self.navSettings.setAutoExclusive(True)
-        self.navSettings.setIconSize(QSize(22, 22))
+        self.navSettings.setIconSize(QSize(20, 20))
 
         self.railLayout.addWidget(self.navSettings)
 
@@ -172,27 +180,33 @@ class Ui_MainWindow(object):
 
         self.topbarLayout.addItem(self.topbarSpacer)
 
-        self.searchIcon = QLabel(self.topbar)
+        self.searchIcon = QToolButton(self.topbar)
         self.searchIcon.setObjectName(u"searchIcon")
         self.searchIcon.setMinimumSize(QSize(34, 34))
         self.searchIcon.setMaximumSize(QSize(34, 34))
-        self.searchIcon.setAlignment(Qt.AlignCenter)
+        self.searchIcon.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.searchIcon.setAutoRaise(True)
+        self.searchIcon.setIconSize(QSize(18, 18))
 
         self.topbarLayout.addWidget(self.searchIcon)
 
-        self.helpIcon = QLabel(self.topbar)
+        self.helpIcon = QToolButton(self.topbar)
         self.helpIcon.setObjectName(u"helpIcon")
         self.helpIcon.setMinimumSize(QSize(34, 34))
         self.helpIcon.setMaximumSize(QSize(34, 34))
-        self.helpIcon.setAlignment(Qt.AlignCenter)
+        self.helpIcon.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.helpIcon.setAutoRaise(True)
+        self.helpIcon.setIconSize(QSize(18, 18))
 
         self.topbarLayout.addWidget(self.helpIcon)
 
-        self.bellIcon = QLabel(self.topbar)
+        self.bellIcon = QToolButton(self.topbar)
         self.bellIcon.setObjectName(u"bellIcon")
         self.bellIcon.setMinimumSize(QSize(34, 34))
         self.bellIcon.setMaximumSize(QSize(34, 34))
-        self.bellIcon.setAlignment(Qt.AlignCenter)
+        self.bellIcon.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.bellIcon.setAutoRaise(True)
+        self.bellIcon.setIconSize(QSize(18, 18))
 
         self.topbarLayout.addWidget(self.bellIcon)
 
@@ -203,11 +217,12 @@ class Ui_MainWindow(object):
 
         self.topbarLayout.addWidget(self.avatar)
 
-        self.avatarCaret = QLabel(self.topbar)
+        self.avatarCaret = QToolButton(self.topbar)
         self.avatarCaret.setObjectName(u"avatarCaret")
-        self.avatarCaret.setMinimumSize(QSize(14, 34))
-        self.avatarCaret.setMaximumSize(QSize(14, 34))
-        self.avatarCaret.setAlignment(Qt.AlignCenter)
+        self.avatarCaret.setMinimumSize(QSize(16, 34))
+        self.avatarCaret.setMaximumSize(QSize(16, 34))
+        self.avatarCaret.setAutoRaise(True)
+        self.avatarCaret.setIconSize(QSize(13, 13))
 
         self.topbarLayout.addWidget(self.avatarCaret)
 
@@ -243,6 +258,18 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Aurora \u2014 Work \u00b7 Jobs (Correct Architecture)", None))
         self.railLogo.setText(QCoreApplication.translate("MainWindow", u"We.", None))
+#if QT_CONFIG(tooltip)
+        self.sidebarToggle.setToolTip(QCoreApplication.translate("MainWindow", u"Expand / collapse menu", None))
+#endif // QT_CONFIG(tooltip)
+        self.navWork.setProperty(u"labelText", QCoreApplication.translate("MainWindow", u"Work", None))
+        self.navCalendar.setProperty(u"labelText", QCoreApplication.translate("MainWindow", u"Schedule", None))
+        self.navClock.setProperty(u"labelText", QCoreApplication.translate("MainWindow", u"Timesheets", None))
+        self.navUsers.setProperty(u"labelText", QCoreApplication.translate("MainWindow", u"Team", None))
+        self.navInvoice.setProperty(u"labelText", QCoreApplication.translate("MainWindow", u"Invoices", None))
+        self.navNote.setProperty(u"labelText", QCoreApplication.translate("MainWindow", u"Notes", None))
+        self.navBox.setProperty(u"labelText", QCoreApplication.translate("MainWindow", u"Inventory", None))
+        self.navChart.setProperty(u"labelText", QCoreApplication.translate("MainWindow", u"Reports", None))
+        self.navSettings.setProperty(u"labelText", QCoreApplication.translate("MainWindow", u"Settings", None))
         self.crumb.setText(QCoreApplication.translate("MainWindow", u"Work  \u203a  <b>Jobs</b>", None))
         self.crumb.setProperty(u"role", QCoreApplication.translate("MainWindow", u"crumb", None))
         self.avatar.setText(QCoreApplication.translate("MainWindow", u"JG", None))

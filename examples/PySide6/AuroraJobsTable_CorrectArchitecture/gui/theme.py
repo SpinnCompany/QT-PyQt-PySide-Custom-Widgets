@@ -35,11 +35,6 @@ def status_palette():
     return _load().get("StatusPalette", {})
 
 
-def brand():
-    """Theme-independent brand chrome (dark rail)."""
-    return _load().get("Brand", {})
-
-
 def _theme(theme_name):
     themes = _load()["QSettings"]["ThemeSettings"]["CustomThemes"]
     for t in themes:
@@ -57,13 +52,10 @@ def roles(theme_name):
     text = t.get("Text-color", "#0f172a")
     surface = t.get("Background-color", "#ffffff")   # the card / surface colour
     accent = t.get("Accent-color", "#f97316")
-    icons = t.get("Icons-color", "#64748b")          # topbar/nav glyph colour
     outline = _blend(text, surface, 0.86)            # faint separator line
     muted = _blend(text, surface, 0.45)              # muted secondary text
-    icon_strong = _blend(text, surface, 0.28)        # crisp topbar/nav glyphs
-    return {"text": text, "background": surface, "accent": accent, "icons": icons,
-            "surface": surface, "outline": outline, "muted": muted,
-            "iconStrong": icon_strong}
+    return {"text": text, "background": surface, "accent": accent,
+            "surface": surface, "outline": outline, "muted": muted}
 
 
 def _blend(fg, bg, f):

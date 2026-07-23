@@ -38,12 +38,21 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="sidebarToggle">
+         <property name="minimumSize"><size><width>0</width><height>40</height></size></property>
+         <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
+         <property name="iconSize"><size><width>20</width><height>20</height></size></property>
+         <property name="toolTip"><string>Expand / collapse menu</string></property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCustomSidebarButton" name="navWork">
          <property name="minimumSize"><size><width>0</width><height>44</height></size></property>
          <property name="checkable"><bool>true</bool></property>
          <property name="autoExclusive"><bool>true</bool></property>
          <property name="checked"><bool>true</bool></property>
-         <property name="iconSize"><size><width>22</width><height>22</height></size></property>
+         <property name="labelText" stdset="0"><string>Work</string></property>
+         <property name="iconSize"><size><width>20</width><height>20</height></size></property>
         </widget>
        </item>
        <item>
@@ -51,7 +60,8 @@
          <property name="minimumSize"><size><width>0</width><height>44</height></size></property>
          <property name="checkable"><bool>true</bool></property>
          <property name="autoExclusive"><bool>true</bool></property>
-         <property name="iconSize"><size><width>22</width><height>22</height></size></property>
+         <property name="labelText" stdset="0"><string>Schedule</string></property>
+         <property name="iconSize"><size><width>20</width><height>20</height></size></property>
         </widget>
        </item>
        <item>
@@ -59,7 +69,8 @@
          <property name="minimumSize"><size><width>0</width><height>44</height></size></property>
          <property name="checkable"><bool>true</bool></property>
          <property name="autoExclusive"><bool>true</bool></property>
-         <property name="iconSize"><size><width>22</width><height>22</height></size></property>
+         <property name="labelText" stdset="0"><string>Timesheets</string></property>
+         <property name="iconSize"><size><width>20</width><height>20</height></size></property>
         </widget>
        </item>
        <item>
@@ -67,7 +78,8 @@
          <property name="minimumSize"><size><width>0</width><height>44</height></size></property>
          <property name="checkable"><bool>true</bool></property>
          <property name="autoExclusive"><bool>true</bool></property>
-         <property name="iconSize"><size><width>22</width><height>22</height></size></property>
+         <property name="labelText" stdset="0"><string>Team</string></property>
+         <property name="iconSize"><size><width>20</width><height>20</height></size></property>
         </widget>
        </item>
        <item>
@@ -75,7 +87,8 @@
          <property name="minimumSize"><size><width>0</width><height>44</height></size></property>
          <property name="checkable"><bool>true</bool></property>
          <property name="autoExclusive"><bool>true</bool></property>
-         <property name="iconSize"><size><width>22</width><height>22</height></size></property>
+         <property name="labelText" stdset="0"><string>Invoices</string></property>
+         <property name="iconSize"><size><width>20</width><height>20</height></size></property>
         </widget>
        </item>
        <item>
@@ -83,7 +96,8 @@
          <property name="minimumSize"><size><width>0</width><height>44</height></size></property>
          <property name="checkable"><bool>true</bool></property>
          <property name="autoExclusive"><bool>true</bool></property>
-         <property name="iconSize"><size><width>22</width><height>22</height></size></property>
+         <property name="labelText" stdset="0"><string>Notes</string></property>
+         <property name="iconSize"><size><width>20</width><height>20</height></size></property>
         </widget>
        </item>
        <item>
@@ -91,7 +105,8 @@
          <property name="minimumSize"><size><width>0</width><height>44</height></size></property>
          <property name="checkable"><bool>true</bool></property>
          <property name="autoExclusive"><bool>true</bool></property>
-         <property name="iconSize"><size><width>22</width><height>22</height></size></property>
+         <property name="labelText" stdset="0"><string>Inventory</string></property>
+         <property name="iconSize"><size><width>20</width><height>20</height></size></property>
         </widget>
        </item>
        <item>
@@ -99,7 +114,8 @@
          <property name="minimumSize"><size><width>0</width><height>44</height></size></property>
          <property name="checkable"><bool>true</bool></property>
          <property name="autoExclusive"><bool>true</bool></property>
-         <property name="iconSize"><size><width>22</width><height>22</height></size></property>
+         <property name="labelText" stdset="0"><string>Reports</string></property>
+         <property name="iconSize"><size><width>20</width><height>20</height></size></property>
         </widget>
        </item>
        <item>
@@ -113,7 +129,8 @@
          <property name="minimumSize"><size><width>0</width><height>44</height></size></property>
          <property name="checkable"><bool>true</bool></property>
          <property name="autoExclusive"><bool>true</bool></property>
-         <property name="iconSize"><size><width>22</width><height>22</height></size></property>
+         <property name="labelText" stdset="0"><string>Settings</string></property>
+         <property name="iconSize"><size><width>20</width><height>20</height></size></property>
         </widget>
        </item>
       </layout>
@@ -155,24 +172,30 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLabel" name="searchIcon">
+           <widget class="QToolButton" name="searchIcon">
             <property name="minimumSize"><size><width>34</width><height>34</height></size></property>
             <property name="maximumSize"><size><width>34</width><height>34</height></size></property>
-            <property name="alignment"><set>Qt::AlignCenter</set></property>
+            <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
+            <property name="autoRaise"><bool>true</bool></property>
+            <property name="iconSize"><size><width>18</width><height>18</height></size></property>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="helpIcon">
+           <widget class="QToolButton" name="helpIcon">
             <property name="minimumSize"><size><width>34</width><height>34</height></size></property>
             <property name="maximumSize"><size><width>34</width><height>34</height></size></property>
-            <property name="alignment"><set>Qt::AlignCenter</set></property>
+            <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
+            <property name="autoRaise"><bool>true</bool></property>
+            <property name="iconSize"><size><width>18</width><height>18</height></size></property>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="bellIcon">
+           <widget class="QToolButton" name="bellIcon">
             <property name="minimumSize"><size><width>34</width><height>34</height></size></property>
             <property name="maximumSize"><size><width>34</width><height>34</height></size></property>
-            <property name="alignment"><set>Qt::AlignCenter</set></property>
+            <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
+            <property name="autoRaise"><bool>true</bool></property>
+            <property name="iconSize"><size><width>18</width><height>18</height></size></property>
            </widget>
           </item>
           <item>
@@ -184,10 +207,11 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="avatarCaret">
-            <property name="minimumSize"><size><width>14</width><height>34</height></size></property>
-            <property name="maximumSize"><size><width>14</width><height>34</height></size></property>
-            <property name="alignment"><set>Qt::AlignCenter</set></property>
+           <widget class="QToolButton" name="avatarCaret">
+            <property name="minimumSize"><size><width>16</width><height>34</height></size></property>
+            <property name="maximumSize"><size><width>16</width><height>34</height></size></property>
+            <property name="autoRaise"><bool>true</bool></property>
+            <property name="iconSize"><size><width>13</width><height>13</height></size></property>
            </widget>
           </item>
          </layout>
