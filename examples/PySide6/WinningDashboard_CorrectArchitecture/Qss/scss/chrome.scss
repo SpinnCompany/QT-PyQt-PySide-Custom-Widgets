@@ -1,0 +1,83 @@
+// Winning dashboard — chrome styles.
+// Tokens ONLY (no hard-coded hex): $COLOR_BACKGROUND_1..6, $COLOR_TEXT_1..4,
+// $COLOR_ACCENT_1..4. For a dark theme BG_1 is darkest and higher numbers get
+// lighter, so: window = BG_1, sidebar = BG_2, panels/cards = BG_3.
+
+// -- window shell ---------------------------------------------------------- //
+QCustomQMainWindow, #centralwidget { background-color: $COLOR_BACKGROUND_1; }
+
+QWidget#sidebar { background-color: $COLOR_BACKGROUND_2; }
+
+QCustomQStackedWidget, #pageStack { background: transparent; }
+QScrollArea, QScrollArea > QWidget > QWidget { background: transparent; border: 0; }
+
+// -- typography roles ------------------------------------------------------ //
+QLabel[role="h1"]        { background: transparent; color: $COLOR_TEXT_1; font-size: 27px; font-weight: 800; }
+QLabel[role="sub"]       { background: transparent; color: $COLOR_TEXT_3; font-size: 13px; }
+QLabel[role="panelTitle"]{ background: transparent; color: $COLOR_TEXT_1; font-size: 16px; font-weight: 700; }
+QLabel[role="muted"]     { background: transparent; color: $COLOR_TEXT_3; font-size: 12px; }
+QLabel[role="legend"]    { background: transparent; color: $COLOR_TEXT_3; font-size: 12px; }
+QLabel[role="legendVal"] { background: transparent; color: $COLOR_TEXT_1; font-size: 12px; font-weight: 700; }
+QLabel[role="colHead"]   { background: transparent; color: $COLOR_TEXT_4; font-size: 11px; font-weight: 600; }
+QLabel[role="orderName"] { background: transparent; color: $COLOR_TEXT_1; font-size: 13px; font-weight: 600; }
+QLabel[role="orderMeta"] { background: transparent; color: $COLOR_TEXT_3; font-size: 12px; }
+QLabel[role="orderPrice"]{ background: transparent; color: $COLOR_TEXT_1; font-size: 13px; font-weight: 700; }
+QLabel[role="kpiLabel"]  { background: transparent; color: $COLOR_TEXT_3; font-size: 13px; }
+QLabel[role="kpiValue"]  { background: transparent; color: $COLOR_TEXT_1; font-size: 29px; font-weight: 800; }
+QLabel[role="axis"]      { background: transparent; color: $COLOR_TEXT_4; font-size: 11px; }
+
+// -- surfaces -------------------------------------------------------------- //
+QFrame[role="panel"] {
+    background-color: $COLOR_BACKGROUND_3;
+    border-radius: 20px;
+}
+QFrame[role="kpi"] {
+    background-color: $COLOR_BACKGROUND_3;
+    border-radius: 20px;
+}
+QFrame[role="kpiActive"] {
+    background-color: $COLOR_ACCENT_1;
+    border-radius: 20px;
+}
+QFrame[role="kpiActive"] QLabel { color: #ffffff; background: transparent; }
+
+QFrame[role="iconChip"] {
+    background-color: $COLOR_BACKGROUND_3;
+    border-radius: 13px;
+}
+QFrame[role="orderRow"] {
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid $COLOR_BACKGROUND_4;
+}
+
+// -- sidebar --------------------------------------------------------------- //
+QCustomSidebarButton {
+    background-color: transparent;
+    border: 0;
+    border-radius: 11px;
+    text-align: left;
+    padding-left: 4px;
+    color: $COLOR_TEXT_2;
+    font-size: 13px;
+}
+QCustomSidebarButton:hover  { background-color: $COLOR_BACKGROUND_3; }
+QCustomSidebarButton:checked{ background-color: $COLOR_BACKGROUND_3; color: $COLOR_TEXT_1; font-weight: 600; }
+
+QCustomSidebarLabel {
+    background: transparent;
+    color: $COLOR_TEXT_3;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+#sidebarToggle, #themeToggle {
+    background-color: $COLOR_BACKGROUND_3;
+    border: 0;
+    border-radius: 11px;
+    color: $COLOR_TEXT_2;
+    text-align: left;
+    padding-left: 10px;
+}
+#sidebarToggle:hover, #themeToggle:hover { background-color: $COLOR_ACCENT_1; color: #ffffff; }

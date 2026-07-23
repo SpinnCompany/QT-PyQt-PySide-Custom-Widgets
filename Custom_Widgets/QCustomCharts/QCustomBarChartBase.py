@@ -4,11 +4,102 @@ import json
 import io
 import random
 from typing import List, Tuple, Optional, Dict, Any, Union
-from qtpy.QtCore import Qt, QPointF, Signal, Property, QTimer, QEasingCurve
-from qtpy.QtGui import QColor, QPen, QPainter, QPalette, QBrush, QFont
+from qtpy.QtCore import Qt, QPointF, QRectF, Signal, Property, QTimer, QEasingCurve
+from qtpy.QtGui import QColor, QPen, QPainter, QPalette, QBrush, QFont, QPainterPath
+from qtpy.QtWidgets import QGraphicsItem
 from qtpy.QtCharts import QChart, QBarSeries, QBarSet, QBarCategoryAxis, QValueAxis, QAbstractBarSeries
 
 from .QCustomChartBase import QCustomChartBase
+
+
+class _RoundedBarOverlay(QGraphicsItem):
+    """Paints top-rounded bars over a QBarSeries whose native fills are hidden.
+
+    QtCharts cannot round bar corners, so when ``barCornerRadius`` is set the
+    native bars are made transparent and this item draws rounded bars instead.
+    All geometry is recomputed from the chart's live ``plotArea`` on every
+    paint, so it tracks resizes and zooms; it is parented to the QChart graphics
+    item so its coordinate system matches ``plotArea``. Vertical bars only.
+    """
+
+    def __init__(self, owner):
+        super().__init__(owner._chart)
+        self._owner = owner
+        self.setZValue(11)
+
+    def boundingRect(self):
+        try:
+            return self._owner._chart.plotArea()
+        except Exception:
+            return QRectF()
+
+    def refresh(self):
+        self.prepareGeometryChange()
+        self.update()
+
+    @staticmethod
+    def _top_rounded_path(rect, r, up=True):
+        x, y, w, h = rect.x(), rect.y(), rect.width(), rect.height()
+        p = QPainterPath()
+        if up:
+            p.moveTo(x, y + h)
+            p.lineTo(x, y + r)
+            p.quadTo(x, y, x + r, y)
+            p.lineTo(x + w - r, y)
+            p.quadTo(x + w, y, x + w, y + r)
+            p.lineTo(x + w, y + h)
+        else:
+            p.moveTo(x, y)
+            p.lineTo(x, y + h - r)
+            p.quadTo(x, y + h, x + r, y + h)
+            p.lineTo(x + w - r, y + h)
+            p.quadTo(x + w, y + h, x + w, y + h - r)
+            p.lineTo(x + w, y)
+        p.closeSubpath()
+        return p
+
+    def paint(self, painter, option, widget=None):
+        o = self._owner
+        if o._bar_corner_radius <= 0 or o._orientation != "vertical":
+            return
+        sets = list(o._bar_sets_dict.values())
+        cats = o.getCategories()
+        n, m = len(cats), len(sets)
+        if n == 0 or m == 0:
+            return
+        plot = o._chart.plotArea()
+        ymin, ymax = o._axis_y.min(), o._axis_y.max()
+        if ymax <= ymin or plot.height() <= 0:
+            return
+
+        def yfor(v):
+            return plot.bottom() - (v - ymin) / (ymax - ymin) * plot.height()
+
+        y0 = yfor(max(0.0, ymin))
+        slot_w = plot.width() / n
+        group_w = max(1.0, o._bar_group_frac * slot_w)
+        bar_w = group_w / m
+        painter.setRenderHint(QPainter.Antialiasing, True)
+        painter.setPen(Qt.NoPen)
+        for i in range(n):
+            cat_center = plot.left() + slot_w * (i + 0.5)
+            for j, bs in enumerate(sets):
+                if i >= bs.count():
+                    continue
+                val = bs.at(i)
+                cx = cat_center - group_w / 2.0 + bar_w * (j + 0.5)
+                bw = bar_w * 0.82
+                top = yfor(val)
+                rect = (QRectF(cx - bw / 2.0, top, bw, y0 - top) if val >= 0
+                        else QRectF(cx - bw / 2.0, y0, bw, top - y0))
+                if rect.height() <= 0.5:
+                    continue
+                r = min(float(o._bar_corner_radius), bw / 2.0, rect.height())
+                color = o._data_manager.getSeriesColor(bs.label())
+                if not color.isValid():
+                    color = QColor("#888888")
+                painter.setBrush(QBrush(color))
+                painter.drawPath(self._top_rounded_path(rect, r, up=(val >= 0)))
 from Custom_Widgets.Utils import is_in_designer
 from Custom_Widgets.QCustomCharts.QCustomChartConstants import (
     QCustomChartConstants as _CC, chart_str_to_int, chart_int_to_str,
@@ -46,6 +137,9 @@ class QCustomBarChartBase(QCustomChartBase):
         
         # Bar chart specific properties
         self._bar_series_dict = {}  # {series_name: QBarSeries}
+        self._bar_corner_radius = 0     # px; >0 draws top-rounded bars via overlay
+        self._bar_group_frac = 0.5      # last group width fraction (for the overlay)
+        self._rounded_overlay = None
         self._crosshair_color = QColor(120, 120, 120)
         self._crosshair_width = 1.0
         self._bar_sets_dict = {}    # {series_name: QBarSet}
@@ -464,6 +558,7 @@ class QCustomBarChartBase(QCustomChartBase):
         num_series = len(series_data)
         num_categories = len(categories)
         bar_width, bar_group_width = self._calculateBarPositions(num_series, num_categories)
+        self._bar_group_frac = bar_group_width   # remembered for the rounded overlay
         
         # Create bar sets for each series
         bar_sets = []
@@ -584,7 +679,10 @@ class QCustomBarChartBase(QCustomChartBase):
         # Set grid visibility and color
         self._axis_y.setGridLineVisible(self._show_grid)
         self._axis_y.setGridLineColor(self._custom_grid_color)
-        
+
+        # Rounded bars: hide native fills and let the overlay paint them
+        self._applyRoundedBars(bar_sets)
+
         # Set animation
         if self._animation_enabled:
             self._chart.setAnimationOptions(QChart.SeriesAnimations)
@@ -598,6 +696,56 @@ class QCustomBarChartBase(QCustomChartBase):
         
         # Update legend
         self._updateLegendSettings()
+
+    def _applyRoundedBars(self, bar_sets):
+        """Toggle rounded-bar rendering: hide native fills + drive the overlay."""
+        rounded = self._bar_corner_radius > 0 and self._orientation == "vertical"
+        if rounded:
+            transparent = QColor(0, 0, 0, 0)
+            for bs in bar_sets:
+                bs.setColor(transparent)
+                bs.setBorderColor(transparent)
+            if self._rounded_overlay is None:
+                self._rounded_overlay = _RoundedBarOverlay(self)
+                try:
+                    self._chart.plotAreaChanged.connect(
+                        lambda *_: self._rounded_overlay and self._rounded_overlay.refresh())
+                except Exception:
+                    pass
+            self._rounded_overlay.setVisible(True)
+            self._rounded_overlay.refresh()
+        elif self._rounded_overlay is not None:
+            self._rounded_overlay.setVisible(False)
+
+    def setBarCornerRadius(self, radius: int):
+        """Round the top corners of bars (px). 0 restores native square bars.
+
+        Implemented with a paint overlay (QtCharts has no rounded-bar support),
+        so it currently applies to vertical bar charts.
+        """
+        self._bar_corner_radius = max(0, int(radius))
+        self.updateChart()
+
+    def getBarCornerRadius(self) -> int:
+        return self._bar_corner_radius
+
+    def setGridLineColor(self, color, alpha: Optional[int] = None):
+        """Set the grid line colour (and optionally its alpha 0-255)."""
+        c = QColor(color)
+        if alpha is not None:
+            c.setAlpha(max(0, min(255, int(alpha))))
+        self._custom_grid_color = c
+        try:
+            self._axis_y.setGridLineColor(c)
+            self._axis_x.setGridLineColor(c)
+        except Exception:
+            pass
+
+    def setGridLineAlpha(self, alpha: int):
+        """Set just the grid line opacity (0-255), keeping the current hue."""
+        c = QColor(self._custom_grid_color)
+        c.setAlpha(max(0, min(255, int(alpha))))
+        self.setGridLineColor(c)
 
     def _onBarSeriesClicked(self, index: int, bar_set: QBarSet):
         """Handle bar series clicked signal"""

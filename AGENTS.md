@@ -24,8 +24,26 @@
    RULE #1 and covers the visible-and-teachable workflow, how to build
    professional screens, theming, and app wiring.
 2. `customwidgets://skills` — pointers to the shipped skills/knowledge.
-3. [`.claude/skills/custom-widgets-demo/SKILL.md`](.claude/skills/custom-widgets-demo/SKILL.md)
-   — token-widget demo pattern, verified widget signatures, and gotchas.
+3. Pick the RIGHT build skill:
+   - [`.claude/skills/custom-widgets-app/SKILL.md`](.claude/skills/custom-widgets-app/SKILL.md)
+     — **REAL apps / dashboards / multi-page tools**: the forms pipeline
+     (`.ui` → compiled `src/` → `json-styles` themes → `Qss/scss` `$TOKENS` →
+     GuiFunctions managers + workers). This is how production apps must be built.
+   - [`.claude/skills/custom-widgets-demo/SKILL.md`](.claude/skills/custom-widgets-demo/SKILL.md)
+     — the quick pure-code token demo only (a single styled `main.py`).
+
+## ⭐ RULE #0 — the forms pipeline IS the product; don't ship a pure-code app
+
+For any production-shaped build, the deliverable is `.ui` forms + `json-styles`
+CustomThemes + `Qss/scss` `$TOKENS` + `GuiFunctions` managers/workers — NOT a
+hand-built `main.py` with hard-coded hex. A code-only app that "looks right" is
+still a failure for maintenance. Mirror `examples/PySide6/AuroraDeckPro` and
+`examples/PySide6/WinningDashboard_CorrectArchitecture`. Compile forms with
+`Custom_Widgets --convert-ui ui --qt-library PySide6 --src-output-dir src`.
+Switch themes BY NAME (`themeEngine.setTheme("<Custom Theme>")`). Read the
+custom-widgets-app skill for the full procedure and the hard-won gotchas
+(Qt hex is `#AARRGGBB`; token widgets need inline styling under `loadJsonStyle`;
+use `QCustomDonut` not a QChart pie in small panels; etc.).
 
 ## The golden path (all through MCP tools)
 

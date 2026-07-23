@@ -282,7 +282,14 @@ class QCustomPieChart(QCustomChartBase, ChartCommonProps):
         """Update the chart display based on current data"""
         # Clean up hover state before removing series
         self._cleanupHoverState()
-        
+
+        # Rebuild synchronously: animating the remove/re-add of pie slices can
+        # leave the donut blank on the first paint (and on offscreen grabs /
+        # theme re-renders). Suppress animation for the rebuild itself; genuine
+        # later data changes still animate because SeriesAnimations is restored
+        # below without forcing a fresh geometry pass on the just-added slices.
+        self._chart.setAnimationOptions(QChart.NoAnimation)
+
         # Clear existing series
         series_to_remove = []
         for series in self._chart.series():
@@ -775,33 +782,39 @@ class QCustomPieChart(QCustomChartBase, ChartCommonProps):
 
     # ============ PUBLIC API ============
     
-    def addSeries(self, name: str, data: List[Tuple[str, float]], 
+    def addSeries(self, name: str, data: List[Tuple[str, float]],
                  color: Optional[QColor] = None,
                  visible: bool = True,
+                 colors: Optional[List] = None,
                  **kwargs) -> bool:
         """
         Add a pie series to the chart.
-        
+
         Args:
             name: Series name
             data: List of (slice_name, value) tuples
             color: Optional series color (for single series pie charts)
             visible: Whether the series is visible
+            colors: Optional per-slice colours (one QColor / hex per data point,
+                    in order). Preferred over poking the internal colour dict.
         """
         # For pie charts, we store the data in a custom dictionary
         # since the data manager expects numeric data
-        
+
         # Store the pie data
         self._pie_labels[name] = data.copy()
-        
+
         # Store slice names
         for slice_name, _ in data:
             self._slice_names[f"{name}_{slice_name}"] = slice_name
-        
+
         # Store colors for each slice
         for idx, (slice_name, _) in enumerate(data):
             color_key = f"{name}_{slice_name}"
-            if color_key not in self._slice_colors:
+            if colors is not None and idx < len(colors):
+                # Explicit per-slice colour wins and is authoritative on rebuild.
+                self._slice_colors[color_key] = QColor(colors[idx])
+            elif color_key not in self._slice_colors:
                 # Assign a unique color to each slice
                 self._slice_colors[color_key] = self._getSliceColor(idx)
         
@@ -821,9 +834,26 @@ class QCustomPieChart(QCustomChartBase, ChartCommonProps):
         
         if success:
             self.updateChart()
-        
+
         return success
-    
+
+    def setSliceColors(self, series_name: str, colors: List) -> bool:
+        """Set per-slice colours for a series and redraw.
+
+        `colors` is an ordered list (one QColor / hex string per slice, matching
+        the data order the series was added with). This is the public, rebuild-
+        safe way to colour a donut/pie — the values become authoritative so a
+        later updateChart() (e.g. a theme switch) keeps them.
+        """
+        data = self._pie_labels.get(series_name)
+        if not data:
+            return False
+        for idx, (slice_name, _v) in enumerate(data):
+            if idx < len(colors):
+                self._slice_colors["%s_%s" % (series_name, slice_name)] = QColor(colors[idx])
+        self.updateChart()
+        return True
+
     def removeSeries(self, name: str) -> bool:
         """Remove a series from the chart"""
         success = self._data_manager.removeSeries(name)

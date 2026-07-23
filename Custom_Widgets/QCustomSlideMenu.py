@@ -247,21 +247,23 @@ class QCustomSlideMenu(QWidget):
     def activateMenuButton(self, buttonObject):
         if is_in_designer(self):
             return
-        # Use an attribute to track if the toggleMenu was connected
-        if not hasattr(self, "_isMenuConnected"):
-            self._isMenuConnected = False
-        
-        # Disconnect only if the toggleMenu is connected
-        if self._isMenuConnected:
+        # Remove any PREVIOUS connection. We connect a lambda, so we must keep a
+        # reference to that exact slot to disconnect it — disconnecting
+        # self.toggleMenu (a different object) silently fails and leaves the old
+        # lambda connected. Re-wiring then stacks connections, and an even count
+        # makes a single click toggle-and-untoggle (the menu never moves).
+        prev_slot = getattr(self, "_menuToggleSlot", None)
+        prev_btn = getattr(self, "_menuToggleButton", None)
+        if prev_slot is not None and prev_btn is not None:
             try:
-                # Disconnect the toggleMenu from the clicked signal
-                buttonObject.clicked.disconnect(self.toggleMenu)
-            except TypeError:
-                # Ignore if no connection exists
+                prev_btn.clicked.disconnect(prev_slot)
+            except (TypeError, RuntimeError):
                 pass
-            
-        # Now safely connect the toggleMenu slot
-        buttonObject.clicked.connect(lambda: self.toggleMenu())
+
+        slot = lambda: self.toggleMenu()
+        buttonObject.clicked.connect(slot)
+        self._menuToggleSlot = slot
+        self._menuToggleButton = buttonObject
         self._isMenuConnected = True  # Update the connection status
 
     def toggleButton(self, **values):

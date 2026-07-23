@@ -1,0 +1,56 @@
+{
+    "ShowLogs": true,
+    "QtBinding": "PySide6",
+    "LiveCompileQss": true,
+    "CheckForMissingicons": true,
+    "QMainWindow": {
+        "title": "Winning — Analytics (Correct Architecture)"
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "WinningDashboardCorrectArchitecture",
+            "OrganizationDomain": "spinncode.com"
+        },
+        "ThemeSettings": {
+            "QtDesignerIconsColor": "theme",
+            "CustomThemes": [
+                {
+                    "Theme-name": "Winning Dark",
+                    "Default-Theme": true,
+                    "Create-icons": true,
+                    "Background-color": "#0d0e12",
+                    "Text-color": "#e9ebf1",
+                    "Accent-color": "#7b6cf6",
+                    "Icons-color": "#c2c6d2"
+                },
+                {
+                    "Theme-name": "Winning Light",
+                    "Default-Theme": false,
+                    "Create-icons": true,
+                    "Background-color": "#eceff5",
+                    "Text-color": "#161a24",
+                    "Accent-color": "#6c5ce7",
+                    "Icons-color": "#3b4150"
+                }
+            ]
+        }
+    },
+    "_comment_ChartPalette": "Read in code by gui/theme.py — chart hues live with the theme so they flip on theme switch (token-driven).",
+    "ChartPalette": {
+        "Winning Dark": {
+            "online": "#7b6cf6", "offline": "#f2794b", "returns": "#f4c44e",
+            "loyal": "#7b6cf6", "new": "#f2794b",
+            "up": "#3ddc97", "down": "#f5678a",
+            "grid": "#14ffffff", "axis": "#767c8b", "panelBg": "#1b1e26", "donutTrack": "#26ffffff",
+            "avatar": ["#f2794b", "#7b6cf6", "#f4c44e", "#3ddc97", "#f5678a"]
+        },
+        "Winning Light": {
+            "online": "#6c5ce7", "offline": "#f2794b", "returns": "#e6a51c",
+            "loyal": "#6c5ce7", "new": "#f2794b",
+            "up": "#17b26a", "down": "#e14d6e",
+            "grid": "#14101423", "axis": "#98a1af", "panelBg": "#f6f8fc", "donutTrack": "#1a101423",
+            "avatar": ["#f2794b", "#6c5ce7", "#e6a51c", "#17b26a", "#e14d6e"]
+        }
+    }
+}
