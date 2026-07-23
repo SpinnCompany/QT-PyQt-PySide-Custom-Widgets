@@ -26,6 +26,7 @@ import os
 from Custom_Widgets.Project import projectRoot
 import subprocess
 import sys
+import threading
 import traceback
 
 try:
@@ -153,20 +154,46 @@ def catalog_resource() -> str:
 _PROJECT_DIR = projectRoot()
 _qt_app = None
 
+from Custom_Widgets.mcp.workspace import ProjectRegistry  # noqa: E402
+
+########################################################################
+## PER-PROJECT SERIALIZATION
+##
+## Every tool takes an optional `project` (a folder, absolute or relative to the
+## session's --project-dir; blank = the default) and an optional `agent` tag.
+## Bridge/app access for a project is funnelled through ONE worker thread
+## (ProjectRegistry -> ProjectWorker), so multiple MCP clients sharing this
+## server - e.g. several sessions over the HTTP transport - can never interleave
+## commands against the same Designer/app. Different projects run in parallel;
+## the same project is strictly FIFO. The default follows _PROJECT_DIR live, so
+## --project-dir, designer_open_workspace and the test monkeypatch all apply.
+########################################################################
+REGISTRY = ProjectRegistry(lambda: _PROJECT_DIR)
+
+# os.chdir is process-global; serialize the few tools that must chdir so
+# concurrent clients (shared transport) don't yank each other's cwd.
+_CWD_LOCK = threading.Lock()
+
 
 def _projectDir():
     return _PROJECT_DIR
 
 
-def _client():
-    """Bridge client bound to the project folder. QtNetwork needs a
-    QCoreApplication in this process (no GUI)."""
+def _resolve(project=None):
+    """Resolve a per-call `project` argument to an absolute project dir."""
+    return REGISTRY.resolve(project)
+
+
+def _client(project_dir=None):
+    """Bridge client bound to a project folder (defaults to the session's
+    project). QtNetwork needs a QCoreApplication in this process (no GUI)."""
     global _qt_app
     from qtpy.QtCore import QCoreApplication
     if _qt_app is None and QCoreApplication.instance() is None:
         _qt_app = QCoreApplication([])
     from Custom_Widgets.DesignerBridge import DesignerBridgeClient
-    return DesignerBridgeClient(project_dir=_projectDir(), timeout_ms=500)
+    return DesignerBridgeClient(project_dir=project_dir or _projectDir(),
+                                timeout_ms=500)
 
 
 _NOT_RUNNING = ("Qt Designer is not reachable. Launch it with the "
@@ -174,33 +201,87 @@ _NOT_RUNNING = ("Qt Designer is not reachable. Launch it with the "
                 "--plugins` from the project folder '{dir}'), then retry.")
 
 
-def _request(message, reply_timeout_ms=10000):
-    reply = _client().request(message, reply_timeout_ms=reply_timeout_ms)
-    if reply is None:
-        _fail("designer_not_running", _NOT_RUNNING.format(dir=_projectDir()),
-              hint="Call designer_launch, wait ~5s, then retry (check "
-                   "designer_status).")
-    if "error" in reply:
-        _fail("bridge_error", "Designer reported: %s" % reply["error"],
-              details={"method": message.get("method")})
-    return reply
+def _request(message, project=None, owner=None, reply_timeout_ms=10000):
+    """Send a bridge request, SERIALIZED through the target project's worker so
+    concurrent MCP clients never interleave against one Designer instance."""
+    project_dir = _resolve(project)
+
+    def call():
+        reply = _client(project_dir).request(message,
+                                              reply_timeout_ms=reply_timeout_ms)
+        if reply is None:
+            _fail("designer_not_running", _NOT_RUNNING.format(dir=project_dir),
+                  hint="Call designer_launch, wait ~5s, then retry (check "
+                       "designer_status).")
+        if "error" in reply:
+            _fail("bridge_error", "Designer reported: %s" % reply["error"],
+                  details={"method": message.get("method")})
+        return reply
+
+    return REGISTRY.worker(project_dir).submit(
+        call, owner=owner, label=message.get("method"))
 
 
 ########################################################################
 ## STATUS / LIFECYCLE
 ########################################################################
 @_tool(annotations={"title": "Designer status", "readOnlyHint": True})
-def designer_status() -> str:
+def designer_status(project: str = "") -> str:
     """Check whether Qt Designer (with the Custom_Widgets bridge) is running
-    for this project, and report the project folder and bridge socket name."""
+    for this project, and report the project folder and bridge socket name.
+    `project` targets another project folder (absolute, or relative to the
+    session default); blank uses the default. Read-only ping - not queued."""
     from Custom_Widgets.DesignerBridge import bridgeServerName
-
-    reachable = _client().request({"method": "ping"}, reply_timeout_ms=2000)
+    project_dir = _resolve(project)
+    reachable = _client(project_dir).request({"method": "ping"}, reply_timeout_ms=2000)
     return json.dumps({
-        "project_dir": _projectDir(),
-        "bridge_socket": bridgeServerName(_projectDir()),
+        "project_dir": project_dir,
+        "bridge_socket": bridgeServerName(project_dir),
         "designer_running": bool(reachable and reachable.get("result") == "pong"),
     }, indent=2)
+
+
+@_tool(annotations={"title": "Workspaces status (multi-project / multi-agent)",
+                    "readOnlyHint": True})
+def workspaces_status(project: str = "") -> str:
+    """Discovery for multi-project / multi-agent work: for every project this
+    server has touched (plus the default and an optional `project`), report
+    whether its Designer and app are live and the state of its serialization
+    queue - depth, busy, and the in-flight command's owner/label. Use it to see
+    who is driving what before starting, and to pick a free project.
+
+    Liveness is probed directly (not queued), so this never blocks behind
+    queued work. Returns JSON: {default, projects:[{project_dir, bridge_socket,
+    designer_running, app_running, queue_depth, busy, current}]}."""
+    from Custom_Widgets.DesignerBridge import bridgeServerName
+    dirs = set(REGISTRY.known())
+    dirs.add(REGISTRY.default_dir())
+    if project:
+        dirs.add(_resolve(project))
+    queue_stats = REGISTRY.statuses()
+    projects = []
+    for d in sorted(dirs):
+        try:
+            ping = _client(d).request({"method": "ping"}, reply_timeout_ms=1000)
+            designer = bool(ping and ping.get("result") == "pong")
+        except Exception:
+            designer = False
+        try:
+            app_up = _app_client(d).isReachable(timeout_ms=1000)
+        except Exception:
+            app_up = False
+        q = queue_stats.get(d, {"queue_depth": 0, "busy": False, "current": None})
+        projects.append({
+            "project_dir": d,
+            "bridge_socket": bridgeServerName(d),
+            "designer_running": designer,
+            "app_running": app_up,
+            "queue_depth": q["queue_depth"],
+            "busy": q["busy"],
+            "current": q["current"],
+        })
+    return json.dumps({"default": REGISTRY.default_dir(), "projects": projects},
+                      indent=2)
 
 
 @_tool(annotations={"title": "Switch Designer workspace / project folder"})
@@ -247,14 +328,15 @@ def designer_open_workspace(path: str) -> str:
 
 
 @_tool(annotations={"title": "Launch Qt Designer"})
-def designer_launch() -> str:
+def designer_launch(project: str = "") -> str:
     """Launch Qt Designer with the Custom_Widgets plugins, tool docks and
-    control bridge, working in this project folder. Returns immediately;
-    give Designer a few seconds to start, then check designer_status."""
+    control bridge, working in a project folder (`project`; blank = default).
+    Returns immediately; give Designer a few seconds to start, then check
+    designer_status."""
     subprocess.Popen(
         [os.path.join(os.path.dirname(sys.executable), "Custom_Widgets"),
          "--start-designer", "--plugins"],
-        cwd=_projectDir(), start_new_session=True,
+        cwd=_resolve(project), start_new_session=True,
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     return "Designer launching (verify with designer_status in ~5s)"
 
@@ -291,16 +373,28 @@ def _kill_designer_processes(project_dir=None):
 
 
 @_tool(annotations={"title": "Quit Qt Designer", "destructiveHint": True})
-def designer_quit(force: bool = True, all_projects: bool = False) -> str:
+def designer_quit(force: bool = True, all_projects: bool = False,
+                  project: str = "", confirm: str = "") -> str:
     """Tear Designer down cleanly. Asks it to quit over the bridge first; if
     force (default) it then force-kills any lingering Designer process (a hung
-    Designer won't answer the bridge). Kills only THIS project's Designer unless
-    all_projects=True. Use this instead of leaving windows around."""
+    Designer won't answer the bridge). Kills only THIS project's Designer
+    (`project`; blank = default) unless all_projects=True.
+
+    all_projects=True also kills Designers other agents/sessions are using, so
+    it is guarded: re-call with confirm='all-projects' to actually do it."""
     import time
+    if all_projects and confirm != "all-projects":
+        _fail("confirmation_required",
+              "all_projects=True force-kills EVERY project's Designer, including "
+              "ones other agents/sessions are driving.",
+              hint="Re-call with confirm='all-projects' to proceed, or drop "
+                   "all_projects to quit only this project's Designer.")
+    project_dir = _resolve(project)
     clean = False
     had_unsaved = []
     try:
-        reply = _client().request({"method": "quit"}, reply_timeout_ms=2000)
+        reply = _client(project_dir).request({"method": "quit"},
+                                             reply_timeout_ms=2000)
         clean = bool(reply and reply.get("result") == "ok")
         had_unsaved = (reply or {}).get("had_unsaved", []) or []
     except Exception:
@@ -309,40 +403,43 @@ def designer_quit(force: bool = True, all_projects: bool = False) -> str:
         time.sleep(1.0)  # give it a moment to exit on its own
     killed = []
     if force:
-        killed = _kill_designer_processes(
-            None if all_projects else _projectDir())
+        killed = _kill_designer_processes(None if all_projects else project_dir)
     return json.dumps({"clean_quit": clean, "force_killed": killed,
-                       "had_unsaved_forms": had_unsaved})
+                       "had_unsaved_forms": had_unsaved,
+                       "scope": "all_projects" if all_projects else project_dir})
 
 
 ########################################################################
 ## FORMS
 ########################################################################
 @_tool(annotations={"title": "Open .ui files in Designer"})
-def designer_open_files(files: list[str], new_window: bool = False) -> str:
+def designer_open_files(files: list[str], new_window: bool = False,
+                        project: str = "", agent: str = "") -> str:
     """Open one or more .ui files. Default: create the form in the running
     Designer process - you can then inspect it (designer_get_object_info,
     designer_get_ui_code), edit it (designer_set_widget_property) and see it
     (designer_screenshot), though it is not shown in Designer's visible
     workspace (a PySide6 limitation). Set new_window=True to launch a
-    Designer window a human can see. Paths may be relative to the project."""
-    absolute = [f if os.path.isabs(f) else os.path.join(_projectDir(), f)
-                for f in files]
+    Designer window a human can see. Paths may be relative to the project.
+    `project` targets another project folder; `agent` tags who is driving it."""
+    base = _resolve(project)
+    absolute = [f if os.path.isabs(f) else os.path.join(base, f) for f in files]
     reply = _request({"method": "openFiles", "files": absolute,
-                      "newWindow": new_window})
+                      "newWindow": new_window}, project=project, owner=agent)
     return json.dumps(reply)
 
 
 @_tool(annotations={"title": "List form templates", "readOnlyHint": True})
-def designer_list_templates() -> str:
+def designer_list_templates(project: str = "") -> str:
     """List the form templates available to designer_new_form (e.g. the blank
     icons-prewired form, dashboard, login, settings page)."""
-    return json.dumps(_request({"method": "listTemplates"}))
+    return json.dumps(_request({"method": "listTemplates"}, project=project))
 
 
 @_tool(annotations={"title": "Create a new form in Designer"})
 def designer_new_form(name: str, template: str = "", folder: str = "",
-                      open_after: bool = True) -> str:
+                      open_after: bool = True, project: str = "",
+                      agent: str = "") -> str:
     """Create a new .ui form from a template and open it in the running
     Designer instance.
 
@@ -350,41 +447,45 @@ def designer_new_form(name: str, template: str = "", folder: str = "",
     template: one of designer_list_templates (empty -> the blank
     icons-prewired form). folder: destination directory (empty -> the
     workspace folder, else <project>/ui). open_after: also open it now.
-    Returns the created path."""
+    `project`/`agent`: target folder and owner tag. Returns the created path."""
     reply = _request({"method": "newForm", "name": name,
                       "template": template or None,
-                      "folder": folder or None, "open": open_after})
+                      "folder": folder or None, "open": open_after},
+                     project=project, owner=agent)
     return json.dumps(reply)
 
 
 @_tool(annotations={"title": "Close forms in Designer", "destructiveHint": True})
-def designer_close_files(files: list[str] = [], close_all: bool = False) -> str:
+def designer_close_files(files: list[str] = [], close_all: bool = False,
+                         project: str = "", agent: str = "") -> str:
     """Close open forms in Qt Designer, by file path or all of them.
     Unsaved changes in closed forms may prompt the user in Designer."""
-    absolute = [f if os.path.isabs(f) else os.path.join(_projectDir(), f)
-                for f in files]
-    reply = _request({"method": "closeFiles", "files": absolute, "all": close_all})
+    base = _resolve(project)
+    absolute = [f if os.path.isabs(f) else os.path.join(base, f) for f in files]
+    reply = _request({"method": "closeFiles", "files": absolute, "all": close_all},
+                     project=project, owner=agent)
     return json.dumps(reply)
 
 
 @_tool(annotations={"title": "Reload forms from disk"})
-def designer_reload_forms() -> str:
+def designer_reload_forms(project: str = "", agent: str = "") -> str:
     """Reload open, unmodified forms from disk. Use after editing a .ui
     file on disk so Designer shows the new content (dirty forms are left
     untouched so user edits are never lost)."""
-    return json.dumps(_request({"method": "reloadForms"}))
+    return json.dumps(_request({"method": "reloadForms"},
+                               project=project, owner=agent))
 
 
 ########################################################################
 ## INSPECTION (agent eyes)
 ########################################################################
 @_tool(annotations={"title": "Screenshot Designer", "readOnlyHint": True})
-def designer_screenshot(target: str = "current") -> Image:
+def designer_screenshot(target: str = "current", project: str = "") -> Image:
     """Take a screenshot inside Qt Designer. target='current' captures the
     active form preview, 'main' captures the whole Designer window. Use it
     to visually verify forms while editing .ui files."""
     reply = _request({"method": "getScreenShot", "type": target},
-                     reply_timeout_ms=20000)
+                     project=project, reply_timeout_ms=20000)
     data = reply["result"]
     if isinstance(data, list):  # 'all' - return the first form
         data = data[0]["png"] if data else ""
@@ -392,17 +493,18 @@ def designer_screenshot(target: str = "current") -> Image:
 
 
 @_tool(annotations={"title": "Get form source code", "readOnlyHint": True})
-def designer_get_ui_code(code_type: str = "xml") -> str:
+def designer_get_ui_code(code_type: str = "xml", project: str = "") -> str:
     """Get the ACTIVE form's current contents (including unsaved edits).
     code_type='xml' returns the .ui XML; 'pyside6' returns the generated
     Python class (via uic)."""
     reply = _request({"method": "getUiCode", "type": code_type},
-                     reply_timeout_ms=30000)
+                     project=project, reply_timeout_ms=30000)
     return reply["result"]
 
 
 @_tool(annotations={"title": "Build/replace a form from .ui XML (live)"})
-def designer_set_form_xml(xml: str, file: str = "", save: bool = False) -> str:
+def designer_set_form_xml(xml: str, file: str = "", save: bool = False,
+                          project: str = "", agent: str = "") -> str:
     """Design a form by pushing its .ui XML into Designer LIVE — Designer
     re-renders it immediately so the user watches it take shape. Use this to
     add layouts and widgets an agent can't add via property edits alone: read
@@ -412,28 +514,31 @@ def designer_set_form_xml(xml: str, file: str = "", save: bool = False) -> str:
     form, or one named by `file`. Pass save=true to write it to disk (needed
     before compiling + running). Keep styles in the QSS editor, not inline."""
     reply = _request({"method": "setFormXml", "xml": xml,
-                      "file": file or None, "save": save}, reply_timeout_ms=20000)
+                      "file": file or None, "save": save},
+                     project=project, owner=agent, reply_timeout_ms=20000)
     return json.dumps(reply)
 
 
 @_tool(annotations={"title": "Create a new form from .ui XML (live)"})
 def designer_new_form_xml(name: str, xml: str, folder: str = "",
-                          save: bool = True) -> str:
+                          save: bool = True, project: str = "",
+                          agent: str = "") -> str:
     """Create a NEW form from .ui XML and open it live in Designer. Writes
     <ui>/<name>.ui by default so it can be compiled (project_convert_ui) and
     run (designer_run_app). Author professional layouts (nested box/grid/form
     layouts with margins + spacing) and iterate with designer_set_form_xml +
     designer_screenshot; style in the QSS editor."""
     reply = _request({"method": "newFormXml", "name": name, "xml": xml,
-                      "folder": folder or None, "save": save}, reply_timeout_ms=20000)
+                      "folder": folder or None, "save": save},
+                     project=project, owner=agent, reply_timeout_ms=20000)
     return json.dumps(reply)
 
 
 @_tool(annotations={"title": "Get widget tree", "readOnlyHint": True})
-def designer_get_object_info() -> str:
+def designer_get_object_info(project: str = "") -> str:
     """Widget tree of every open form: class names, object names and
     geometries as JSON. Useful to understand a form before editing it."""
-    reply = _request({"method": "getObjectInfos"})
+    reply = _request({"method": "getObjectInfos"}, project=project)
     return json.dumps(reply["result"], indent=2)
 
 
@@ -599,7 +704,8 @@ sys.stdout.write(base64.b64encode(bytes(ba)).decode("ascii"))
 @_tool(annotations={"title": "Render a widget headless (offscreen)",
                        "readOnlyHint": True})
 def render_widget(name: str, props: dict = {}, width: int = 0, height: int = 0,
-                  theme: bool = True, theme_name: str = "light") -> Image:
+                  theme: bool = True, theme_name: str = "light",
+                  project: str = "") -> Image:
     """Render ONE Custom_Widgets widget to a PNG headlessly — no Designer, no
     running app, no display (offscreen Qt). Use it to SEE and self-verify a
     widget in isolation while writing UI code.
@@ -620,7 +726,7 @@ def render_widget(name: str, props: dict = {}, width: int = 0, height: int = 0,
             "theme": theme, "theme_name": theme_name}
     proc = subprocess.run(
         [sys.executable, "-c", _RENDER_SCRIPT],
-        cwd=_projectDir(), capture_output=True, text=True, timeout=60,
+        cwd=_resolve(project), capture_output=True, text=True, timeout=60,
         env={**os.environ, "QT_QPA_PLATFORM": "offscreen",
              "CW_RENDER_SPEC": json.dumps(spec)})
     data = proc.stdout.strip().splitlines()[-1] if proc.stdout.strip() else ""
@@ -650,7 +756,8 @@ def widget_signature(name: str) -> str:
 
 @_tool(annotations={"title": "Search examples & docs (recipes)",
                     "readOnlyHint": True})
-def search_examples(query: str, k: int = 5, full: bool = False) -> str:
+def search_examples(query: str, k: int = 5, full: bool = False,
+                    project: str = "") -> str:
     """Search the bundled example projects and the repo docs for task->code
     recipes — grounding for HOW to use the widgets, straight from real code
     instead of guesswork. Lexical (BM25) ranking; a query is natural language or
@@ -664,7 +771,7 @@ def search_examples(query: str, k: int = 5, full: bool = False) -> str:
     are not indexed."""
     from Custom_Widgets.mcp import retrieval
     k = max(1, min(int(k), 20))
-    hits = retrieval.search(query, k=k, project_dir=_projectDir(), full=full)
+    hits = retrieval.search(query, k=k, project_dir=_resolve(project), full=full)
     return json.dumps({"query": query, "count": len(hits), "results": hits},
                       indent=2)
 
@@ -673,23 +780,24 @@ def search_examples(query: str, k: int = 5, full: bool = False) -> str:
 ## THEME / STYLING
 ########################################################################
 @_tool(annotations={"title": "Style Designer forms"})
-def designer_set_stylesheet(qss: str) -> str:
+def designer_set_stylesheet(qss: str, project: str = "", agent: str = "") -> str:
     """Apply a stylesheet to all open form previews in Designer (live
     preview only - it does not modify the .ui files)."""
-    _request({"method": "setStyleSheet", "qss": qss})
+    _request({"method": "setStyleSheet", "qss": qss}, project=project, owner=agent)
     return "stylesheet applied to open forms"
 
 
 @_tool(annotations={"title": "Refresh Designer icon caches"})
-def designer_refresh_icons() -> str:
+def designer_refresh_icons(project: str = "") -> str:
     """Clear Designer's pixmap caches and repaint open forms. Use after
     the shared icon set (Qss/icons/icons) was regenerated on disk."""
-    _request({"method": "refreshIcons"})
+    _request({"method": "refreshIcons"}, project=project)
     return "icon caches refreshed"
 
 
 @_tool(annotations={"title": "Drive the QSS / Theme editor window"})
-def designer_qss_window(action: str = "status", enabled: bool = True) -> str:
+def designer_qss_window(action: str = "status", enabled: bool = True,
+                        project: str = "") -> str:
     """Drive the standalone QSS / Theme editor window - a floating top-level
     window the dock tools can't reach.
 
@@ -701,27 +809,30 @@ def designer_qss_window(action: str = "status", enabled: bool = True) -> str:
 
     Use designer_qss_screenshot to capture the window."""
     return json.dumps(_request({"method": "qssWindow",
-                                "action": action, "enabled": enabled}))
+                                "action": action, "enabled": enabled},
+                               project=project))
 
 
 @_tool(annotations={"title": "Move/raise the Designer window"})
 def designer_window(action: str = "raise", x: int = 0, y: int = 0,
-                    width: int = 1100, height: int = 750) -> str:
+                    width: int = 1100, height: int = 750,
+                    project: str = "") -> str:
     """Position the Designer main window (multi-monitor compositors often park
     it on an off-screen output). action='screens' lists monitors; 'toPrimary'
     moves Designer onto the primary screen; 'move'/'geometry' use x/y[/w/h];
     'maximize'/'normal'/'raise' as named."""
     return json.dumps(_request({"method": "designerWindow", "action": action,
-                                "x": x, "y": y, "width": width, "height": height}))
+                                "x": x, "y": y, "width": width, "height": height},
+                               project=project))
 
 
 @_tool(annotations={"title": "Screenshot the QSS editor window",
                        "readOnlyHint": True})
-def designer_qss_screenshot() -> Image:
+def designer_qss_screenshot(project: str = "") -> Image:
     """Screenshot the floating QSS / Theme editor window. Open it first with
     designer_qss_window(action='open')."""
     reply = _request({"method": "qssWindow", "action": "screenshot"},
-                     reply_timeout_ms=20000)
+                     project=project, reply_timeout_ms=20000)
     data = reply.get("result", "")
     if not data:
         _fail("no_screenshot",
@@ -734,37 +845,37 @@ def designer_qss_screenshot() -> Image:
 ## APP RUN (the project's main.py under the dev server, inside Designer)
 ########################################################################
 @_tool(annotations={"title": "Run the project app"})
-def designer_run_app() -> dict:
+def designer_run_app(project: str = "", agent: str = "") -> dict:
     """Start the project's main.py under the dev-server supervisor from
     inside Designer. While running, saving a form in Designer regenerates
     src/ui_*.py and hot-restarts the app. Output streams into Designer's
     Logs dock and is readable via designer_app_logs."""
-    return _request({"method": "runApp"})
+    return _request({"method": "runApp"}, project=project, owner=agent)
 
 
 @_tool(annotations={"title": "Stop the project app"})
-def designer_stop_app() -> dict:
+def designer_stop_app(project: str = "", agent: str = "") -> dict:
     """Stop the app started with designer_run_app."""
-    return _request({"method": "stopApp"})
+    return _request({"method": "stopApp"}, project=project, owner=agent)
 
 
 @_tool(annotations={"title": "Restart the project app"})
-def designer_restart_app() -> dict:
+def designer_restart_app(project: str = "", agent: str = "") -> dict:
     """Restart the app started with designer_run_app."""
-    return _request({"method": "restartApp"})
+    return _request({"method": "restartApp"}, project=project, owner=agent)
 
 
 @_tool(annotations={"title": "Project app status", "readOnlyHint": True})
-def designer_app_status() -> dict:
+def designer_app_status(project: str = "") -> dict:
     """Whether the project app is running, and which script it runs."""
-    return _request({"method": "appStatus"})
+    return _request({"method": "appStatus"}, project=project)
 
 
 @_tool(annotations={"title": "Read project app output", "readOnlyHint": True})
-def designer_app_logs(lines: int = 100) -> dict:
+def designer_app_logs(lines: int = 100, project: str = "") -> dict:
     """The last stdout/stderr lines of the running (or last-run) app -
     includes crash tracebacks."""
-    return _request({"method": "appLogs", "lines": lines})
+    return _request({"method": "appLogs", "lines": lines}, project=project)
 
 
 ########################################################################
@@ -776,13 +887,14 @@ def designer_app_logs(lines: int = 100) -> dict:
 ## the real app window and DRIVE it - screenshot, walk the widget tree,
 ## click buttons, set text/properties, invoke slots.
 ########################################################################
-def _app_client():
+def _app_client(project_dir=None):
     global _qt_app
     from qtpy.QtCore import QCoreApplication
     if _qt_app is None and QCoreApplication.instance() is None:
         _qt_app = QCoreApplication([])
     from Custom_Widgets.AppControl import AppControlClient
-    return AppControlClient(project_dir=_projectDir(), timeout_ms=500)
+    return AppControlClient(project_dir=project_dir or _projectDir(),
+                            timeout_ms=500)
 
 
 _APP_NOT_RUNNING = ("The project app is not reachable. Start it with "
@@ -790,113 +902,133 @@ _APP_NOT_RUNNING = ("The project app is not reachable. Start it with "
                     "in-app control server is enabled), then retry.")
 
 
-def _app_request(message, reply_timeout_ms=15000):
-    reply = _app_client().request(message, reply_timeout_ms=reply_timeout_ms)
-    if reply is None:
-        _fail("app_not_running", _APP_NOT_RUNNING,
-              hint="Start the app with designer_run_app, then retry (check "
-                   "app_status).")
-    if "error" in reply:
-        _fail("app_error", "App reported: %s" % reply["error"],
-              details={"method": message.get("method")})
-    return reply
+def _app_request(message, project=None, owner=None, reply_timeout_ms=15000):
+    """Send a running-app control request, SERIALIZED through the target
+    project's worker (shared with the Designer bridge for that project)."""
+    project_dir = _resolve(project)
+
+    def call():
+        reply = _app_client(project_dir).request(
+            message, reply_timeout_ms=reply_timeout_ms)
+        if reply is None:
+            _fail("app_not_running", _APP_NOT_RUNNING,
+                  hint="Start the app with designer_run_app, then retry (check "
+                       "app_status).")
+        if "error" in reply:
+            _fail("app_error", "App reported: %s" % reply["error"],
+                  details={"method": message.get("method")})
+        return reply
+
+    return REGISTRY.worker(project_dir).submit(
+        call, owner=owner, label="app:" + str(message.get("method")))
 
 
 @_tool(annotations={"title": "Running app status", "readOnlyHint": True})
-def app_status() -> str:
+def app_status(project: str = "") -> str:
     """Whether the running app's control server is reachable (the app must be
-    started with designer_run_app). Use before the other app_* tools."""
-    reachable = _app_client().isReachable(timeout_ms=1500)
+    started with designer_run_app). Use before the other app_* tools.
+    Read-only reachability probe - not queued."""
+    reachable = _app_client(_resolve(project)).isReachable(timeout_ms=1500)
     return json.dumps({"app_reachable": reachable})
 
 
 @_tool(annotations={"title": "List running-app windows", "readOnlyHint": True})
-def app_list_windows() -> str:
+def app_list_windows(project: str = "") -> str:
     """List the running app's top-level windows (objectName, class, title,
     geometry, which is active)."""
-    return json.dumps(_app_request({"method": "listWindows"})["result"], indent=2)
+    return json.dumps(_app_request({"method": "listWindows"},
+                                   project=project)["result"], indent=2)
 
 
 @_tool(annotations={"title": "Screenshot the running app", "readOnlyHint": True})
-def app_screenshot(target: str = "active") -> Image:
+def app_screenshot(target: str = "active", project: str = "") -> Image:
     """Screenshot a window of the RUNNING app (not Designer). target='active'
     (default), 'main' (the QMainWindow), or a window objectName."""
     reply = _app_request({"method": "screenshot", "target": target},
-                         reply_timeout_ms=20000)
+                         project=project, reply_timeout_ms=20000)
     return Image(data=base64.b64decode(reply["result"]), format="png")
 
 
 @_tool(annotations={"title": "Running app widget tree", "readOnlyHint": True})
-def app_object_tree(window: str = "active") -> str:
+def app_object_tree(window: str = "active", project: str = "") -> str:
     """The live widget tree of a running-app window: class, objectName,
     geometry, text, visible/enabled. Use it to find things to click/edit."""
-    return json.dumps(_app_request({"method": "objectTree", "window": window})["result"],
-                      indent=2)
+    return json.dumps(_app_request({"method": "objectTree", "window": window},
+                                   project=project)["result"], indent=2)
 
 
 @_tool(annotations={"title": "Find widgets in the running app", "readOnlyHint": True})
-def app_find(query: str, by: str = "any") -> str:
+def app_find(query: str, by: str = "any", project: str = "") -> str:
     """Find widgets in the running app by=name|text|class|any (substring,
     case-insensitive). Returns objectName, class, text, visibility."""
-    return json.dumps(_app_request({"method": "find", "query": query, "by": by})["result"],
-                      indent=2)
+    return json.dumps(_app_request({"method": "find", "query": query, "by": by},
+                                   project=project)["result"], indent=2)
 
 
 @_tool(annotations={"title": "Click a widget in the running app"})
-def app_click(widget: str) -> str:
+def app_click(widget: str, project: str = "", agent: str = "") -> str:
     """Click a widget in the running app by objectName (buttons via click();
     others via a synthesized mouse click). Navigate the live app this way."""
-    return json.dumps(_app_request({"method": "click", "widget": widget}))
+    return json.dumps(_app_request({"method": "click", "widget": widget},
+                                   project=project, owner=agent))
 
 
 @_tool(annotations={"title": "Set text in the running app"})
-def app_set_text(widget: str, text: str) -> str:
+def app_set_text(widget: str, text: str, project: str = "", agent: str = "") -> str:
     """Set a widget's text in the running app by objectName (setText or
     setPlainText)."""
-    return json.dumps(_app_request({"method": "setText", "widget": widget, "text": text}))
+    return json.dumps(_app_request({"method": "setText", "widget": widget,
+                                    "text": text}, project=project, owner=agent))
 
 
 @_tool(annotations={"title": "Set a widget property in the running app"})
-def app_set_property(widget: str, property_name: str, value) -> str:
+def app_set_property(widget: str, property_name: str, value,
+                     project: str = "", agent: str = "") -> str:
     """Set a Qt property on a running-app widget by objectName (repolishes so
     QSS re-evaluates). E.g. set 'variant' on a themed button."""
     return json.dumps(_app_request({"method": "setProperty", "widget": widget,
-                                    "property": property_name, "value": value}))
+                                    "property": property_name, "value": value},
+                                   project=project, owner=agent))
 
 
 @_tool(annotations={"title": "Invoke a slot in the running app"})
-def app_invoke(widget: str, slot: str) -> str:
+def app_invoke(widget: str, slot: str, project: str = "", agent: str = "") -> str:
     """Call a no-arg method/slot on a running-app widget by objectName (e.g.
     'showMaximized', 'clear', a custom slot)."""
-    return json.dumps(_app_request({"method": "invoke", "widget": widget, "slot": slot}))
+    return json.dumps(_app_request({"method": "invoke", "widget": widget,
+                                    "slot": slot}, project=project, owner=agent))
 
 
 @_tool(annotations={"title": "Move/raise the running-app window"})
 def app_window(action: str = "raise", x: int = 0, y: int = 0,
-               width: int = 900, height: int = 600, target: str = "active") -> str:
+               width: int = 900, height: int = 600, target: str = "active",
+               project: str = "", agent: str = "") -> str:
     """Position a running-app window (multi-monitor compositors often park it
     on an off-screen output). action='screens' lists monitors; 'toPrimary'
     moves the window onto the primary screen; 'move'/'geometry' use x/y[/w/h];
     'maximize'/'normal'/'raise' as named. Use app_screenshot after to verify."""
     return json.dumps(_app_request({"method": "window", "action": action,
                                     "x": x, "y": y, "width": width,
-                                    "height": height, "target": target}))
+                                    "height": height, "target": target},
+                                   project=project, owner=agent))
 
 
 ########################################################################
 ## WINDOW MANAGEMENT (panes, dialogs, actions)
 ########################################################################
 @_tool(annotations={"title": "List Designer panes", "readOnlyHint": True})
-def designer_list_docks() -> str:
+def designer_list_docks(project: str = "") -> str:
     """List Designer's dock panes (Widget Box, Property Editor, Object
     Inspector, Custom Widgets docks...) with visibility, area and floating
     state."""
-    return json.dumps(_request({"method": "getDocks"})["result"], indent=2)
+    return json.dumps(_request({"method": "getDocks"},
+                               project=project)["result"], indent=2)
 
 
 @_tool(annotations={"title": "Arrange a Designer pane"})
 def designer_arrange_dock(dock: str, visible: bool = True, area: str = "",
-                          floating: bool = False, raise_: bool = False) -> str:
+                          floating: bool = False, raise_: bool = False,
+                          project: str = "") -> str:
     """Arrange a Designer dock pane matched by name/title substring:
     show/hide it, move it to an area ('left'/'right'/'top'/'bottom'),
     float it, or raise it above tabbed siblings."""
@@ -904,33 +1036,36 @@ def designer_arrange_dock(dock: str, visible: bool = True, area: str = "",
                "floating": floating, "raise": raise_}
     if area:
         message["area"] = area
-    return json.dumps(_request(message))
+    return json.dumps(_request(message, project=project))
 
 
 @_tool(annotations={"title": "List open dialogs", "readOnlyHint": True})
-def designer_list_dialogs() -> str:
+def designer_list_dialogs(project: str = "") -> str:
     """List visible dialogs / popups / prompts / error boxes in Designer
     (e.g. the startup New Form dialog or a save prompt), with their title,
     message text and buttons. Check this when Designer seems blocked."""
-    return json.dumps(_request({"method": "getDialogs"})["result"], indent=2)
+    return json.dumps(_request({"method": "getDialogs"},
+                               project=project)["result"], indent=2)
 
 
 @_tool(annotations={"title": "Dismiss a dialog"})
-def designer_dismiss_dialog(match: str = "", button: str = "") -> str:
+def designer_dismiss_dialog(match: str = "", button: str = "",
+                            project: str = "") -> str:
     """Close an open dialog matched by title/class substring (empty match =
     first open dialog). Pass button text to click a specific button
     instead, e.g. button='Don't Save' on a save prompt, or button='Close'
     on the startup New Form dialog."""
     return json.dumps(_request({"method": "dismissDialog",
-                                "match": match, "button": button}))
+                                "match": match, "button": button},
+                               project=project))
 
 
 @_tool(annotations={"title": "List Designer actions", "readOnlyHint": True})
-def designer_list_actions(contains: str = "") -> str:
+def designer_list_actions(contains: str = "", project: str = "") -> str:
     """List Designer's menu/toolbar actions (Save, Save All, Preview,
     Close, ...). Optionally filter by substring. Trigger any of them with
     designer_trigger_action."""
-    actions = _request({"method": "getActions"})["result"]
+    actions = _request({"method": "getActions"}, project=project)["result"]
     if contains:
         needle = contains.lower()
         actions = [a for a in actions
@@ -939,65 +1074,72 @@ def designer_list_actions(contains: str = "") -> str:
 
 
 @_tool(annotations={"title": "Trigger a Designer action"})
-def designer_trigger_action(action: str) -> str:
+def designer_trigger_action(action: str, project: str = "", agent: str = "") -> str:
     """Trigger a Designer menu/toolbar action by text or objectName
     (e.g. 'Save Form', 'Save All', 'Preview'). Use it to save forms after
     edits."""
-    return json.dumps(_request({"method": "triggerAction", "action": action}))
+    return json.dumps(_request({"method": "triggerAction", "action": action},
+                               project=project, owner=agent))
 
 
 @_tool(annotations={"title": "Set a widget property (undoable)"})
-def designer_set_widget_property(widget: str, property_name: str, value) -> str:
+def designer_set_widget_property(widget: str, property_name: str, value,
+                                 project: str = "", agent: str = "") -> str:
     """Set a property on a widget of the ACTIVE form (matched by
     objectName) through Designer's undo stack, like a manual edit - e.g.
     text, geometry, toolTip, checked. NOTE: styleSheet is refused by
     project rule; persist styles with project_write_style instead."""
     return json.dumps(_request({"method": "setWidgetProperty", "widget": widget,
-                                "property": property_name, "value": value}))
+                                "property": property_name, "value": value},
+                               project=project, owner=agent))
 
 
 ########################################################################
 ## PROJECT WORKFLOW
 ########################################################################
 @_tool(annotations={"title": "List project .ui files", "readOnlyHint": True})
-def project_list_ui_files() -> str:
+def project_list_ui_files(project: str = "") -> str:
     """List the .ui files of the project (excluding generated copies)."""
+    base = _resolve(project)
     found = []
     skip = {".git", "__pycache__", "generated-files", "node_modules", "venv", ".venv"}
-    for root, dirs, files in os.walk(_projectDir()):
+    for root, dirs, files in os.walk(base):
         dirs[:] = [d for d in dirs if d not in skip]
         for name in files:
             if name.lower().endswith(".ui") and not name.startswith("new_"):
-                found.append(os.path.relpath(os.path.join(root, name), _projectDir()))
+                found.append(os.path.relpath(os.path.join(root, name), base))
     return json.dumps(sorted(found), indent=2)
 
 
 @_tool(annotations={"title": "Create a new .ui form"})
-def project_new_ui(name: str) -> str:
+def project_new_ui(name: str, project: str = "") -> str:
     """Create ui/<name>.ui pre-wired to the theme icons resource
     (Qss/icons/_icons.qrc), ready to design in Qt Designer."""
-    previous = projectRoot()
-    os.chdir(_projectDir())
-    try:
-        from Custom_Widgets.ProjectMaker import create_ui_file
-        path = create_ui_file(name)
-        if path is None:
-            _fail("already_exists", "ui/%s.ui already exists" % name,
-                  hint="Pick another name or edit the existing form.")
-        return os.path.relpath(path, _projectDir())
-    finally:
-        os.chdir(previous)
+    base = _resolve(project)
+    with _CWD_LOCK:  # create_ui_file relies on cwd; keep it process-safe
+        previous = os.getcwd()
+        os.chdir(base)
+        try:
+            from Custom_Widgets.ProjectMaker import create_ui_file
+            path = create_ui_file(name)
+            if path is None:
+                _fail("already_exists", "ui/%s.ui already exists" % name,
+                      hint="Pick another name or edit the existing form.")
+            return os.path.relpath(path, base)
+        finally:
+            os.chdir(previous)
 
 
 @_tool(annotations={"title": "Convert ui/ to Python sources"})
-def project_convert_ui(ui_path: str = "ui", src_output_dir: str = "src") -> str:
+def project_convert_ui(ui_path: str = "ui", src_output_dir: str = "src",
+                       project: str = "") -> str:
     """Convert the project's .ui files to Python (src/ui_*.py) plus the
     generated-files/ intermediates the theme engine needs. Run after
     editing .ui files (equivalent of `Custom_Widgets --convert-ui`)."""
     exe = os.path.join(os.path.dirname(sys.executable), "Custom_Widgets")
     proc = subprocess.run(
         [exe, "--convert-ui", ui_path, "--src-output-dir", src_output_dir],
-        cwd=_projectDir(), capture_output=True, text=True, timeout=300,
+        cwd=_resolve(project), capture_output=True, text=True, timeout=300,
         env={**os.environ, "QT_QPA_PLATFORM": os.environ.get("QT_QPA_PLATFORM", "offscreen")})
     if proc.returncode != 0:
         _fail("convert_failed", "ui-to-Python conversion failed",
@@ -1009,7 +1151,7 @@ def project_convert_ui(ui_path: str = "ui", src_output_dir: str = "src") -> str:
 
 
 @_tool(annotations={"title": "Write project styles (scss)"})
-def project_write_style(scss: str, file: str = "") -> str:
+def project_write_style(scss: str, file: str = "", project: str = "") -> str:
     """Persist custom styles the Custom_Widgets way: appended to
     Qss/scss/defaultStyle.scss, or written to a separate scss file that
     gets @import-ed into it (pass file='mystyles.scss'). Target widgets
@@ -1018,7 +1160,7 @@ def project_write_style(scss: str, file: str = "") -> str:
     properties in .ui files. The edited .scss is streamed live into the QSS
     editor so the user watches it change. Styles apply on the next app run;
     for an instant Designer preview also call designer_set_stylesheet."""
-    scss_dir = os.path.join(_projectDir(), "Qss", "scss")
+    scss_dir = os.path.join(_resolve(project), "Qss", "scss")
     os.makedirs(scss_dir, exist_ok=True)
     default_path = os.path.join(scss_dir, "defaultStyle.scss")
     if not os.path.exists(default_path):
@@ -1038,21 +1180,22 @@ def project_write_style(scss: str, file: str = "") -> str:
         if import_line not in default_content:
             with open(default_path, "a", encoding="utf-8") as f:
                 f.write(f"\n{import_line}\n")
-        _show_style_in_editor(edited)
+        _show_style_in_editor(edited, project)
         return f"wrote Qss/scss/{name} and imported it from defaultStyle.scss"
 
     with open(default_path, "a", encoding="utf-8") as f:
         f.write("\n" + scss.rstrip() + "\n")
-    _show_style_in_editor(default_path)
+    _show_style_in_editor(default_path, project)
     return "appended to Qss/scss/defaultStyle.scss"
 
 
-def _show_style_in_editor(path):
+def _show_style_in_editor(path, project=None):
     """Best-effort: open the just-edited .scss in Designer's QSS editor so the
     user sees the change live. No-op when Designer isn't running."""
     try:
-        _client().request({"method": "qssWindow", "action": "load", "file": path},
-                          reply_timeout_ms=2000)
+        _client(_resolve(project)).request(
+            {"method": "qssWindow", "action": "load", "file": path},
+            reply_timeout_ms=2000)
     except Exception:
         pass
 
@@ -1061,13 +1204,34 @@ def main():
     global _PROJECT_DIR
     parser = argparse.ArgumentParser(description="Custom Widgets MCP server")
     parser.add_argument("--project-dir", default=projectRoot(),
-                        help="Project folder (where Qss/, ui/ and json-styles/ live)")
+                        help="Default project folder (where Qss/, ui/ and "
+                             "json-styles/ live). Individual tools can target "
+                             "another folder via their `project` argument.")
+    parser.add_argument("--transport", choices=["stdio", "http"], default="stdio",
+                        help="stdio (default): one client per process. http: a "
+                             "single SHARED daemon many sessions/agents connect "
+                             "to - the per-project queue then serializes them. "
+                             "Point .mcp.json at http://<host>:<port>/mcp.")
+    parser.add_argument("--host", default="127.0.0.1",
+                        help="HTTP bind host (transport=http). Default 127.0.0.1.")
+    parser.add_argument("--port", type=int, default=8765,
+                        help="HTTP bind port (transport=http). Default 8765.")
     args = parser.parse_args()
     _PROJECT_DIR = os.path.abspath(args.project_dir)
     from Custom_Widgets.Project import setProjectRoot
     setProjectRoot(_PROJECT_DIR)
     os.chdir(_PROJECT_DIR)
-    mcp.run()
+    if args.transport == "http":
+        # Shared daemon: several sessions/agents dial in over streamable HTTP;
+        # cross-client commands to one project are serialized by its worker.
+        try:
+            mcp.settings.host = args.host
+            mcp.settings.port = args.port
+        except Exception:  # pragma: no cover - older FastMCP settings shape
+            pass
+        mcp.run(transport="streamable-http")
+    else:
+        mcp.run()
 
 
 if __name__ == "__main__":

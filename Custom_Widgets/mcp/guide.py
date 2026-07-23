@@ -81,6 +81,29 @@ silently in the background when the user could watch instead.
    assets qrc). The form-construction tools inject the icons qrc automatically
    when a form uses <iconset>; if you author .ui another way, include it.
 
+== MULTI-PROJECT / MULTI-AGENT ==
+
+Every tool takes an optional `project` (a folder, absolute or relative to the
+server's --project-dir; blank = the default) and mutating tools take an optional
+`agent` tag. Different projects are fully isolated (separate Designer/app
+sockets) and run in parallel; the SAME project is serialized — a per-project
+queue funnels all bridge/app commands so concurrent sessions/agents can never
+interleave against one Designer/app. So:
+  - To work on another example without remounting, pass project="examples/Foo".
+  - Call workspaces_status FIRST when others may be active: it lists each
+    project's designer_running / app_running / queue_depth / busy / current
+    owner, so you can pick a free project and see who is driving what. Pass an
+    `agent` name on your mutating calls so that ownership shows up there.
+  - Two agents on ONE project still share its single Designer/app (one at a
+    time via the queue) — prefer giving each agent its OWN project folder.
+  - designer_quit affects only THIS project by default; all_projects=True also
+    kills Designers other agents are using and is refused without
+    confirm='all-projects'.
+For several sessions to share one server (and thus one queue per project), run
+it once as a shared daemon: `Custom_Widgets-mcp --transport http --port 8765`
+and point each .mcp.json at http://127.0.0.1:8765/mcp. Plain stdio (the default)
+is one client per process and needs none of this.
+
 == BUILDING PROFESSIONAL SCREENS (how real Custom_Widgets apps are structured) ==
 
 USE THE CUSTOM WIDGETS — that is the whole point of the library; do NOT default
