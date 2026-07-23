@@ -27,15 +27,9 @@ from qtpy.QtCore import QSize
 from qtpy.QtGui import QIcon
 from qtpy.QtWidgets import QApplication, QMainWindow, QListWidgetItem
 
-from Custom_Widgets import loadJsonStyle
+from Custom_Widgets import loadJsonStyle, enable_hot_reload
 from Custom_Widgets.QAppSettings import QAppSettings
 from Custom_Widgets.QCustomTheme import QCustomTheme
-
-try:
-    from src.ui_mainwindow import Ui_MainWindow
-except ImportError:
-    sys.exit("Generated UI not found. Run first:\n"
-             "    Custom_Widgets --convert-ui ui --src-output-dir src")
 
 MAX_VISIBLE_ICONS = 300
 
@@ -43,9 +37,33 @@ MAX_VISIBLE_ICONS = 300
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._theme_switch_started = None
+        self.themeEngine = None
+
+        # Build the UI now, and rebuild it IN PLACE whenever ui_mainwindow.py
+        # is regenerated (edit the form in Designer, save) - no restart. The
+        # `build` method re-runs setupUi AND re-connects signals, so the
+        # rebuilt window stays fully interactive.
+        enable_hot_reload(self, self.build)
+
+        # A QCustomQMainWindow attaches the theme engine itself; a plain
+        # QMainWindow attaches it explicitly. Created once, reused across
+        # rebuilds.
+        self.themeEngine = QCustomTheme(self)
+        loadJsonStyle(self, jsonFiles={"json-styles/style.json"})
+
+    def build(self):
+        """(Re)construct the UI: setupUi + signal connections. Called on start
+        and on every hot reload of the compiled UI module. The Ui_ class is
+        imported HERE so a reloaded module is picked up."""
+        try:
+            from src.ui_mainwindow import Ui_MainWindow
+        except ImportError:
+            sys.exit("Generated UI not found. Run first:\n"
+                     "    Custom_Widgets --convert-ui ui --src-output-dir src")
+
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self._theme_switch_started = None
 
         self.ui.sampleSlider.valueChanged.connect(self.ui.sampleProgress.setValue)
         self.ui.themeSelector.activated.connect(self._switchTheme)
@@ -54,10 +72,15 @@ class MainWindow(QMainWindow):
         for btn in (self.ui.saveBtn, self.ui.settingsBtn, self.ui.deleteBtn, self.ui.materialBtn):
             btn.setIconSize(QSize(20, 20))
 
-        # A QCustomQMainWindow attaches the theme engine itself; a plain
-        # QMainWindow attaches it explicitly.
-        self.themeEngine = QCustomTheme(self)
-        loadJsonStyle(self, jsonFiles={"json-styles/style.json"})
+        # On a hot rebuild (theme engine already up), restyle + re-icon +
+        # repopulate the fresh widgets. On the very first build this is skipped
+        # - start() drives it via the theme-ready signal.
+        if self.themeEngine is not None:
+            loadJsonStyle(self, jsonFiles={"json-styles/style.json"})
+            self.themeEngine.applyIcons(self.ui, ui_file_name="mainwindow")
+            self._populateThemeSelector()
+            self._refreshPackSelector()
+            self._populateIconList()
 
     def start(self):
         self.show()

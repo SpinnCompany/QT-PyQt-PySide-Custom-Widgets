@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CustomComponent</class>
+ <widget class="QCustomComponent" name="CustomComponent">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>336</width>
+    <height>256</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>CustomComponent</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QCustomDataTable" name="customDataTable">
+     <property name="showGrid" stdset="0">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>test hot reload </string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCustomComponentContainer" name="QCustomComponentContainer">
+     <property name="filePath" stdset="0">
+      <string>src/ui_testnew.py</string>
+     </property>
+     <property name="previewComponent" stdset="0">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomDataTable</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomDataTable</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomComponent</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomComponent</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomComponentContainer</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomComponentContainer</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
