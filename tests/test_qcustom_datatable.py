@@ -435,3 +435,79 @@ class TestRowActions:
         t.resize(700, 240)
         pm = t.grab()
         assert not pm.isNull() and pm.width() > 0
+
+
+class TestCustomizationHooks:
+    """The customization surface that lets the table match ANY design (like an
+    HTML table): per-column alignment, twoline peer lines, kebab colour, and the
+    opt-in header affordances (persistent sort carets / select caret / gear)."""
+
+    def test_column_align_overrides_type_default(self, qapp):
+        # a number column defaults to right; an explicit align wins, and the
+        # model serves it through TextAlignmentRole for the delegate to honour.
+        from Custom_Widgets.QCustomDataTable import QCustomDataTableModel, DataTableColumn
+        m = QCustomDataTableModel(
+            [DataTableColumn("amount", type="number", renderer="currency",
+                             align=Qt.AlignLeft)],
+            [{"amount": 550}])
+        align = int(m.data(m.index(0, 0), Qt.TextAlignmentRole))
+        assert align & int(Qt.AlignLeft)
+        assert not (align & int(Qt.AlignRight))
+
+    def test_twoline_peer_lines_scale_zero(self, qapp):
+        # subtitle scale 0 -> two equal peer lines; both bands present.
+        from qtpy.QtGui import QColor
+        from Custom_Widgets.QCustomDataTable import QCustomDataTable, DataTableColumn
+        HUE = "#f97316"
+        t = QCustomDataTable()
+        t.customizeQCustomDataTable(
+            columns=[DataTableColumn("s", renderer="twoline", subtitleKey="s2",
+                                     colorKey="c")], showPagination=False)
+        t.setData([{"s": "line one", "s2": "line two", "c": HUE}])
+        t.setTwoLineSubtitleScale(0)
+        t.view().verticalHeader().setDefaultSectionSize(64)
+        t.resize(360, 120)
+        img = t.grab().toImage()
+        oc = QColor(HUE)
+        inky = [y for y in range(img.height())
+                if sum(1 for x in range(img.width())
+                       if _close(img.pixelColor(x, y), oc)) > 3]
+        bands = []
+        for y in inky:
+            if bands and y - bands[-1][-1] <= 2:
+                bands[-1].append(y)
+            else:
+                bands.append([y])
+        assert len(bands) >= 2
+
+    def test_header_affordances_toggle_and_paint(self, qapp):
+        from Custom_Widgets.QCustomDataTable import QCustomDataTable, DataTableColumn
+        t = QCustomDataTable()
+        t.customizeQCustomDataTable(
+            columns=[DataTableColumn("a"), DataTableColumn("b")],
+            selectable=True, rowActions=[("x", "X")], showPagination=False)
+        t.setData([{"a": "1", "b": "2"}])
+        t.setPersistentSortIndicators(True)
+        t.setHeaderSelectCaret(True)
+        t.setHeaderActionsGlyph("gear")
+        t.setHeaderGlyphColor("#94a3b8")
+        t.setHeaderAccentColor("#f97316")
+        t.setActionsColor("#64748b")
+        assert t._hheader._sortAlways is True
+        assert t._hheader._actionsGlyph == "gear"
+        # sortable data columns get carets (select/actions excluded)
+        assert t._hheader._sortableCols == {1, 2}
+        t.resize(700, 160)
+        assert not t.grab().isNull()
+
+    def test_header_gear_click_signal(self, qapp):
+        from Custom_Widgets.QCustomDataTable import QCustomDataTable, DataTableColumn
+        t = QCustomDataTable()
+        t.customizeQCustomDataTable(
+            columns=[DataTableColumn("a")], rowActions=[("x", "X")],
+            showPagination=False)
+        t.setHeaderActionsGlyph("gear")
+        fired = []
+        t.headerActionsGlyphClicked.connect(lambda: fired.append(True))
+        t._hheader.cornerGlyphClicked.emit()
+        assert fired == [True]

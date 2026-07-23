@@ -13,11 +13,19 @@ light/dark theme-aware.
 | Column | Renderer | Notes |
 | --- | --- | --- |
 | JOB | `status` | green status dot + orange (accent) link text |
-| INVOICED | `badge` | soft "Issued" pill (`colorMap`) |
-| AMOUNT | `currency` | right-aligned money (`formatter`) |
+| INVOICED | `colored` | muted grey "Issued" |
+| AMOUNT | `currency` | **left-aligned** money (`align=Qt.AlignLeft` overrides the numeric default) |
 | SITE | `twoline` | street over a muted town line (`subtitleKey`) |
-| SCHEDULED | `twoline` | two **orange** lines (`subtitleKey` + `colorKey`) |
+| SCHEDULED | `twoline` | two **equal** orange lines (`subtitleKey` + `colorKey`, `setTwoLineSubtitleScale(0)`) |
 | CUSTOMER / DUE DATE / ASSIGNED TO | — | plain text |
+
+**Customization hooks used to match the reference exactly** (the point: the
+table bends like an HTML table, nothing is hard-coded):
+`setTwoLineSubtitleScale(0)` (equal peer lines), `align=` per column,
+`setStatusDotSize`, `setActionsColor` (visible kebab), and the opt-in header
+affordances `setPersistentSortIndicators(True)` (a sort caret on every column),
+`setHeaderSelectCaret(True)`, `setHeaderActionsGlyph("gear")` +
+`setHeaderGlyphColor` / `setHeaderAccentColor` (theme-tracked).
 
 **Selection & actions** (on `QCustomDataTable`):
 

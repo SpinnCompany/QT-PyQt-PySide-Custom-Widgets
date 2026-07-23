@@ -149,6 +149,30 @@ QCustomVerticalSeparator, QCustomQProgressBar, QCustomQDialog. Prefer per-<item>
 alignment + size policies over QSpacerItem/separators wherever the layout can
 express the gap that way — reach for a spacer only when alignment cannot.
 
+== DESIGN FIDELITY: WIDGETS ARE FULLY CUSTOMIZABLE ==
+
+Treat every Custom_Widget like an HTML element + CSS: it must be flexible enough
+to reproduce an ARBITRARY design reference pixel-for-pixel. Widgets are NOT
+tight or one-look — the library's whole value is that a developer can bend a
+widget to any brand or mockup.
+
+- When matching a reference image, diff it ELEMENT-BY-ELEMENT (alignment, font
+  weight/size hierarchy, glyphs, colours, affordances like sort carets / gears /
+  carets), not with a "looks close" glance and not on green tests alone. Own
+  every gap you find.
+- If the widget can't hit some detail, the fix is to ADD THE HOOK to the widget,
+  not to accept the limitation or call it close enough. Expose it as an opt-in
+  setter/Property that DEFAULTS TO THE CURRENT behaviour (never break existing
+  looks) and, for colours, that can track the active theme. Prefer many small
+  orthogonal knobs over a single "style" enum. Then EXTEND THIS MCP / the widget,
+  and note the new knob in the catalog.
+- Reference: QCustomDataTable exposes per-column `align`, twoline subtitle
+  scale/weight, kebab colour + status-dot size, and opt-in header affordances
+  (persistent per-column sort carets, select caret, actions gear) — enough to
+  match a real SaaS "Jobs" table exactly (examples/PySide6/AuroraJobsTable).
+- Verify rendering with a PIXEL PROBE (render_widget / grab -> toImage ->
+  pixelColor) under a stable harness, never by eyeballing a downscaled shot.
+
 COMPOSITION
 - ONE top-level window: class QCustomQMainWindow (extends QMainWindow). Every
   other screen is a QCustomComponent (extends QWidget); modals are a root

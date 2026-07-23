@@ -2,8 +2,9 @@
 + QCustomTableToolbar.
 
 Shows the rich data-table feature set end to end:
-  * status-dot + coloured link cell (JOB), currency (AMOUNT), two-line address
-    cells (SITE), orange scheduled two-line cell, an "Issued" badge (INVOICED)
+  * status-dot + coloured link cell (JOB), left-aligned currency (AMOUNT),
+    two-line address cells (SITE), orange two-line SCHEDULED, muted INVOICED,
+    per-column sort carets, a header gear, and a visible kebab column
   * a checkbox select column with a select-all header
   * a trailing kebab (⋮) row-actions column -> rowActionTriggered(row, key)
   * a QCustomTableToolbar: search + Filters + removable filter chips +
@@ -27,7 +28,7 @@ from qtpy.QtCore import Qt, QSize, QRectF, QPointF
 from qtpy.QtGui import QColor, QPainter, QPen, QPixmap, QIcon, QBrush
 from qtpy.QtWidgets import (
     QApplication, QWidget, QFrame, QLabel, QPushButton, QHBoxLayout,
-    QVBoxLayout, QSizePolicy, QGraphicsDropShadowEffect,
+    QVBoxLayout, QSizePolicy,
 )
 
 from Custom_Widgets.JSonStyles.tokens import applyDesignTokens, DesignTokens
@@ -169,6 +170,12 @@ def _icon(kind, color, size=22, ratio=2):
         p.drawLine(QPointF(0.72 * s, 0.47 * s), QPointF(0.72 * s, 0.66 * s))
         p.drawLine(QPointF(0.28 * s, 0.66 * s), QPointF(0.72 * s, 0.66 * s))
         p.drawArc(R(0.42, 0.68, 0.16, 0.12), 180 * 16, 180 * 16)
+    elif kind == "plus":
+        p.drawLine(QPointF(0.5 * s, 0.24 * s), QPointF(0.5 * s, 0.76 * s))
+        p.drawLine(QPointF(0.24 * s, 0.5 * s), QPointF(0.76 * s, 0.5 * s))
+    elif kind == "moon":  # theme toggle (crescent = half-lit disc)
+        p.drawArc(R(0.22, 0.18, 0.58, 0.64), 60 * 16, 300 * 16)
+        p.drawArc(R(0.4, 0.2, 0.42, 0.6), 250 * 16, 220 * 16)
     p.end()
     return px
 
@@ -271,10 +278,11 @@ class JobsWindow(QWidget):
         self._avatar.setFixedSize(36, 36)
         self._avatar.setAlignment(Qt.AlignCenter)
         tb.addWidget(self._avatar)
-        # theme toggle (demo convenience)
-        self._themeBtn = QPushButton("◑", self._topbar)
+        # theme toggle (demo convenience) — painted icon, recoloured per theme
+        self._themeBtn = QPushButton(self._topbar)
         self._themeBtn.setObjectName("themeBtn")
         self._themeBtn.setFixedSize(34, 34)
+        self._themeBtn.setIconSize(QSize(18, 18))
         self._themeBtn.setCursor(Qt.PointingHandCursor)
         self._themeBtn.clicked.connect(self.toggle_theme)
         tb.addWidget(self._themeBtn)
@@ -293,9 +301,11 @@ class JobsWindow(QWidget):
         self._title.setObjectName("pageTitle")
         titleRow.addWidget(self._title)
         titleRow.addStretch(1)
-        self._addBtn = QPushButton("＋   Add job", content)
+        self._addBtn = QPushButton("  Add job", content)
         self._addBtn.setObjectName("addBtn")
         self._addBtn.setCursor(Qt.PointingHandCursor)
+        self._addBtn.setIcon(QIcon(_icon("plus", "#ffffff", 18)))  # on accent fill
+        self._addBtn.setIconSize(QSize(16, 16))
         titleRow.addWidget(self._addBtn)
         cl.addLayout(titleRow)
 
@@ -329,7 +339,13 @@ class JobsWindow(QWidget):
             ("view", "View job"), ("edit", "Edit"), ("duplicate", "Duplicate"),
             ("delete", "Delete"),
         ])
-        self._table.view().verticalHeader().setDefaultSectionSize(60)
+        self._table.view().verticalHeader().setDefaultSectionSize(72)
+        # match the reference exactly using the table's customization hooks:
+        self._table.setTwoLineSubtitleScale(0)      # two equal peer lines
+        self._table.setStatusDotSize(9)
+        self._table.setPersistentSortIndicators(True)   # sort caret on every column
+        self._table.setHeaderSelectCaret(True)          # caret beside select-all
+        self._table.setHeaderActionsGlyph("gear")       # ⚙ in the actions header
         self._table.view().setColumnWidth(1, 150)   # JOB
         self._table.view().setColumnWidth(2, 90)     # INVOICED
         self._table.view().setColumnWidth(3, 90)     # AMOUNT
@@ -360,10 +376,14 @@ class JobsWindow(QWidget):
                                       ("Tracking job", "Boiler service",
                                        "Leak inspection", "Panel install",
                                        "Annual audit")}),
-            DataTableColumn("invoiced", title="INVOICED", renderer="badge",
-                            colorMap={"Issued": BLUE}, sortable=False),
+            # plain muted "Issued" (matches the reference - not a badge)
+            DataTableColumn("invoiced", title="INVOICED", renderer="colored",
+                            color="#64748b"),
+            # currency, but LEFT-aligned per the reference (align overrides the
+            # numeric-default right) - proving alignment is fully controllable
             DataTableColumn("amount", title="AMOUNT", type="number",
-                            renderer="currency", formatter=lambda v: "$%d" % v),
+                            renderer="currency", align=Qt.AlignLeft,
+                            formatter=lambda v: "$%d" % v),
             DataTableColumn("customer", title="CUSTOMER"),
             DataTableColumn("site", title="SITE", renderer="twoline",
                             subtitleKey="site2"),
@@ -401,8 +421,12 @@ class JobsWindow(QWidget):
         applyDesignTokens(app, tokens=tokens)          # 2. widgets append block
 
         # let the token widgets track the theme
+        muted = self._muted(tokens)
         self._table.setCellAccentColor(ORANGE)
-        self._table.setCellMutedColor(r("on-surface"))
+        self._table.setCellMutedColor(muted)          # muted twoline subtitle
+        self._table.setActionsColor(muted)            # visible kebab, theme-tracked
+        self._table.setHeaderGlyphColor(muted)        # sort carets / caret / gear
+        self._table.setHeaderAccentColor(ORANGE)      # active sort caret
         self._table.view().setStyleSheet(self._tableQss(tokens))
         self._toolbar.setThemeColors(surface=r("surface"), on_surface=r("on-surface"),
                                      muted=self._muted(tokens), outline=r("outline"),
@@ -414,7 +438,17 @@ class JobsWindow(QWidget):
             b.setActive(b.isChecked(), accent=accent, muted=railMuted)
         self._gearBtn.setActive(False, accent=accent, muted=railMuted)
         for lbl in self._hdrIcons:
-            lbl.setPixmap(_icon(lbl._kind, r("on-surface"), 20))
+            px = _icon(lbl._kind, r("on-surface"), 20)
+            if lbl._kind == "bell":       # unread-notification red dot
+                p = QPainter(px)
+                p.setRenderHint(QPainter.Antialiasing, True)
+                p.setPen(Qt.NoPen)
+                p.setBrush(QColor("#ef4444"))
+                p.drawEllipse(QRectF(13.5, 1.5, 5.5, 5.5))
+                p.end()
+            lbl.setPixmap(px)
+        # theme-toggle glyph tracks the theme too
+        self._themeBtn.setIcon(QIcon(_icon("moon", r("on-surface"), 18)))
 
     def toggle_theme(self):
         self.apply_theme("dark" if self._theme == "light" else "light")

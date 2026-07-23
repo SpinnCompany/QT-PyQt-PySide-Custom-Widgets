@@ -299,6 +299,26 @@ unchanged. Companion widget **`QCustomTableToolbar`** (search + Filters + filter
 chips + Clear + status pills w/ counts + Show-statuses switch) pairs with the
 table above it; see `examples/PySide6/AuroraJobsTable`.
 
+**Customization hooks (match any design, like an HTML table).** The renderers
+are intentionally over-configurable so a reference can be matched pixel-for-pixel
+without subclassing (creative rule: widgets must be fully customizable, never
+tight). All default to the prior behaviour:
+
+- per-column `align` — the delegate honours `Qt.TextAlignmentRole`, so e.g. a
+  `currency` column can be left-aligned instead of the numeric default right.
+- `setTwoLineSubtitleScale(delta)` (0 = two equal *peer* lines vs the default
+  -1 caption) and `setTwoLineSubtitleBold(bool)`.
+- `setActionsColor()` (kebab drawn as three legible filled dots) and
+  `setStatusDotSize()`.
+- opt-in header affordances on `_SelectAllHeader`, exposed on the widget:
+  `setPersistentSortIndicators()` (an up/down caret on EVERY sortable column,
+  active one accented), `setHeaderSelectCaret()`, `setHeaderActionsGlyph('gear')`
+  (→ `headerActionsGlyphClicked`), plus `setHeaderGlyphColor()` /
+  `setHeaderAccentColor()` so the glyphs track the theme.
+
+`examples/PySide6/AuroraJobsTable` uses exactly these to reproduce the WorkEver
+"Jobs" table one-to-one.
+
 ## Pro extension seams (design for datatable-pro-spec.md)
 
 Pro subclasses `QCustomDataTable` and overrides:

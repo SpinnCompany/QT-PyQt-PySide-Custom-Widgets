@@ -21,7 +21,7 @@ from enum import IntEnum
 
 from qtpy.QtCore import (
     Qt, QModelIndex, QAbstractTableModel, QAbstractProxyModel,
-    QSortFilterProxyModel, Signal, Property, QSize, QRect, QRectF,
+    QSortFilterProxyModel, Signal, Property, QSize, QRect, QRectF, QPointF,
 )
 from qtpy.QtGui import QColor, QFont, QPainter, QPen
 from qtpy.QtWidgets import (
@@ -630,6 +630,10 @@ class QCustomDataTableDelegate(QStyledItemDelegate):
         super().__init__(parent)
         self._accent = None
         self._muted = None
+        self._actions = None            # kebab colour (None -> visible default)
+        self._subtitleScale = -1.0      # twoline subtitle font delta (0 = peer lines)
+        self._subtitleBold = None       # None inherits; True/False forces weight
+        self._statusDot = self._DOT     # status-dot diameter (customisable)
 
     def setAccentColor(self, color):
         """Colour for link text and (by default) status text. None -> palette."""
@@ -638,6 +642,24 @@ class QCustomDataTableDelegate(QStyledItemDelegate):
     def setMutedColor(self, color):
         """Colour for the muted second line of twoline cells. None -> palette."""
         self._muted = QColor(color) if color else None
+
+    def setActionsColor(self, color):
+        """Colour of the kebab (⋮) glyph. None -> a visible palette-derived grey."""
+        self._actions = QColor(color) if color else None
+
+    def setTwoLineSubtitleScale(self, delta):
+        """Font-size delta for a twoline cell's subtitle, in points. The default
+        -1 gives a title/subtitle hierarchy; pass 0 for two equal *peer* lines
+        (e.g. a pair of timestamps), a positive value to make it bigger."""
+        self._subtitleScale = float(delta)
+
+    def setTwoLineSubtitleBold(self, bold):
+        """Force the subtitle weight: None inherits the cell font, True/False
+        overrides. Lets a subtitle read as a peer line, not a caption."""
+        self._subtitleBold = None if bold is None else bool(bold)
+
+    def setStatusDotSize(self, px):
+        self._statusDot = max(2, int(px))
 
     # ------------------------------------------------------------------ #
     ## colour helpers
@@ -680,6 +702,11 @@ class QCustomDataTableDelegate(QStyledItemDelegate):
         color = index.data(CellColorRole) or ""
         rect = option.rect.adjusted(self._PAD, 0, -self._PAD, 0)
 
+        # honour an explicit column alignment (Qt.TextAlignmentRole) so any
+        # renderer can be left/right/centre aligned per column - e.g. currency
+        # that should read left, not the numeric-default right.
+        model_align = index.data(Qt.TextAlignmentRole)
+
         painter.save()
         painter.setRenderHint(QPainter.Antialiasing, True)
         if self._onSelection(option):
@@ -687,36 +714,47 @@ class QCustomDataTableDelegate(QStyledItemDelegate):
         try:
             if renderer == "twoline":
                 self._paintTwoLine(painter, option, rect, text,
-                                   str(index.data(SubtitleRole) or ""), color)
+                                   str(index.data(SubtitleRole) or ""), color,
+                                   model_align)
             elif renderer == "badge":
                 self._paintBadge(painter, option, rect, text, color)
             elif renderer == "status":
                 self._paintStatus(painter, option, rect, text, color)
             else:  # link | colored | currency
-                self._paintText(painter, option, rect, text, renderer, color)
+                self._paintText(painter, option, rect, text, renderer, color,
+                                model_align)
         finally:
             painter.restore()
 
-    def _paintText(self, painter, option, rect, text, renderer, color):
+    def _resolveAlign(self, model_align, default):
+        if model_align is None:
+            return Qt.AlignVCenter | default
+        a = int(model_align)
+        if not (a & int(Qt.AlignVertical_Mask)):
+            a |= int(Qt.AlignVCenter)
+        return a
+
+    def _paintText(self, painter, option, rect, text, renderer, color,
+                   model_align=None):
         if renderer == "link":
             col = (option.palette.highlightedText().color()
                    if self._onSelection(option)
                    else (QColor(color) if color else self._accentColor(option)))
         else:  # colored | currency
             col = self._textColor(option, color)
-        align = Qt.AlignVCenter | (Qt.AlignRight if renderer == "currency"
-                                   else Qt.AlignLeft)
+        default = Qt.AlignRight if renderer == "currency" else Qt.AlignLeft
+        align = self._resolveAlign(model_align, default)
         painter.setPen(QPen(col))
         painter.drawText(rect, int(align), self._elide(option, text, rect.width()))
 
     def _paintStatus(self, painter, option, rect, text, color):
         cy = rect.center().y()
+        d = self._statusDot
         dot = QColor(color) if color else self._accentColor(option)
         painter.setPen(Qt.NoPen)
         painter.setBrush(dot)
-        painter.drawEllipse(QRectF(rect.left(), cy - self._DOT / 2.0,
-                                   self._DOT, self._DOT))
-        text_rect = rect.adjusted(self._DOT + self._GAP, 0, 0, 0)
+        painter.drawEllipse(QRectF(rect.left(), cy - d / 2.0, d, d))
+        text_rect = rect.adjusted(d + self._GAP, 0, 0, 0)
         col = (option.palette.highlightedText().color()
                if self._onSelection(option) else self._accentColor(option))
         painter.setPen(QPen(col))
@@ -738,33 +776,45 @@ class QCustomDataTableDelegate(QStyledItemDelegate):
         painter.setPen(QPen(base))
         painter.drawText(pill, int(Qt.AlignCenter), text)
 
+    def _actionsGlyphColor(self, option):
+        if self._onSelection(option):
+            return option.palette.highlightedText().color()
+        if self._actions is not None:
+            return QColor(self._actions)
+        # visible default: text colour at ~75% - reads clearly, not a whisper
+        c = QColor(option.palette.text().color())
+        c.setAlpha(190)
+        return c
+
     def _paintActions(self, painter, option, index):
-        """Trailing row-actions cell: a centred kebab (vertical ellipsis)."""
+        """Trailing row-actions cell: a centred kebab of three filled dots
+        (more legible than the U+22EE glyph, which some fonts render hairline)."""
         self.initStyleOption(option, index)
         painter.save()
         painter.setRenderHint(QPainter.Antialiasing, True)
-        selected = self._onSelection(option)
-        if selected:
+        if self._onSelection(option):
             painter.fillRect(option.rect, option.palette.highlight())
         hovered = bool(option.state & QStyle.State_MouseOver)
-        col = (option.palette.highlightedText().color() if selected
-               else (self._accentColor(option) if hovered
-                     else self._mutedColor(option)))
-        f = QFont(option.font)
-        f.setPointSizeF(option.font.pointSizeF() + 3)
-        f.setBold(True)
-        painter.setFont(f)
-        painter.setPen(QPen(col))
-        painter.drawText(option.rect, int(Qt.AlignCenter), "⋮")  # ⋮
+        col = (self._accentColor(option) if hovered
+               else self._actionsGlyphColor(option))
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(col)
+        cx = option.rect.center().x()
+        cy = option.rect.center().y()
+        r = 1.7
+        for dy in (-6, 0, 6):
+            painter.drawEllipse(QRectF(cx - r, cy + dy - r, r * 2, r * 2))
         painter.restore()
 
-    def _paintTwoLine(self, painter, option, rect, title, subtitle, color):
+    def _paintTwoLine(self, painter, option, rect, title, subtitle, color,
+                      model_align=None):
         fm = option.fontMetrics
         line = fm.height()
         block = line * 2
         top = rect.top() + max(0, (rect.height() - block) // 2)
         title_rect = QRectF(rect.left(), top, rect.width(), line)
         sub_rect = QRectF(rect.left(), top + line, rect.width(), line)
+        align = int(self._resolveAlign(model_align, Qt.AlignLeft))
         title_col = self._textColor(option, color)
         if color:
             sub_col = self._textColor(option, color)
@@ -772,14 +822,15 @@ class QCustomDataTableDelegate(QStyledItemDelegate):
             sub_col = (option.palette.highlightedText().color()
                        if self._onSelection(option) else self._mutedColor(option))
         painter.setPen(QPen(title_col))
-        painter.drawText(title_rect, int(Qt.AlignVCenter | Qt.AlignLeft),
-                         self._elide(option, title, rect.width()))
+        painter.drawText(title_rect, align, self._elide(option, title, rect.width()))
         if subtitle:
             f = QFont(option.font)
-            f.setPointSizeF(max(1.0, option.font.pointSizeF() - 1))
+            f.setPointSizeF(max(1.0, option.font.pointSizeF() + self._subtitleScale))
+            if self._subtitleBold is not None:
+                f.setBold(self._subtitleBold)
             painter.setFont(f)
             painter.setPen(QPen(sub_col))
-            painter.drawText(sub_rect, int(Qt.AlignVCenter | Qt.AlignLeft),
+            painter.drawText(sub_rect, align,
                              self._elide(option, subtitle, rect.width()))
 
     def sizeHint(self, option, index):
@@ -794,28 +845,51 @@ class QCustomDataTableDelegate(QStyledItemDelegate):
 
 
 class _SelectAllHeader(QHeaderView):
-    """Horizontal header that paints a tri-state select-all checkbox in the
-    select column and turns a click there into ``selectAllToggled`` instead of
-    a sort. All other sections behave like a normal sortable header.
+    """A fully paintable horizontal header. Beyond a normal sortable header it
+    can draw, per opt-in:
+
+    * a tri-state **select-all checkbox** in the select column (click there
+      emits ``selectAllToggled`` instead of sorting), with an optional dropdown
+      caret beside it (``selectCaretClicked``);
+    * **persistent sort carets** (an up/down chevron pair) on every data
+      column, highlighting the active sort direction - matching web tables that
+      always advertise sortability, not only the sorted column;
+    * a **gear glyph** in the actions column header (``cornerGlyphClicked``).
+
+    Glyph colours track the theme via setGlyphColor / setAccentColor. Everything
+    is off by default, so the plain header is unchanged unless asked for.
     """
 
     selectAllToggled = Signal(bool)
+    selectCaretClicked = Signal()
+    cornerGlyphClicked = Signal()
 
     def __init__(self, orientation=Qt.Horizontal, parent=None):
         super().__init__(orientation, parent)
         self._checkCol = -1
+        self._actionsCol = -1
         self._state = 0                 # 0 none, 1 some, 2 all
+        self._sortAlways = False
+        self._selectCaret = False
+        self._actionsGlyph = None       # None | "gear"
+        self._sortableCols = None       # None -> all data cols; else a set
+        self._glyph = None              # muted glyph colour (None -> palette)
+        self._accent = None             # active-sort colour (None -> palette)
         self.setSectionsClickable(True)
         self.setHighlightSections(False)
 
+    # -- configuration -------------------------------------------------- #
     def setCheckColumn(self, col):
-        if col == self._checkCol:
-            return
-        old = self._checkCol
-        self._checkCol = col
-        for c in (old, col):
-            if c is not None and c >= 0:
-                self.updateSection(c)
+        if col != self._checkCol:
+            old = self._checkCol
+            self._checkCol = col
+            for c in (old, col):
+                if c is not None and c >= 0:
+                    self.updateSection(c)
+
+    def setActionsColumn(self, col):
+        self._actionsCol = col
+        self.viewport().update()
 
     def setCheckState(self, state):
         state = int(state)
@@ -824,14 +898,70 @@ class _SelectAllHeader(QHeaderView):
             if self._checkCol >= 0:
                 self.updateSection(self._checkCol)
 
+    def setSortIndicatorsAlways(self, on):
+        self._sortAlways = bool(on)
+        # hide Qt's single built-in indicator; we draw our own on every column
+        self.setSortIndicatorShown(not self._sortAlways)
+        self.viewport().update()
+
+    def setSelectCaret(self, on):
+        self._selectCaret = bool(on)
+        if self._checkCol >= 0:
+            self.updateSection(self._checkCol)
+
+    def setActionsGlyph(self, kind):
+        self._actionsGlyph = kind or None
+        self.viewport().update()
+
+    def setSortableColumns(self, cols):
+        self._sortableCols = None if cols is None else set(cols)
+        self.viewport().update()
+
+    def setGlyphColor(self, color):
+        self._glyph = QColor(color) if color else None
+        self.viewport().update()
+
+    def setAccentColor(self, color):
+        self._accent = QColor(color) if color else None
+        self.viewport().update()
+
+    # -- colours -------------------------------------------------------- #
+    def _glyphColor(self):
+        if self._glyph is not None:
+            return QColor(self._glyph)
+        c = QColor(self.palette().windowText().color())
+        c.setAlpha(120)
+        return c
+
+    def _accentColor(self):
+        return QColor(self._accent) if self._accent else self.palette().highlight().color()
+
+    def _isDataCol(self, logicalIndex):
+        return logicalIndex not in (self._checkCol, self._actionsCol)
+
+    def _isSortable(self, logicalIndex):
+        if not self._isDataCol(logicalIndex):
+            return False
+        return self._sortableCols is None or logicalIndex in self._sortableCols
+
+    # -- painting ------------------------------------------------------- #
     def paintSection(self, painter, rect, logicalIndex):
         super().paintSection(painter, rect, logicalIndex)
-        if logicalIndex != self._checkCol:
-            return
-        opt = QStyleOptionButton()
+        painter.save()
+        painter.setRenderHint(QPainter.Antialiasing, True)
+        if logicalIndex == self._checkCol:
+            self._paintCheckbox(painter, rect)
+        elif logicalIndex == self._actionsCol and self._actionsGlyph == "gear":
+            self._paintGear(painter, rect, rect.center())
+        elif self._sortAlways and self._isSortable(logicalIndex):
+            self._paintSortCarets(painter, rect, logicalIndex)
+        painter.restore()
+
+    def _paintCheckbox(self, painter, rect):
         sz = 16
-        opt.rect = QRect(rect.center().x() - sz // 2,
-                         rect.center().y() - sz // 2, sz, sz)
+        cx = rect.center().x() - (6 if self._selectCaret else 0)
+        opt = QStyleOptionButton()
+        opt.rect = QRect(int(cx - sz // 2), rect.center().y() - sz // 2, sz, sz)
         if self._state == 2:
             opt.state = QStyle.State_On | QStyle.State_Enabled
         elif self._state == 1:
@@ -839,13 +969,66 @@ class _SelectAllHeader(QHeaderView):
         else:
             opt.state = QStyle.State_Off | QStyle.State_Enabled
         self.style().drawPrimitive(QStyle.PE_IndicatorCheckBox, opt, painter, self)
+        if self._selectCaret:
+            self._paintChevron(painter, cx + sz - 2, rect.center().y() + 1,
+                               down=True, color=self._glyphColor(), w=7, h=4)
 
+    def _paintSortCarets(self, painter, rect, logicalIndex):
+        x = rect.right() - 9
+        cy = rect.center().y()
+        muted = self._glyphColor()
+        accent = self._accentColor()
+        sorted_here = (self.isSortIndicatorShown() is False
+                       and self.sortIndicatorSection() == logicalIndex)
+        order = self.sortIndicatorOrder()
+        up_col = accent if (sorted_here and order == Qt.AscendingOrder) else muted
+        dn_col = accent if (sorted_here and order == Qt.DescendingOrder) else muted
+        self._paintChevron(painter, x, cy - 4, down=False, color=up_col, w=7, h=3.5)
+        self._paintChevron(painter, x, cy + 4, down=True, color=dn_col, w=7, h=3.5)
+
+    def _paintChevron(self, painter, cx, cy, down, color, w=8, h=4):
+        pen = QPen(color)
+        pen.setWidthF(1.4)
+        pen.setCapStyle(Qt.RoundCap)
+        pen.setJoinStyle(Qt.RoundJoin)
+        painter.setPen(pen)
+        painter.setBrush(Qt.NoBrush)
+        half = w / 2.0
+        if down:
+            apex = QPointF(cx, cy + h / 2.0)
+            left = QPointF(cx - half, cy - h / 2.0)
+            right = QPointF(cx + half, cy - h / 2.0)
+        else:
+            apex = QPointF(cx, cy - h / 2.0)
+            left = QPointF(cx - half, cy + h / 2.0)
+            right = QPointF(cx + half, cy + h / 2.0)
+        painter.drawLine(left, apex)
+        painter.drawLine(apex, right)
+
+    def _paintGear(self, painter, rect, center):
+        import math
+        col = self._glyphColor()
+        pen = QPen(col)
+        pen.setWidthF(1.4)
+        painter.setPen(pen)
+        painter.setBrush(Qt.NoBrush)
+        cx, cy = center.x(), center.y()
+        rout, rin = 6.5, 3.0
+        painter.drawEllipse(QRectF(cx - rin, cy - rin, rin * 2, rin * 2))
+        for a in range(0, 360, 45):
+            rad = math.radians(a)
+            painter.drawLine(QPointF(cx + rin * math.cos(rad), cy + rin * math.sin(rad)),
+                             QPointF(cx + rout * math.cos(rad), cy + rout * math.sin(rad)))
+
+    # -- clicks --------------------------------------------------------- #
     def mouseReleaseEvent(self, event):
-        if (self._checkCol >= 0
-                and self.logicalIndexAt(event.pos()) == self._checkCol):
-            # not all -> select all; already all -> clear. Swallow the event so
-            # the section does not also emit a sort click.
+        idx = self.logicalIndexAt(event.pos())
+        if self._checkCol >= 0 and idx == self._checkCol:
             self.selectAllToggled.emit(self._state != 2)
+            return
+        if (self._actionsGlyph == "gear" and self._actionsCol >= 0
+                and idx == self._actionsCol):
+            self.cornerGlyphClicked.emit()
             return
         super().mouseReleaseEvent(event)
 
@@ -927,6 +1110,7 @@ class QCustomDataTable(QWidget):
     pageChanged = Signal(int)
     rowActionTriggered = Signal(int, str)      # (source row, action key) from the ⋮ menu
     selectionCheckedChanged = Signal(list)     # checked source rows (checkbox column)
+    headerActionsGlyphClicked = Signal()       # the header gear (setHeaderActionsGlyph) was clicked
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -992,6 +1176,7 @@ class QCustomDataTable(QWidget):
         self._view.setHorizontalHeader(self._hheader)
         self._hheader.setStretchLastSection(True)
         self._hheader.selectAllToggled.connect(self._onSelectAllToggled)
+        self._hheader.cornerGlyphClicked.connect(self.headerActionsGlyphClicked)
         # rich-cell painting (status dots, links, badges, two-line, currency);
         # plain columns fall through to default rendering.
         self._delegate = self._createDelegate()
@@ -1097,6 +1282,12 @@ class QCustomDataTable(QWidget):
         actCol = n - 1 if self._model.rowActions() else -1
 
         header.setCheckColumn(selCol)
+        header.setActionsColumn(actCol)
+        # which VIEW columns carry a persistent sort caret: the sortable data
+        # columns (translate DataTableColumn.sortable through the select offset).
+        off = self._model._selOffset()
+        header.setSortableColumns(
+            {i + off for i, c in enumerate(self._model.columns()) if c.sortable})
         # a trailing actions column must stay narrow, so don't stretch the last
         # section; otherwise let the last data column fill the width.
         header.setStretchLastSection(actCol < 0)
@@ -1155,6 +1346,47 @@ class QCustomDataTable(QWidget):
     def setCellMutedColor(self, color):
         """Colour used for the muted second line of twoline cells."""
         self._delegate.setMutedColor(color)
+
+    # -- cell fine-tuning (delegate passthroughs) ----------------------- #
+    def setActionsColor(self, color):
+        """Colour of the kebab (⋮) glyph."""
+        self._delegate.setActionsColor(color)
+
+    def setTwoLineSubtitleScale(self, delta):
+        """Twoline subtitle size delta in points (0 = two equal peer lines)."""
+        self._delegate.setTwoLineSubtitleScale(delta)
+        self._view.viewport().update()
+
+    def setTwoLineSubtitleBold(self, bold):
+        self._delegate.setTwoLineSubtitleBold(bold)
+        self._view.viewport().update()
+
+    def setStatusDotSize(self, px):
+        self._delegate.setStatusDotSize(px)
+        self._view.viewport().update()
+
+    # -- header affordances (all opt-in) -------------------------------- #
+    def setPersistentSortIndicators(self, on):
+        """Draw an up/down sort caret on EVERY sortable column header (web-style),
+        not just Qt's single indicator on the active column."""
+        self._hheader.setSortIndicatorsAlways(on)
+
+    def setHeaderSelectCaret(self, on):
+        """Show a dropdown caret next to the select-all checkbox."""
+        self._hheader.setSelectCaret(on)
+
+    def setHeaderActionsGlyph(self, kind):
+        """Glyph in the actions-column header, e.g. 'gear' (or None). Clicking
+        it emits headerActionsGlyphClicked."""
+        self._hheader.setActionsGlyph(kind)
+
+    def setHeaderGlyphColor(self, color):
+        """Muted colour for header carets / caret / gear (track the theme)."""
+        self._hheader.setGlyphColor(color)
+
+    def setHeaderAccentColor(self, color):
+        """Colour of the ACTIVE sort caret."""
+        self._hheader.setAccentColor(color)
 
     # ------------------------------------------------------------------ #
     ## Selection column (checkboxes) + row-actions (kebab)
