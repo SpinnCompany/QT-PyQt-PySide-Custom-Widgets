@@ -2,7 +2,6 @@ from qtpy.QtWidgets import QMainWindow, QPushButton, QWidget, QFrame, QStyle, QS
 from qtpy.QtCore import Property, Qt, QEvent
 from qtpy.QtGui import QIcon, QPaintEvent, QPainter, QColor, QResizeEvent
 
-from Custom_Widgets.QAppSettings import QAppSettings as QCustomAppSettings
 from Custom_Widgets.JSonStyles import updateJson
 from Custom_Widgets.QCustomTheme import QCustomTheme
 from Custom_Widgets.FileMonitor import QSsFileMonitor
@@ -49,9 +48,7 @@ class QCustomQMainWindow(QMainWindow):
     # is the friendly editor on top, not a replacement.
     DESIGNER_CUSTOM_PROPS = [
         {"name": "appTheme", "kind": "theme", "group": "Theme"},
-        {"name": "liveCompileStylesheet", "kind": "bool", "group": "Stylesheet"},
         {"name": "jsonStylesheetFilePath", "kind": "str", "group": "Stylesheet"},
-        {"name": "paintQtDesignerUI", "kind": "bool", "group": "Stylesheet"},
         {"name": "frameless", "kind": "bool", "group": "Window"},
         {"name": "translucentBg", "kind": "bool", "group": "Window"},
         {"name": "windowBorderRadius", "kind": "int", "group": "Window"},
@@ -89,9 +86,7 @@ class QCustomQMainWindow(QMainWindow):
         self._move_window = moveWindow
         self._size_grip = sizeGrip
         self._designer_prev = True
-        self._live_compile_style = False
         self._json_file = "json-styles/style.json"
-        self._paint_qt_designer = False
         self._shadow_color = QColor("")
         self._title = ""
         self._shadow_blur = 0
@@ -109,17 +104,13 @@ class QCustomQMainWindow(QMainWindow):
         self.checkForMissingicons = True 
 
         self._qss_file_monitor = QSsFileMonitor.instance()
-        self.qss_watcher = None
-        self.liveCompileQss = False
 
         loadJsonStyle(
-            self, 
+            self,
             jsonFiles={
                 self._json_file
-            }        
+            }
         )
-        
-        self.compileStylesheet()
 
     @Property(str)
     def appTheme(self):
@@ -142,7 +133,6 @@ class QCustomQMainWindow(QMainWindow):
         if self._app_theme != value and self.isValidTheme(value):
             self._app_theme = value
             self.themeEngine.setTheme(value)
-            self.compileStylesheet()
 
     def isValidTheme(self, value: str):
         try:
@@ -153,27 +143,6 @@ class QCustomQMainWindow(QMainWindow):
         except Exception:
             return False
 
-    @Property(bool)
-    def liveCompileStylesheet(self):
-        return self._live_compile_style
-    
-    @liveCompileStylesheet.setter
-    def liveCompileStylesheet(self, value = False):
-        if self._live_compile_style == value:
-            return
-
-        self._live_compile_style = value
-
-        updateJson(
-            self._json_file,
-            "LiveCompileQss",
-            value
-        )
-
-        self.liveCompileQss = value
-        
-        self.compileStylesheet()
-    
     @Property(str)
     def jsonStylesheetFilePath(self):
         return self._json_file
@@ -185,36 +154,12 @@ class QCustomQMainWindow(QMainWindow):
 
         self._json_file = value
         loadJsonStyle(
-            self, 
+            self,
             jsonFiles={
                 self._json_file
-            }        
+            }
         )
-        
-        self.compileStylesheet()
 
-    def compileStylesheet(self):
-        logInfo("Should live compile stylesheet?: "+str(self._live_compile_style))
-        logInfo("Should paint Qt Designer UI?: "+str(self._paint_qt_designer))
-
-        if self._live_compile_style and self._json_file:
-            try:
-                logInfo("JSon stylesheet path: "+self._json_file) 
-
-                QCustomAppSettings.updateAppSettings(self, generateIcons = False, reloadJson = False, paintEntireApp = self._paint_qt_designer, QtDesignerMode = True)
-                self.themeEngine = QCustomTheme(self)
-                
-                self.appTheme = self.themeEngine.theme
-
-                try:
-                    if not self.qss_watcher:
-                        self._qss_file_monitor.start_qss_file_listener(self.themeEngine)
-
-                except Exception as e:
-                    logError("Failed to start live file listener: "+str(e))
-
-            except Exception as e:
-                logError(str(e))
     # Add cleanup method
     def closeEvent(self, event):
         """Clean up file watchers when window is closed"""
@@ -232,16 +177,6 @@ class QCustomQMainWindow(QMainWindow):
                 self._qss_file_monitor.stop_qss_file_listener()
             except Exception:
                 pass
-
-    @Property(bool)
-    def paintQtDesignerUI(self):
-        return self._paint_qt_designer
-    
-    @paintQtDesignerUI.setter
-    def paintQtDesignerUI(self, value):
-        self._paint_qt_designer = value
-
-        self.compileStylesheet()
 
     @Property(bool)
     def frameless(self):
@@ -543,7 +478,6 @@ class QCustomQMainWindow(QMainWindow):
                 self.themeEngine.refreshTheme()
             else:
                 self._app_theme = self.themeEngine.theme
-                self.compileStylesheet()
                 self.themeEngine.refreshTheme()
         
 
