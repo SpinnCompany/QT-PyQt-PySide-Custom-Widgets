@@ -1,95 +1,130 @@
 /* ===================================================================
-   Aurora Deck Pro — component chrome (design-token driven)
-   Tokens only: $COLOR_BACKGROUND_1..6, $COLOR_TEXT_1..4,
-   $COLOR_ACCENT_1..4, $SIZE_BORDER_RADIUS. No hex; no spacing tokens
-   (layout spacing lives in the .ui). Never styled inside a .ui file.
+   Aurora Deck Pro — component chrome (design-token driven, modern pass)
+   Tokens only: $COLOR_BACKGROUND_1..6, $COLOR_TEXT_1..4, $COLOR_ACCENT_1..4.
+   Depth = deep canvas + lifted cards + BIG radius + soft drop shadows
+   (shadows are applied in code via QGraphicsDropShadowEffect — Qt QSS has no
+   box-shadow). Literal radii/px are fine (they don't switch per theme); colours
+   never are. Never styled inside a .ui file. See [[modern-ui-design-bar]].
    =================================================================== */
 
-/* --- Page canvas: pages sit on the deeper background so cards lift off it --- */
+/* --- Page canvas: pages sit on a DEEP surface so cards clearly lift ------- */
 QCustomComponent {
-    background-color: $COLOR_BACKGROUND_3;
+    background-color: $COLOR_BACKGROUND_4;
 }
 
-/* --- Elevated surfaces ---------------------------------------------------
-   The theme's BACKGROUND_1..3 ramp is very tight, so surfaces are defined by
-   a visible hairline border ($COLOR_TEXT_4) rather than by fill contrast.
-   (BORDER_1..3 tokens resolve to the card colour here, so they can't be used.)
-   ------------------------------------------------------------------------- */
-QFrame[role="card"] {
+/* --- Elevated surfaces (big radius; frameShape=StyledPanel required) ------ */
+QFrame[role="card"], QCustomStatCard {
     background-color: $COLOR_BACKGROUND_1;
     border: 1px solid $COLOR_TEXT_4;
-    border-radius: $SIZE_BORDER_RADIUS;
+    border-radius: 18px;
 }
-QFrame[role="hero"] {
-    background-color: $COLOR_BACKGROUND_1;
+QFrame[role="card"]:hover {
     border: 1px solid $COLOR_ACCENT_1;
-    border-radius: $SIZE_BORDER_RADIUS;
+}
+/* Hero = the feature block: accent-tinted gradient + accent edge for rhythm */
+QFrame[role="hero"] {
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 $COLOR_BACKGROUND_1, stop:1 $COLOR_BACKGROUND_2);
+    border: 1px solid $COLOR_ACCENT_1;
+    border-radius: 22px;
 }
 QFrame[role="panel"] {
-    background-color: $COLOR_BACKGROUND_2;
+    background-color: $COLOR_BACKGROUND_1;
     border: 1px solid $COLOR_TEXT_4;
-    border-radius: $SIZE_BORDER_RADIUS;
+    border-radius: 18px;
 }
 QFrame[role="toolbar"] {
-    background-color: $COLOR_BACKGROUND_1;
-    border: 1px solid $COLOR_TEXT_4;
-    border-radius: $SIZE_BORDER_RADIUS;
+    background-color: $COLOR_BACKGROUND_2;
+    border: 1px solid $COLOR_BACKGROUND_2;
+    border-radius: 14px;
 }
 
-/* Stat cards are custom-painted widgets (no QFrame role), so give them the
-   same card chrome directly by class. */
-QCustomStatCard {
-    background-color: $COLOR_BACKGROUND_1;
-    border: 1px solid $COLOR_TEXT_4;
-    border-radius: $SIZE_BORDER_RADIUS;
-}
+/* --- Typography roles — big confident hierarchy (bg transparent so labels
+       never paint an opaque box over gradient/card surfaces) --------------- */
+QLabel[role="kicker"] { background: transparent; color: $COLOR_ACCENT_1; font-weight: 800; font-size: 11px; letter-spacing: 2px; }
+QLabel[role="h1"]     { background: transparent; color: $COLOR_TEXT_1; font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+QLabel[role="h2"]     { background: transparent; color: $COLOR_TEXT_1; font-size: 17px; font-weight: 700; }
+QLabel[role="body"]   { background: transparent; color: $COLOR_TEXT_1; }
+QLabel[role="muted"]  { background: transparent; color: $COLOR_TEXT_3; }
+QLabel[role="value"]  { background: transparent; color: $COLOR_TEXT_1; font-size: 32px; font-weight: 800; letter-spacing: -1px; }
 
-/* --- Typography roles ---------------------------------------------------- */
-QLabel[role="kicker"] { color: $COLOR_ACCENT_1; font-weight: 700; }
-QLabel[role="h1"]     { color: $COLOR_TEXT_1; font-size: 22px; font-weight: 700; }
-QLabel[role="h2"]     { color: $COLOR_TEXT_1; font-size: 16px; font-weight: 600; }
-QLabel[role="body"]   { color: $COLOR_TEXT_1; }
-QLabel[role="muted"]  { color: $COLOR_TEXT_3; }
-QLabel[role="value"]  { color: $COLOR_TEXT_1; font-size: 26px; font-weight: 800; }
-
-/* --- Sidebar ------------------------------------------------------------- */
-#sidebar {
+/* --- Left rail ----------------------------------------------------------- */
+QCustomSidebar {
     background-color: $COLOR_BACKGROUND_1;
+    border: none;
     border-right: 1px solid $COLOR_BACKGROUND_2;
 }
-#brandLabel {
-    color: $COLOR_ACCENT_1;
-    font-size: 18px;
-    font-weight: 800;
-}
-
-/* Nav buttons (QCustomSidebarButton) — idle / hover / active */
+/* Nav items: rounded, quiet by default; active = solid accent pill --------- */
 QCustomSidebarButton {
-    color: $COLOR_TEXT_3;
     background-color: transparent;
+    color: $COLOR_TEXT_3;
     border: none;
-    border-radius: $SIZE_BORDER_RADIUS;
+    border-radius: 12px;
+    padding: 8px 12px;
     text-align: left;
-    padding: 8px;
+    font-weight: 600;
 }
 QCustomSidebarButton:hover {
     background-color: $COLOR_BACKGROUND_2;
     color: $COLOR_TEXT_1;
 }
-QCustomSidebarButton:checked,
-QCustomSidebarButton[active="true"] {
+QCustomSidebarButton:checked, QCustomSidebarButton[active="true"] {
     background-color: $COLOR_ACCENT_1;
     color: $COLOR_BACKGROUND_1;
 }
+QCustomSidebarLabel { color: $COLOR_TEXT_4; font-weight: 800; letter-spacing: 2px; }
+#sidebarToggle {
+    background-color: $COLOR_BACKGROUND_2;
+    color: $COLOR_TEXT_2;
+    border: none;
+    border-radius: 12px;
+    qproperty-icon: url(theme-icons:icons/feather/menu.svg);
+}
+#sidebarToggle:hover { background-color: $COLOR_ACCENT_1; color: $COLOR_BACKGROUND_1; }
+/* Brand mark: a real icon, not a glyph. */
+#brandLabel { qproperty-icon: url(theme-icons:icons/feather/zap.svg); color: $COLOR_TEXT_1; font-weight: 800; letter-spacing: 3px; }
 
-/* --- Inputs -------------------------------------------------------------- */
-#searchBox {
+/* Real, theme-recoloured nav icons (persist when the rail collapses to
+   icon-only; recolour automatically on theme switch via the search path). */
+#navOverview  { qproperty-icon: url(theme-icons:icons/feather/home.svg); }
+#navStations  { qproperty-icon: url(theme-icons:icons/feather/radio.svg); }
+#navForecast  { qproperty-icon: url(theme-icons:icons/feather/cloud.svg); }
+#navAnalytics { qproperty-icon: url(theme-icons:icons/feather/bar-chart-2.svg); }
+#navGallery   { qproperty-icon: url(theme-icons:icons/feather/grid.svg); }
+#navSettings  { qproperty-icon: url(theme-icons:icons/feather/settings.svg); }
+
+/* --- Buttons: pill, accent primary -------------------------------------- */
+QPushButton, QCustomQPushButton {
+    border-radius: 12px;
+    padding: 8px 16px;
+    font-weight: 700;
+}
+#saveBtn {
+    background-color: $COLOR_ACCENT_1;
+    color: $COLOR_BACKGROUND_1;
+    border: none;
+    border-radius: 14px;
+    padding: 12px;
+    font-weight: 800;
+}
+#saveBtn:hover { background-color: $COLOR_ACCENT_2; }
+
+/* --- Inputs ------------------------------------------------------------- */
+QLineEdit, QCustomComboBox, QComboBox {
     background-color: $COLOR_BACKGROUND_2;
     color: $COLOR_TEXT_1;
     border: 1px solid $COLOR_BACKGROUND_2;
-    border-radius: $SIZE_BORDER_RADIUS;
-    padding: 6px 10px;
+    border-radius: 12px;
+    padding: 6px 12px;
 }
-#searchBox:focus {
-    border: 1px solid $COLOR_ACCENT_1;
+QLineEdit:focus, QComboBox:focus { border: 1px solid $COLOR_ACCENT_1; }
+
+/* --- Slim, accent scrollbars -------------------------------------------- */
+QScrollBar:vertical   { background: transparent; width: 10px; margin: 6px 2px; }
+QScrollBar:horizontal { background: transparent; height: 10px; margin: 2px 6px; }
+QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
+    background: $COLOR_TEXT_4; border-radius: 5px; min-height: 32px; min-width: 32px;
 }
+QScrollBar::handle:hover { background: $COLOR_ACCENT_1; }
+QScrollBar::add-line, QScrollBar::sub-line { height: 0; width: 0; }
+QScrollBar::add-page, QScrollBar::sub-page { background: transparent; }

@@ -10,7 +10,9 @@ objectName. Runtime data + interactions live here, never in the .ui.
 import math
 
 from qtpy.QtCore import QObject, QTimer, Qt
-from qtpy.QtWidgets import QWidget, QVBoxLayout, QLabel, QGraphicsOpacityEffect
+from qtpy.QtGui import QColor
+from qtpy.QtWidgets import (QWidget, QVBoxLayout, QLabel, QGraphicsDropShadowEffect,
+                            QGraphicsOpacityEffect)
 from qtpy.QtCore import QPropertyAnimation, QEasingCurve
 
 from Custom_Widgets.QCustomDataTable import DataTableColumn
@@ -70,12 +72,33 @@ class PageManager(QObject):
             return
         try:
             self.setup(comp)
+            self._applyElevation(comp)
             self._loaded = True
         except Exception as e:  # never let one page break navigation
             print("[deck-pro] %s setup failed: %s" % (type(self).__name__, e))
 
     def setup(self, comp):
         raise NotImplementedError
+
+    # Soft drop-shadow elevation for surfaces. Only cards/hero (simple content) —
+    # NOT panels, which host charts/tables (QGraphicsView children render badly
+    # under a QGraphicsEffect). One effect per widget: skip anything already set.
+    _ELEVATE_ROLES = {"card"}
+
+    def _applyElevation(self, comp):
+        # comp is the Ui_ wrapper (not a QWidget); walk the real embedded widget
+        # tree via the container, which is a QWidget.
+        for w in self.container.findChildren(QWidget):
+            role = w.property("role")
+            is_card = (role in self._ELEVATE_ROLES
+                       or w.metaObject().className() == "QCustomStatCard")
+            if not is_card or w.graphicsEffect() is not None:
+                continue
+            eff = QGraphicsDropShadowEffect(w)
+            eff.setBlurRadius(26)
+            eff.setOffset(0, 7)
+            eff.setColor(QColor(0, 0, 0, 140))
+            w.setGraphicsEffect(eff)
 
 
 # --------------------------------------------------------------------------- #
@@ -252,8 +275,6 @@ class GalleryManager(PageManager):
             if btn is not None:
                 btn.clicked.connect(lambda _=False, v=variant: self._toast(v))
 
-        self._reveal(comp)
-
     def _toast(self, variant):
         fn = getattr(QCustomToast, variant, None)
         try:
@@ -263,24 +284,6 @@ class GalleryManager(PageManager):
                 QCustomToast.show_toast(self.win, "Aurora conditions updated", variant=variant)
         except Exception:
             pass
-
-    def _reveal(self, comp):
-        """Staggered fade-in of the gallery cards on first show."""
-        self._anims = []
-        for i, name in enumerate(self.CARDS):
-            card = getattr(comp, name, None)
-            if card is None:
-                continue
-            eff = QGraphicsOpacityEffect(card)
-            eff.setOpacity(0.0)
-            card.setGraphicsEffect(eff)
-            anim = QPropertyAnimation(eff, b"opacity", self)
-            anim.setDuration(420)
-            anim.setStartValue(0.0)
-            anim.setEndValue(1.0)
-            anim.setEasingCurve(QEasingCurve.OutCubic)
-            self._anims.append(anim)
-            QTimer.singleShot(45 * i, anim.start)
 
 
 # --------------------------------------------------------------------------- #

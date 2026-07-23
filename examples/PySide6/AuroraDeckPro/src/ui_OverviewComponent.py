@@ -262,7 +262,7 @@ class Ui_OverviewComponent(object):
     def retranslateUi(self, OverviewComponent):
         self.heroFrame.setProperty(u"role", QCoreApplication.translate("OverviewComponent", u"hero", None))
         self.heroTitle.setProperty(u"role", QCoreApplication.translate("OverviewComponent", u"h1", None))
-        self.heroTitle.setText(QCoreApplication.translate("OverviewComponent", u"\u2726  Good evening, Operator", None))
+        self.heroTitle.setText(QCoreApplication.translate("OverviewComponent", u"Good evening, Operator", None))
         self.heroSub.setProperty(u"role", QCoreApplication.translate("OverviewComponent", u"muted", None))
         self.heroSub.setText(QCoreApplication.translate("OverviewComponent", u"G2 storm watch is active. 8 of 12 stations reporting live.", None))
         self.paletteHint.setProperty(u"role", QCoreApplication.translate("OverviewComponent", u"muted", None))
