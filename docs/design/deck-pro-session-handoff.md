@@ -23,13 +23,23 @@ adopting the ATS-Project layout conventions (see
   declared order). All objectNames preserved; GuiFunctions/managers untouched.
 - Verified in the running app: all 6 pages, both themes, data intact.
 
-**⚠️ OPEN — card chrome contrast (theming, NOT layout):** `QFrame[role="card"]`
-renders but doesn't visibly lift off the canvas because the **theme background
-ramp is too tight**: dark `BACKGROUND_1 #0d1117` (card) vs `_3 #080a0e` (canvas)
-— ~5 hex units apart — and `BORDER_1` is set to the card color (useless border).
-`role="panel"` (`_2`) is only slightly better. Fix is in **json-styles/style.json**
-(widen the Background ramp per theme) and/or **chrome.scss** (borders/elevation
-with real contrast). Palette is the user's design call — ASK before changing.
+**Card chrome — FIXED (commit 2652e2c), palette untouched.** Two causes:
+(1) the Aurora `BACKGROUND_1..3` ramp is very tight (dark `#0d1117` card vs
+`#080a0e` canvas) and `BORDER_1..3` tokens resolve to the card colour, so
+fill/border contrast was ~nil; (2) **a plain QFrame does NOT paint a QSS
+background/border unless its `frameShape` is `StyledPanel`** — the role frames
+had no frameShape, so the chrome QSS never showed (proven live: setting
+frameShape=StyledPanel made the border appear instantly). Fix: chrome.scss
+borders now use `$COLOR_TEXT_4` (real hairline) + a `QCustomStatCard` class rule
+(custom-painted, styled by class not role); and `frameShape=StyledPanel` added
+to all 26 role-bearing surface QFrames. Verified both themes.
+
+**Two converter/QSS gotchas worth remembering** (also in memory
+[[ats-responsive-layout-conventions]]): the `.ui` layout `stretch` property is
+mis-compiled (use sizepolicy horstretch); and editing an @import'd `.scss`
+(e.g. chrome.scss) does NOT live-reload — the SASS cache keys on
+`defaultStyle.scss`'s own hash, so restart the app (or touch defaultStyle) to
+recompile.
 
 ## ⏩ SESSION 3 STATUS (2026-07-23) — Phases 1–4 DONE, Phase 5 mid-flight
 
