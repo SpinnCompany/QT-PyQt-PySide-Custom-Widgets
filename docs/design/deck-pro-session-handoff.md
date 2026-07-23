@@ -13,14 +13,26 @@ collapse to a clean **icon-only rail** — no glyph/encoded-string icons. Also
 fixed the dev loop: `FileMonitor` now live-recompiles on ANY `.scss` change (was
 only defaultStyle.scss). **Default DARK theme looks great and is stable.**
 
-**⚠️ BLOCKER for light theme / theme-toggle — icon-recolor mass-regen HANG.**
-Any theme change that changes the resolved Icons-color makes `QCustomTheme`
-re-write the whole icon set (thousands of SVGs) synchronously on the UI thread →
-the app hangs (took down Designer too). A naive `getCurrentThemeInfo` fix (map
-custom light/dark by luminance) made icons resolve correctly but hung boot → was
-reverted. Full analysis + the proper fix plan is in memory
-[[custom-widgets-modern-dev-notes]] and task "Fix icon-recolor mass-regen hang".
-Until fixed: keep Deck Pro in dark; don't toggle theme.
+**Theme toggle / icon recolour — FIXED (commit bd99b73), grounded in
+`examples/svg_icons_demo`.** Root cause: `QCustomThemeDarkLightToggle` sets
+`self.theme="Light"/"Dark"`, which never matches a CUSTOM theme name, so
+`getCurrentThemeInfo` fell back to the default theme's icons-colour → the icon
+set never recoloured for the non-default theme (and, compounded by the earlier
+`FileMonitor` generated-file watch loop, appeared to hang). Fix = the canonical
+demo pipeline, **no library changes**: replaced the toggle with a plain
+QPushButton wired to `themeEngine.setTheme("Aurora Dark"/"Aurora Light")` BY
+NAME; regen runs on the worker thread; `onThemeChangeComplete` re-polishes the
+nav pill. Verified: dark↔light round-trips, no hang, nav + QSS indicator icons
+recolour (home.svg #e8edf9 dark / #0c1122 light; combo arrow visible in light).
+Earlier over-diagnosis corrected in memory [[custom-widgets-theme-icon-pipeline]]
++ [[custom-widgets-modern-dev-notes]]. NOTE: don't hack `getCurrentThemeInfo` or
+the icon generator — switch themes by name.
+
+⚠️ Repo has a CONCURRENT-session merge conflict in
+`Custom_Widgets/QCustomCharts/QCustom{Horizontal,Vertical}BarSeries.py` (conflict
+markers, from commit 69c12ab — NOT this work); it blocks plain `git commit`.
+Deck Pro commits used a path-scoped `git commit <files>` to avoid it. Leave that
+conflict for the other session to resolve.
 
 ## ⏩ SESSION 4 STATUS (2026-07-23) — responsive layout pass DONE (commit 5625060)
 
