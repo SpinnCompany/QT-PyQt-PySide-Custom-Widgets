@@ -671,9 +671,12 @@ def skeleton_qss(tokens):
 
 
 def avatargroup_qss(tokens):
-    """Separating ring colour for QCustomAvatarGroup (matches the surface)."""
+    """Separating ring colour + overflow-chip colours for QCustomAvatarGroup.
+    The ring matches the surface; the '+N' chip uses the muted surface role."""
     r = tokens.role
-    return "QCustomAvatarGroup { qproperty-ringColor: %s; }\n" % r("surface")
+    return ("QCustomAvatarGroup { qproperty-ringColor: %s; "
+            "qproperty-overflowBg: %s; qproperty-overflowText: %s; }\n"
+            % (r("surface"), r("surface-muted"), r("on-surface")))
 
 
 def timeline_qss(tokens):
