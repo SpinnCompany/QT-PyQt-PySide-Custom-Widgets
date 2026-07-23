@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SettingsComponent</class>
+ <widget class="QCustomComponent" name="SettingsComponent">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>940</width><height>680</height></rect></property>
+  <layout class="QVBoxLayout" name="settingsRoot">
+   <property name="spacing"><number>14</number></property>
+   <property name="leftMargin"><number>24</number></property>
+   <property name="topMargin"><number>24</number></property>
+   <property name="rightMargin"><number>24</number></property>
+   <property name="bottomMargin"><number>24</number></property>
+   <item>
+    <layout class="QVBoxLayout" name="settingsHeader">
+     <property name="spacing"><number>2</number></property>
+     <item><widget class="QLabel" name="settingsKicker"><property name="role" stdset="0"><string>kicker</string></property><property name="text"><string>PREFERENCES</string></property></widget></item>
+     <item><widget class="QLabel" name="settingsTitle"><property name="role" stdset="0"><string>h1</string></property><property name="text"><string>Settings</string></property></widget></item>
+     <item><widget class="QLabel" name="settingsSub"><property name="role" stdset="0"><string>muted</string></property><property name="text"><string>Tune the deck to your watch.</string></property></widget></item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QFrame" name="appearanceCard">
+     <property name="role" stdset="0"><string>card</string></property>
+     <layout class="QVBoxLayout" name="appearanceLayout">
+      <property name="spacing"><number>12</number></property>
+      <property name="leftMargin"><number>18</number></property>
+      <property name="topMargin"><number>16</number></property>
+      <property name="rightMargin"><number>18</number></property>
+      <property name="bottomMargin"><number>16</number></property>
+      <item><widget class="QLabel" name="appearanceTitle"><property name="role" stdset="0"><string>h2</string></property><property name="text"><string>Appearance</string></property></widget></item>
+      <item><widget class="QLabel" name="appearanceSub"><property name="role" stdset="0"><string>muted</string></property><property name="text"><string>Theme and accent</string></property></widget></item>
+      <item>
+       <layout class="QHBoxLayout" name="themeRow">
+        <property name="spacing"><number>12</number></property>
+        <item><widget class="QCustomSegmentedControl" name="themeSeg"><property name="currentIndex" stdset="0"><number>1</number></property></widget></item>
+        <item><widget class="QCustomThemeDarkLightToggle" name="themeToggle"><property name="text"><string>Toggle</string></property></widget></item>
+        <item><spacer name="themeSp"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+       </layout>
+      </item>
+      <item><widget class="QCustomColorPicker" name="accentPicker"/></item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="notifCard">
+     <property name="role" stdset="0"><string>card</string></property>
+     <layout class="QVBoxLayout" name="notifLayout">
+      <property name="spacing"><number>10</number></property>
+      <property name="leftMargin"><number>18</number></property>
+      <property name="topMargin"><number>16</number></property>
+      <property name="rightMargin"><number>18</number></property>
+      <property name="bottomMargin"><number>16</number></property>
+      <item><widget class="QLabel" name="notifTitle"><property name="role" stdset="0"><string>h2</string></property><property name="text"><string>Notifications</string></property></widget></item>
+      <item>
+       <layout class="QHBoxLayout" name="notifStormRow">
+        <item><widget class="QLabel" name="notifStormLbl"><property name="role" stdset="0"><string>muted</string></property><property name="text"><string>Storm alerts (Kp &#8805; 6)</string></property></widget></item>
+        <item><spacer name="notifStormSp"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+        <item><widget class="QCustomSwitch" name="notifStorm"><property name="checked" stdset="0"><bool>true</bool></property></widget></item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="notifOfflineRow">
+        <item><widget class="QLabel" name="notifOfflineLbl"><property name="role" stdset="0"><string>muted</string></property><property name="text"><string>Station offline</string></property></widget></item>
+        <item><spacer name="notifOfflineSp"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+        <item><widget class="QCustomSwitch" name="notifOffline"><property name="checked" stdset="0"><bool>true</bool></property></widget></item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="notifClearRow">
+        <item><widget class="QLabel" name="notifClearLbl"><property name="role" stdset="0"><string>muted</string></property><property name="text"><string>Clear-sky windows</string></property></widget></item>
+        <item><spacer name="notifClearSp"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+        <item><widget class="QCustomSwitch" name="notifClear"><property name="checked" stdset="0"><bool>false</bool></property></widget></item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCustomQPushButton" name="saveBtn">
+     <property name="text"><string>Save preferences</string></property>
+     <property name="variant" stdset="0"><string>primary</string></property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="settingsSpacer">
+     <property name="orientation"><enum>Qt::Vertical</enum></property>
+     <property name="sizeHint" stdset="0"><size><width>20</width><height>20</height></size></property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget><class>QCustomComponent</class><extends>QWidget</extends><header>Custom_Widgets.QCustomComponent</header><container>1</container></customwidget>
+  <customwidget><class>QCustomSegmentedControl</class><extends>QWidget</extends><header>Custom_Widgets.QCustomSegmentedControl</header></customwidget>
+  <customwidget><class>QCustomThemeDarkLightToggle</class><extends>QPushButton</extends><header>Custom_Widgets.QCustomThemeDarkLightToggle</header></customwidget>
+  <customwidget><class>QCustomColorPicker</class><extends>QWidget</extends><header>Custom_Widgets.QCustomColorPicker</header></customwidget>
+  <customwidget><class>QCustomSwitch</class><extends>QWidget</extends><header>Custom_Widgets.QCustomSwitch</header></customwidget>
+  <customwidget><class>QCustomQPushButton</class><extends>QPushButton</extends><header>Custom_Widgets.QCustomQPushButton</header></customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

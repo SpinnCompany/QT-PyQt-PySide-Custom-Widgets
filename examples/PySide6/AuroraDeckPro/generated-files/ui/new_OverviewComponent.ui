@@ -1,0 +1,208 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>OverviewComponent</class>
+ <widget class="QCustomComponent" name="OverviewComponent">
+  <property name="geometry">
+   <rect><x>0</x><y>0</y><width>940</width><height>680</height></rect>
+  </property>
+  <layout class="QVBoxLayout" name="overviewLayout">
+   <property name="spacing"><number>16</number></property>
+   <property name="leftMargin"><number>24</number></property>
+   <property name="topMargin"><number>24</number></property>
+   <property name="rightMargin"><number>24</number></property>
+   <property name="bottomMargin"><number>24</number></property>
+   <item>
+    <widget class="QFrame" name="heroFrame">
+     <property name="role" stdset="0"><string>hero</string></property>
+     <property name="minimumSize"><size><width>0</width><height>96</height></size></property>
+     <layout class="QHBoxLayout" name="heroLayout">
+      <property name="leftMargin"><number>24</number></property>
+      <property name="topMargin"><number>20</number></property>
+      <property name="rightMargin"><number>24</number></property>
+      <property name="bottomMargin"><number>20</number></property>
+      <item>
+       <layout class="QVBoxLayout" name="heroTextLayout">
+        <property name="spacing"><number>4</number></property>
+        <item>
+         <widget class="QLabel" name="heroTitle">
+          <property name="role" stdset="0"><string>h1</string></property>
+          <property name="text"><string>✦  Good evening, Operator</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="heroSub">
+          <property name="role" stdset="0"><string>muted</string></property>
+          <property name="text"><string>G2 storm watch is active. 8 of 12 stations reporting live.</string></property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <spacer name="heroSpacer">
+        <property name="orientation"><enum>Qt::Horizontal</enum></property>
+        <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="paletteHint">
+        <property name="role" stdset="0"><string>muted</string></property>
+        <property name="text"><string>Command palette</string></property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomKbd" name="paletteKbd">
+        <property name="keys" stdset="0"><string>Ctrl+K</string></property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="statsLayout">
+     <property name="spacing"><number>14</number></property>
+     <item>
+      <widget class="QCustomStatCard" name="statLive">
+       <property name="label" stdset="0"><string>STATIONS LIVE</string></property>
+       <property name="value" stdset="0"><string>8 / 12</string></property>
+       <property name="caption" stdset="0"><string>Arctic belt</string></property>
+       <property name="trend" stdset="0"><string>up</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCustomStatCard" name="statKp">
+       <property name="label" stdset="0"><string>PLANETARY Kp</string></property>
+       <property name="value" stdset="0"><string>6.2</string></property>
+       <property name="caption" stdset="0"><string>G2 watch</string></property>
+       <property name="trend" stdset="0"><string>up</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCustomStatCard" name="statOdds">
+       <property name="label" stdset="0"><string>AURORA ODDS</string></property>
+       <property name="value" stdset="0"><string>87%</string></property>
+       <property name="caption" stdset="0"><string>≥65°N</string></property>
+       <property name="trend" stdset="0"><string>up</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCustomStatCard" name="statClear">
+       <property name="label" stdset="0"><string>CLEAR SKIES</string></property>
+       <property name="value" stdset="0"><string>5</string></property>
+       <property name="caption" stdset="0"><string>cloud moving in</string></property>
+       <property name="trend" stdset="0"><string>down</string></property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QCustomAlert" name="stormAlert">
+     <property name="variant" stdset="0"><string>warning</string></property>
+     <property name="title" stdset="0"><string>Geomagnetic storm in progress</string></property>
+     <property name="text" stdset="0"><string>Kp has crossed 6. Aurora may be visible down to 60°N tonight.</string></property>
+     <property name="dismissible" stdset="0"><bool>true</bool></property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="cardsRow">
+     <property name="spacing"><number>14</number></property>
+     <item>
+      <widget class="QFrame" name="activityCard">
+       <property name="role" stdset="0"><string>card</string></property>
+       <layout class="QVBoxLayout" name="activityLayout">
+        <property name="spacing"><number>10</number></property>
+        <property name="leftMargin"><number>18</number></property>
+        <property name="topMargin"><number>16</number></property>
+        <property name="rightMargin"><number>18</number></property>
+        <property name="bottomMargin"><number>16</number></property>
+        <item>
+         <widget class="QLabel" name="activityTitle">
+          <property name="role" stdset="0"><string>h2</string></property>
+          <property name="text"><string>Activity</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCustomTimeline" name="activityTimeline" />
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QFrame" name="shiftCard">
+       <property name="role" stdset="0"><string>card</string></property>
+       <layout class="QVBoxLayout" name="shiftLayout">
+        <property name="spacing"><number>12</number></property>
+        <property name="leftMargin"><number>18</number></property>
+        <property name="topMargin"><number>16</number></property>
+        <property name="rightMargin"><number>18</number></property>
+        <property name="bottomMargin"><number>16</number></property>
+        <item>
+         <widget class="QLabel" name="shiftTitle">
+          <property name="role" stdset="0"><string>h2</string></property>
+          <property name="text"><string>On shift</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCustomAvatarGroup" name="shiftAvatars">
+          <property name="maxVisible" stdset="0"><number>5</number></property>
+          <property name="avatarSize" stdset="0"><number>36</number></property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="badgeRow">
+          <property name="spacing"><number>8</number></property>
+          <item>
+           <widget class="QCustomBadge" name="badgeLive">
+            <property name="text" stdset="0"><string>LIVE</string></property>
+            <property name="variant" stdset="0"><string>success</string></property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCustomBadge" name="badgeG2">
+            <property name="text" stdset="0"><string>G2</string></property>
+            <property name="variant" stdset="0"><string>warning</string></property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCustomBadge" name="badgeAlerts">
+            <property name="text" stdset="0"><string>3 alerts</string></property>
+            <property name="variant" stdset="0"><string>destructive</string></property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="badgeSpacer">
+            <property name="orientation"><enum>Qt::Horizontal</enum></property>
+            <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="shiftVSpacer">
+          <property name="orientation"><enum>Qt::Vertical</enum></property>
+          <property name="sizeHint" stdset="0"><size><width>20</width><height>10</height></size></property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <spacer name="pageSpacer">
+     <property name="orientation"><enum>Qt::Vertical</enum></property>
+     <property name="sizeHint" stdset="0"><size><width>20</width><height>20</height></size></property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget><class>QCustomComponent</class><extends>QWidget</extends><header>Custom_Widgets.QCustomComponent</header><container>1</container></customwidget>
+  <customwidget><class>QCustomKbd</class><extends>QWidget</extends><header>Custom_Widgets.QCustomKbd</header></customwidget>
+  <customwidget><class>QCustomStatCard</class><extends>QWidget</extends><header>Custom_Widgets.QCustomStatCard</header></customwidget>
+  <customwidget><class>QCustomAlert</class><extends>QWidget</extends><header>Custom_Widgets.QCustomAlert</header></customwidget>
+  <customwidget><class>QCustomTimeline</class><extends>QWidget</extends><header>Custom_Widgets.QCustomTimeline</header></customwidget>
+  <customwidget><class>QCustomAvatarGroup</class><extends>QWidget</extends><header>Custom_Widgets.QCustomAvatarGroup</header></customwidget>
+  <customwidget><class>QCustomBadge</class><extends>QLabel</extends><header>Custom_Widgets.QCustomBadge</header></customwidget>
+ <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>

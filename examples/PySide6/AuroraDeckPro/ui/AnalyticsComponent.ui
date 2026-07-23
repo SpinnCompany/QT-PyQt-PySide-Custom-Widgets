@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AnalyticsComponent</class>
+ <widget class="QCustomComponent" name="AnalyticsComponent">
+  <property name="geometry">
+   <rect><x>0</x><y>0</y><width>940</width><height>680</height></rect>
+  </property>
+  <layout class="QVBoxLayout" name="analyticsRoot">
+   <property name="spacing"><number>14</number></property>
+   <property name="leftMargin"><number>24</number></property>
+   <property name="topMargin"><number>24</number></property>
+   <property name="rightMargin"><number>24</number></property>
+   <property name="bottomMargin"><number>24</number></property>
+   <item>
+    <layout class="QVBoxLayout" name="analyticsHeader">
+     <property name="spacing"><number>2</number></property>
+     <item>
+      <widget class="QLabel" name="analyticsKicker">
+       <property name="role" stdset="0"><string>kicker</string></property>
+       <property name="text"><string>SIGNALS</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="analyticsTitle">
+       <property name="role" stdset="0"><string>h1</string></property>
+       <property name="text"><string>Analytics</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="analyticsSub">
+       <property name="role" stdset="0"><string>muted</string></property>
+       <property name="text"><string>Kp trend and station distribution.</string></property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="chartsRow">
+     <property name="spacing"><number>14</number></property>
+     <property name="stretch"><string>3,2</string></property>
+     <item>
+      <widget class="QFrame" name="kpPanel">
+       <property name="role" stdset="0"><string>panel</string></property>
+       <layout class="QVBoxLayout" name="kpPanelLayout">
+        <property name="spacing"><number>10</number></property>
+        <property name="leftMargin"><number>18</number></property>
+        <property name="topMargin"><number>16</number></property>
+        <property name="rightMargin"><number>18</number></property>
+        <property name="bottomMargin"><number>16</number></property>
+        <item>
+         <widget class="QLabel" name="kpChartLabel">
+          <property name="role" stdset="0"><string>kicker</string></property>
+          <property name="text"><string>KP TREND</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCustomLineChart" name="kpChart">
+          <property name="minimumSize"><size><width>0</width><height>240</height></size></property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QFrame" name="regionPanel">
+       <property name="role" stdset="0"><string>panel</string></property>
+       <layout class="QVBoxLayout" name="regionPanelLayout">
+        <property name="spacing"><number>10</number></property>
+        <property name="leftMargin"><number>18</number></property>
+        <property name="topMargin"><number>16</number></property>
+        <property name="rightMargin"><number>18</number></property>
+        <property name="bottomMargin"><number>16</number></property>
+        <item>
+         <widget class="QLabel" name="regionChartLabel">
+          <property name="role" stdset="0"><string>kicker</string></property>
+          <property name="text"><string>BY REGION</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCustomPieChart" name="regionPie">
+          <property name="minimumSize"><size><width>0</width><height>240</height></size></property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget><class>QCustomComponent</class><extends>QWidget</extends><header>Custom_Widgets.QCustomComponent</header><container>1</container></customwidget>
+  <customwidget><class>QCustomLineChart</class><extends>QWidget</extends><header>Custom_Widgets.QCustomCharts.QCustomLineChart</header></customwidget>
+  <customwidget><class>QCustomPieChart</class><extends>QWidget</extends><header>Custom_Widgets.QCustomCharts.QCustomPieChart</header></customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
