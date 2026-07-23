@@ -258,6 +258,47 @@ Headless-safe (construct with `QApplication`, skip if unavailable). Cover:
 - `customizeQCustomDataTable(**...)` applies config.
 - Runs under both bindings (`QT_API=pyqt6`).
 
+## Rich cells, selection & row actions (implemented)
+
+The free table renders WorkEver-style rich cells and carries a selection +
+row-actions surface. All of it rides the existing model → proxy chain, so
+sorting/filtering/pagination keep working unchanged.
+
+**Rich-cell renderers** — set `DataTableColumn(renderer=...)`; drawn by
+`QCustomDataTableDelegate` (plain columns fall through to the default delegate):
+
+| renderer | draws |
+| --- | --- |
+| `status` | coloured dot + accent/link text |
+| `link` | accent-coloured text |
+| `colored` | text in the resolved cell colour |
+| `twoline` | title over a muted (or coloured) subtitle |
+| `badge` | rounded pill tinted with the cell colour |
+| `currency` | right-aligned money |
+
+Colour resolution per cell: `colorKey` (row-dict key holding the colour) >
+`colorMap` (value→colour) > `color` (fixed). `twoline` reads its second line from
+`subtitleKey`. Extra model roles carry this to the delegate through the proxies:
+`RendererRole`, `SubtitleRole`, `CellColorRole`. Delegate accents:
+`setCellAccentColor()` / `setCellMutedColor()` (default to the palette so they
+track the theme).
+
+**Selection column** — `setSelectable(True)` prepends a checkbox column with a
+tri-state **select-all header** (`_SelectAllHeader`, painted checkbox, click =
+toggle-all not sort). API: `checkedRows()`, `setRowChecked()`, `setAllChecked()`,
+`clearChecked()`, signal `selectionCheckedChanged(list)` (source rows). Check
+state lives on the model keyed by source row and survives sort/filter/removeRows.
+
+**Row-actions column** — `setRowActions([(key,label), ...])` appends a trailing
+kebab (⋮) column; clicking it opens a menu (built by `buildRowActionsMenu`, which
+is exposed for testing) and emits `rowActionTriggered(sourceRow, key)`.
+
+Both synthetic columns are fixed-width; data-column indices are translated past
+the select offset inside the model, so `DataTableColumn`/`rawValue` semantics are
+unchanged. Companion widget **`QCustomTableToolbar`** (search + Filters + filter
+chips + Clear + status pills w/ counts + Show-statuses switch) pairs with the
+table above it; see `examples/PySide6/AuroraJobsTable`.
+
 ## Pro extension seams (design for datatable-pro-spec.md)
 
 Pro subclasses `QCustomDataTable` and overrides:

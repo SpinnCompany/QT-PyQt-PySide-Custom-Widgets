@@ -36,11 +36,12 @@ commits, not only this effort's widget/compliance/licensing work.
   `sass_functions`) bridged into `QCustomTheme`, following the live theme.
 - Every widget below is tokenized; each commit includes a pixel-verified paint test.
 
-## Free widgets added (34 modern widgets — 33 new + `QCustomBadge` modernization)
+## Free widgets added (35 modern widgets — 34 new + `QCustomBadge` modernization)
 
 | Widget | Notes |
 |---|---|
-| QCustomDataTable | model/view, client sort/filter, pagination, `Qt.UserRole` sort seam, `_createModel/_createView` Pro seams |
+| QCustomDataTable | model/view, client sort/filter, pagination, `Qt.UserRole` sort seam, `_createModel/_createView` Pro seams; **rich cells** (status/link/colored/twoline/badge/currency delegate), **checkbox select column + select-all header**, **kebab ⋮ row-actions** → `rowActionTriggered` |
+| QCustomTableToolbar | search + Filters + removable filter chips + Clear filters + colour-coded status pills w/ counts + Show-statuses switch; pairs above QCustomDataTable (see `examples/PySide6/AuroraJobsTable`) |
 | QCustomToast | stacked, auto-dismiss, 6 corners, reflow |
 | QCustomComboBox | searchable / substring autocomplete |
 | QCustomDateEdit / QCustomTimeEdit / QCustomDateRangeEdit | calendar popup; range keeps start≤end |
