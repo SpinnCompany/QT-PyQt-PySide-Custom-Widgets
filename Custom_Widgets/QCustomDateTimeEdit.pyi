@@ -5,6 +5,11 @@ from PySide6.QtWidgets import QDateEdit, QTimeEdit, QWidget
 from typing import Any, ClassVar
 
 
+class _VariantMixin(object):
+    variant: Any
+    sizeVariant: Any
+
+
 class QCustomDateEdit(_VariantMixin, QDateEdit):
     def __init__(self, parent = ...) -> None: ...
 

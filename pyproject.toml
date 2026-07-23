@@ -43,6 +43,9 @@ acrylic = ["numpy", "colorthief", "Pillow"] # AcrylicEffect blur (scipy optional
 acrylic-hq = ["scipy"]                      # higher-quality acrylic blur
 loaders = ["perlin_noise"]                  # QCustomPerlinLoader
 mcp = ["mcp"]                               # Custom_Widgets-mcp server
+# Type-checking the generated widget stubs + regenerating them (needs PySide6
+# for base resolution and mcp for the catalog the generator reads).
+dev = ["mypy>=1.10", "PySide6", "mcp"]
 all = [
     "qrcode>=8.0", "Pillow", "numpy", "colorthief", "scipy",
     "perlin_noise", "mcp",
@@ -61,3 +64,14 @@ include = ["Custom_Widgets*"]
 
 [tool.setuptools]
 include-package-data = true
+
+[tool.mypy]
+# Scoped type-checking for the GENERATED widget stubs (Custom_Widgets/mcp/
+# stubgen.py) and the typing smoke-test. The hand-written .py sources are not
+# yet mypy-clean, so we validate the .pyi stubs + downstream resolution rather
+# than the whole package; imports are followed silently so a stub's base
+# (re-rooted to the typed PySide6 class) is resolved without failing CI on
+# source-level noise. Run: `mypy` (uses this config).
+files = ["Custom_Widgets/*.pyi", "tests/typing"]
+follow_imports = "silent"
+ignore_missing_imports = true

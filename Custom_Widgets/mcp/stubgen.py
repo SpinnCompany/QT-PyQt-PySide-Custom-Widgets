@@ -136,41 +136,37 @@ def stub_for_class(cls, prop_types=None):
     return "\n".join(lines)
 
 
-def _iter_module_classes(module):
-    """Public classes actually DEFINED in this module (not imported)."""
-    for name, value in vars(module).items():
-        if (inspect.isclass(value) and not name.startswith("_")
-                and value.__module__ == module.__name__):
-            yield value
+def _module_classes(module):
+    """Classes to stub for a module: every PUBLIC class defined in it, plus any
+    private same-module base it inherits from (transitively). A `.pyi` shadows
+    the `.py`, so an undefined private base (e.g. a `_VariantMixin`) would break
+    type-checking — it must be emitted too."""
+    defined = {v for _, v in vars(module).items()
+               if inspect.isclass(v) and v.__module__ == module.__name__}
+    wanted, order = set(), []
 
-
-def _toposort(classes):
-    """Order classes so an intra-module base is defined before its subclass."""
-    names = {c.__name__ for c in classes}
-    ordered, placed = [], set()
-
-    def place(c):
-        if c.__name__ in placed:
+    def want(cls):
+        if cls in wanted:
             return
-        for b in c.__bases__:
-            if b.__name__ in names and b.__name__ not in placed:
-                nxt = next((x for x in classes if x.__name__ == b.__name__), None)
-                if nxt is not None:
-                    place(nxt)
-        placed.add(c.__name__)
-        ordered.append(c)
+        wanted.add(cls)
+        for base in cls.__bases__:
+            if base in defined:            # a same-module base — pull it in first
+                want(base)
+        order.append(cls)
 
-    for c in classes:
-        place(c)
-    return ordered
+    for cls in vars(module).values():
+        if (inspect.isclass(cls) and cls in defined
+                and not cls.__name__.startswith("_")):
+            want(cls)
+    return order
 
 
 def stub_for_module(module_name, prop_types=None):
-    """Full `.pyi` text for a widget module: every public class defined in it,
-    with a resolved-and-typed base import for each."""
+    """Full `.pyi` text for a widget module: every public class defined in it
+    (plus required private bases), each with a resolved-and-typed base import."""
     prop_types = prop_types if prop_types is not None else _catalog_props()
     module = importlib.import_module(module_name)
-    classes = _toposort(list(_iter_module_classes(module)))
+    classes = _module_classes(module)
     if not classes:
         return None
 
