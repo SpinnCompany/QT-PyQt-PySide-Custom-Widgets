@@ -1,9 +1,21 @@
 # GPLv3 → LGPLv3 relicense plan + CLA rollout
 
-**Status:** Proposed / not started — planning only
+**Status:** Groundwork done (2026-07-23) — `.mailmap` in place, external audit
+complete; relicense execution is **counsel-gated** (see below).
 **Owner:** TBD
 **Created:** 2026-07-22
-**Related:** commercial-product.md, LICENSING.draft.md, CLA.draft.md
+**Related:** commercial-product.md, LICENSING.draft.md, CLA.draft.md,
+`docs/relicense/external-contributions-audit.md`,
+`docs/relicense/consent-tracking-issue.md`
+
+> **2026-07-23 update.** The external-contribution audit is done (see
+> `docs/relicense/`). Owner is **~98.6%** (408/414 commits). Only **2 of 5**
+> externals have any surviving lines, and those **11 lines total** are all
+> package-dictated imports (youngsikshin, 8) or tool-generated example boilerplate
+> (Théo Brunet, 3) — i.e. **no protectable expression**. The consent axis is
+> effectively clear pending counsel's de-minimis confirmation. The remaining
+> blockers are legal review + the actual license flip (mechanics below), not
+> engineering.
 
 > **Not legal advice.** This plan and the CLA draft must be reviewed by qualified
 > counsel before execution. It describes a process, not a legal opinion.
@@ -105,13 +117,23 @@ license contributions under *other* terms (including proprietary). So:
 
 ## Sequenced checklist
 
-- [ ] Add `.mailmap` consolidating owner identities
-- [ ] Open relicense tracking issue; list the 5 externals + their commits
-- [ ] Send consent requests (Tier 1)
-- [ ] For non-responders: `git blame` surviving lines → de-minimis call or rewrite (Tier 2)
-- [ ] Legal review of consents + de-minimis assessments
-- [ ] Land CLA + CLA bot + `CONTRIBUTING.md` (gates new contributions immediately)
-- [ ] Execute relicense mechanics (COPYING.LESSER, LICENSE, setup.py, SPDX, README)
+- [x] Add `.mailmap` consolidating owner identities — **done** (canonical
+      `Khamisi Kibet <kibetkhamisi@gmail.com>`; 4 alias identities mapped)
+- [x] `git blame` surviving external lines (Tier 2 fact-find) — **done**, see
+      `docs/relicense/external-contributions-audit.md`: only 11 de-minimis lines
+      survive (8 imports + 3 generated), 4/5 externals clear
+- [x] Prepare relicense tracking issue + consent template — **ready to post**,
+      `docs/relicense/consent-tracking-issue.md`
+- [ ] (Optional, belt-and-suspenders) post the issue / email the 2 reachable
+      survivors for explicit consent
+- [ ] (Optional hard-clear) regenerate the one example `ui_interface.py`
+      (Théo Brunet's 3 generated lines)
+- [ ] **Legal review** of the de-minimis assessments + any consents — *gates the
+      flip*
+- [ ] Land CLA + CLA bot + `CONTRIBUTING.md` (gates new contributions) — drafts
+      ready in `docs/design/`; counsel to review the §2 relicense grant first
+- [ ] Execute relicense mechanics (COPYING.LESSER, LICENSE, `pyproject.toml`,
+      SPDX headers, README) — **only after legal review**
 - [ ] Record consents in `docs/relicense/`
 - [ ] Promote `LICENSING.md`; announce the change
 
