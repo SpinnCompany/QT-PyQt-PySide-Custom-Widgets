@@ -214,3 +214,88 @@ def test_client_delivers_to_server(qapp, bridge, project_dir):
     client = DesignerBridgeClient(project_dir=str(project_dir), timeout_ms=2000)
     assert client.notifyThemeChanged(color="#abc", qss="QWidget{}") is True
     _spin(qapp, 0.2)  # let the server consume the messages
+
+
+def test_qss_window_error_when_not_installed(qapp, bridge, monkeypatch):
+    """Outside Designer the QSS editor window isn't installed, so the bridge
+    reports an actionable error rather than crashing."""
+    from Custom_Widgets import DesignerTools
+
+    monkeypatch.setattr(DesignerTools, "_tools", {}, raising=False)
+    reply = _request(qapp, bridge, {"method": "qssWindow", "action": "status"})
+    assert "error" in reply and "not installed" in reply["error"]
+
+
+@pytest.fixture
+def fake_qss_window(qapp, monkeypatch):
+    """Inject a stand-in QSS editor window into DesignerTools._tools so the
+    bridge's qssWindow driver can be exercised offscreen (the real window is a
+    heavy top-level tied to a project's Qss/scss tree)."""
+    from qtpy.QtGui import QAction
+    from qtpy.QtWidgets import QWidget
+    from Custom_Widgets import DesignerTools
+
+    class _FakeQss(QWidget):
+        def __init__(self):
+            super().__init__()
+            self.setObjectName("customWidgetsQssWindow")
+            self._path = "/proj/Qss/scss/defaultStyle.scss"
+            self.painted = None
+            self._repaintDesigner = QAction(self)
+            self._repaintDesigner.setCheckable(True)
+            # mirror the real window: toggling applies/clears the paint
+            self._repaintDesigner.toggled.connect(self._applyPaintDesigner)
+
+        def openFloating(self):
+            self.show()
+
+        def _applyPaintDesigner(self, *_):
+            self.painted = self._repaintDesigner.isChecked()
+
+    fake = _FakeQss()
+    monkeypatch.setattr(DesignerTools, "_tools", {"qss": fake}, raising=False)
+    yield fake
+    fake.close()
+
+
+def test_qss_window_open_status_and_screenshot(qapp, bridge, fake_qss_window):
+    status = _request(qapp, bridge,
+                      {"method": "qssWindow", "action": "status"})["result"]
+    assert status["open"] is False
+    assert status["paintEntireDesigner"] is False
+    assert status["currentFile"] == "defaultStyle.scss"
+    assert status["objectName"] == "customWidgetsQssWindow"
+
+    opened = _request(qapp, bridge, {"method": "qssWindow", "action": "open"})
+    assert opened["result"] == "ok" and opened["open"] is True
+
+    shot = _request(qapp, bridge, {"method": "qssWindow", "action": "screenshot"})
+    assert isinstance(shot["result"], str) and len(shot["result"]) > 0
+
+    closed = _request(qapp, bridge, {"method": "qssWindow", "action": "close"})
+    assert closed["open"] is False
+
+
+def test_qss_window_paint_entire_designer_toggle(qapp, bridge, fake_qss_window):
+    # turn it on: the toggle fires and the paint is applied
+    on = _request(qapp, bridge,
+                  {"method": "qssWindow", "action": "paint", "enabled": True})
+    assert on["result"] == "ok" and on["paintEntireDesigner"] is True
+    assert fake_qss_window.painted is True
+
+    # re-applying the same state still forces an apply (no silent no-op)
+    fake_qss_window.painted = None
+    again = _request(qapp, bridge,
+                     {"method": "qssWindow", "action": "paint", "enabled": True})
+    assert again["paintEntireDesigner"] is True
+    assert fake_qss_window.painted is True
+
+    off = _request(qapp, bridge,
+                   {"method": "qssWindow", "action": "paint", "enabled": False})
+    assert off["paintEntireDesigner"] is False
+    assert fake_qss_window.painted is False
+
+
+def test_qss_window_unknown_action(qapp, bridge, fake_qss_window):
+    reply = _request(qapp, bridge, {"method": "qssWindow", "action": "bogus"})
+    assert "error" in reply and "unknown qss action" in reply["error"]

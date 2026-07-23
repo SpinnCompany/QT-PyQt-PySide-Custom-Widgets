@@ -63,6 +63,17 @@ class QAppSettings():
             
         themeEngine.applyCompiledSass(generateIcons = generateIcons, paintEntireApp = paintEntireApp)
 
+        #######################################################################
+        # DEV: expose this running app to Designer / the MCP for live
+        # observe + navigate. No-op unless CUSTOM_WIDGETS_APP_CONTROL is set
+        # (the dev server sets it for Run'd apps), so production is untouched.
+        #######################################################################
+        try:
+            from Custom_Widgets.AppControl import maybe_start_app_control
+            maybe_start_app_control()
+        except Exception as e:
+            logDebug(f"App control: not started: {e}")
+
 
 ########################################################################
 ## END

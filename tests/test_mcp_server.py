@@ -35,6 +35,11 @@ async def test_expected_tools_registered():
         "designer_list_dialogs", "designer_dismiss_dialog",
         "designer_list_actions", "designer_trigger_action",
         "designer_set_widget_property", "project_write_style",
+        "designer_qss_window", "designer_qss_screenshot",
+        "app_status", "app_list_windows", "app_screenshot", "app_object_tree",
+        "app_find", "app_click", "app_set_text", "app_set_property", "app_invoke",
+        "app_window", "designer_window",
+        "designer_set_form_xml", "designer_new_form_xml", "designer_quit",
     }
     assert expected <= tools
 

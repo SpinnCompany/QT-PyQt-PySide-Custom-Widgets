@@ -21,13 +21,14 @@ import re
 import sys
 
 from qtpy.QtCore import Qt, QObject, QTimer, Signal, QStringListModel
-from qtpy.QtGui import (QColor, QFont, QSyntaxHighlighter, QTextCharFormat,
-                        QTextCursor)
+from qtpy.QtGui import (QAction, QColor, QFont, QSyntaxHighlighter,
+                        QTextCharFormat, QTextCursor)
 from qtpy.QtWidgets import (QApplication, QCheckBox, QComboBox, QCompleter,
                             QDockWidget, QFileDialog, QHBoxLayout, QLabel,
                             QLineEdit, QListWidget, QListWidgetItem,
                             QMainWindow, QMenu, QPlainTextEdit, QPushButton,
-                            QToolButton, QVBoxLayout, QWidget)
+                            QSizePolicy, QToolBar, QToolButton, QVBoxLayout,
+                            QWidget)
 
 from Custom_Widgets.Project import projectRoot
 from Custom_Widgets.Log import *
@@ -124,6 +125,12 @@ class LogViewDock(QDockWidget):
         self._counts = QLabel()
         footer.addWidget(self._counts)
 
+        copy = QToolButton()
+        copy.setText("Copy")
+        copy.setToolTip("Copy the visible log messages to the clipboard")
+        copy.clicked.connect(self.copyToClipboard)
+        footer.addWidget(copy)
+
         clear = QToolButton()
         clear.setText("Clear")
         clear.clicked.connect(self.clear)
@@ -137,6 +144,18 @@ class LogViewDock(QDockWidget):
         self._emitter.message.connect(self._onRecord)
         self._handler = _DockLogHandler(self._emitter)
         logging.getLogger().addHandler(self._handler)
+
+    def copyToClipboard(self):
+        """Copy the currently visible (filtered) log messages to the
+        clipboard, falling back to all records if the view is empty."""
+        text = self._view.toPlainText()
+        if not text:
+            text = "\n".join(
+                t for levelno, t in self._records
+                if self._passesFilter(levelno, t))
+        clipboard = QApplication.clipboard()
+        if clipboard is not None:
+            clipboard.setText(text)
 
     def clear(self):
         self._records.clear()
@@ -597,35 +616,56 @@ class WorkspaceDock(QDockWidget):
             return
         path = item.toolTip()
         menu = QMenu(self._list)
-        act = menu.addAction("Open in Designer")
-        act.triggered.connect(lambda: self._open(path))
-        act.setToolTip("Opens in a Designer window (Qt cannot open a form "
-                       "into the already-running instance)")
+        openAct = menu.addAction("Open in Designer")
+        openAct.setToolTip("Opens the form in this Designer instance")
         menu.addSeparator()
-        menu.addAction("Open in Editor").triggered.connect(
-            lambda: self._openInEditor(path))
-        menu.addAction("Reveal in File Manager").triggered.connect(
-            lambda: self._reveal(path))
-        menu.addAction("Copy Path").triggered.connect(
-            lambda: QApplication.clipboard().setText(path))
+        editAct = menu.addAction("Open in Editor")
+        revealAct = menu.addAction("Reveal in File Manager")
+        copyAct = menu.addAction("Copy Path")
         menu.addSeparator()
-        menu.addAction("Refresh List").triggered.connect(self.refresh)
-        menu.exec_(self._list.viewport().mapToGlobal(pos))
+        refreshAct = menu.addAction("Refresh List")
+        # Act on the CHOSEN action only after exec_() returns, i.e. after the
+        # menu's nested event loop has fully unwound. Connecting to triggered
+        # would run the handler while still inside that loop; opening a form
+        # from there builds its custom widgets on a deep, re-entrant stack and
+        # segfaults shiboken (see _open / faulthandler analysis).
+        chosen = menu.exec_(self._list.viewport().mapToGlobal(pos))
+        if chosen is None:
+            return
+        if chosen is openAct:
+            self._open(path)
+        elif chosen is editAct:
+            self._openInEditor(path)
+        elif chosen is revealAct:
+            self._reveal(path)
+        elif chosen is copyAct:
+            QApplication.clipboard().setText(path)
+        elif chosen is refreshAct:
+            self.refresh()
 
     def _open(self, path):
-        # Preferred: a synthetic file-drop onto this Designer's window opens
-        # the form VISIBLY in the current instance (the workbench handles url
-        # drops like File > Open). Falls back to a separate Designer window
-        # only if the drop is refused.
+        # Defer the real work to a clean stack. Opening a form synthesizes a
+        # drop event that drives Designer's form builder to instantiate the
+        # form's custom widgets. Doing that re-entrantly - from inside a
+        # QMenu.exec_() popup loop or directly off a QListWidget signal - builds
+        # the custom widget on a deep, nested call stack, and shiboken's wrapper
+        # allocation segfaults there (confirmed via faulthandler). Running it
+        # from the main event loop via singleShot(0) unwinds that nesting first.
+        from qtpy.QtCore import QTimer
+        QTimer.singleShot(0, lambda: self._openNow(path))
+
+    def _openNow(self, path):
+        # Open through the bridge. It opens plain forms in-instance via a
+        # synthetic drop, and custom-widget forms in-instance via the safe
+        # captured-core route (the drop path segfaults while building custom
+        # widgets - see DesignerBridge._openViaDropEvent). Both keep the form
+        # in THIS Designer instance; only a hard failure falls back to a new
+        # process.
         try:
             from Custom_Widgets.DesignerBridge import startDesignerBridge
             bridge = startDesignerBridge()
-            if bridge._openViaDropEvent(os.path.abspath(path)):
-                logInfo(f"Workspace opened in this window: "
-                        f"{os.path.basename(path)}")
-                return
-            opened = bridge.openFiles([path], new_process=True)
-            logInfo(f"Workspace opened (new window): {opened}")
+            opened = bridge.openFiles([path], new_process=False)
+            logInfo(f"Workspace opened: {opened}")
         except Exception as e:
             logException(e, message="Workspace: failed to open form")
 
@@ -693,6 +733,7 @@ class _CodeEditor(QPlainTextEdit):
         super().__init__(parent)
         self._completer = None
         self._saveCallback = None
+        self._extraShortcuts = {}  # Qt.Key -> callback, all with Ctrl
 
     def setCompleter(self, completer):
         self._completer = completer
@@ -701,6 +742,27 @@ class _CodeEditor(QPlainTextEdit):
 
     def setSaveCallback(self, cb):
         self._saveCallback = cb
+
+    def bindShortcut(self, key, callback):
+        """Bind Ctrl+<key> to a callback, handled by the editor itself."""
+        self._extraShortcuts[key] = callback
+
+    def _ownedCtrlKeys(self):
+        return {Qt.Key_S, Qt.Key_D, Qt.Key_Slash} | set(self._extraShortcuts)
+
+    def event(self, event):
+        # Claim the editor's Ctrl-combos as ShortcutOverride so they are
+        # delivered here as keyPressEvent, instead of being swallowed - or made
+        # ambiguous - by window/application shortcuts (e.g. Designer's own
+        # Ctrl+S). Without this, Ctrl+S in the QSS editor can silently do
+        # nothing.
+        from qtpy.QtCore import QEvent
+        if event.type() == QEvent.ShortcutOverride:
+            if (event.modifiers() & Qt.ControlModifier) and \
+                    event.key() in self._ownedCtrlKeys():
+                event.accept()
+                return True
+        return super().event(event)
 
     def _insertCompletion(self, completion):
         cursor = self.textCursor()
@@ -727,6 +789,11 @@ class _CodeEditor(QPlainTextEdit):
         ctrl = event.modifiers() & Qt.ControlModifier
         shift = event.modifiers() & Qt.ShiftModifier
 
+        # Bound window shortcuts (Ctrl+O/N/Return...) - handled here so they
+        # work reliably from inside the editor, without shortcut ambiguity.
+        if ctrl and event.key() in self._extraShortcuts:
+            self._extraShortcuts[event.key()]()
+            return
         if ctrl and event.key() == Qt.Key_S:
             if self._saveCallback:
                 self._saveCallback()
@@ -839,26 +906,111 @@ class _CodeEditor(QPlainTextEdit):
         cursor.insertText("\n" + indent)
 
 
-class QssEditorDock(QDockWidget):
-    """Edits the project's default style (Qss/scss/defaultStyle.scss), open
-    by default. New style files are auto-imported into it. On change the SCSS
-    is compiled (qtsass) and applied live to the open form previews - and,
-    if the user opts in, to the whole Designer window. Styles live in scss,
-    never inline in .ui files."""
+class QssEditorWindow(QMainWindow):
+    """Standalone (undockable) QSS / theme editor window with a menu bar and a
+    top toolbar.
+
+    A file list on the left switches between the project's .scss files;
+    GENERATED files (main.scss, _styles.scss, _variables.scss) open READ-ONLY
+    (preview) so users can't corrupt the theme machinery. Edits to your own
+    files (defaultStyle.scss and imports) compile live (qtsass) and apply to
+    the open form previews - and, with 'Paint entire Designer', to the whole
+    Designer. Styles live in scss, never inline in .ui files."""
+
+    # Generated / system files - preview only.
+    READ_ONLY = {"main.scss", "_styles.scss", "_variables.scss"}
 
     def __init__(self, parent=None, project_dir=None):
-        super().__init__("Custom Widgets - QSS Editor", parent)
-        self.setObjectName("customWidgetsQssDock")
+        super().__init__(parent)
+        self.setObjectName("customWidgetsQssWindow")
+        # A real top-level window: movable, resizable, undockable.
+        self.setWindowFlag(Qt.Window, True)
+        self.setWindowTitle("Custom Widgets — QSS / Theme Editor")
         self._project_dir = os.path.abspath(project_dir or projectRoot())
         self._scss_dir = os.path.join(self._project_dir, "Qss", "scss")
         self._path = os.path.join(self._scss_dir, "defaultStyle.scss")
+        self._read_only = False
+        self._centered = False
 
-        container = QWidget()
-        layout = QVBoxLayout(container)
+        # ---- actions (shared by the menu bar and the top toolbar) ----
+        def _mk(text, slot, shortcut=None, tip=None):
+            act = QAction(text, self)
+            act.triggered.connect(slot)
+            if shortcut:
+                act.setShortcut(shortcut)
+            if tip:
+                act.setToolTip(tip)
+            return act
 
+        self._openAct = _mk("📂  Open…", self._open, "Ctrl+O",
+                            "Open a stylesheet")
+        self._newAct = _mk("✚  New Style…", self._newStyleFile, "Ctrl+N",
+                           "Create a new .scss and @import it")
+        self._saveAct = _mk("💾  Save", self._save, "Ctrl+S", "Save the file")
+        self._checkAct = _mk("✓  Check", self._check, None,
+                             "Lint the current buffer")
+        self._applyAct = _mk("▶  Apply", self._apply, "Ctrl+Return",
+                             "Compile and apply to the open form previews")
+        close_act = _mk("Close", self.close, "Ctrl+W")
+
+        self._autoApply = QAction("Auto-compile && apply on change", self)
+        self._autoApply.setCheckable(True)
+        self._autoApply.setChecked(True)
+        self._autoApply.toggled.connect(lambda *_: self._scheduleApply())
+
+        self._repaintDesigner = QAction("🎨  Paint entire Designer", self)
+        self._repaintDesigner.setCheckable(True)
+        self._repaintDesigner.setToolTip(
+            "Apply the current theme to the whole Designer (and every open "
+            "form). Uncheck to clear it.")
+        self._repaintDesigner.toggled.connect(lambda *_: self._applyPaintDesigner())
+
+        # ---- menu bar (top) ----
+        menubar = self.menuBar()
+        file_menu = menubar.addMenu("&File")
+        file_menu.addAction(self._openAct)
+        file_menu.addAction(self._newAct)
+        file_menu.addAction(self._saveAct)
+        file_menu.addSeparator()
+        file_menu.addAction(close_act)
+        style_menu = menubar.addMenu("&Style")
+        style_menu.addAction(self._checkAct)
+        style_menu.addAction(self._applyAct)
+        style_menu.addSeparator()
+        style_menu.addAction(self._autoApply)
+        style_menu.addAction(self._repaintDesigner)
+
+        # ---- top toolbar (the "top nav") ----
+        toolbar = QToolBar("QSS", self)
+        toolbar.setMovable(False)
+        toolbar.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        toolbar.addAction(self._openAct)
+        toolbar.addAction(self._newAct)
+        toolbar.addAction(self._saveAct)
+        toolbar.addSeparator()
+        toolbar.addAction(self._checkAct)
+        toolbar.addAction(self._applyAct)
+        spacer = QWidget()
+        spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        toolbar.addWidget(spacer)
+        toolbar.addAction(self._repaintDesigner)
+        self.addToolBar(toolbar)
+
+        # ---- central: file list | editor ----
+        central = QWidget()
+        root = QHBoxLayout(central)
+
+        left = QVBoxLayout()
+        left.addWidget(QLabel("Style files"))
+        self._fileList = QListWidget()
+        self._fileList.setMaximumWidth(230)
+        self._fileList.currentItemChanged.connect(self._onFileSelected)
+        left.addWidget(self._fileList)
+        root.addLayout(left)
+
+        editor_col = QVBoxLayout()
         self._fileLabel = QLabel()
-        layout.addWidget(self._fileLabel)
-
+        editor_col.addWidget(self._fileLabel)
         self._editor = _CodeEditor()
         self._editor.setPlaceholderText(
             "Default styles (Qss/scss/defaultStyle.scss)...\n"
@@ -868,29 +1020,17 @@ class QssEditorDock(QDockWidget):
         self._editor.setFont(font)
         self._highlighter = QssHighlighter(self._editor.document())
         self._editor.setSaveCallback(self._save)
-        layout.addWidget(self._editor)
+        # Route the window shortcuts through the editor so they work reliably
+        # from inside it (Ctrl+S is the save callback above).
+        self._editor.bindShortcut(Qt.Key_O, self._open)
+        self._editor.bindShortcut(Qt.Key_N, self._newStyleFile)
+        self._editor.bindShortcut(Qt.Key_Return, self._apply)
+        self._editor.bindShortcut(Qt.Key_Enter, self._apply)
+        editor_col.addWidget(self._editor)
+        root.addLayout(editor_col, 1)
 
-        row = QHBoxLayout()
-        for label, slot in (("Open...", self._open),
-                            ("New Style File...", self._newStyleFile),
-                            ("Save", self._save), ("Check", self._check),
-                            ("Apply", self._apply)):
-            btn = QPushButton(label)
-            btn.clicked.connect(slot)
-            row.addWidget(btn)
-        layout.addLayout(row)
-
-        opts = QHBoxLayout()
-        self._autoApply = _checkbox("Auto-compile & apply on change", True)
-        self._autoApply.stateChanged.connect(lambda *_: self._scheduleApply())
-        opts.addWidget(self._autoApply)
-        self._repaintDesigner = _checkbox("Repaint entire Designer window", False)
-        self._repaintDesigner.stateChanged.connect(lambda *_: self._scheduleApply())
-        opts.addWidget(self._repaintDesigner)
-        opts.addStretch()
-        layout.addLayout(opts)
-
-        self.setWidget(container)
+        self.setCentralWidget(central)
+        self.resize(1000, 700)
 
         completer = QCompleter(QStringListModel(QSS_PROPERTIES, self))
         completer.setCompletionMode(QCompleter.PopupCompletion)
@@ -904,6 +1044,7 @@ class QssEditorDock(QDockWidget):
         self._applyTimer.timeout.connect(self._apply)
         self._editor.textChanged.connect(self._scheduleApply)
 
+        self._refreshFileList()
         self._loadDefault()  # open the default style by default
 
     # --- file handling --------------------------------------------------
@@ -912,7 +1053,37 @@ class QssEditorDock(QDockWidget):
         self._project_dir = os.path.abspath(root)
         self._scss_dir = os.path.join(self._project_dir, "Qss", "scss")
         self._path = os.path.join(self._scss_dir, "defaultStyle.scss")
+        self._refreshFileList()
         self._loadDefault()
+
+    def _isReadOnly(self, path):
+        return os.path.basename(path) in self.READ_ONLY
+
+    def _refreshFileList(self):
+        """List every .scss/.qss/.css in the project's scss folder. Generated
+        files are flagged read-only (🔒), editable ones with ✎."""
+        self._fileList.blockSignals(True)
+        self._fileList.clear()
+        try:
+            names = sorted(f for f in os.listdir(self._scss_dir)
+                           if f.endswith((".scss", ".qss", ".css")))
+        except Exception:
+            names = []
+        for name in names:
+            ro = name in self.READ_ONLY
+            item = QListWidgetItem(("🔒 " if ro else "✎ ") + name)
+            item.setData(Qt.UserRole, os.path.join(self._scss_dir, name))
+            item.setToolTip("Generated file - preview only" if ro
+                            else "Editable")
+            self._fileList.addItem(item)
+        self._fileList.blockSignals(False)
+
+    def _onFileSelected(self, current, previous=None):
+        if current is None:
+            return
+        path = current.data(Qt.UserRole)
+        if path and os.path.isfile(path) and os.path.abspath(path) != os.path.abspath(self._path):
+            self._load(path)
 
     def _loadDefault(self):
         os.makedirs(self._scss_dir, exist_ok=True)
@@ -922,34 +1093,108 @@ class QssEditorDock(QDockWidget):
                         "// New style files are @import-ed here automatically.\n")
         self._load(self._path)
 
+    def showFile(self, path, content=None):
+        """Open the editor and DISPLAY `path` so an agent's style edits made
+        over MCP are visible live to the user. Refreshes the file list first
+        (so a newly-created .scss shows up). If `content` is given it is shown
+        directly (stream a change in before/without a disk read)."""
+        try:
+            self._refreshFileList()
+            self.openFloating()
+            if content is not None:
+                self._editor.setReadOnly(self._isReadOnly(path))
+                self._editor.setPlainText(content)
+                self._path = path
+                rel = os.path.relpath(path, self._project_dir)
+                self._fileLabel.setText("✎ " + rel)
+                for i in range(self._fileList.count()):
+                    item = self._fileList.item(i)
+                    if os.path.abspath(item.data(Qt.UserRole)) == os.path.abspath(path):
+                        self._fileList.blockSignals(True)
+                        self._fileList.setCurrentItem(item)
+                        self._fileList.blockSignals(False)
+                        break
+            elif path and os.path.isfile(path):
+                self._load(path)
+        except Exception as e:
+            logException(e, message="QSS editor: showFile failed")
+
     def _load(self, path):
         with open(path, encoding="utf-8", errors="ignore") as f:
             self._editor.setPlainText(f.read())
         self._path = path
-        self._fileLabel.setText("✎ " + os.path.relpath(path, self._project_dir))
+        self._read_only = self._isReadOnly(path)
+        # Preview-only for generated files: no editing, no saving.
+        self._editor.setReadOnly(self._read_only)
+        self._saveAct.setEnabled(not self._read_only)
+        rel = os.path.relpath(path, self._project_dir)
+        self._fileLabel.setText(("🔒 " + rel + "   —   read-only (preview)")
+                                if self._read_only else ("✎ " + rel))
+        # Keep the list selection in sync with programmatic loads.
+        for i in range(self._fileList.count()):
+            item = self._fileList.item(i)
+            if os.path.abspath(item.data(Qt.UserRole)) == os.path.abspath(path):
+                self._fileList.blockSignals(True)
+                self._fileList.setCurrentItem(item)
+                self._fileList.blockSignals(False)
+                break
+
+    def _inScssDir(self, path):
+        """True if `path` lives inside the project's Qss/scss folder. All
+        stylesheets are kept there for uniformity."""
+        try:
+            root = os.path.abspath(self._scss_dir)
+            return os.path.abspath(path).startswith(root + os.sep)
+        except Exception:
+            return False
 
     def _open(self):
+        # Only stylesheets from the project's Qss/scss folder may be opened -
+        # styles must live there for uniformity. The dialog starts there; a
+        # file chosen outside it is rejected (use 'New Style' to add one).
         path, _ = QFileDialog.getOpenFileName(
-            self, "Open stylesheet", self._scss_dir,
-            "Styles (*.qss *.css *.scss);;All files (*)")
-        if path:
-            self._load(path)
-
-    def _newStyleFile(self):
-        """Create a new scss file and auto-import it into defaultStyle.scss."""
-        path, _ = QFileDialog.getSaveFileName(
-            self, "New style file", os.path.join(self._scss_dir, "custom.scss"),
-            "SCSS files (*.scss)")
+            self, "Open stylesheet (from Qss/scss/)", self._scss_dir,
+            "Styles (*.scss *.qss *.css)")
         if not path:
             return
-        name = os.path.basename(path)
+        if not self._inScssDir(path):
+            logWarning("QSS editor: stylesheets must live in Qss/scss/ for "
+                       f"uniformity - '{os.path.basename(path)}' is outside "
+                       "that folder and was not opened.")
+            return
+        self._load(path)
+
+    def _newStyleFile(self):
+        """Create a new .scss INSIDE the project's Qss/scss folder (styles are
+        kept there for uniformity) and @import it into defaultStyle.scss. Only
+        a file NAME is asked for - any path the user types is stripped, so the
+        file always lands in Qss/scss/."""
+        from qtpy.QtWidgets import QInputDialog
+        name, ok = QInputDialog.getText(
+            self, "New style file", "Name (created in Qss/scss/):",
+            text="custom.scss")
+        if not ok:
+            return
+        # Strip any directory the user typed - the file stays in the folder.
+        name = os.path.basename(name.strip())
+        if not name:
+            return
         if not name.endswith(".scss"):
             name += ".scss"
-            path = os.path.join(os.path.dirname(path), name)
-        if not os.path.exists(path):
-            with open(path, "w", encoding="utf-8") as f:
-                f.write(f"// {name} - imported into defaultStyle.scss\n")
+        if name in self.READ_ONLY:
+            logWarning(f"QSS editor: '{name}' is a reserved generated file.")
+            return
+        os.makedirs(self._scss_dir, exist_ok=True)
+        path = os.path.join(self._scss_dir, name)
+        if os.path.exists(path):
+            logWarning(f"QSS editor: {name} already exists - opening it.")
+            self._refreshFileList()
+            self._load(path)
+            return
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(f"// {name} - imported into defaultStyle.scss\n")
         self._ensureImport(name)
+        self._refreshFileList()
         self._load(path)
         logInfo(f"QSS editor: created {name} and imported it into defaultStyle.scss")
 
@@ -967,6 +1212,15 @@ class QssEditorDock(QDockWidget):
                 f.write(f"\n{import_line}\n")
 
     def _save(self):
+        if self._read_only:
+            logWarning(f"QSS editor: {os.path.basename(self._path)} is a "
+                       "generated file - read-only (preview). Edit "
+                       "defaultStyle.scss or your own imported files instead.")
+            return
+        if not self._inScssDir(self._path):
+            logWarning("QSS editor: refusing to save outside Qss/scss/ - "
+                       "stylesheets are kept in that folder for uniformity.")
+            return
         try:
             with open(self._path, "w", encoding="utf-8") as f:
                 f.write(self._editor.toPlainText())
@@ -1010,24 +1264,86 @@ class QssEditorDock(QDockWidget):
         return qtsass.compile(source, include_paths=[self._scss_dir])
 
     def _apply(self):
+        # Apply the edited buffer to the open form previews...
         try:
             css = self._compile()
-        except Exception as e:
-            logWarning(f"QSS compile error: {str(e).splitlines()[0]}")
-            return
-        try:
             from Custom_Widgets.DesignerBridge import startDesignerBridge
-            bridge = startDesignerBridge()
-            bridge._setStyleSheet(css)
-            if self._repaintDesigner.isChecked():
-                self._repaintWholeDesigner(css)
+            startDesignerBridge()._setStyleSheet(css)
         except Exception as e:
-            logException(e, message="QSS editor: apply failed")
+            detail = None
+            try:
+                from Custom_Widgets.JSonStyles.tokens import \
+                    describe_scss_compile_error
+                # The buffer @imports resolve from the scss folder; also walk
+                # main.scss so a dangling @import in an imported partial is caught.
+                detail = describe_scss_compile_error(
+                    os.path.join(self._scss_dir, "main.scss"), [self._scss_dir], e)
+            except Exception:
+                pass
+            logWarning(f"QSS compile error: {detail or str(e).splitlines()[0]}")
+        # ...and (independently) paint the whole Designer with the full theme.
+        self._applyPaintDesigner()
 
-    def _repaintWholeDesigner(self, css):
-        window = _designerMainWindow()
-        if window is not None:
-            window.setStyleSheet(css)
+    def _compileFullTheme(self):
+        """Compile the FULL current theme - Qss/scss/main.scss (library base
+        styles + the theme's _variables + your defaultStyle overrides) - so
+        'Paint entire Designer' reflects the whole theme, not just the (usually
+        empty) defaultStyle buffer. Falls back to the last generated main.css,
+        then to the editor buffer."""
+        import qtsass
+        main_scss = os.path.join(self._scss_dir, "main.scss")
+        if os.path.exists(main_scss):
+            try:
+                with open(main_scss, encoding="utf-8", errors="ignore") as f:
+                    source = f.read()
+                return qtsass.compile(source, include_paths=[self._scss_dir])
+            except Exception as e:
+                logWarning("QSS: full-theme compile failed "
+                           f"({str(e).splitlines()[0]}); using generated CSS")
+        generated = os.path.join(self._project_dir, "generated-files",
+                                 "css", "main.css")
+        if os.path.exists(generated):
+            with open(generated, encoding="utf-8", errors="ignore") as f:
+                return f.read()
+        return self._compile()  # last resort: the editor buffer
+
+    def _applyPaintDesigner(self):
+        """Paint the ENTIRE Designer with the full current theme, or clear it
+        when unchecked. Independent of the editor buffer so it always takes
+        effect."""
+        try:
+            css = self._compileFullTheme() if self._repaintDesigner.isChecked() else ""
+            self._paintEntireDesigner(css)
+        except Exception as e:
+            logException(e, message="QSS editor: paint entire Designer failed")
+
+    def _paintEntireDesigner(self, css):
+        """Apply (or clear) an APPLICATION-level stylesheet. Qt propagates an
+        app-level stylesheet to every widget, so the whole Designer - chrome
+        and every open form - takes the current theme. Passing "" removes it."""
+        app = QApplication.instance()
+        if app is not None:
+            app.setStyleSheet(css)
+
+    def openFloating(self):
+        """Show the editor window: centre it the first time, then just raise it
+        so the user's position/size are kept. It is a standalone top-level
+        window, opened from the Designer footer (never docked)."""
+        if not self._centered:
+            self._centered = True
+            try:
+                screen = QApplication.primaryScreen()
+                if screen is not None:
+                    center = screen.availableGeometry().center()
+                    self.move(center.x() - self.width() // 2,
+                              center.y() - self.height() // 2)
+            except Exception as e:
+                logDebug(f"QSS editor: positioning failed: {e}")
+        self.showNormal()
+        self.raise_()
+        self.activateWindow()
+        # Focus the editor so keystrokes (and its shortcuts) go to it.
+        self._editor.setFocus()
 
 
 ########################################################################
@@ -1150,6 +1466,14 @@ class CustomPropertiesDock(QDockWidget):
                         cursor.selectedWidgetCount() == 0:
                     target = container
             self.setTargetWidget(target)
+        except RuntimeError as e:
+            # The form window (or its cursor) is a C++ object that Qt deleted
+            # out from under us - this fires routinely when a form is replaced
+            # while a selection-changed signal is still in flight. Benign, so
+            # swallow it silently instead of logging noise every reload.
+            if "already deleted" in str(e).lower():
+                return
+            logDebug(f"Custom Properties dock: selection read failed: {e}")
         except Exception as e:
             logDebug(f"Custom Properties dock: selection read failed: {e}")
 
@@ -1725,7 +2049,7 @@ def _refreshRecentMenu():
 ########################################################################
 ## DOCK LAYOUT - defaults + persistence
 ########################################################################
-_LAYOUT_VERSION = 1
+_LAYOUT_VERSION = 2  # bumped: QSS editor is no longer a dock (floating window)
 
 
 def _layoutSettings():
@@ -1751,7 +2075,8 @@ def _applyDefaultLayout(window):
     else:
         window.addDockWidget(Qt.RightDockWidgetArea, _tools["customprops"])
     window.addDockWidget(Qt.RightDockWidgetArea, _tools["workspace"])
-    window.tabifyDockWidget(_tools["workspace"], _tools["qss"])
+    # The QSS editor is a standalone top-level window (not a dock) - opened
+    # from the footer button; nothing to place here.
     window.addDockWidget(Qt.BottomDockWidgetArea, _tools["logs"])
     _tools["logs"].hide()
     _tools["customprops"].raise_()
@@ -1781,7 +2106,7 @@ def _restoreLayout(window):
 def _resetLayout(window):
     _layoutSettings().remove("layout/state")
     _applyDefaultLayout(window)
-    for key in ("workspace", "qss", "customprops"):
+    for key in ("workspace", "customprops"):
         _tools[key].show()
 
 
@@ -1831,8 +2156,12 @@ def _addViewMenu(window):
         target = menu_bar.addMenu("Custom &Widgets")
     else:
         target.addSeparator()
-    for key in ("workspace", "qss", "customprops", "logs"):
+    for key in ("workspace", "customprops", "logs"):
         target.addAction(_tools[key].toggleViewAction())
+    # QSS editor is a standalone window, not a dock - give it a menu entry too.
+    qss_act = target.addAction("QSS / Theme Editor")
+    qss_act.triggered.connect(lambda: _tools["qss"].openFloating()
+                              if "qss" in _tools else None)
     # Workspace actions live in OUR OWN top-level menu: Designer rebuilds
     # its View menu dynamically, which destroys submenus we parent there.
     own = menu_bar.addMenu("&Workspace")
@@ -1854,6 +2183,13 @@ def _addStatusFooter(window):
         status = window.statusBar()
         if status is None:
             return
+
+        qss_btn = QToolButton()
+        qss_btn.setText("🎨 QSS Editor")
+        qss_btn.setToolTip("Open the QSS / theme editor in a floating window")
+        qss_btn.clicked.connect(
+            lambda: _tools["qss"].openFloating() if "qss" in _tools else None)
+        status.addPermanentWidget(qss_btn)
 
         logs_btn = QToolButton()
         logs_btn.setText("Logs")
@@ -1898,13 +2234,16 @@ def _install(attempt=0):
     try:
         _tools["logs"] = LogViewDock(window)
         _tools["workspace"] = WorkspaceDock(window)
-        _tools["qss"] = QssEditorDock(window)
+        _tools["qss"] = QssEditorWindow(window)
         _tools["customprops"] = CustomPropertiesDock(window)
         # Uncongested defaults (Custom Properties tabs beside Designer's own
         # Property Editor); a saved user arrangement wins when present.
         _applyDefaultLayout(window)
         if _restoreLayout(window):
             logInfo("Designer tools: restored saved dock layout")
+        # The QSS editor is a standalone window - keep it hidden until the
+        # footer button opens it.
+        _tools["qss"].hide()
         _LayoutSaver(window)
         _addRunToolbar(window)
         _addViewMenu(window)
@@ -1913,8 +2252,31 @@ def _install(attempt=0):
         _addStatusFooter(window)
         logInfo("Designer tools installed: Logs, UI Workspace, QSS Editor, "
                 "Custom Properties, Run toolbar")
+        # Designer pops a modal "New Form" dialog on launch. Here it is
+        # redundant (the Workspace dock creates/opens forms) and, being modal,
+        # it sits in front and blocks autonomous / MCP-driven control until a
+        # human closes it. Dismiss it shortly after startup.
+        for delay in (200, 900, 1800):
+            QTimer.singleShot(delay, _dismissStartupNewForm)
     except Exception as e:
         logException(e, message="Designer tools installation failed")
+
+
+def _dismissStartupNewForm():
+    """Close Designer's startup 'New Form' dialog if it is showing."""
+    try:
+        from qtpy.QtWidgets import QDialog
+        app = QApplication.instance()
+        for w in (app.topLevelWidgets() if app else []):
+            if isinstance(w, QDialog) and w.isVisible():
+                haystack = (w.windowTitle() + " "
+                            + w.metaObject().className()).lower()
+                if "new form" in haystack or "newform" in haystack:
+                    w.reject()
+                    logInfo("Designer tools: dismissed startup New Form dialog")
+                    return
+    except Exception as e:
+        logDebug(f"Designer tools: dismiss startup New Form failed: {e}")
 
 
 _scheduled = False
