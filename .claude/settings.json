@@ -8,7 +8,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python .claude/hooks/design_lint_hook.py"
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/design_lint_hook.py\""
           }
         ]
       }
