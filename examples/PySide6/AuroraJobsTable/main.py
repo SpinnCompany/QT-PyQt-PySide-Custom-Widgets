@@ -155,6 +155,9 @@ def _icon(kind, color, size=22, ratio=2):
                                (0.5 + 0.26 * math.sin(rad)) * s),
                        QPointF((0.5 + 0.36 * math.cos(rad)) * s,
                                (0.5 + 0.36 * math.sin(rad)) * s))
+    elif kind == "caret":
+        p.drawLine(QPointF(0.3 * s, 0.42 * s), QPointF(0.5 * s, 0.6 * s))
+        p.drawLine(QPointF(0.5 * s, 0.6 * s), QPointF(0.7 * s, 0.42 * s))
     elif kind == "search":
         p.drawEllipse(R(0.24, 0.24, 0.36, 0.36))
         p.drawLine(QPointF(0.58 * s, 0.58 * s), QPointF(0.78 * s, 0.78 * s))
@@ -259,7 +262,7 @@ class JobsWindow(QWidget):
         tb = QHBoxLayout(self._topbar)
         tb.setContentsMargins(28, 0, 24, 0)
         tb.setSpacing(16)
-        self._crumb = QLabel("Work  ›  <b>Jobs</b>", self._topbar)
+        self._crumb = QLabel("Work &gt; <b>Jobs</b>", self._topbar)
         self._crumb.setObjectName("crumb")
         self._crumb.setTextFormat(Qt.RichText)
         tb.addWidget(self._crumb)
@@ -273,19 +276,21 @@ class JobsWindow(QWidget):
             lbl._kind = kind
             self._hdrIcons.append(lbl)
             tb.addWidget(lbl)
-        self._avatar = QLabel("JG", self._topbar)
+        # avatar + dropdown caret (matches the reference). The avatar doubles as
+        # the demo's light/dark toggle so there's no extra button the reference
+        # doesn't have.
+        self._avatar = QPushButton("JG", self._topbar)
         self._avatar.setObjectName("avatar")
         self._avatar.setFixedSize(36, 36)
-        self._avatar.setAlignment(Qt.AlignCenter)
+        self._avatar.setCursor(Qt.PointingHandCursor)
+        self._avatar.setToolTip("Toggle light / dark theme")
+        self._avatar.clicked.connect(self.toggle_theme)
         tb.addWidget(self._avatar)
-        # theme toggle (demo convenience) — painted icon, recoloured per theme
-        self._themeBtn = QPushButton(self._topbar)
-        self._themeBtn.setObjectName("themeBtn")
-        self._themeBtn.setFixedSize(34, 34)
-        self._themeBtn.setIconSize(QSize(18, 18))
-        self._themeBtn.setCursor(Qt.PointingHandCursor)
-        self._themeBtn.clicked.connect(self.toggle_theme)
-        tb.addWidget(self._themeBtn)
+        self._avatarCaret = QLabel(self._topbar)   # painted caret set in apply_theme
+        self._avatarCaret.setObjectName("avatarCaret")
+        self._avatarCaret.setFixedSize(14, 34)
+        self._avatarCaret.setAlignment(Qt.AlignCenter)
+        tb.addWidget(self._avatarCaret)
         main.addWidget(self._topbar)
 
         # content area
@@ -340,8 +345,9 @@ class JobsWindow(QWidget):
             ("delete", "Delete"),
         ])
         self._table.view().verticalHeader().setDefaultSectionSize(72)
-        # match the reference exactly using the table's customization hooks:
-        self._table.setTwoLineSubtitleScale(0)      # two equal peer lines
+        # match the reference exactly using the table's customization hooks
+        # (SITE caption vs SCHEDULED peer lines are set per-column via
+        # subtitleScale on the DataTableColumn):
         self._table.setStatusDotSize(9)
         self._table.setPersistentSortIndicators(True)   # sort caret on every column
         self._table.setHeaderSelectCaret(True)          # caret beside select-all
@@ -376,20 +382,22 @@ class JobsWindow(QWidget):
                                       ("Tracking job", "Boiler service",
                                        "Leak inspection", "Panel install",
                                        "Annual audit")}),
-            # plain muted "Issued" (matches the reference - not a badge)
-            DataTableColumn("invoiced", title="INVOICED", renderer="colored",
-                            color="#64748b"),
+            # plain "Issued" - normal body text, like the reference (not a badge)
+            DataTableColumn("invoiced", title="INVOICED"),
             # currency, but LEFT-aligned per the reference (align overrides the
             # numeric-default right) - proving alignment is fully controllable
             DataTableColumn("amount", title="AMOUNT", type="number",
                             renderer="currency", align=Qt.AlignLeft,
                             formatter=lambda v: "$%d" % v),
             DataTableColumn("customer", title="CUSTOMER"),
+            # SITE: address over a smaller muted CAPTION line (subtitleScale -1)
             DataTableColumn("site", title="SITE", renderer="twoline",
-                            subtitleKey="site2"),
+                            subtitleKey="site2", subtitleScale=-1),
             DataTableColumn("due", title="DUE DATE"),
+            # SCHEDULED: two EQUAL orange peer lines (subtitleScale 0)
             DataTableColumn("scheduled", title="SCHEDULED", renderer="twoline",
-                            subtitleKey="scheduled2", colorKey="sched_color"),
+                            subtitleKey="scheduled2", colorKey="sched_color",
+                            subtitleScale=0),
             DataTableColumn("assigned", title="ASSIGNED TO"),
         ]
 
@@ -447,8 +455,8 @@ class JobsWindow(QWidget):
                 p.drawEllipse(QRectF(13.5, 1.5, 5.5, 5.5))
                 p.end()
             lbl.setPixmap(px)
-        # theme-toggle glyph tracks the theme too
-        self._themeBtn.setIcon(QIcon(_icon("moon", r("on-surface"), 18)))
+        # avatar dropdown caret (painted, theme-tracked)
+        self._avatarCaret.setPixmap(_icon("caret", muted, 14))
 
     def toggle_theme(self):
         self.apply_theme("dark" if self._theme == "light" else "light")
@@ -489,11 +497,9 @@ class JobsWindow(QWidget):
         #topbar {{ background: {surface}; border-bottom: 1px solid {outline}; }}
         #crumb {{ color: {on_surface}; font-size: 16px; }}
         #hdrIcon {{ background: transparent; }}
-        #avatar {{ background: {accent}; color: #ffffff; border-radius: 18px;
-            font-weight: 700; }}
-        #themeBtn {{ background: {surface_muted}; color: {on_surface};
-            border: 1px solid {outline}; border-radius: 17px; font-size: 15px; }}
-        #themeBtn:hover {{ border-color: {accent}; }}
+        #avatar {{ background: {accent}; color: #ffffff; border: none;
+            border-radius: 18px; font-weight: 700; }}
+        #avatarCaret {{ background: transparent; }}
         #content {{ background: {muted_bg}; }}
         #pageTitle {{ color: {on_surface}; font-size: 26px; font-weight: 800; }}
         #addBtn {{ background: {accent}; color: #ffffff; border: none;

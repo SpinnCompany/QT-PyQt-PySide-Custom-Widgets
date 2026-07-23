@@ -36,6 +36,27 @@ designer_run_app → app_screenshot / app_click / app_object_tree # run + observ
 designer_stop_app → designer_quit                               # tear down cleanly
 ```
 
+## Design rules (enforced — not optional)
+
+The library ships a design-rule linter (`Custom_Widgets.lint`) that enforces the
+project's **visual** rules a type checker can't see. It runs automatically on
+every file edit (a PostToolUse hook in [`.claude/settings.json`](.claude/settings.json)),
+in pre-commit, and in CI — and is exposed to MCP agents as the `design_lint`
+tool. Canonical spec: [`docs/design/design-rules.md`](docs/design/design-rules.md).
+
+- **`glyph-icons` (error)** — never use a unicode glyph as an icon in UI text
+  (no `◑ ＋ ⚙ ✦ ➤ ✓ ↗` / emoji). Use a real themed-SVG or painted icon that
+  recolours per theme. A new violation **blocks the edit**.
+- **`hardcoded-hex` (warning)** — drive chrome colour from token roles, not raw
+  `#rrggbb` (ALL-CAPS palette constants are allowed).
+- **`drop-shadow` (warning)** — no `QGraphicsDropShadowEffect` without a
+  `# allow-shadow: <reason>` justification.
+
+Run it yourself before finishing a screen: `python -m Custom_Widgets.lint`
+(or the `design_lint` MCP tool). Pre-existing debt is grandfathered by
+`.custom_widgets_lint_baseline.json`; only **new** violations fail. Suppress a
+genuine false positive with `# noqa: <rule-id>`.
+
 ## Where things live
 
 | Path | What |
@@ -44,6 +65,7 @@ designer_stop_app → designer_quit                               # tear down cl
 | [`Custom_Widgets/DesignerBridge.py`](Custom_Widgets/DesignerBridge.py) | live link that runs inside Qt Designer + the app |
 | `Custom_Widgets/` | the widget library (import `from Custom_Widgets.QCustom… import …`) |
 | `examples/PySide6/` | runnable examples / showcases |
+| [`Custom_Widgets/lint/`](Custom_Widgets/lint/) | design-rule linter (rules in `rules.py`); spec in [`docs/design/design-rules.md`](docs/design/design-rules.md) |
 | `.claude/skills/` | Claude Code skills for this repo |
 
 **If a capability is missing, add it to the MCP** — don't work around it in a shell.
