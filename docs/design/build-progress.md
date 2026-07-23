@@ -239,6 +239,37 @@ In-repo code batch (**done**):
   message at both apply sites; the demo's stray import was removed.
   (`tests/test_design_tokens.py::TestScssImportDiagnostics`.)
 
+Agent-legibility tools (**done** — makes the widgets legible + self-verifiable
+to autonomous agents; all five are **Designer-independent**, i.e. work with no
+Designer/app running). The MCP grew **44 → 49 tools**:
+
+- **Widget catalog** — `widgets_catalog(name/query)` + the
+  `customwidgets://catalog` resource expose a machine-readable API of every
+  widget (props with types + allowed enum values, signals, tokens, droppable
+  flag), read via AST from each class's `__catalog__` (nothing imported). An
+  agent picks/configures a widget without reading source.
+- **Headless render** — `render_widget(name, props, …)` renders one widget to a
+  PNG offscreen (`QT_QPA_PLATFORM=offscreen`) in an isolated subprocess, applying
+  the token theme. Closes the generate→look→correct loop with no Designer/app.
+  (Retains the `QByteArray` backing `QBuffer` to avoid an offscreen-grab
+  segfault.)
+- **Type stubs** — `Custom_Widgets/mcp/stubgen.py` introspects each class and
+  emits PEP 484 `.pyi` that re-root the base to the concrete typed PySide6 class
+  (so `QCustomBadge` is seen as `QLabel`, exposing inherited Qt API that qtpy
+  otherwise hides). Ships 35 `.pyi` + a `py.typed` marker (regenerate:
+  `python -m Custom_Widgets.mcp.stubgen --write`); `widget_signature(name)` MCP
+  tool returns a live stub. Validated end-to-end with **mypy** (a `dev` extra +
+  `[tool.mypy]` + a `mypy` CI job with stub-drift detection).
+- **Uniform structured errors** — every tool failure now returns the same JSON
+  envelope `{"error": {kind, message, hint?, details?}}`. `_fail(kind, …)` +
+  a `_tool` decorator on every tool normalise even unexpected exceptions to
+  `kind="internal"` (+ traceback tail). (`tests/test_mcp_errors.py`.)
+- **Example/doc retrieval** — `search_examples(query, k, full)` ranks the
+  bundled example recipes + README/AGENTS (dependency-free BM25 in
+  `Custom_Widgets/mcp/retrieval.py`; internal `docs/design/*` excluded; external
+  docs via `CUSTOM_WIDGETS_DOCS_DIR`). Grounds "how do I use widget X" in real
+  code. (`tests/test_mcp_retrieval.py`.)
+
 Still open:
 
 - ~~**User-facing docs** (Docusaurus repo) — pages for container `.py`-only +
