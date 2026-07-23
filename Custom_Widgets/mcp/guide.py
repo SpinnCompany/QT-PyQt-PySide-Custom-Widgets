@@ -15,9 +15,26 @@ Before ANY task in a Custom_Widgets project:
      ad-hoc `python`/shell. Shell is only for bootstrapping Designer or the
      dev server. If a capability is missing, ADD it to this MCP.
 If you cannot reach these tools, STOP and ask the user to mount the
-`custom-widgets` MCP (`claude mcp add custom-widgets -- Custom_Widgets-mcp
---project-dir .`, or the repo's .mcp.json auto-mounts it) — do not fall back
-to a shell.
+`custom-widgets` MCP (`claude mcp add custom-widgets -- Custom_Widgets-mcp`,
+or the repo's .mcp.json auto-mounts it) — do not fall back to a shell.
+========================================================================
+
+========================================================================
+ RULE #2 — TARGET A PROJECT PER CALL, NEVER BAKE ONE IN
+========================================================================
+This server is PER-SESSION and DIR-AGNOSTIC. Do NOT pin it to a project
+with `--project-dir` — that bakes one session's working folder into shared
+config and collides with other sessions. Instead:
+  - Mount it WITHOUT `--project-dir`. The default project is then the repo
+    root (the server's cwd); it is only a fallback for calls that omit
+    `project`.
+  - Pass `project="/abs/path/to/examples/PySide6/<Project>"` on EVERY tool
+    call. Absolute paths are used verbatim; relative paths resolve against
+    the default. This is how one server drives any example/project.
+  - Pass an `agent` name on mutating calls so ownership shows in
+    workspaces_status. Call workspaces_status FIRST to see who is driving.
+  - To move the session default at runtime (instead of remounting), use
+    designer_open_workspace — do not edit .mcp.json mid-session.
 ========================================================================
 
 """
@@ -83,13 +100,18 @@ silently in the background when the user could watch instead.
 
 == MULTI-PROJECT / MULTI-AGENT ==
 
-Every tool takes an optional `project` (a folder, absolute or relative to the
-server's --project-dir; blank = the default) and mutating tools take an optional
-`agent` tag. Different projects are fully isolated (separate Designer/app
-sockets) and run in parallel; the SAME project is serialized — a per-project
-queue funnels all bridge/app commands so concurrent sessions/agents can never
-interleave against one Designer/app. So:
-  - To work on another example without remounting, pass project="examples/Foo".
+Every tool takes an optional `project` (a folder — absolute, used verbatim; or
+relative, resolved against the session default) and mutating tools take an
+optional `agent` tag. The session default is the server's cwd (the repo root)
+unless moved with designer_open_workspace; it is a FALLBACK only, so name your
+project explicitly rather than relying on it. Do NOT mount with `--project-dir`
+pinned to one example (see RULE #2) — it baffles other sessions. Different
+projects are fully isolated (separate Designer/app sockets) and run in parallel;
+the SAME project is serialized — a per-project queue funnels all bridge/app
+commands so concurrent sessions/agents can never interleave against one
+Designer/app. So:
+  - To work on any example, pass project="/abs/examples/PySide6/Foo" (or a path
+    relative to the repo root, e.g. project="examples/PySide6/Foo").
   - Call workspaces_status FIRST when others may be active: it lists each
     project's designer_running / app_running / queue_depth / busy / current
     owner, so you can pick a free project and see who is driving what. Pass an
