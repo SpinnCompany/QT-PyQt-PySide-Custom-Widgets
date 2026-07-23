@@ -1,0 +1,34 @@
+QT-PyQt-PySide-Custom-Widgets — free core
+
+Copyright (C) SpinnCompany / Khamisi Kibet and contributors.
+
+This library (the "free core", the `Custom_Widgets` package) is free software:
+you can redistribute it and/or modify it under the terms of the GNU Lesser
+General Public License as published by the Free Software Foundation, either
+version 3 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+
+The GNU Lesser General Public License v3.0 is a set of additional permissions on
+top of the GNU General Public License v3.0. Both texts ship with this
+distribution:
+
+    COPYING.LESSER   GNU Lesser General Public License, version 3
+    COPYING          GNU General Public License, version 3 (referenced by the LGPL)
+
+You should have received a copy of both licenses along with this library. If
+not, see <https://www.gnu.org/licenses/>.
+
+SPDX-License-Identifier: LGPL-3.0-or-later
+
+---
+
+Note on Qt: this library uses Qt via `qtpy` (PySide6 or PyQt6). Qt is licensed
+separately by The Qt Company / Riverbank Computing and is NOT covered by this
+license — you are responsible for complying with the Qt binding's license. See
+`Custom_Widgets/THIRD_PARTY_NOTICES.md` and `LICENSING.md`.
+
+The separate `custom-widgets-pro` add-on is proprietary and is NOT covered by
+this license.

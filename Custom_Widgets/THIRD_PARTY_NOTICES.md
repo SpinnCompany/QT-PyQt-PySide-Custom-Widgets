@@ -57,7 +57,7 @@ release with `pip-licenses` against the extra actually shipped:
 | `Custom_Widgets/LoadingIndicators/` | Original (`QCustom*`) | Project license |
 | `Custom_Widgets/AnalogGaugeWidget.py` | Stefan Holstein; inspired by the PyQt analog-clock example | MIT (confirm) |
 | `Custom_Widgets/iconify/` | Vendored `iconify` icon-rendering engine | MIT (confirm) |
-| `Custom_Widgets/ProgressIndicator.py` | Classic QProgressIndicator pattern (Morgan Leborgne) | MIT (confirm) |
+| `Custom_Widgets/QCustomProgressIndicator.py` | Classic QProgressIndicator pattern (Morgan Leborgne) | MIT (confirm) |
 
 ## D. Bundled icon sets (`Custom_Widgets/Qss/icons/`)
 
