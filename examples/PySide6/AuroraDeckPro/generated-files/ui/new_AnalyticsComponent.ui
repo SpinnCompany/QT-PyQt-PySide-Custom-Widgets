@@ -37,9 +37,11 @@
    <item>
     <layout class="QHBoxLayout" name="chartsRow">
      <property name="spacing"><number>14</number></property>
-     <property name="stretch"><string>3,2</string></property>
      <item>
       <widget class="QFrame" name="kpPanel">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding"><horstretch>3</horstretch><verstretch>0</verstretch></sizepolicy>
+       </property>
        <property name="role" stdset="0"><string>panel</string></property>
        <layout class="QVBoxLayout" name="kpPanelLayout">
         <property name="spacing"><number>10</number></property>
@@ -63,6 +65,9 @@
      </item>
      <item>
       <widget class="QFrame" name="regionPanel">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding"><horstretch>2</horstretch><verstretch>0</verstretch></sizepolicy>
+       </property>
        <property name="role" stdset="0"><string>panel</string></property>
        <layout class="QVBoxLayout" name="regionPanelLayout">
         <property name="spacing"><number>10</number></property>
