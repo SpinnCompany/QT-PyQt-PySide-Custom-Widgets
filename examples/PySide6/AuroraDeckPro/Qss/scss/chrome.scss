@@ -1,0 +1,83 @@
+/* ===================================================================
+   Aurora Deck Pro — component chrome (design-token driven)
+   Tokens only: $COLOR_BACKGROUND_1..6, $COLOR_TEXT_1..4,
+   $COLOR_ACCENT_1..4, $SIZE_BORDER_RADIUS. No hex; no spacing tokens
+   (layout spacing lives in the .ui). Never styled inside a .ui file.
+   =================================================================== */
+
+/* --- Page canvas: pages sit on the deeper background so cards lift off it --- */
+QCustomComponent {
+    background-color: $COLOR_BACKGROUND_3;
+}
+
+/* --- Elevated surfaces --------------------------------------------------- */
+QFrame[role="card"] {
+    background-color: $COLOR_BACKGROUND_1;
+    border: 1px solid $COLOR_BACKGROUND_2;
+    border-radius: $SIZE_BORDER_RADIUS;
+}
+QFrame[role="hero"] {
+    background-color: $COLOR_BACKGROUND_1;
+    border: 1px solid $COLOR_ACCENT_1;
+    border-radius: $SIZE_BORDER_RADIUS;
+}
+QFrame[role="panel"] {
+    background-color: $COLOR_BACKGROUND_2;
+    border: 1px solid $COLOR_BACKGROUND_2;
+    border-radius: $SIZE_BORDER_RADIUS;
+}
+QFrame[role="toolbar"] {
+    background-color: $COLOR_BACKGROUND_1;
+    border: 1px solid $COLOR_BACKGROUND_2;
+    border-radius: $SIZE_BORDER_RADIUS;
+}
+
+/* --- Typography roles ---------------------------------------------------- */
+QLabel[role="kicker"] { color: $COLOR_ACCENT_1; font-weight: 700; }
+QLabel[role="h1"]     { color: $COLOR_TEXT_1; font-size: 22px; font-weight: 700; }
+QLabel[role="h2"]     { color: $COLOR_TEXT_1; font-size: 16px; font-weight: 600; }
+QLabel[role="body"]   { color: $COLOR_TEXT_1; }
+QLabel[role="muted"]  { color: $COLOR_TEXT_3; }
+QLabel[role="value"]  { color: $COLOR_TEXT_1; font-size: 26px; font-weight: 800; }
+
+/* --- Sidebar ------------------------------------------------------------- */
+#sidebar {
+    background-color: $COLOR_BACKGROUND_1;
+    border-right: 1px solid $COLOR_BACKGROUND_2;
+}
+#brandLabel {
+    color: $COLOR_ACCENT_1;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+/* Nav buttons (QCustomSidebarButton) — idle / hover / active */
+QCustomSidebarButton {
+    color: $COLOR_TEXT_3;
+    background-color: transparent;
+    border: none;
+    border-radius: $SIZE_BORDER_RADIUS;
+    text-align: left;
+    padding: 8px;
+}
+QCustomSidebarButton:hover {
+    background-color: $COLOR_BACKGROUND_2;
+    color: $COLOR_TEXT_1;
+}
+QCustomSidebarButton:checked,
+QCustomSidebarButton[active="true"] {
+    background-color: $COLOR_ACCENT_1;
+    color: $COLOR_BACKGROUND_1;
+}
+
+/* --- Inputs -------------------------------------------------------------- */
+#searchBox {
+    background-color: $COLOR_BACKGROUND_2;
+    color: $COLOR_TEXT_1;
+    border: 1px solid $COLOR_BACKGROUND_2;
+    border-radius: $SIZE_BORDER_RADIUS;
+    padding: 6px 10px;
+}
+#searchBox:focus {
+    border: 1px solid $COLOR_ACCENT_1;
+}
