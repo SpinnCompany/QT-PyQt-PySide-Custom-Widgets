@@ -16,8 +16,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QLabel,
-    QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout,
-    QWidget)
+    QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
+    QVBoxLayout, QWidget)
 
 from Custom_Widgets.QCustomColorPicker import QCustomColorPicker
 from Custom_Widgets.QCustomComponent import QCustomComponent
@@ -30,32 +30,60 @@ class Ui_SettingsComponent(object):
         if not SettingsComponent.objectName():
             SettingsComponent.setObjectName(u"SettingsComponent")
         SettingsComponent.resize(940, 680)
-        self.settingsRoot = QVBoxLayout(SettingsComponent)
-        self.settingsRoot.setSpacing(14)
-        self.settingsRoot.setObjectName(u"settingsRoot")
-        self.settingsRoot.setContentsMargins(24, 24, 24, 24)
+        self.SettingsOuter = QVBoxLayout(SettingsComponent)
+        self.SettingsOuter.setSpacing(0)
+        self.SettingsOuter.setObjectName(u"SettingsOuter")
+        self.SettingsOuter.setContentsMargins(0, 0, 0, 0)
+        self.SettingsScroll = QScrollArea(SettingsComponent)
+        self.SettingsScroll.setObjectName(u"SettingsScroll")
+        self.SettingsScroll.setWidgetResizable(True)
+        self.SettingsScroll.setFrameShape(QFrame.NoFrame)
+        self.SettingsScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.SettingsScrollContents = QWidget()
+        self.SettingsScrollContents.setObjectName(u"SettingsScrollContents")
+        self.SettingsScrollContents.setGeometry(QRect(0, 0, 1200, 760))
+        self.SettingsCenterRow = QHBoxLayout(self.SettingsScrollContents)
+        self.SettingsCenterRow.setSpacing(0)
+        self.SettingsCenterRow.setObjectName(u"SettingsCenterRow")
+        self.SettingsCenterRow.setContentsMargins(28, 24, 28, 24)
+        self.SettingsLeftSp = QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.SettingsCenterRow.addItem(self.SettingsLeftSp)
+
+        self.SettingsColumn = QWidget(self.SettingsScrollContents)
+        self.SettingsColumn.setObjectName(u"SettingsColumn")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(20)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.SettingsColumn.sizePolicy().hasHeightForWidth())
+        self.SettingsColumn.setSizePolicy(sizePolicy)
+        self.SettingsColumn.setMaximumSize(QSize(900, 16777215))
+        self.SettingsColLayout = QVBoxLayout(self.SettingsColumn)
+        self.SettingsColLayout.setSpacing(14)
+        self.SettingsColLayout.setObjectName(u"SettingsColLayout")
+        self.SettingsColLayout.setContentsMargins(0, 0, 0, 0)
         self.settingsHeader = QVBoxLayout()
         self.settingsHeader.setSpacing(2)
         self.settingsHeader.setObjectName(u"settingsHeader")
-        self.settingsKicker = QLabel(SettingsComponent)
+        self.settingsKicker = QLabel(self.SettingsColumn)
         self.settingsKicker.setObjectName(u"settingsKicker")
 
         self.settingsHeader.addWidget(self.settingsKicker)
 
-        self.settingsTitle = QLabel(SettingsComponent)
+        self.settingsTitle = QLabel(self.SettingsColumn)
         self.settingsTitle.setObjectName(u"settingsTitle")
 
         self.settingsHeader.addWidget(self.settingsTitle)
 
-        self.settingsSub = QLabel(SettingsComponent)
+        self.settingsSub = QLabel(self.SettingsColumn)
         self.settingsSub.setObjectName(u"settingsSub")
 
         self.settingsHeader.addWidget(self.settingsSub)
 
 
-        self.settingsRoot.addLayout(self.settingsHeader)
+        self.SettingsColLayout.addLayout(self.settingsHeader)
 
-        self.appearanceCard = QFrame(SettingsComponent)
+        self.appearanceCard = QFrame(self.SettingsColumn)
         self.appearanceCard.setObjectName(u"appearanceCard")
         self.appearanceLayout = QVBoxLayout(self.appearanceCard)
         self.appearanceLayout.setSpacing(12)
@@ -98,9 +126,9 @@ class Ui_SettingsComponent(object):
         self.appearanceLayout.addWidget(self.accentPicker)
 
 
-        self.settingsRoot.addWidget(self.appearanceCard)
+        self.SettingsColLayout.addWidget(self.appearanceCard)
 
-        self.notifCard = QFrame(SettingsComponent)
+        self.notifCard = QFrame(self.SettingsColumn)
         self.notifCard.setObjectName(u"notifCard")
         self.notifLayout = QVBoxLayout(self.notifCard)
         self.notifLayout.setSpacing(10)
@@ -172,16 +200,27 @@ class Ui_SettingsComponent(object):
         self.notifLayout.addLayout(self.notifClearRow)
 
 
-        self.settingsRoot.addWidget(self.notifCard)
+        self.SettingsColLayout.addWidget(self.notifCard)
 
-        self.saveBtn = QCustomQPushButton(SettingsComponent)
+        self.saveBtn = QCustomQPushButton(self.SettingsColumn)
         self.saveBtn.setObjectName(u"saveBtn")
 
-        self.settingsRoot.addWidget(self.saveBtn)
+        self.SettingsColLayout.addWidget(self.saveBtn)
 
         self.settingsSpacer = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
-        self.settingsRoot.addItem(self.settingsSpacer)
+        self.SettingsColLayout.addItem(self.settingsSpacer)
+
+
+        self.SettingsCenterRow.addWidget(self.SettingsColumn)
+
+        self.SettingsRightSp = QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.SettingsCenterRow.addItem(self.SettingsRightSp)
+
+        self.SettingsScroll.setWidget(self.SettingsScrollContents)
+
+        self.SettingsOuter.addWidget(self.SettingsScroll)
 
 
         self.retranslateUi(SettingsComponent)

@@ -16,8 +16,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QLabel,
-    QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout,
-    QWidget)
+    QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
+    QVBoxLayout, QWidget)
 
 from Custom_Widgets.QCustomAccordion import QCustomAccordion
 from Custom_Widgets.QCustomCarousel import QCustomCarousel
@@ -30,32 +30,60 @@ class Ui_ForecastComponent(object):
         if not ForecastComponent.objectName():
             ForecastComponent.setObjectName(u"ForecastComponent")
         ForecastComponent.resize(940, 680)
-        self.forecastRoot = QVBoxLayout(ForecastComponent)
-        self.forecastRoot.setSpacing(14)
-        self.forecastRoot.setObjectName(u"forecastRoot")
-        self.forecastRoot.setContentsMargins(24, 24, 24, 24)
+        self.ForecastOuter = QVBoxLayout(ForecastComponent)
+        self.ForecastOuter.setSpacing(0)
+        self.ForecastOuter.setObjectName(u"ForecastOuter")
+        self.ForecastOuter.setContentsMargins(0, 0, 0, 0)
+        self.ForecastScroll = QScrollArea(ForecastComponent)
+        self.ForecastScroll.setObjectName(u"ForecastScroll")
+        self.ForecastScroll.setWidgetResizable(True)
+        self.ForecastScroll.setFrameShape(QFrame.NoFrame)
+        self.ForecastScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.ForecastScrollContents = QWidget()
+        self.ForecastScrollContents.setObjectName(u"ForecastScrollContents")
+        self.ForecastScrollContents.setGeometry(QRect(0, 0, 1200, 760))
+        self.ForecastCenterRow = QHBoxLayout(self.ForecastScrollContents)
+        self.ForecastCenterRow.setSpacing(0)
+        self.ForecastCenterRow.setObjectName(u"ForecastCenterRow")
+        self.ForecastCenterRow.setContentsMargins(28, 24, 28, 24)
+        self.ForecastLeftSp = QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.ForecastCenterRow.addItem(self.ForecastLeftSp)
+
+        self.ForecastColumn = QWidget(self.ForecastScrollContents)
+        self.ForecastColumn.setObjectName(u"ForecastColumn")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(20)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.ForecastColumn.sizePolicy().hasHeightForWidth())
+        self.ForecastColumn.setSizePolicy(sizePolicy)
+        self.ForecastColumn.setMaximumSize(QSize(1360, 16777215))
+        self.ForecastColLayout = QVBoxLayout(self.ForecastColumn)
+        self.ForecastColLayout.setSpacing(14)
+        self.ForecastColLayout.setObjectName(u"ForecastColLayout")
+        self.ForecastColLayout.setContentsMargins(0, 0, 0, 0)
         self.forecastHeader = QVBoxLayout()
         self.forecastHeader.setSpacing(2)
         self.forecastHeader.setObjectName(u"forecastHeader")
-        self.forecastKicker = QLabel(ForecastComponent)
+        self.forecastKicker = QLabel(self.ForecastColumn)
         self.forecastKicker.setObjectName(u"forecastKicker")
 
         self.forecastHeader.addWidget(self.forecastKicker)
 
-        self.forecastTitle = QLabel(ForecastComponent)
+        self.forecastTitle = QLabel(self.ForecastColumn)
         self.forecastTitle.setObjectName(u"forecastTitle")
 
         self.forecastHeader.addWidget(self.forecastTitle)
 
-        self.forecastSub = QLabel(ForecastComponent)
+        self.forecastSub = QLabel(self.ForecastColumn)
         self.forecastSub.setObjectName(u"forecastSub")
 
         self.forecastHeader.addWidget(self.forecastSub)
 
 
-        self.forecastRoot.addLayout(self.forecastHeader)
+        self.ForecastColLayout.addLayout(self.forecastHeader)
 
-        self.forecastSplitter = QCustomSplitter(ForecastComponent)
+        self.forecastSplitter = QCustomSplitter(self.ForecastColumn)
         self.forecastSplitter.setObjectName(u"forecastSplitter")
         self.forecastLeft = QFrame(self.forecastSplitter)
         self.forecastLeft.setObjectName(u"forecastLeft")
@@ -187,7 +215,18 @@ class Ui_ForecastComponent(object):
 
         self.forecastSplitter.addWidget(self.forecastRight)
 
-        self.forecastRoot.addWidget(self.forecastSplitter)
+        self.ForecastColLayout.addWidget(self.forecastSplitter)
+
+
+        self.ForecastCenterRow.addWidget(self.ForecastColumn)
+
+        self.ForecastRightSp = QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.ForecastCenterRow.addItem(self.ForecastRightSp)
+
+        self.ForecastScroll.setWidget(self.ForecastScrollContents)
+
+        self.ForecastOuter.addWidget(self.ForecastScroll)
 
 
         self.retranslateUi(ForecastComponent)

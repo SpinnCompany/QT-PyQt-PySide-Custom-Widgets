@@ -16,13 +16,14 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QLabel,
-    QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout,
-    QWidget)
+    QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
+    QVBoxLayout, QWidget)
 
 from Custom_Widgets.QCustomAlert import QCustomAlert
 from Custom_Widgets.QCustomAvatarGroup import QCustomAvatarGroup
 from Custom_Widgets.QCustomBadge import QCustomBadge
 from Custom_Widgets.QCustomComponent import QCustomComponent
+from Custom_Widgets.QCustomFlowWidget import QCustomFlowWidget
 from Custom_Widgets.QCustomKbd import QCustomKbd
 from Custom_Widgets.QCustomStatCard import QCustomStatCard
 from Custom_Widgets.QCustomTimeline import QCustomTimeline
@@ -30,12 +31,40 @@ class Ui_OverviewComponent(object):
     def setupUi(self, OverviewComponent):
         if not OverviewComponent.objectName():
             OverviewComponent.setObjectName(u"OverviewComponent")
-        OverviewComponent.resize(940, 680)
-        self.overviewLayout = QVBoxLayout(OverviewComponent)
-        self.overviewLayout.setSpacing(16)
-        self.overviewLayout.setObjectName(u"overviewLayout")
-        self.overviewLayout.setContentsMargins(24, 24, 24, 24)
-        self.heroFrame = QFrame(OverviewComponent)
+        OverviewComponent.resize(1200, 760)
+        self.overviewOuter = QVBoxLayout(OverviewComponent)
+        self.overviewOuter.setSpacing(0)
+        self.overviewOuter.setObjectName(u"overviewOuter")
+        self.overviewOuter.setContentsMargins(0, 0, 0, 0)
+        self.overviewScroll = QScrollArea(OverviewComponent)
+        self.overviewScroll.setObjectName(u"overviewScroll")
+        self.overviewScroll.setWidgetResizable(True)
+        self.overviewScroll.setFrameShape(QFrame.NoFrame)
+        self.overviewScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.overviewScrollContents = QWidget()
+        self.overviewScrollContents.setObjectName(u"overviewScrollContents")
+        self.overviewScrollContents.setGeometry(QRect(0, 0, 1200, 760))
+        self.overviewCenterRow = QHBoxLayout(self.overviewScrollContents)
+        self.overviewCenterRow.setSpacing(0)
+        self.overviewCenterRow.setObjectName(u"overviewCenterRow")
+        self.overviewCenterRow.setContentsMargins(28, 28, 28, 28)
+        self.ovLeftSpacer = QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.overviewCenterRow.addItem(self.ovLeftSpacer)
+
+        self.overviewColumn = QWidget(self.overviewScrollContents)
+        self.overviewColumn.setObjectName(u"overviewColumn")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(20)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.overviewColumn.sizePolicy().hasHeightForWidth())
+        self.overviewColumn.setSizePolicy(sizePolicy)
+        self.overviewColumn.setMaximumSize(QSize(1320, 16777215))
+        self.overviewColLayout = QVBoxLayout(self.overviewColumn)
+        self.overviewColLayout.setSpacing(20)
+        self.overviewColLayout.setObjectName(u"overviewColLayout")
+        self.overviewColLayout.setContentsMargins(0, 0, 0, 0)
+        self.heroFrame = QFrame(self.overviewColumn)
         self.heroFrame.setObjectName(u"heroFrame")
         self.heroFrame.setMinimumSize(QSize(0, 96))
         self.heroLayout = QHBoxLayout(self.heroFrame)
@@ -64,53 +93,71 @@ class Ui_OverviewComponent(object):
         self.paletteHint = QLabel(self.heroFrame)
         self.paletteHint.setObjectName(u"paletteHint")
 
-        self.heroLayout.addWidget(self.paletteHint)
+        self.heroLayout.addWidget(self.paletteHint, 0, Qt.AlignRight|Qt.AlignVCenter)
 
         self.paletteKbd = QCustomKbd(self.heroFrame)
         self.paletteKbd.setObjectName(u"paletteKbd")
 
-        self.heroLayout.addWidget(self.paletteKbd)
+        self.heroLayout.addWidget(self.paletteKbd, 0, Qt.AlignRight|Qt.AlignVCenter)
 
 
-        self.overviewLayout.addWidget(self.heroFrame)
+        self.overviewColLayout.addWidget(self.heroFrame)
 
-        self.statsLayout = QHBoxLayout()
-        self.statsLayout.setSpacing(14)
-        self.statsLayout.setObjectName(u"statsLayout")
-        self.statLive = QCustomStatCard(OverviewComponent)
+        self.statsFlow = QCustomFlowWidget(self.overviewColumn)
+        self.statsFlow.setObjectName(u"statsFlow")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.statsFlow.sizePolicy().hasHeightForWidth())
+        self.statsFlow.setSizePolicy(sizePolicy1)
+        self.statsFlow.setProperty(u"spacing", 16)
+        self.statsFlow.setProperty(u"horizontalSpacing", 16)
+        self.statsFlow.setProperty(u"verticalSpacing", 16)
+        self.statsFlow.setProperty(u"margin", 0)
+        self.statsFlow.setProperty(u"animationEnabled", True)
+        self.statsFlow.setProperty(u"animationDuration", 300)
+        self.statsFlow.setProperty(u"autoFillWidth", False)
+        self.statsFlow.setProperty(u"autoFillHeight", False)
+        self.statsFlow.setProperty(u"justifySpacing", False)
+        self.statLive = QCustomStatCard(self.statsFlow)
         self.statLive.setObjectName(u"statLive")
-
-        self.statsLayout.addWidget(self.statLive)
-
-        self.statKp = QCustomStatCard(OverviewComponent)
+        self.statLive.setGeometry(QRect(0, 0, 300, 112))
+        self.statLive.setMinimumSize(QSize(300, 112))
+        self.statLive.setMaximumSize(QSize(300, 112))
+        self.statKp = QCustomStatCard(self.statsFlow)
         self.statKp.setObjectName(u"statKp")
-
-        self.statsLayout.addWidget(self.statKp)
-
-        self.statOdds = QCustomStatCard(OverviewComponent)
+        self.statKp.setGeometry(QRect(316, 0, 300, 112))
+        self.statKp.setMinimumSize(QSize(300, 112))
+        self.statKp.setMaximumSize(QSize(300, 112))
+        self.statOdds = QCustomStatCard(self.statsFlow)
         self.statOdds.setObjectName(u"statOdds")
-
-        self.statsLayout.addWidget(self.statOdds)
-
-        self.statClear = QCustomStatCard(OverviewComponent)
+        self.statOdds.setGeometry(QRect(632, 0, 300, 112))
+        self.statOdds.setMinimumSize(QSize(300, 112))
+        self.statOdds.setMaximumSize(QSize(300, 112))
+        self.statClear = QCustomStatCard(self.statsFlow)
         self.statClear.setObjectName(u"statClear")
+        self.statClear.setGeometry(QRect(948, 0, 300, 112))
+        self.statClear.setMinimumSize(QSize(300, 112))
+        self.statClear.setMaximumSize(QSize(300, 112))
 
-        self.statsLayout.addWidget(self.statClear)
+        self.overviewColLayout.addWidget(self.statsFlow)
 
-
-        self.overviewLayout.addLayout(self.statsLayout)
-
-        self.stormAlert = QCustomAlert(OverviewComponent)
+        self.stormAlert = QCustomAlert(self.overviewColumn)
         self.stormAlert.setObjectName(u"stormAlert")
         self.stormAlert.setProperty(u"dismissible", True)
 
-        self.overviewLayout.addWidget(self.stormAlert)
+        self.overviewColLayout.addWidget(self.stormAlert)
 
         self.cardsRow = QHBoxLayout()
-        self.cardsRow.setSpacing(14)
+        self.cardsRow.setSpacing(16)
         self.cardsRow.setObjectName(u"cardsRow")
-        self.activityCard = QFrame(OverviewComponent)
+        self.activityCard = QFrame(self.overviewColumn)
         self.activityCard.setObjectName(u"activityCard")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        sizePolicy2.setHorizontalStretch(2)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.activityCard.sizePolicy().hasHeightForWidth())
+        self.activityCard.setSizePolicy(sizePolicy2)
         self.activityLayout = QVBoxLayout(self.activityCard)
         self.activityLayout.setSpacing(10)
         self.activityLayout.setObjectName(u"activityLayout")
@@ -128,8 +175,15 @@ class Ui_OverviewComponent(object):
 
         self.cardsRow.addWidget(self.activityCard)
 
-        self.shiftCard = QFrame(OverviewComponent)
+        self.shiftCard = QFrame(self.overviewColumn)
         self.shiftCard.setObjectName(u"shiftCard")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.shiftCard.sizePolicy().hasHeightForWidth())
+        self.shiftCard.setSizePolicy(sizePolicy3)
+        self.shiftCard.setMinimumSize(QSize(320, 0))
+        self.shiftCard.setMaximumSize(QSize(380, 16777215))
         self.shiftLayout = QVBoxLayout(self.shiftCard)
         self.shiftLayout.setSpacing(12)
         self.shiftLayout.setObjectName(u"shiftLayout")
@@ -179,11 +233,22 @@ class Ui_OverviewComponent(object):
         self.cardsRow.addWidget(self.shiftCard)
 
 
-        self.overviewLayout.addLayout(self.cardsRow)
+        self.overviewColLayout.addLayout(self.cardsRow)
 
         self.pageSpacer = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
-        self.overviewLayout.addItem(self.pageSpacer)
+        self.overviewColLayout.addItem(self.pageSpacer)
+
+
+        self.overviewCenterRow.addWidget(self.overviewColumn)
+
+        self.ovRightSpacer = QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.overviewCenterRow.addItem(self.ovRightSpacer)
+
+        self.overviewScroll.setWidget(self.overviewScrollContents)
+
+        self.overviewOuter.addWidget(self.overviewScroll)
 
 
         self.retranslateUi(OverviewComponent)
@@ -200,6 +265,7 @@ class Ui_OverviewComponent(object):
         self.paletteHint.setProperty(u"role", QCoreApplication.translate("OverviewComponent", u"muted", None))
         self.paletteHint.setText(QCoreApplication.translate("OverviewComponent", u"Command palette", None))
         self.paletteKbd.setProperty(u"keys", QCoreApplication.translate("OverviewComponent", u"Ctrl+K", None))
+        self.statsFlow.setProperty(u"animationEasingCurve", QCoreApplication.translate("OverviewComponent", u"OutCubic", None))
         self.statLive.setProperty(u"label", QCoreApplication.translate("OverviewComponent", u"STATIONS LIVE", None))
         self.statLive.setProperty(u"value", QCoreApplication.translate("OverviewComponent", u"8 / 12", None))
         self.statLive.setProperty(u"caption", QCoreApplication.translate("OverviewComponent", u"Arctic belt", None))

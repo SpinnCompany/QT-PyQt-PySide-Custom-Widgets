@@ -3,13 +3,39 @@
  <class>SettingsComponent</class>
  <widget class="QCustomComponent" name="SettingsComponent">
   <property name="geometry"><rect><x>0</x><y>0</y><width>940</width><height>680</height></rect></property>
-  <layout class="QVBoxLayout" name="settingsRoot">
-   <property name="spacing"><number>14</number></property>
-   <property name="leftMargin"><number>24</number></property>
-   <property name="topMargin"><number>24</number></property>
-   <property name="rightMargin"><number>24</number></property>
-   <property name="bottomMargin"><number>24</number></property>
-   <item>
+  <layout class="QVBoxLayout" name="SettingsOuter">
+ <property name="spacing"><number>0</number></property>
+ <property name="leftMargin"><number>0</number></property>
+ <property name="topMargin"><number>0</number></property>
+ <property name="rightMargin"><number>0</number></property>
+ <property name="bottomMargin"><number>0</number></property>
+ <item>
+  <widget class="QScrollArea" name="SettingsScroll">
+   <property name="widgetResizable"><bool>true</bool></property>
+   <property name="frameShape"><enum>QFrame::NoFrame</enum></property>
+   <property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property>
+   <widget class="QWidget" name="SettingsScrollContents">
+    <property name="geometry"><rect><x>0</x><y>0</y><width>1200</width><height>760</height></rect></property>
+    <layout class="QHBoxLayout" name="SettingsCenterRow">
+     <property name="spacing"><number>0</number></property>
+     <property name="leftMargin"><number>28</number></property>
+     <property name="topMargin"><number>24</number></property>
+     <property name="rightMargin"><number>28</number></property>
+     <property name="bottomMargin"><number>24</number></property>
+     <item>
+      <spacer name="SettingsLeftSp"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>0</width><height>0</height></size></property></spacer>
+     </item>
+     <item>
+      <widget class="QWidget" name="SettingsColumn" native="true">
+       <property name="sizePolicy"><sizepolicy hsizetype="Expanding" vsizetype="Preferred"><horstretch>20</horstretch><verstretch>0</verstretch></sizepolicy></property>
+       <property name="maximumSize"><size><width>900</width><height>16777215</height></size></property>
+       <layout class="QVBoxLayout" name="SettingsColLayout">
+        <property name="spacing"><number>14</number></property>
+        <property name="leftMargin"><number>0</number></property>
+        <property name="topMargin"><number>0</number></property>
+        <property name="rightMargin"><number>0</number></property>
+        <property name="bottomMargin"><number>0</number></property>
+       <item>
     <layout class="QVBoxLayout" name="settingsHeader">
      <property name="spacing"><number>2</number></property>
      <item><widget class="QLabel" name="settingsKicker"><property name="role" stdset="0"><string>kicker</string></property><property name="text"><string>PREFERENCES</string></property></widget></item>
@@ -36,7 +62,7 @@
         <item><spacer name="themeSp"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
        </layout>
       </item>
-      <item><widget class="QCustomColorPicker" name="accentPicker"/></item>
+      <item><widget class="QCustomColorPicker" name="accentPicker" /></item>
      </layout>
     </widget>
    </item>
@@ -52,7 +78,7 @@
       <item><widget class="QLabel" name="notifTitle"><property name="role" stdset="0"><string>h2</string></property><property name="text"><string>Notifications</string></property></widget></item>
       <item>
        <layout class="QHBoxLayout" name="notifStormRow">
-        <item><widget class="QLabel" name="notifStormLbl"><property name="role" stdset="0"><string>muted</string></property><property name="text"><string>Storm alerts (Kp &#8805; 6)</string></property></widget></item>
+        <item><widget class="QLabel" name="notifStormLbl"><property name="role" stdset="0"><string>muted</string></property><property name="text"><string>Storm alerts (Kp ≥ 6)</string></property></widget></item>
         <item><spacer name="notifStormSp"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
         <item><widget class="QCustomSwitch" name="notifStorm"><property name="checked" stdset="0"><bool>true</bool></property></widget></item>
        </layout>
@@ -87,7 +113,16 @@
     </spacer>
    </item>
   </layout>
- </widget>
+      </widget>
+     </item>
+     <item>
+      <spacer name="SettingsRightSp"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>0</width><height>0</height></size></property></spacer>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+ </item>
+</layout></widget>
  <customwidgets>
   <customwidget><class>QCustomComponent</class><extends>QWidget</extends><header>Custom_Widgets.QCustomComponent</header><container>1</container></customwidget>
   <customwidget><class>QCustomSegmentedControl</class><extends>QWidget</extends><header>Custom_Widgets.QCustomSegmentedControl</header></customwidget>
@@ -96,6 +131,6 @@
   <customwidget><class>QCustomSwitch</class><extends>QWidget</extends><header>Custom_Widgets.QCustomSwitch</header></customwidget>
   <customwidget><class>QCustomQPushButton</class><extends>QPushButton</extends><header>Custom_Widgets.QCustomQPushButton</header></customwidget>
  </customwidgets>
- <resources/>
- <connections/>
+ <resources />
+ <connections />
 </ui>

@@ -15,9 +15,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QFrame, QGridLayout, QHBoxLayout,
-    QLabel, QPushButton, QScrollArea, QSizePolicy,
-    QSpacerItem, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QLabel,
+    QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
+    QVBoxLayout, QWidget)
 
 from Custom_Widgets.QCustomAvatarGroup import QCustomAvatarGroup
 from Custom_Widgets.QCustomBadge import QCustomBadge
@@ -26,6 +26,7 @@ from Custom_Widgets.QCustomChip import QCustomChipGroup
 from Custom_Widgets.QCustomColorPicker import QCustomColorPicker
 from Custom_Widgets.QCustomComboBox import QCustomComboBox
 from Custom_Widgets.QCustomComponent import QCustomComponent
+from Custom_Widgets.QCustomFlowWidget import QCustomFlowWidget
 from Custom_Widgets.QCustomKbd import QCustomKbd
 from Custom_Widgets.QCustomNumberInput import QCustomNumberInput
 from Custom_Widgets.QCustomPagination import QCustomPagination
@@ -41,44 +42,64 @@ class Ui_GalleryComponent(object):
         if not GalleryComponent.objectName():
             GalleryComponent.setObjectName(u"GalleryComponent")
         GalleryComponent.resize(940, 680)
-        self.galleryRoot = QVBoxLayout(GalleryComponent)
-        self.galleryRoot.setSpacing(12)
-        self.galleryRoot.setObjectName(u"galleryRoot")
-        self.galleryRoot.setContentsMargins(24, 24, 24, 8)
+        self.galleryOuter = QVBoxLayout(GalleryComponent)
+        self.galleryOuter.setSpacing(0)
+        self.galleryOuter.setObjectName(u"galleryOuter")
+        self.galleryOuter.setContentsMargins(0, 0, 0, 0)
+        self.galleryScroll = QScrollArea(GalleryComponent)
+        self.galleryScroll.setObjectName(u"galleryScroll")
+        self.galleryScroll.setWidgetResizable(True)
+        self.galleryScroll.setFrameShape(QFrame.NoFrame)
+        self.galleryScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.galleryContent = QWidget()
+        self.galleryContent.setObjectName(u"galleryContent")
+        self.galleryContent.setGeometry(QRect(0, 0, 1200, 1200))
+        self.galleryContentLayout = QVBoxLayout(self.galleryContent)
+        self.galleryContentLayout.setSpacing(16)
+        self.galleryContentLayout.setObjectName(u"galleryContentLayout")
+        self.galleryContentLayout.setContentsMargins(28, 24, 28, 16)
         self.galleryHeader = QVBoxLayout()
         self.galleryHeader.setSpacing(2)
         self.galleryHeader.setObjectName(u"galleryHeader")
-        self.galleryKicker = QLabel(GalleryComponent)
+        self.galleryKicker = QLabel(self.galleryContent)
         self.galleryKicker.setObjectName(u"galleryKicker")
 
         self.galleryHeader.addWidget(self.galleryKicker)
 
-        self.galleryTitle = QLabel(GalleryComponent)
+        self.galleryTitle = QLabel(self.galleryContent)
         self.galleryTitle.setObjectName(u"galleryTitle")
 
         self.galleryHeader.addWidget(self.galleryTitle)
 
-        self.gallerySub = QLabel(GalleryComponent)
+        self.gallerySub = QLabel(self.galleryContent)
         self.gallerySub.setObjectName(u"gallerySub")
 
         self.galleryHeader.addWidget(self.gallerySub)
 
 
-        self.galleryRoot.addLayout(self.galleryHeader)
+        self.galleryContentLayout.addLayout(self.galleryHeader)
 
-        self.galleryScroll = QScrollArea(GalleryComponent)
-        self.galleryScroll.setObjectName(u"galleryScroll")
-        self.galleryScroll.setWidgetResizable(True)
-        self.galleryScroll.setFrameShape(QFrame.NoFrame)
-        self.galleryContent = QWidget()
-        self.galleryContent.setObjectName(u"galleryContent")
-        self.galleryGrid = QGridLayout(self.galleryContent)
-        self.galleryGrid.setObjectName(u"galleryGrid")
-        self.galleryGrid.setHorizontalSpacing(16)
-        self.galleryGrid.setVerticalSpacing(16)
-        self.galleryGrid.setContentsMargins(2, 6, 12, 20)
-        self.cardRating = QFrame(self.galleryContent)
+        self.galleryFlow = QCustomFlowWidget(self.galleryContent)
+        self.galleryFlow.setObjectName(u"galleryFlow")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.galleryFlow.sizePolicy().hasHeightForWidth())
+        self.galleryFlow.setSizePolicy(sizePolicy)
+        self.galleryFlow.setProperty(u"spacing", 16)
+        self.galleryFlow.setProperty(u"horizontalSpacing", 16)
+        self.galleryFlow.setProperty(u"verticalSpacing", 16)
+        self.galleryFlow.setProperty(u"margin", 0)
+        self.galleryFlow.setProperty(u"animationEnabled", True)
+        self.galleryFlow.setProperty(u"animationDuration", 300)
+        self.galleryFlow.setProperty(u"autoFillWidth", False)
+        self.galleryFlow.setProperty(u"autoFillHeight", False)
+        self.galleryFlow.setProperty(u"justifySpacing", False)
+        self.cardRating = QFrame(self.galleryFlow)
         self.cardRating.setObjectName(u"cardRating")
+        self.cardRating.setGeometry(QRect(0, 0, 300, 160))
+        self.cardRating.setMinimumSize(QSize(300, 160))
+        self.cardRating.setMaximumSize(QSize(300, 160))
         self.lRating = QVBoxLayout(self.cardRating)
         self.lRating.setSpacing(10)
         self.lRating.setObjectName(u"lRating")
@@ -95,11 +116,11 @@ class Ui_GalleryComponent(object):
 
         self.lRating.addWidget(self.gRating)
 
-
-        self.galleryGrid.addWidget(self.cardRating, 0, 0, 1, 1)
-
-        self.cardBadges = QFrame(self.galleryContent)
+        self.cardBadges = QFrame(self.galleryFlow)
         self.cardBadges.setObjectName(u"cardBadges")
+        self.cardBadges.setGeometry(QRect(316, 0, 300, 160))
+        self.cardBadges.setMinimumSize(QSize(300, 160))
+        self.cardBadges.setMaximumSize(QSize(300, 160))
         self.lBadges = QVBoxLayout(self.cardBadges)
         self.lBadges.setSpacing(10)
         self.lBadges.setObjectName(u"lBadges")
@@ -139,11 +160,11 @@ class Ui_GalleryComponent(object):
 
         self.lBadges.addLayout(self.badgesRow)
 
-
-        self.galleryGrid.addWidget(self.cardBadges, 0, 1, 1, 1)
-
-        self.cardSwitches = QFrame(self.galleryContent)
+        self.cardSwitches = QFrame(self.galleryFlow)
         self.cardSwitches.setObjectName(u"cardSwitches")
+        self.cardSwitches.setGeometry(QRect(632, 0, 300, 160))
+        self.cardSwitches.setMinimumSize(QSize(300, 160))
+        self.cardSwitches.setMaximumSize(QSize(300, 160))
         self.lSwitches = QVBoxLayout(self.cardSwitches)
         self.lSwitches.setSpacing(10)
         self.lSwitches.setObjectName(u"lSwitches")
@@ -185,11 +206,11 @@ class Ui_GalleryComponent(object):
 
         self.lSwitches.addLayout(self.switchRow)
 
-
-        self.galleryGrid.addWidget(self.cardSwitches, 1, 0, 1, 1)
-
-        self.cardSegmented = QFrame(self.galleryContent)
+        self.cardSegmented = QFrame(self.galleryFlow)
         self.cardSegmented.setObjectName(u"cardSegmented")
+        self.cardSegmented.setGeometry(QRect(948, 0, 300, 160))
+        self.cardSegmented.setMinimumSize(QSize(300, 160))
+        self.cardSegmented.setMaximumSize(QSize(300, 160))
         self.lSeg = QVBoxLayout(self.cardSegmented)
         self.lSeg.setSpacing(10)
         self.lSeg.setObjectName(u"lSeg")
@@ -205,11 +226,11 @@ class Ui_GalleryComponent(object):
 
         self.lSeg.addWidget(self.gSegmented)
 
-
-        self.galleryGrid.addWidget(self.cardSegmented, 1, 1, 1, 1)
-
-        self.cardRange = QFrame(self.galleryContent)
+        self.cardRange = QFrame(self.galleryFlow)
         self.cardRange.setObjectName(u"cardRange")
+        self.cardRange.setGeometry(QRect(1264, 0, 300, 160))
+        self.cardRange.setMinimumSize(QSize(300, 160))
+        self.cardRange.setMaximumSize(QSize(300, 160))
         self.lRange = QVBoxLayout(self.cardRange)
         self.lRange.setSpacing(10)
         self.lRange.setObjectName(u"lRange")
@@ -228,11 +249,11 @@ class Ui_GalleryComponent(object):
 
         self.lRange.addWidget(self.gRange)
 
-
-        self.galleryGrid.addWidget(self.cardRange, 2, 0, 1, 1)
-
-        self.cardNumber = QFrame(self.galleryContent)
+        self.cardNumber = QFrame(self.galleryFlow)
         self.cardNumber.setObjectName(u"cardNumber")
+        self.cardNumber.setGeometry(QRect(1580, 0, 300, 160))
+        self.cardNumber.setMinimumSize(QSize(300, 160))
+        self.cardNumber.setMaximumSize(QSize(300, 160))
         self.lNumber = QVBoxLayout(self.cardNumber)
         self.lNumber.setSpacing(10)
         self.lNumber.setObjectName(u"lNumber")
@@ -251,11 +272,11 @@ class Ui_GalleryComponent(object):
 
         self.lNumber.addWidget(self.gNumber)
 
-
-        self.galleryGrid.addWidget(self.cardNumber, 2, 1, 1, 1)
-
-        self.cardKbd = QFrame(self.galleryContent)
+        self.cardKbd = QFrame(self.galleryFlow)
         self.cardKbd.setObjectName(u"cardKbd")
+        self.cardKbd.setGeometry(QRect(1896, 0, 300, 160))
+        self.cardKbd.setMinimumSize(QSize(300, 160))
+        self.cardKbd.setMaximumSize(QSize(300, 160))
         self.lKbd = QVBoxLayout(self.cardKbd)
         self.lKbd.setSpacing(10)
         self.lKbd.setObjectName(u"lKbd")
@@ -285,11 +306,11 @@ class Ui_GalleryComponent(object):
 
         self.lKbd.addLayout(self.kbdRow)
 
-
-        self.galleryGrid.addWidget(self.cardKbd, 3, 0, 1, 1)
-
-        self.cardPagination = QFrame(self.galleryContent)
+        self.cardPagination = QFrame(self.galleryFlow)
         self.cardPagination.setObjectName(u"cardPagination")
+        self.cardPagination.setGeometry(QRect(2212, 0, 300, 160))
+        self.cardPagination.setMinimumSize(QSize(300, 160))
+        self.cardPagination.setMaximumSize(QSize(300, 160))
         self.lPag = QVBoxLayout(self.cardPagination)
         self.lPag.setSpacing(10)
         self.lPag.setObjectName(u"lPag")
@@ -306,11 +327,11 @@ class Ui_GalleryComponent(object):
 
         self.lPag.addWidget(self.gPagination)
 
-
-        self.galleryGrid.addWidget(self.cardPagination, 3, 1, 1, 1)
-
-        self.cardColor = QFrame(self.galleryContent)
+        self.cardColor = QFrame(self.galleryFlow)
         self.cardColor.setObjectName(u"cardColor")
+        self.cardColor.setGeometry(QRect(2528, 0, 300, 160))
+        self.cardColor.setMinimumSize(QSize(300, 160))
+        self.cardColor.setMaximumSize(QSize(300, 160))
         self.lColor = QVBoxLayout(self.cardColor)
         self.lColor.setSpacing(10)
         self.lColor.setObjectName(u"lColor")
@@ -325,11 +346,11 @@ class Ui_GalleryComponent(object):
 
         self.lColor.addWidget(self.gColorPicker)
 
-
-        self.galleryGrid.addWidget(self.cardColor, 4, 0, 1, 1)
-
-        self.cardRings = QFrame(self.galleryContent)
+        self.cardRings = QFrame(self.galleryFlow)
         self.cardRings.setObjectName(u"cardRings")
+        self.cardRings.setGeometry(QRect(2844, 0, 300, 160))
+        self.cardRings.setMinimumSize(QSize(300, 160))
+        self.cardRings.setMaximumSize(QSize(300, 160))
         self.lRings = QVBoxLayout(self.cardRings)
         self.lRings.setSpacing(10)
         self.lRings.setObjectName(u"lRings")
@@ -373,11 +394,11 @@ class Ui_GalleryComponent(object):
 
         self.lRings.addLayout(self.ringsGalRow)
 
-
-        self.galleryGrid.addWidget(self.cardRings, 4, 1, 1, 1)
-
-        self.cardChips = QFrame(self.galleryContent)
+        self.cardChips = QFrame(self.galleryFlow)
         self.cardChips.setObjectName(u"cardChips")
+        self.cardChips.setGeometry(QRect(3160, 0, 300, 160))
+        self.cardChips.setMinimumSize(QSize(300, 160))
+        self.cardChips.setMaximumSize(QSize(300, 160))
         self.lChips = QVBoxLayout(self.cardChips)
         self.lChips.setSpacing(10)
         self.lChips.setObjectName(u"lChips")
@@ -393,11 +414,11 @@ class Ui_GalleryComponent(object):
 
         self.lChips.addWidget(self.gChips)
 
-
-        self.galleryGrid.addWidget(self.cardChips, 5, 0, 1, 1)
-
-        self.cardCombo = QFrame(self.galleryContent)
+        self.cardCombo = QFrame(self.galleryFlow)
         self.cardCombo.setObjectName(u"cardCombo")
+        self.cardCombo.setGeometry(QRect(3476, 0, 300, 160))
+        self.cardCombo.setMinimumSize(QSize(300, 160))
+        self.cardCombo.setMaximumSize(QSize(300, 160))
         self.lCombo = QVBoxLayout(self.cardCombo)
         self.lCombo.setSpacing(10)
         self.lCombo.setObjectName(u"lCombo")
@@ -413,11 +434,11 @@ class Ui_GalleryComponent(object):
 
         self.lCombo.addWidget(self.gCombo)
 
-
-        self.galleryGrid.addWidget(self.cardCombo, 5, 1, 1, 1)
-
-        self.cardAvatars = QFrame(self.galleryContent)
+        self.cardAvatars = QFrame(self.galleryFlow)
         self.cardAvatars.setObjectName(u"cardAvatars")
+        self.cardAvatars.setGeometry(QRect(3792, 0, 300, 160))
+        self.cardAvatars.setMinimumSize(QSize(300, 160))
+        self.cardAvatars.setMaximumSize(QSize(300, 160))
         self.lAvatars = QVBoxLayout(self.cardAvatars)
         self.lAvatars.setSpacing(10)
         self.lAvatars.setObjectName(u"lAvatars")
@@ -434,11 +455,11 @@ class Ui_GalleryComponent(object):
 
         self.lAvatars.addWidget(self.gAvatars)
 
-
-        self.galleryGrid.addWidget(self.cardAvatars, 6, 0, 1, 1)
-
-        self.cardSkeleton = QFrame(self.galleryContent)
+        self.cardSkeleton = QFrame(self.galleryFlow)
         self.cardSkeleton.setObjectName(u"cardSkeleton")
+        self.cardSkeleton.setGeometry(QRect(4108, 0, 300, 160))
+        self.cardSkeleton.setMinimumSize(QSize(300, 160))
+        self.cardSkeleton.setMaximumSize(QSize(300, 160))
         self.lSkel = QVBoxLayout(self.cardSkeleton)
         self.lSkel.setSpacing(8)
         self.lSkel.setObjectName(u"lSkel")
@@ -460,11 +481,11 @@ class Ui_GalleryComponent(object):
 
         self.lSkel.addWidget(self.gSkel2)
 
-
-        self.galleryGrid.addWidget(self.cardSkeleton, 6, 1, 1, 1)
-
-        self.cardBreadcrumbs = QFrame(self.galleryContent)
+        self.cardBreadcrumbs = QFrame(self.galleryFlow)
         self.cardBreadcrumbs.setObjectName(u"cardBreadcrumbs")
+        self.cardBreadcrumbs.setGeometry(QRect(4424, 0, 300, 160))
+        self.cardBreadcrumbs.setMinimumSize(QSize(300, 160))
+        self.cardBreadcrumbs.setMaximumSize(QSize(300, 160))
         self.lBc = QVBoxLayout(self.cardBreadcrumbs)
         self.lBc.setSpacing(10)
         self.lBc.setObjectName(u"lBc")
@@ -479,11 +500,11 @@ class Ui_GalleryComponent(object):
 
         self.lBc.addWidget(self.gBreadcrumbs)
 
-
-        self.galleryGrid.addWidget(self.cardBreadcrumbs, 7, 0, 1, 1)
-
-        self.cardToasts = QFrame(self.galleryContent)
+        self.cardToasts = QFrame(self.galleryFlow)
         self.cardToasts.setObjectName(u"cardToasts")
+        self.cardToasts.setGeometry(QRect(4740, 0, 300, 160))
+        self.cardToasts.setMinimumSize(QSize(300, 160))
+        self.cardToasts.setMaximumSize(QSize(300, 160))
         self.lToasts = QVBoxLayout(self.cardToasts)
         self.lToasts.setSpacing(10)
         self.lToasts.setObjectName(u"lToasts")
@@ -519,11 +540,15 @@ class Ui_GalleryComponent(object):
         self.lToasts.addLayout(self.toastRow)
 
 
-        self.galleryGrid.addWidget(self.cardToasts, 7, 1, 1, 1)
+        self.galleryContentLayout.addWidget(self.galleryFlow)
+
+        self.gallerySpacer = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.galleryContentLayout.addItem(self.gallerySpacer)
 
         self.galleryScroll.setWidget(self.galleryContent)
 
-        self.galleryRoot.addWidget(self.galleryScroll)
+        self.galleryOuter.addWidget(self.galleryScroll)
 
 
         self.retranslateUi(GalleryComponent)
@@ -538,6 +563,7 @@ class Ui_GalleryComponent(object):
         self.galleryTitle.setText(QCoreApplication.translate("GalleryComponent", u"Widget Gallery", None))
         self.gallerySub.setProperty(u"role", QCoreApplication.translate("GalleryComponent", u"muted", None))
         self.gallerySub.setText(QCoreApplication.translate("GalleryComponent", u"A tour of the design-token widget set.", None))
+        self.galleryFlow.setProperty(u"animationEasingCurve", QCoreApplication.translate("GalleryComponent", u"OutCubic", None))
         self.cardRating.setProperty(u"role", QCoreApplication.translate("GalleryComponent", u"card", None))
         self.tRating.setProperty(u"role", QCoreApplication.translate("GalleryComponent", u"kicker", None))
         self.tRating.setText(QCoreApplication.translate("GalleryComponent", u"RATING", None))

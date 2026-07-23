@@ -16,8 +16,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QLabel,
-    QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
-    QVBoxLayout, QWidget)
+    QLineEdit, QPushButton, QScrollArea, QSizePolicy,
+    QSpacerItem, QVBoxLayout, QWidget)
 
 from Custom_Widgets.QCustomComboBox import QCustomComboBox
 from Custom_Widgets.QCustomComponent import QCustomComponent
@@ -30,32 +30,60 @@ class Ui_StationsComponent(object):
         if not StationsComponent.objectName():
             StationsComponent.setObjectName(u"StationsComponent")
         StationsComponent.resize(940, 680)
-        self.stationsRoot = QVBoxLayout(StationsComponent)
-        self.stationsRoot.setSpacing(14)
-        self.stationsRoot.setObjectName(u"stationsRoot")
-        self.stationsRoot.setContentsMargins(24, 24, 24, 24)
+        self.StationsOuter = QVBoxLayout(StationsComponent)
+        self.StationsOuter.setSpacing(0)
+        self.StationsOuter.setObjectName(u"StationsOuter")
+        self.StationsOuter.setContentsMargins(0, 0, 0, 0)
+        self.StationsScroll = QScrollArea(StationsComponent)
+        self.StationsScroll.setObjectName(u"StationsScroll")
+        self.StationsScroll.setWidgetResizable(True)
+        self.StationsScroll.setFrameShape(QFrame.NoFrame)
+        self.StationsScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.StationsScrollContents = QWidget()
+        self.StationsScrollContents.setObjectName(u"StationsScrollContents")
+        self.StationsScrollContents.setGeometry(QRect(0, 0, 1200, 760))
+        self.StationsCenterRow = QHBoxLayout(self.StationsScrollContents)
+        self.StationsCenterRow.setSpacing(0)
+        self.StationsCenterRow.setObjectName(u"StationsCenterRow")
+        self.StationsCenterRow.setContentsMargins(28, 24, 28, 24)
+        self.StationsLeftSp = QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.StationsCenterRow.addItem(self.StationsLeftSp)
+
+        self.StationsColumn = QWidget(self.StationsScrollContents)
+        self.StationsColumn.setObjectName(u"StationsColumn")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(20)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.StationsColumn.sizePolicy().hasHeightForWidth())
+        self.StationsColumn.setSizePolicy(sizePolicy)
+        self.StationsColumn.setMaximumSize(QSize(1360, 16777215))
+        self.StationsColLayout = QVBoxLayout(self.StationsColumn)
+        self.StationsColLayout.setSpacing(14)
+        self.StationsColLayout.setObjectName(u"StationsColLayout")
+        self.StationsColLayout.setContentsMargins(0, 0, 0, 0)
         self.stationsHeader = QVBoxLayout()
         self.stationsHeader.setSpacing(2)
         self.stationsHeader.setObjectName(u"stationsHeader")
-        self.stationsKicker = QLabel(StationsComponent)
+        self.stationsKicker = QLabel(self.StationsColumn)
         self.stationsKicker.setObjectName(u"stationsKicker")
 
         self.stationsHeader.addWidget(self.stationsKicker)
 
-        self.stationsTitle = QLabel(StationsComponent)
+        self.stationsTitle = QLabel(self.StationsColumn)
         self.stationsTitle.setObjectName(u"stationsTitle")
 
         self.stationsHeader.addWidget(self.stationsTitle)
 
-        self.stationsSub = QLabel(StationsComponent)
+        self.stationsSub = QLabel(self.StationsColumn)
         self.stationsSub.setObjectName(u"stationsSub")
 
         self.stationsHeader.addWidget(self.stationsSub)
 
 
-        self.stationsRoot.addLayout(self.stationsHeader)
+        self.StationsColLayout.addLayout(self.stationsHeader)
 
-        self.stationsPanel = QFrame(StationsComponent)
+        self.stationsPanel = QFrame(self.StationsColumn)
         self.stationsPanel.setObjectName(u"stationsPanel")
         self.panelLayout = QVBoxLayout(self.stationsPanel)
         self.panelLayout.setSpacing(12)
@@ -142,7 +170,18 @@ class Ui_StationsComponent(object):
         self.panelLayout.addWidget(self.stationsStatus)
 
 
-        self.stationsRoot.addWidget(self.stationsPanel)
+        self.StationsColLayout.addWidget(self.stationsPanel)
+
+
+        self.StationsCenterRow.addWidget(self.StationsColumn)
+
+        self.StationsRightSp = QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.StationsCenterRow.addItem(self.StationsRightSp)
+
+        self.StationsScroll.setWidget(self.StationsScrollContents)
+
+        self.StationsOuter.addWidget(self.StationsScroll)
 
 
         self.retranslateUi(StationsComponent)

@@ -16,7 +16,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QLabel,
-    QPushButton, QSizePolicy, QVBoxLayout, QWidget)
+    QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
+    QVBoxLayout, QWidget)
 
 from Custom_Widgets.QCustomCharts.QCustomLineChart import QCustomLineChart
 from Custom_Widgets.QCustomCharts.QCustomPieChart import QCustomPieChart
@@ -26,41 +27,69 @@ class Ui_AnalyticsComponent(object):
         if not AnalyticsComponent.objectName():
             AnalyticsComponent.setObjectName(u"AnalyticsComponent")
         AnalyticsComponent.resize(940, 680)
-        self.analyticsRoot = QVBoxLayout(AnalyticsComponent)
-        self.analyticsRoot.setSpacing(14)
-        self.analyticsRoot.setObjectName(u"analyticsRoot")
-        self.analyticsRoot.setContentsMargins(24, 24, 24, 24)
+        self.AnalyticsOuter = QVBoxLayout(AnalyticsComponent)
+        self.AnalyticsOuter.setSpacing(0)
+        self.AnalyticsOuter.setObjectName(u"AnalyticsOuter")
+        self.AnalyticsOuter.setContentsMargins(0, 0, 0, 0)
+        self.AnalyticsScroll = QScrollArea(AnalyticsComponent)
+        self.AnalyticsScroll.setObjectName(u"AnalyticsScroll")
+        self.AnalyticsScroll.setWidgetResizable(True)
+        self.AnalyticsScroll.setFrameShape(QFrame.NoFrame)
+        self.AnalyticsScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.AnalyticsScrollContents = QWidget()
+        self.AnalyticsScrollContents.setObjectName(u"AnalyticsScrollContents")
+        self.AnalyticsScrollContents.setGeometry(QRect(0, 0, 1200, 760))
+        self.AnalyticsCenterRow = QHBoxLayout(self.AnalyticsScrollContents)
+        self.AnalyticsCenterRow.setSpacing(0)
+        self.AnalyticsCenterRow.setObjectName(u"AnalyticsCenterRow")
+        self.AnalyticsCenterRow.setContentsMargins(28, 24, 28, 24)
+        self.AnalyticsLeftSp = QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.AnalyticsCenterRow.addItem(self.AnalyticsLeftSp)
+
+        self.AnalyticsColumn = QWidget(self.AnalyticsScrollContents)
+        self.AnalyticsColumn.setObjectName(u"AnalyticsColumn")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(20)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.AnalyticsColumn.sizePolicy().hasHeightForWidth())
+        self.AnalyticsColumn.setSizePolicy(sizePolicy)
+        self.AnalyticsColumn.setMaximumSize(QSize(1360, 16777215))
+        self.AnalyticsColLayout = QVBoxLayout(self.AnalyticsColumn)
+        self.AnalyticsColLayout.setSpacing(14)
+        self.AnalyticsColLayout.setObjectName(u"AnalyticsColLayout")
+        self.AnalyticsColLayout.setContentsMargins(0, 0, 0, 0)
         self.analyticsHeader = QVBoxLayout()
         self.analyticsHeader.setSpacing(2)
         self.analyticsHeader.setObjectName(u"analyticsHeader")
-        self.analyticsKicker = QLabel(AnalyticsComponent)
+        self.analyticsKicker = QLabel(self.AnalyticsColumn)
         self.analyticsKicker.setObjectName(u"analyticsKicker")
 
         self.analyticsHeader.addWidget(self.analyticsKicker)
 
-        self.analyticsTitle = QLabel(AnalyticsComponent)
+        self.analyticsTitle = QLabel(self.AnalyticsColumn)
         self.analyticsTitle.setObjectName(u"analyticsTitle")
 
         self.analyticsHeader.addWidget(self.analyticsTitle)
 
-        self.analyticsSub = QLabel(AnalyticsComponent)
+        self.analyticsSub = QLabel(self.AnalyticsColumn)
         self.analyticsSub.setObjectName(u"analyticsSub")
 
         self.analyticsHeader.addWidget(self.analyticsSub)
 
 
-        self.analyticsRoot.addLayout(self.analyticsHeader)
+        self.AnalyticsColLayout.addLayout(self.analyticsHeader)
 
         self.chartsRow = QHBoxLayout()
         self.chartsRow.setSpacing(14)
         self.chartsRow.setObjectName(u"chartsRow")
-        self.kpPanel = QFrame(AnalyticsComponent)
+        self.kpPanel = QFrame(self.AnalyticsColumn)
         self.kpPanel.setObjectName(u"kpPanel")
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy.setHorizontalStretch(3)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.kpPanel.sizePolicy().hasHeightForWidth())
-        self.kpPanel.setSizePolicy(sizePolicy)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy1.setHorizontalStretch(3)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.kpPanel.sizePolicy().hasHeightForWidth())
+        self.kpPanel.setSizePolicy(sizePolicy1)
         self.kpPanelLayout = QVBoxLayout(self.kpPanel)
         self.kpPanelLayout.setSpacing(10)
         self.kpPanelLayout.setObjectName(u"kpPanelLayout")
@@ -79,13 +108,13 @@ class Ui_AnalyticsComponent(object):
 
         self.chartsRow.addWidget(self.kpPanel)
 
-        self.regionPanel = QFrame(AnalyticsComponent)
+        self.regionPanel = QFrame(self.AnalyticsColumn)
         self.regionPanel.setObjectName(u"regionPanel")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy1.setHorizontalStretch(2)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.regionPanel.sizePolicy().hasHeightForWidth())
-        self.regionPanel.setSizePolicy(sizePolicy1)
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy2.setHorizontalStretch(2)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.regionPanel.sizePolicy().hasHeightForWidth())
+        self.regionPanel.setSizePolicy(sizePolicy2)
         self.regionPanelLayout = QVBoxLayout(self.regionPanel)
         self.regionPanelLayout.setSpacing(10)
         self.regionPanelLayout.setObjectName(u"regionPanelLayout")
@@ -105,7 +134,18 @@ class Ui_AnalyticsComponent(object):
         self.chartsRow.addWidget(self.regionPanel)
 
 
-        self.analyticsRoot.addLayout(self.chartsRow)
+        self.AnalyticsColLayout.addLayout(self.chartsRow)
+
+
+        self.AnalyticsCenterRow.addWidget(self.AnalyticsColumn)
+
+        self.AnalyticsRightSp = QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.AnalyticsCenterRow.addItem(self.AnalyticsRightSp)
+
+        self.AnalyticsScroll.setWidget(self.AnalyticsScrollContents)
+
+        self.AnalyticsOuter.addWidget(self.AnalyticsScroll)
 
 
         self.retranslateUi(AnalyticsComponent)
