@@ -238,15 +238,21 @@
         </spacer>
        </item>
        <item>
-        <widget class="QCustomThemeDarkLightToggle" name="themeToggle">
+        <widget class="QPushButton" name="themeToggle">
          <property name="minimumSize">
           <size>
            <width>0</width>
            <height>36</height>
           </size>
          </property>
+         <property name="iconSize">
+          <size>
+           <width>18</width>
+           <height>18</height>
+          </size>
+         </property>
          <property name="text">
-          <string>Theme</string>
+          <string>  Light theme</string>
          </property>
         </widget>
        </item>
@@ -342,11 +348,6 @@
    <class>QCustomSidebarButton</class>
    <extends>QPushButton</extends>
    <header>Custom_Widgets.QCustomSidebarButton</header>
-  </customwidget>
-  <customwidget>
-   <class>QCustomThemeDarkLightToggle</class>
-   <extends>QPushButton</extends>
-   <header>Custom_Widgets.QCustomThemeDarkLightToggle</header>
   </customwidget>
   <customwidget>
    <class>QCustomQStackedWidget</class>

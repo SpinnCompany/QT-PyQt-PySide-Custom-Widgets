@@ -83,6 +83,18 @@ QCustomSidebarLabel { color: $COLOR_TEXT_4; font-weight: 800; letter-spacing: 2p
 #sidebarToggle:hover { background-color: $COLOR_ACCENT_1; color: $COLOR_BACKGROUND_1; }
 /* Brand mark: a real icon, not a glyph. */
 #brandLabel { qproperty-icon: url(theme-icons:icons/feather/zap.svg); color: $COLOR_TEXT_1; font-weight: 800; letter-spacing: 3px; }
+/* Theme switch (switches Aurora Dark <-> Aurora Light by name). */
+#themeToggle {
+    background-color: $COLOR_BACKGROUND_2;
+    color: $COLOR_TEXT_2;
+    border: none;
+    border-radius: 12px;
+    text-align: left;
+    padding: 8px 12px;
+    font-weight: 700;
+    qproperty-icon: url(theme-icons:icons/feather/sun.svg);
+}
+#themeToggle:hover { background-color: $COLOR_ACCENT_1; color: $COLOR_BACKGROUND_1; }
 
 /* Real, theme-recoloured nav icons (persist when the rail collapses to
    icon-only; recolour automatically on theme switch via the search path). */

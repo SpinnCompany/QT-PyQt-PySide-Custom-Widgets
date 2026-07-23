@@ -344,8 +344,55 @@ class GuiFunctions:
         for name, btn in self.navButtons.items():
             btn.clicked.connect(lambda _=False, n=name: self.navigateTo(n))
 
+        # Theme switching BY NAME (the svg_icons_demo pipeline). The generic
+        # QCustomThemeDarkLightToggle sets self.theme="Light"/"Dark", which never
+        # matches a CUSTOM theme name, so icon-colour resolution falls back to the
+        # default theme and the icon set never recolours. Instead we call
+        # themeEngine.setTheme("Aurora Light"/"Aurora Dark") ourselves; the icon
+        # regen runs on a worker thread and onThemeChangeComplete fires when done.
+        self.themeEngine = getattr(self.win, "themeEngine", None)
+        ui.themeToggle.clicked.connect(self.toggleTheme)
+        if self.themeEngine is not None:
+            try:
+                self.themeEngine.onThemeChangeComplete.connect(self._onThemeReady)
+            except Exception:
+                pass
+        self._updateThemeButton()
+
         # Start on Overview.
         self.navigateTo("overview")
+
+    THEME_DARK = "Aurora Dark"
+    THEME_LIGHT = "Aurora Light"
+
+    def _currentThemeIsLight(self):
+        cur = str(getattr(self.themeEngine, "theme", "") or "")
+        return "light" in cur.lower()
+
+    def toggleTheme(self):
+        if self.themeEngine is None:
+            return
+        target = self.THEME_DARK if self._currentThemeIsLight() else self.THEME_LIGHT
+        self.themeEngine.setTheme(target)   # async icon regen on a worker thread
+        self._updateThemeButton()
+
+    def _onThemeReady(self):
+        # Async icon regen finished: re-polish the active nav pill + refresh label.
+        try:
+            for btn in self.navButtons.values():
+                btn.style().unpolish(btn)
+                btn.style().polish(btn)
+        except Exception:
+            pass
+        self._updateThemeButton()
+
+    def _updateThemeButton(self):
+        # Label shows the theme a click will switch TO.
+        try:
+            self.ui.themeToggle.setText("  Dark theme" if self._currentThemeIsLight()
+                                        else "  Light theme")
+        except Exception:
+            pass
 
     def navigateTo(self, name):
         page = self.pages.get(name)
