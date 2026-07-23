@@ -102,7 +102,12 @@ def configure_custom_widgets(self, data, update: bool = False):
             if not hasattr(self, 'qss_watcher') and not hasattr(self, 'liveCompileQss'):
                 self.liveCompileQss = True
                 try:
-                    QSsFileMonitor.start_qss_file_listener(self)
+                    # start_qss_file_listener is an instance method on the
+                    # QSsFileMonitor singleton and needs the theme engine;
+                    # calling it on the class with just `self` dropped the
+                    # theme_engine argument.
+                    QSsFileMonitor.instance().start_qss_file_listener(
+                        getattr(self, "themeEngine", None))
                 except Exception as e:
                     logError("Failed to start live file listener: "+str(e))
             

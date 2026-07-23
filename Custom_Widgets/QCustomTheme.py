@@ -1170,7 +1170,25 @@ class QCustomTheme(QObject):
                                         custom_functions=token_fns)
                 self._last_compile_key = compile_key
             except Exception as e:
-                logError(f"Failed to compile SASS: {e}")
+                # qtsass errors on a dangling @import are opaque
+                # (CompileError/"expected str ... not NoneType"). Translate to
+                # an actionable message naming the file + missing partial; the
+                # app then keeps the last-good CSS (read below) so it stays
+                # usable, but the real cause is no longer buried.
+                detail = None
+                try:
+                    from Custom_Widgets.JSonStyles.tokens import \
+                        describe_scss_compile_error
+                    detail = describe_scss_compile_error(
+                        main_sass_path, [os.path.dirname(main_sass_path)], e)
+                except Exception:
+                    pass
+                if detail:
+                    logError(detail)
+                    logError("Keeping the previously compiled stylesheet - fix "
+                             "the SCSS above and re-save to apply new styles.")
+                else:
+                    logError(f"Failed to compile SASS: {e}")
             try:
                 with open(css_path, "r") as css:
                     stylesheet = css.read()

@@ -175,3 +175,50 @@ class TestButtonVariant:
         t = QCustomDataTable()
         assert t.size() is not None                    # was broken with `size` prop
         assert t.sizeVariant == "md"
+
+
+class TestScssImportDiagnostics:
+    """The scss engine turns a dangling @import (which makes qtsass fail
+    opaquely) into an actionable message. Pure/Qt-free helpers."""
+
+    def _scss(self, tmp_path, name, body):
+        p = tmp_path / name
+        p.write_text(body)
+        return str(p)
+
+    def test_resolves_partial_and_plain(self, tmp_path):
+        from Custom_Widgets.JSonStyles.tokens import find_unresolved_imports
+        self._scss(tmp_path, "_vars.scss", "$x: 1;")
+        self._scss(tmp_path, "extra.scss", "QLabel{}")
+        root = self._scss(tmp_path, "main.scss",
+                          "@import 'vars';\n@import 'extra';\nQWidget{}")
+        assert find_unresolved_imports(root, [str(tmp_path)]) == []
+
+    def test_flags_missing_import_recursively(self, tmp_path):
+        from Custom_Widgets.JSonStyles.tokens import find_unresolved_imports
+        # main -> default -> (missing) custom
+        self._scss(tmp_path, "defaultStyle.scss", "@import 'custom';")
+        root = self._scss(tmp_path, "main.scss", "@import 'defaultStyle';")
+        problems = find_unresolved_imports(root, [str(tmp_path)])
+        assert len(problems) == 1
+        importer, name = problems[0]
+        assert name == "custom"
+        assert importer.endswith("defaultStyle.scss")
+
+    def test_css_and_url_imports_are_ignored(self, tmp_path):
+        from Custom_Widgets.JSonStyles.tokens import find_unresolved_imports
+        root = self._scss(tmp_path, "main.scss",
+                          "@import 'reset.css';\n@import 'https://x/y';")
+        assert find_unresolved_imports(root, [str(tmp_path)]) == []
+
+    def test_describe_names_file_and_partial(self, tmp_path):
+        from Custom_Widgets.JSonStyles.tokens import describe_scss_compile_error
+        self._scss(tmp_path, "defaultStyle.scss", "@import 'custom';")
+        root = self._scss(tmp_path, "main.scss", "@import 'defaultStyle';")
+        msg = describe_scss_compile_error(root, [str(tmp_path)])
+        assert msg and "custom" in msg and "defaultStyle.scss" in msg
+
+    def test_describe_returns_none_when_no_import_problem(self, tmp_path):
+        from Custom_Widgets.JSonStyles.tokens import describe_scss_compile_error
+        root = self._scss(tmp_path, "main.scss", "QWidget{ color: red; }")
+        assert describe_scss_compile_error(root, [str(tmp_path)]) is None
