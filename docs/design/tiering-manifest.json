@@ -71,7 +71,7 @@
     "loc": 547,
     "pyi": false,
     "catalog": false,
-    "test": false,
+    "test": true,
     "example": false,
     "designer": false,
     "tier": "free"
@@ -82,7 +82,7 @@
     "loc": 873,
     "pyi": false,
     "catalog": false,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": false,
     "tier": "free"
@@ -104,7 +104,7 @@
     "loc": 153,
     "pyi": true,
     "catalog": true,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": true,
     "tier": "free"
@@ -126,7 +126,7 @@
     "loc": 253,
     "pyi": true,
     "catalog": true,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": true,
     "tier": "free"
@@ -280,7 +280,7 @@
     "loc": 330,
     "pyi": false,
     "catalog": false,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": false,
     "tier": "free"
@@ -390,7 +390,7 @@
     "loc": 266,
     "pyi": false,
     "catalog": false,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": false,
     "tier": "free"
@@ -401,7 +401,7 @@
     "loc": 557,
     "pyi": false,
     "catalog": false,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": false,
     "tier": "free"
@@ -489,7 +489,7 @@
     "loc": 260,
     "pyi": true,
     "catalog": true,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": true,
     "tier": "free"
@@ -511,7 +511,7 @@
     "loc": 189,
     "pyi": true,
     "catalog": true,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": true,
     "tier": "free"
@@ -566,7 +566,7 @@
     "loc": 358,
     "pyi": true,
     "catalog": true,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": true,
     "tier": "free"
@@ -621,7 +621,7 @@
     "loc": 489,
     "pyi": false,
     "catalog": false,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": false,
     "tier": "free"
@@ -654,7 +654,7 @@
     "loc": 60,
     "pyi": false,
     "catalog": false,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": false,
     "tier": "free"
@@ -676,7 +676,7 @@
     "loc": 47,
     "pyi": false,
     "catalog": false,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": false,
     "tier": "free"
@@ -698,7 +698,7 @@
     "loc": 662,
     "pyi": false,
     "catalog": false,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": false,
     "tier": "free"
@@ -808,7 +808,7 @@
     "loc": 607,
     "pyi": false,
     "catalog": false,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": false,
     "tier": "free"
@@ -940,7 +940,7 @@
     "loc": 1043,
     "pyi": false,
     "catalog": false,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": false,
     "tier": "free"
@@ -1025,10 +1025,10 @@
   {
     "module": "Custom_Widgets/QCustomTagEdit.py",
     "widget": "QTagEdit",
-    "loc": 266,
+    "loc": 269,
     "pyi": false,
     "catalog": false,
-    "test": false,
+    "test": true,
     "example": false,
     "designer": false,
     "tier": "free"

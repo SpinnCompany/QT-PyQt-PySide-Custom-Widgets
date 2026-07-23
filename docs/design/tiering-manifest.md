@@ -13,7 +13,7 @@ ships at once. Tiers here are **first-pass proposals for ratification**, not fin
 
 | Signal | Coverage |
 |---|---|
-| Has a test | 80/108 (74%) |
+| Has a test | 97/108 (90%) |
 | Has an example | 84/108 (78%) |
 | In `__catalog__` | 54/108 (50%) |
 | Designer-registered | 74/108 (69%) |
@@ -55,12 +55,12 @@ Pro mapping:
 | Widget | Test | Example | Catalog | Designer | .pyi | LOC | Module |
 |---|:--:|:--:|:--:|:--:|:--:|--:|---|
 | `AnalogGaugeWidget` | ✅ | ✅ | — | ✅ | — | 1014 | Custom_Widgets/AnalogGaugeWidget.py |
-| `Canvas` | — | — | — | — | — | 547 | Custom_Widgets/QCustomAnnotationWidget.py |
-| `LoadForm` | — | ✅ | — | — | — | 873 | Custom_Widgets/QCustomModals.py |
+| `Canvas` | ✅ | — | — | — | — | 547 | Custom_Widgets/QCustomAnnotationWidget.py |
+| `LoadForm` | ✅ | ✅ | — | — | — | 873 | Custom_Widgets/QCustomModals.py |
 | `QCustomAccordion` | ✅ | ✅ | ✅ | ✅ | ✅ | 150 | Custom_Widgets/QCustomAccordion.py |
-| `QCustomActionButton` | — | ✅ | ✅ | ✅ | ✅ | 153 | Custom_Widgets/QCustomActionButton.py |
+| `QCustomActionButton` | ✅ | ✅ | ✅ | ✅ | ✅ | 153 | Custom_Widgets/QCustomActionButton.py |
 | `QCustomAlert` | ✅ | ✅ | ✅ | ✅ | ✅ | 166 | Custom_Widgets/QCustomAlert.py |
-| `QCustomAvatar` | — | ✅ | ✅ | ✅ | ✅ | 253 | Custom_Widgets/QCustomAvatar.py |
+| `QCustomAvatar` | ✅ | ✅ | ✅ | ✅ | ✅ | 253 | Custom_Widgets/QCustomAvatar.py |
 | `QCustomAvatarGroup` | ✅ | ✅ | ✅ | ✅ | ✅ | 150 | Custom_Widgets/QCustomAvatarGroup.py |
 | `QCustomBadge` | ✅ | ✅ | ✅ | ✅ | ✅ | 224 | Custom_Widgets/QCustomBadge.py |
 | `QCustomBreadcrumbs` | ✅ | ✅ | ✅ | ✅ | ✅ | 89 | Custom_Widgets/QCustomBreadcrumbs.py |
@@ -74,7 +74,7 @@ Pro mapping:
 | `QCustomChatThread` | ✅ | ✅ | ✅ | ✅ | ✅ | 281 | Custom_Widgets/QCustomChatThread.py |
 | `QCustomCheckBox` | ✅ | ✅ | — | ✅ | — | 269 | Custom_Widgets/QCustomCheckBox.py |
 | `QCustomChip` | ✅ | ✅ | ✅ | ✅ | ✅ | 181 | Custom_Widgets/QCustomChip.py |
-| `QCustomCodeEditor` | — | ✅ | — | — | — | 330 | Custom_Widgets/QCustomCodeEditor.py |
+| `QCustomCodeEditor` | ✅ | ✅ | — | — | — | 330 | Custom_Widgets/QCustomCodeEditor.py |
 | `QCustomColorPicker` | ✅ | ✅ | ✅ | ✅ | ✅ | 139 | Custom_Widgets/QCustomColorPicker.py |
 | `QCustomComboBox` | ✅ | ✅ | ✅ | ✅ | ✅ | 140 | Custom_Widgets/QCustomComboBox.py |
 | `QCustomCommandPalette` | ✅ | ✅ | ✅ | — | ✅ | 247 | Custom_Widgets/QCustomCommandPalette.py |
@@ -84,8 +84,8 @@ Pro mapping:
 | `QCustomDateEdit` | ✅ | ✅ | ✅ | ✅ | ✅ | 181 | Custom_Widgets/QCustomDateTimeEdit.py |
 | `QCustomDonut` | ✅ | ✅ | ✅ | — | ✅ | 241 | Custom_Widgets/QCustomDonut.py |
 | `QCustomDrawer` | ✅ | ✅ | ✅ | — | ✅ | 138 | Custom_Widgets/QCustomDrawer.py |
-| `QCustomEmbeddedWindow` | — | ✅ | — | — | — | 266 | Custom_Widgets/QCustomEmbeddedWindow.py |
-| `QCustomEmojiPicker` | — | ✅ | — | — | — | 557 | Custom_Widgets/QCustomEmojiPicker.py |
+| `QCustomEmbeddedWindow` | ✅ | ✅ | — | — | — | 266 | Custom_Widgets/QCustomEmbeddedWindow.py |
+| `QCustomEmojiPicker` | ✅ | ✅ | — | — | — | 557 | Custom_Widgets/QCustomEmojiPicker.py |
 | `QCustomEmptyState` | ✅ | ✅ | ✅ | ✅ | ✅ | 90 | Custom_Widgets/QCustomEmptyState.py |
 | `QCustomFileDropZone` | ✅ | ✅ | ✅ | ✅ | ✅ | 160 | Custom_Widgets/QCustomFileDropZone.py |
 | `QCustomFlowLayout` | ✅ | ✅ | — | ✅ | — | 750 | Custom_Widgets/QCustomFlowLayout.py |
@@ -93,26 +93,26 @@ Pro mapping:
 | `QCustomHamburgerMenu` | ✅ | — | — | ✅ | — | 839 | Custom_Widgets/QCustomHamburgerMenu.py |
 | `QCustomHorizontalSeparator` | ✅ | — | — | ✅ | — | 119 | Custom_Widgets/QCustomHorizontalSeparator.py |
 | `QCustomKbd` | ✅ | ✅ | ✅ | ✅ | ✅ | 112 | Custom_Widgets/QCustomKbd.py |
-| `QCustomListRow` | — | ✅ | ✅ | ✅ | ✅ | 260 | Custom_Widgets/QCustomListRow.py |
+| `QCustomListRow` | ✅ | ✅ | ✅ | ✅ | ✅ | 260 | Custom_Widgets/QCustomListRow.py |
 | `QCustomLoadingIndicators` | ✅ | ✅ | — | ✅ | — | 7 | Custom_Widgets/QCustomLoadingIndicators.py |
-| `QCustomMediaGrid` | — | ✅ | ✅ | ✅ | ✅ | 189 | Custom_Widgets/QCustomMediaGrid.py |
+| `QCustomMediaGrid` | ✅ | ✅ | ✅ | ✅ | ✅ | 189 | Custom_Widgets/QCustomMediaGrid.py |
 | `QCustomMiniBarChart` | ✅ | ✅ | ✅ | ✅ | ✅ | 288 | Custom_Widgets/QCustomMiniBarChart.py |
 | `QCustomNumberInput` | ✅ | ✅ | ✅ | ✅ | ✅ | 196 | Custom_Widgets/QCustomNumberInput.py |
 | `QCustomPageDots` | ✅ | ✅ | ✅ | ✅ | ✅ | 236 | Custom_Widgets/QCustomPageDots.py |
 | `QCustomPagination` | ✅ | ✅ | ✅ | ✅ | ✅ | 122 | Custom_Widgets/QCustomPagination.py |
-| `QCustomPaymentCard` | — | ✅ | ✅ | ✅ | ✅ | 358 | Custom_Widgets/QCustomPaymentCard.py |
+| `QCustomPaymentCard` | ✅ | ✅ | ✅ | ✅ | ✅ | 358 | Custom_Widgets/QCustomPaymentCard.py |
 | `QCustomPopover` | ✅ | ✅ | ✅ | — | ✅ | 171 | Custom_Widgets/QCustomPopover.py |
 | `QCustomProgressBars` | ✅ | ✅ | — | ✅ | — | 1 | Custom_Widgets/QCustomProgressBars.py |
 | `QCustomProgressIndicator` | ✅ | ✅ | — | — | — | 375 | Custom_Widgets/QCustomProgressIndicator.py |
 | `QCustomProgressRing` | ✅ | ✅ | ✅ | ✅ | ✅ | 190 | Custom_Widgets/QCustomProgressRing.py |
-| `QCustomQDialog` | — | ✅ | — | — | — | 489 | Custom_Widgets/QCustomQDialog.py |
+| `QCustomQDialog` | ✅ | ✅ | — | — | — | 489 | Custom_Widgets/QCustomQDialog.py |
 | `QCustomQMainWindow` | ✅ | ✅ | — | ✅ | — | 484 | Custom_Widgets/QCustomQMainWindow.py |
 | `QCustomQPushButton` | ✅ | ✅ | ✅ | ✅ | ✅ | 538 | Custom_Widgets/QCustomQPushButton.py |
-| `QCustomQPushButtonGroup` | — | ✅ | — | — | — | 60 | Custom_Widgets/QCustomQPushButtonGroup.py |
+| `QCustomQPushButtonGroup` | ✅ | ✅ | — | — | — | 60 | Custom_Widgets/QCustomQPushButtonGroup.py |
 | `QCustomQRGenerator` | ✅ | — | — | ✅ | — | 721 | Custom_Widgets/QCustomQRGenerator.py |
-| `QCustomQSlider` | — | ✅ | — | — | — | 47 | Custom_Widgets/QCustomQSlider.py |
+| `QCustomQSlider` | ✅ | ✅ | — | — | — | 47 | Custom_Widgets/QCustomQSlider.py |
 | `QCustomQStackedWidget` | ✅ | ✅ | — | ✅ | — | 816 | Custom_Widgets/QCustomQStackedWidget.py |
-| `QCustomQToolTip` | — | ✅ | — | — | — | 662 | Custom_Widgets/QCustomQToolTip.py |
+| `QCustomQToolTip` | ✅ | ✅ | — | — | — | 662 | Custom_Widgets/QCustomQToolTip.py |
 | `QCustomRangeSlider` | ✅ | ✅ | ✅ | ✅ | ✅ | 220 | Custom_Widgets/QCustomRangeSlider.py |
 | `QCustomRating` | ✅ | ✅ | ✅ | ✅ | ✅ | 135 | Custom_Widgets/QCustomRating.py |
 | `QCustomRichTextEditor` | ✅ | ✅ | ✅ | ✅ | ✅ | 186 | Custom_Widgets/QCustomRichTextEditor.py |
@@ -122,7 +122,7 @@ Pro mapping:
 | `QCustomSidebarContainer` | ✅ | — | — | ✅ | — | 246 | Custom_Widgets/QCustomSidebarContainer.py |
 | `QCustomSidebarLabel` | ✅ | ✅ | — | ✅ | — | 241 | Custom_Widgets/QCustomSidebarLabel.py |
 | `QCustomSkeleton` | ✅ | ✅ | ✅ | ✅ | ✅ | 134 | Custom_Widgets/QCustomSkeleton.py |
-| `QCustomSlideMenu` | — | ✅ | — | — | — | 607 | Custom_Widgets/QCustomSlideMenu.py |
+| `QCustomSlideMenu` | ✅ | ✅ | — | — | — | 607 | Custom_Widgets/QCustomSlideMenu.py |
 | `QCustomSparkline` | ✅ | ✅ | ✅ | — | ✅ | 207 | Custom_Widgets/QCustomSparkline.py |
 | `QCustomSplitter` | ✅ | ✅ | ✅ | ✅ | ✅ | 57 | Custom_Widgets/QCustomSplitter.py |
 | `QCustomStatCard` | ✅ | ✅ | ✅ | ✅ | ✅ | 160 | Custom_Widgets/QCustomStatCard.py |
@@ -134,7 +134,7 @@ Pro mapping:
 | `QCustomThemeDarkLightToggle` | ✅ | ✅ | — | ✅ | — | 140 | Custom_Widgets/QCustomThemeDarkLightToggle.py |
 | `QCustomThemeList` | ✅ | ✅ | — | ✅ | — | 139 | Custom_Widgets/QCustomThemeList.py |
 | `QCustomTimeline` | ✅ | ✅ | ✅ | ✅ | ✅ | 143 | Custom_Widgets/QCustomTimeline.py |
-| `QCustomTipOverlay` | — | ✅ | — | — | — | 1043 | Custom_Widgets/QCustomTipOverlay.py |
+| `QCustomTipOverlay` | ✅ | ✅ | — | — | — | 1043 | Custom_Widgets/QCustomTipOverlay.py |
 | `QCustomToast` | ✅ | ✅ | ✅ | — | ✅ | 233 | Custom_Widgets/QCustomToast.py |
 | `QCustomTreeWidget` | ✅ | ✅ | ✅ | ✅ | ✅ | 102 | Custom_Widgets/QCustomTreeWidget.py |
 | `QCustomTrendChip` | ✅ | ✅ | ✅ | ✅ | ✅ | 251 | Custom_Widgets/QCustomTrendChip.py |
@@ -142,7 +142,7 @@ Pro mapping:
 | `QCustomVerticalSeparator` | ✅ | — | — | ✅ | — | 117 | Custom_Widgets/QCustomVerticalSeparator.py |
 | `QCustomVoiceMessage` | ✅ | ✅ | ✅ | ✅ | ✅ | 302 | Custom_Widgets/QCustomVoiceMessage.py |
 | `QFlowProgressBar` | ✅ | ✅ | — | — | — | 381 | Custom_Widgets/QFlowProgressBar.py |
-| `QTagEdit` | — | — | — | — | — | 266 | Custom_Widgets/QCustomTagEdit.py |
+| `QTagEdit` | ✅ | — | — | — | — | 269 | Custom_Widgets/QCustomTagEdit.py |
 
 ## Internal / engine -- not standalone widgets (14)
 
@@ -170,24 +170,8 @@ separate tier. (Most surface through the public chart types above.)
 
 ## Hardening backlog (drives the gate)
 
-### Untested user-facing widgets (17) -- highest priority
-- `Canvas` (QCustomAnnotationWidget.py)
-- `LoadForm` (QCustomModals.py)
-- `QCustomActionButton` (QCustomActionButton.py)
-- `QCustomAvatar` (QCustomAvatar.py)
-- `QCustomCodeEditor` (QCustomCodeEditor.py)
-- `QCustomEmbeddedWindow` (QCustomEmbeddedWindow.py)
-- `QCustomEmojiPicker` (QCustomEmojiPicker.py)
-- `QCustomListRow` (QCustomListRow.py)
-- `QCustomMediaGrid` (QCustomMediaGrid.py)
-- `QCustomPaymentCard` (QCustomPaymentCard.py)
-- `QCustomQDialog` (QCustomQDialog.py)
-- `QCustomQPushButtonGroup` (QCustomQPushButtonGroup.py)
-- `QCustomQSlider` (QCustomQSlider.py)
-- `QCustomQToolTip` (QCustomQToolTip.py)
-- `QCustomSlideMenu` (QCustomSlideMenu.py)
-- `QCustomTipOverlay` (QCustomTipOverlay.py)
-- `QTagEdit` (QCustomTagEdit.py)
+### Untested user-facing widgets (0) -- highest priority
+
 
 ### Missing `__catalog__` entry (40)
 - `AnalogGaugeWidget`

@@ -1,6 +1,9 @@
 from qtpy import QtGui, QtCore, QtWidgets
 import typing
-    
+
+from Custom_Widgets.QCustomFlowLayout import QCustomFlowLayout
+
+
 class QTagEdit(QtWidgets.QScrollArea):
     """A tag based edit"""
 
@@ -11,7 +14,7 @@ class QTagEdit(QtWidgets.QScrollArea):
         self.setWidgetResizable(True)
 
         self._main_widget = QtWidgets.QWidget()
-        self._layout = QFlowLayout(self._main_widget)
+        self._layout = QCustomFlowLayout(self._main_widget)
 
         self._tag_input = QtWidgets.QLineEdit()
         # self._tag_input.setPlaceholderText('Type in a new tag and hit enter...')
@@ -22,8 +25,8 @@ class QTagEdit(QtWidgets.QScrollArea):
 
         self._layout.addWidget(self._tag_input)
 
-        self._tag_input.palette().color(QtGui.QPalette.Background)
-        tag_input_color = self._tag_input.palette().color(QtGui.QPalette.Background)
+        self._tag_input.palette().color(QtGui.QPalette.Window)
+        tag_input_color = self._tag_input.palette().color(QtGui.QPalette.Window)
         self.setStyleSheet(f'background-color: rgb({tag_input_color.red()}, {tag_input_color.green()}, {tag_input_color.blue()})')
 
         self.setWidget(self._main_widget)
@@ -238,8 +241,8 @@ class QTagEdit(QtWidgets.QScrollArea):
 
         def paintEvent(self, a0: QtGui.QPaintEvent) -> None:
             """Styles the tag"""
-            dark_color = self.palette().color(QtGui.QPalette.Background).darker()
-            light_color = self.palette().color(QtGui.QPalette.Background).lighter()
+            dark_color = self.palette().color(QtGui.QPalette.Window).darker()
+            light_color = self.palette().color(QtGui.QPalette.Window).lighter()
 
             painter = QtGui.QPainter(self)
             painter.setRenderHint(QtGui.QPainter.Antialiasing)
