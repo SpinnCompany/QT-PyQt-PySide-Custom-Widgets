@@ -7,11 +7,19 @@
 import os as _os
 try:
     import faulthandler as _faulthandler
+    from datetime import datetime as _datetime
     _fh_path = _os.path.join(
         _os.path.expanduser("~/.local/share/customwidgets/logs"),
         "designer_faulthandler.log")
     _os.makedirs(_os.path.dirname(_fh_path), exist_ok=True)
-    _fh_file = open(_fh_path, "a", buffering=1)
+    # Truncate on startup ("w"): each Designer launch starts with a clean log,
+    # so a dump found here unambiguously belongs to the current session
+    # (appending made stale crash dumps look current). A timestamped header
+    # marks when this session began.
+    _fh_file = open(_fh_path, "w", buffering=1)
+    _fh_file.write(
+        f"# customwidgets designer faulthandler - session started "
+        f"{_datetime.now().isoformat(timespec='seconds')} (pid {_os.getpid()})\n")
     _faulthandler.enable(file=_fh_file, all_threads=True)
 except Exception:
     pass
