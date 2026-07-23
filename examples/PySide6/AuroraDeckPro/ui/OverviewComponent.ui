@@ -46,7 +46,7 @@
           <property name="bottomMargin"><number>0</number></property>
           <item>
            <widget class="QFrame" name="heroFrame">
-            <property name="role" stdset="0"><string>hero</string></property>
+            <property name="frameShape"><enum>QFrame::StyledPanel</enum></property><property name="role" stdset="0"><string>hero</string></property>
             <property name="minimumSize"><size><width>0</width><height>96</height></size></property>
             <layout class="QHBoxLayout" name="heroLayout">
              <property name="leftMargin"><number>24</number></property>
@@ -129,7 +129,7 @@
              <property name="maximumSize"><size><width>300</width><height>112</height></size></property>
              <property name="label" stdset="0"><string>AURORA ODDS</string></property>
              <property name="value" stdset="0"><string>87%</string></property>
-             <property name="caption" stdset="0"><string>&#8805;65&#176;N</string></property>
+             <property name="caption" stdset="0"><string>≥65°N</string></property>
              <property name="trend" stdset="0"><string>up</string></property>
             </widget>
             <widget class="QCustomStatCard" name="statClear">
@@ -147,7 +147,7 @@
            <widget class="QCustomAlert" name="stormAlert">
             <property name="variant" stdset="0"><string>warning</string></property>
             <property name="title" stdset="0"><string>Geomagnetic storm in progress</string></property>
-            <property name="text" stdset="0"><string>Kp has crossed 6. Aurora may be visible down to 60&#176;N tonight.</string></property>
+            <property name="text" stdset="0"><string>Kp has crossed 6. Aurora may be visible down to 60°N tonight.</string></property>
             <property name="dismissible" stdset="0"><bool>true</bool></property>
            </widget>
           </item>
@@ -156,7 +156,7 @@
             <property name="spacing"><number>16</number></property>
             <item>
              <widget class="QFrame" name="activityCard">
-              <property name="role" stdset="0"><string>card</string></property>
+              <property name="frameShape"><enum>QFrame::StyledPanel</enum></property><property name="role" stdset="0"><string>card</string></property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Preferred"><horstretch>2</horstretch><verstretch>0</verstretch></sizepolicy>
               </property>
@@ -173,14 +173,14 @@
                 </widget>
                </item>
                <item>
-                <widget class="QCustomTimeline" name="activityTimeline"/>
+                <widget class="QCustomTimeline" name="activityTimeline" />
                </item>
               </layout>
              </widget>
             </item>
             <item>
              <widget class="QFrame" name="shiftCard">
-              <property name="role" stdset="0"><string>card</string></property>
+              <property name="frameShape"><enum>QFrame::StyledPanel</enum></property><property name="role" stdset="0"><string>card</string></property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred"><horstretch>0</horstretch><verstretch>0</verstretch></sizepolicy>
               </property>
@@ -275,6 +275,6 @@
   <customwidget><class>QCustomAvatarGroup</class><extends>QWidget</extends><header>Custom_Widgets.QCustomAvatarGroup</header></customwidget>
   <customwidget><class>QCustomBadge</class><extends>QLabel</extends><header>Custom_Widgets.QCustomBadge</header></customwidget>
  </customwidgets>
- <resources/>
- <connections/>
+ <resources />
+ <connections />
 </ui>

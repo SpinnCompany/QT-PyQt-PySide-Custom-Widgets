@@ -62,7 +62,7 @@
    </item>
    <item>
     <widget class="QFrame" name="stationsPanel">
-     <property name="role" stdset="0"><string>panel</string></property>
+     <property name="frameShape"><enum>QFrame::StyledPanel</enum></property><property name="role" stdset="0"><string>panel</string></property>
      <layout class="QVBoxLayout" name="panelLayout">
       <property name="spacing"><number>12</number></property>
       <property name="leftMargin"><number>18</number></property>

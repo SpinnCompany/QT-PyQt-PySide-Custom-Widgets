@@ -64,7 +64,7 @@
     <widget class="QCustomSplitter" name="forecastSplitter">
      <property name="orientation" stdset="0"><string>horizontal</string></property>
      <widget class="QFrame" name="forecastLeft">
-      <property name="role" stdset="0"><string>panel</string></property>
+      <property name="frameShape"><enum>QFrame::StyledPanel</enum></property><property name="role" stdset="0"><string>panel</string></property>
       <layout class="QVBoxLayout" name="forecastLeftLayout">
        <property name="spacing"><number>12</number></property>
        <property name="leftMargin"><number>18</number></property>
@@ -163,7 +163,7 @@
       </layout>
      </widget>
      <widget class="QFrame" name="forecastRight">
-      <property name="role" stdset="0"><string>panel</string></property>
+      <property name="frameShape"><enum>QFrame::StyledPanel</enum></property><property name="role" stdset="0"><string>panel</string></property>
       <layout class="QVBoxLayout" name="forecastRightLayout">
        <property name="spacing"><number>14</number></property>
        <property name="leftMargin"><number>18</number></property>

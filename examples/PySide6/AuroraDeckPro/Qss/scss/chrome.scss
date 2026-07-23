@@ -10,10 +10,14 @@ QCustomComponent {
     background-color: $COLOR_BACKGROUND_3;
 }
 
-/* --- Elevated surfaces --------------------------------------------------- */
+/* --- Elevated surfaces ---------------------------------------------------
+   The theme's BACKGROUND_1..3 ramp is very tight, so surfaces are defined by
+   a visible hairline border ($COLOR_TEXT_4) rather than by fill contrast.
+   (BORDER_1..3 tokens resolve to the card colour here, so they can't be used.)
+   ------------------------------------------------------------------------- */
 QFrame[role="card"] {
     background-color: $COLOR_BACKGROUND_1;
-    border: 1px solid $COLOR_BACKGROUND_2;
+    border: 1px solid $COLOR_TEXT_4;
     border-radius: $SIZE_BORDER_RADIUS;
 }
 QFrame[role="hero"] {
@@ -23,12 +27,20 @@ QFrame[role="hero"] {
 }
 QFrame[role="panel"] {
     background-color: $COLOR_BACKGROUND_2;
-    border: 1px solid $COLOR_BACKGROUND_2;
+    border: 1px solid $COLOR_TEXT_4;
     border-radius: $SIZE_BORDER_RADIUS;
 }
 QFrame[role="toolbar"] {
     background-color: $COLOR_BACKGROUND_1;
-    border: 1px solid $COLOR_BACKGROUND_2;
+    border: 1px solid $COLOR_TEXT_4;
+    border-radius: $SIZE_BORDER_RADIUS;
+}
+
+/* Stat cards are custom-painted widgets (no QFrame role), so give them the
+   same card chrome directly by class. */
+QCustomStatCard {
+    background-color: $COLOR_BACKGROUND_1;
+    border: 1px solid $COLOR_TEXT_4;
     border-radius: $SIZE_BORDER_RADIUS;
 }
 

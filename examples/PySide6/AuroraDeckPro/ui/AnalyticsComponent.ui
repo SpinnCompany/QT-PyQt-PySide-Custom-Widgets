@@ -65,7 +65,7 @@
      <property name="spacing"><number>14</number></property>
      <item>
       <widget class="QFrame" name="kpPanel">
-       <property name="sizePolicy">
+       <property name="frameShape"><enum>QFrame::StyledPanel</enum></property><property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding"><horstretch>3</horstretch><verstretch>0</verstretch></sizepolicy>
        </property>
        <property name="role" stdset="0"><string>panel</string></property>
@@ -91,7 +91,7 @@
      </item>
      <item>
       <widget class="QFrame" name="regionPanel">
-       <property name="sizePolicy">
+       <property name="frameShape"><enum>QFrame::StyledPanel</enum></property><property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding"><horstretch>2</horstretch><verstretch>0</verstretch></sizepolicy>
        </property>
        <property name="role" stdset="0"><string>panel</string></property>

@@ -85,6 +85,7 @@ class Ui_AnalyticsComponent(object):
         self.chartsRow.setObjectName(u"chartsRow")
         self.kpPanel = QFrame(self.AnalyticsColumn)
         self.kpPanel.setObjectName(u"kpPanel")
+        self.kpPanel.setFrameShape(QFrame.StyledPanel)
         sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy1.setHorizontalStretch(3)
         sizePolicy1.setVerticalStretch(0)
@@ -110,6 +111,7 @@ class Ui_AnalyticsComponent(object):
 
         self.regionPanel = QFrame(self.AnalyticsColumn)
         self.regionPanel.setObjectName(u"regionPanel")
+        self.regionPanel.setFrameShape(QFrame.StyledPanel)
         sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy2.setHorizontalStretch(2)
         sizePolicy2.setVerticalStretch(0)

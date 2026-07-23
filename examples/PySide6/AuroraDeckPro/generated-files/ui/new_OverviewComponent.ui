@@ -46,7 +46,7 @@
           <property name="bottomMargin"><number>0</number></property>
           <item>
            <widget class="QFrame" name="heroFrame">
-            <property name="role" stdset="0"><string>hero</string></property>
+            <property name="frameShape"><enum>QFrame::StyledPanel</enum></property><property name="role" stdset="0"><string>hero</string></property>
             <property name="minimumSize"><size><width>0</width><height>96</height></size></property>
             <layout class="QHBoxLayout" name="heroLayout">
              <property name="leftMargin"><number>24</number></property>
@@ -156,7 +156,7 @@
             <property name="spacing"><number>16</number></property>
             <item>
              <widget class="QFrame" name="activityCard">
-              <property name="role" stdset="0"><string>card</string></property>
+              <property name="frameShape"><enum>QFrame::StyledPanel</enum></property><property name="role" stdset="0"><string>card</string></property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Preferred"><horstretch>2</horstretch><verstretch>0</verstretch></sizepolicy>
               </property>
@@ -180,7 +180,7 @@
             </item>
             <item>
              <widget class="QFrame" name="shiftCard">
-              <property name="role" stdset="0"><string>card</string></property>
+              <property name="frameShape"><enum>QFrame::StyledPanel</enum></property><property name="role" stdset="0"><string>card</string></property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred"><horstretch>0</horstretch><verstretch>0</verstretch></sizepolicy>
               </property>
