@@ -181,8 +181,8 @@ class TestEmbeddedWindow:
 
 class TestEmojiPicker:
     def test_class_structure(self, qapp):
-        # Constructing triggers async emoji-set loading; assert structure only
-        # (it extends the tip overlay and exposes the selection signal).
+        # Offline-first + opt-in network (autoUpdate=False by default), but it
+        # still needs a live host form to construct; assert structure only.
         from Custom_Widgets.QCustomEmojiPicker import QCustomEmojiPicker
         from Custom_Widgets.QCustomTipOverlay import QCustomTipOverlay
         assert issubclass(QCustomEmojiPicker, QCustomTipOverlay)
