@@ -21,6 +21,7 @@
 ## `applyDesignTokens(target, theme=...)` generates component QSS and applies
 ## it to a QApplication or widget (idempotent, so theme switching is safe).
 ########################################################################
+import os
 import re
 
 
@@ -986,6 +987,83 @@ def sass_functions(tokens):
         raw = getattr(name, "value", name)      # SassString -> its .value
         return _token_string(tokens, str(raw))
     return [token]
+
+
+_IMPORT_RE = re.compile(r"""@import\s+['"]([^'"]+)['"]""")
+
+
+def _resolve_scss_import(name, base_dir, include_paths):
+    """Resolve a single ``@import '<name>'`` the way libsass does: to
+    ``<name>.scss`` or the ``_<name>.scss`` partial, searched under the
+    importing file's directory then the include paths. Returns the absolute
+    path, or ``None`` when nothing matches."""
+    stem = name[:-5] if name.lower().endswith(".scss") else name
+    head, tail = os.path.split(stem)
+    for root in [base_dir, *include_paths]:
+        for cand in (os.path.join(root, head, tail + ".scss"),
+                     os.path.join(root, head, "_" + tail + ".scss")):
+            if os.path.isfile(cand):
+                return os.path.normpath(cand)
+    return None
+
+
+def find_unresolved_imports(root_file, include_paths=()):
+    """Walk the ``@import`` graph from ``root_file`` and return a list of
+    ``(importing_file, import_name)`` for every import that resolves to no
+    file on disk.
+
+    A dangling ``@import`` (e.g. a leftover ``@import 'custom'`` after the
+    partial was deleted) makes qtsass/libsass fail with an OPAQUE error
+    (``CompileError``/``TypeError: expected str ... not NoneType``). Call this
+    to turn that into an actionable message naming the file and the missing
+    import. Pure/Qt-free so it is unit-testable.
+    """
+    include_paths = [os.path.abspath(p) for p in include_paths]
+    problems, visited = [], set()
+
+    def walk(path):
+        path = os.path.normpath(os.path.abspath(path))
+        if path in visited or not os.path.isfile(path):
+            return
+        visited.add(path)
+        try:
+            with open(path, encoding="utf-8", errors="ignore") as f:
+                src = f.read()
+        except OSError:
+            return
+        base_dir = os.path.dirname(path)
+        for name in _IMPORT_RE.findall(src):
+            # CSS / URL imports are passed through to Qt untouched, not resolved.
+            if name.lower().endswith(".css") or \
+                    name.startswith(("http://", "https://", "url(")):
+                continue
+            resolved = _resolve_scss_import(name, base_dir, include_paths)
+            if resolved is None:
+                problems.append((path, name))
+            else:
+                walk(resolved)
+
+    walk(root_file)
+    return problems
+
+
+def describe_scss_compile_error(root_file, include_paths=(), original=None):
+    """Return a clear, single-line diagnosis for a failed SCSS compile of
+    ``root_file``, or ``None`` when no unresolved import explains it (so the
+    caller can fall back to the raw error). Names the importing file and the
+    missing partial so the fix is obvious."""
+    try:
+        problems = find_unresolved_imports(root_file, include_paths)
+    except Exception:
+        return None
+    if not problems:
+        return None
+    importer, name = problems[0]
+    extra = f" (+{len(problems) - 1} more)" if len(problems) > 1 else ""
+    return (f"SCSS @import '{name}' in {os.path.basename(importer)} could not "
+            f"be resolved{extra} - expected '{name}.scss' or '_{name}.scss' in "
+            f"the scss folder / include paths. Create the file or remove the "
+            f"@import.")
 
 
 def compile_scss(source, tokens=None, theme="light", is_filename=False,
