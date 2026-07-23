@@ -95,7 +95,14 @@ class _RoundedBarOverlay(QGraphicsItem):
                 if rect.height() <= 0.5:
                     continue
                 r = min(float(o._bar_corner_radius), bw / 2.0, rect.height())
-                color = o._data_manager.getSeriesColor(bs.label())
+                # Honour per-bar colour / highlight overrides when the owner
+                # exposes them (QCustomBarChart), so rounded bars match native.
+                color = None
+                resolver = getattr(o, "_colorForBar", None)
+                if resolver is not None:
+                    color = resolver(bs.label(), i)
+                if color is None:
+                    color = o._data_manager.getSeriesColor(bs.label())
                 if not color.isValid():
                     color = QColor("#888888")
                 painter.setBrush(QBrush(color))

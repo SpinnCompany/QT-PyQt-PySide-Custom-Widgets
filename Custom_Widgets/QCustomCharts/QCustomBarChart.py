@@ -88,6 +88,8 @@ class QCustomBarChart(QCustomChartBase, AxisChartProps, ChartCommonProps):
         self._bar_group_frac = 0.7      # last group width fraction (for the overlay)
         self._rounded_overlay = None
         self._orientation = "vertical"  # QCustomBarChart renders vertical bars
+        self._bar_colors = {}           # {series_name: [QColor|None, ...]} per-bar override
+        self._bar_highlight = {}        # {series_name: {index: QColor}} single-bar accents
         
         # Chart configuration
         self._chart.setTitle("Bar Chart")
@@ -444,7 +446,11 @@ class QCustomBarChart(QCustomChartBase, AxisChartProps, ChartCommonProps):
                 else:
                     value = 0
                 bar_set.append(value)
-            
+
+            # Per-bar colours / single-bar highlight (native rendering). The
+            # rounded overlay reads the same overrides so both modes match.
+            self._applyPerBarColors(bar_set, series_name)
+
             # Store bar set
             self._bar_sets_dict[series_name] = bar_set
             bar_sets.append(bar_set)
@@ -561,6 +567,67 @@ class QCustomBarChart(QCustomChartBase, AxisChartProps, ChartCommonProps):
 
     def getBarCornerRadius(self) -> int:
         return self._bar_corner_radius
+
+    # ============ PER-BAR COLOURS / HIGHLIGHT ============
+
+    def _colorForBar(self, series_name: str, index: int):
+        """Resolve the override colour for one bar, or None to use the series
+        colour. Highlight wins over the per-bar list."""
+        hl = self._bar_highlight.get(series_name, {})
+        if index in hl:
+            return hl[index]
+        cols = self._bar_colors.get(series_name)
+        if cols and index < len(cols) and cols[index] is not None:
+            return QColor(cols[index])
+        return None
+
+    def _applyPerBarColors(self, bar_set, series_name):
+        for i in range(bar_set.count()):
+            c = self._colorForBar(series_name, i)
+            if c is not None:
+                bar_set.setColor(i, QColor(c))
+
+    def setBarColors(self, colors, series_name: str = None):
+        """Give each bar its own colour. ``colors`` is a list parallel to the
+        series values (use None for a bar that should keep the series colour).
+        With one series you can omit ``series_name``.
+        """
+        name = series_name or self._firstSeriesName()
+        if name is None:
+            return
+        self._bar_colors[name] = [None if c is None else QColor(c) for c in (colors or [])]
+        self.updateChart()
+
+    def highlightIndex(self, index: int, color=None, series_name: str = None):
+        """Accent a single bar (by category index). ``color`` defaults to a
+        lightened series colour. Pass color=None + index<0 semantics via
+        clearHighlight()."""
+        name = series_name or self._firstSeriesName()
+        if name is None:
+            return
+        if color is None:
+            base = self._data_manager.getSeriesColor(name)
+            color = base.lighter(140) if base and base.isValid() else QColor("#2fce80")
+        self._bar_highlight.setdefault(name, {})[int(index)] = QColor(color)
+        self.updateChart()
+
+    def clearHighlight(self, series_name: str = None):
+        if series_name:
+            self._bar_highlight.pop(series_name, None)
+        else:
+            self._bar_highlight.clear()
+        self.updateChart()
+
+    def clearBarColors(self, series_name: str = None):
+        if series_name:
+            self._bar_colors.pop(series_name, None)
+        else:
+            self._bar_colors.clear()
+        self.updateChart()
+
+    def _firstSeriesName(self):
+        names = self._data_manager.getSeriesNames()
+        return names[0] if names else None
 
     def setGridLineColor(self, color, alpha: Optional[int] = None):
         """Set the grid line colour (and optionally its alpha 0-255)."""

@@ -1,0 +1,23 @@
+# Auto-generated type stub — DO NOT EDIT.
+# Regenerate with:  python -m Custom_Widgets.mcp.stubgen --write
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QWidget
+from typing import Any, ClassVar
+
+
+class QCustomTrendChip(QWidget):
+    text: str
+    direction: str
+    variant: str
+    upColor: str
+    downColor: str
+    flatColor: str
+    tintOpacity: float
+    cornerRadius: int
+    def __init__(self, parent = ..., direction = ..., text = ..., variant = ...) -> None: ...
+    def setDirection(self, direction) -> None: ...
+    def setValue(self, value, text = ...) -> None: ...
+    def setText(self, text) -> None: ...
+    def setVariant(self, variant) -> None: ...
+    def sizeHint(self): ...
+    def paintEvent(self, e): ...
