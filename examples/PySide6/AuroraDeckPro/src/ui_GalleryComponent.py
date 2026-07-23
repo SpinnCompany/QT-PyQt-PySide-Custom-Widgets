@@ -97,6 +97,7 @@ class Ui_GalleryComponent(object):
         self.galleryFlow.setProperty(u"justifySpacing", False)
         self.cardRating = QFrame(self.galleryFlow)
         self.cardRating.setObjectName(u"cardRating")
+        self.cardRating.setFrameShape(QFrame.StyledPanel)
         self.cardRating.setGeometry(QRect(0, 0, 300, 160))
         self.cardRating.setMinimumSize(QSize(300, 160))
         self.cardRating.setMaximumSize(QSize(300, 160))
@@ -118,6 +119,7 @@ class Ui_GalleryComponent(object):
 
         self.cardBadges = QFrame(self.galleryFlow)
         self.cardBadges.setObjectName(u"cardBadges")
+        self.cardBadges.setFrameShape(QFrame.StyledPanel)
         self.cardBadges.setGeometry(QRect(316, 0, 300, 160))
         self.cardBadges.setMinimumSize(QSize(300, 160))
         self.cardBadges.setMaximumSize(QSize(300, 160))
@@ -162,6 +164,7 @@ class Ui_GalleryComponent(object):
 
         self.cardSwitches = QFrame(self.galleryFlow)
         self.cardSwitches.setObjectName(u"cardSwitches")
+        self.cardSwitches.setFrameShape(QFrame.StyledPanel)
         self.cardSwitches.setGeometry(QRect(632, 0, 300, 160))
         self.cardSwitches.setMinimumSize(QSize(300, 160))
         self.cardSwitches.setMaximumSize(QSize(300, 160))
@@ -208,6 +211,7 @@ class Ui_GalleryComponent(object):
 
         self.cardSegmented = QFrame(self.galleryFlow)
         self.cardSegmented.setObjectName(u"cardSegmented")
+        self.cardSegmented.setFrameShape(QFrame.StyledPanel)
         self.cardSegmented.setGeometry(QRect(948, 0, 300, 160))
         self.cardSegmented.setMinimumSize(QSize(300, 160))
         self.cardSegmented.setMaximumSize(QSize(300, 160))
@@ -228,6 +232,7 @@ class Ui_GalleryComponent(object):
 
         self.cardRange = QFrame(self.galleryFlow)
         self.cardRange.setObjectName(u"cardRange")
+        self.cardRange.setFrameShape(QFrame.StyledPanel)
         self.cardRange.setGeometry(QRect(1264, 0, 300, 160))
         self.cardRange.setMinimumSize(QSize(300, 160))
         self.cardRange.setMaximumSize(QSize(300, 160))
@@ -251,6 +256,7 @@ class Ui_GalleryComponent(object):
 
         self.cardNumber = QFrame(self.galleryFlow)
         self.cardNumber.setObjectName(u"cardNumber")
+        self.cardNumber.setFrameShape(QFrame.StyledPanel)
         self.cardNumber.setGeometry(QRect(1580, 0, 300, 160))
         self.cardNumber.setMinimumSize(QSize(300, 160))
         self.cardNumber.setMaximumSize(QSize(300, 160))
@@ -274,6 +280,7 @@ class Ui_GalleryComponent(object):
 
         self.cardKbd = QFrame(self.galleryFlow)
         self.cardKbd.setObjectName(u"cardKbd")
+        self.cardKbd.setFrameShape(QFrame.StyledPanel)
         self.cardKbd.setGeometry(QRect(1896, 0, 300, 160))
         self.cardKbd.setMinimumSize(QSize(300, 160))
         self.cardKbd.setMaximumSize(QSize(300, 160))
@@ -308,6 +315,7 @@ class Ui_GalleryComponent(object):
 
         self.cardPagination = QFrame(self.galleryFlow)
         self.cardPagination.setObjectName(u"cardPagination")
+        self.cardPagination.setFrameShape(QFrame.StyledPanel)
         self.cardPagination.setGeometry(QRect(2212, 0, 300, 160))
         self.cardPagination.setMinimumSize(QSize(300, 160))
         self.cardPagination.setMaximumSize(QSize(300, 160))
@@ -329,6 +337,7 @@ class Ui_GalleryComponent(object):
 
         self.cardColor = QFrame(self.galleryFlow)
         self.cardColor.setObjectName(u"cardColor")
+        self.cardColor.setFrameShape(QFrame.StyledPanel)
         self.cardColor.setGeometry(QRect(2528, 0, 300, 160))
         self.cardColor.setMinimumSize(QSize(300, 160))
         self.cardColor.setMaximumSize(QSize(300, 160))
@@ -348,6 +357,7 @@ class Ui_GalleryComponent(object):
 
         self.cardRings = QFrame(self.galleryFlow)
         self.cardRings.setObjectName(u"cardRings")
+        self.cardRings.setFrameShape(QFrame.StyledPanel)
         self.cardRings.setGeometry(QRect(2844, 0, 300, 160))
         self.cardRings.setMinimumSize(QSize(300, 160))
         self.cardRings.setMaximumSize(QSize(300, 160))
@@ -396,6 +406,7 @@ class Ui_GalleryComponent(object):
 
         self.cardChips = QFrame(self.galleryFlow)
         self.cardChips.setObjectName(u"cardChips")
+        self.cardChips.setFrameShape(QFrame.StyledPanel)
         self.cardChips.setGeometry(QRect(3160, 0, 300, 160))
         self.cardChips.setMinimumSize(QSize(300, 160))
         self.cardChips.setMaximumSize(QSize(300, 160))
@@ -416,6 +427,7 @@ class Ui_GalleryComponent(object):
 
         self.cardCombo = QFrame(self.galleryFlow)
         self.cardCombo.setObjectName(u"cardCombo")
+        self.cardCombo.setFrameShape(QFrame.StyledPanel)
         self.cardCombo.setGeometry(QRect(3476, 0, 300, 160))
         self.cardCombo.setMinimumSize(QSize(300, 160))
         self.cardCombo.setMaximumSize(QSize(300, 160))
@@ -436,6 +448,7 @@ class Ui_GalleryComponent(object):
 
         self.cardAvatars = QFrame(self.galleryFlow)
         self.cardAvatars.setObjectName(u"cardAvatars")
+        self.cardAvatars.setFrameShape(QFrame.StyledPanel)
         self.cardAvatars.setGeometry(QRect(3792, 0, 300, 160))
         self.cardAvatars.setMinimumSize(QSize(300, 160))
         self.cardAvatars.setMaximumSize(QSize(300, 160))
@@ -457,6 +470,7 @@ class Ui_GalleryComponent(object):
 
         self.cardSkeleton = QFrame(self.galleryFlow)
         self.cardSkeleton.setObjectName(u"cardSkeleton")
+        self.cardSkeleton.setFrameShape(QFrame.StyledPanel)
         self.cardSkeleton.setGeometry(QRect(4108, 0, 300, 160))
         self.cardSkeleton.setMinimumSize(QSize(300, 160))
         self.cardSkeleton.setMaximumSize(QSize(300, 160))
@@ -483,6 +497,7 @@ class Ui_GalleryComponent(object):
 
         self.cardBreadcrumbs = QFrame(self.galleryFlow)
         self.cardBreadcrumbs.setObjectName(u"cardBreadcrumbs")
+        self.cardBreadcrumbs.setFrameShape(QFrame.StyledPanel)
         self.cardBreadcrumbs.setGeometry(QRect(4424, 0, 300, 160))
         self.cardBreadcrumbs.setMinimumSize(QSize(300, 160))
         self.cardBreadcrumbs.setMaximumSize(QSize(300, 160))
@@ -502,6 +517,7 @@ class Ui_GalleryComponent(object):
 
         self.cardToasts = QFrame(self.galleryFlow)
         self.cardToasts.setObjectName(u"cardToasts")
+        self.cardToasts.setFrameShape(QFrame.StyledPanel)
         self.cardToasts.setGeometry(QRect(4740, 0, 300, 160))
         self.cardToasts.setMinimumSize(QSize(300, 160))
         self.cardToasts.setMaximumSize(QSize(300, 160))

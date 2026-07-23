@@ -85,6 +85,7 @@ class Ui_StationsComponent(object):
 
         self.stationsPanel = QFrame(self.StationsColumn)
         self.stationsPanel.setObjectName(u"stationsPanel")
+        self.stationsPanel.setFrameShape(QFrame.StyledPanel)
         self.panelLayout = QVBoxLayout(self.stationsPanel)
         self.panelLayout.setSpacing(12)
         self.panelLayout.setObjectName(u"panelLayout")

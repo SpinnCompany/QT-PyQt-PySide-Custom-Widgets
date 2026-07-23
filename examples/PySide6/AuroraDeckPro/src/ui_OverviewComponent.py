@@ -66,6 +66,7 @@ class Ui_OverviewComponent(object):
         self.overviewColLayout.setContentsMargins(0, 0, 0, 0)
         self.heroFrame = QFrame(self.overviewColumn)
         self.heroFrame.setObjectName(u"heroFrame")
+        self.heroFrame.setFrameShape(QFrame.StyledPanel)
         self.heroFrame.setMinimumSize(QSize(0, 96))
         self.heroLayout = QHBoxLayout(self.heroFrame)
         self.heroLayout.setObjectName(u"heroLayout")
@@ -153,6 +154,7 @@ class Ui_OverviewComponent(object):
         self.cardsRow.setObjectName(u"cardsRow")
         self.activityCard = QFrame(self.overviewColumn)
         self.activityCard.setObjectName(u"activityCard")
+        self.activityCard.setFrameShape(QFrame.StyledPanel)
         sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
         sizePolicy2.setHorizontalStretch(2)
         sizePolicy2.setVerticalStretch(0)
@@ -177,6 +179,7 @@ class Ui_OverviewComponent(object):
 
         self.shiftCard = QFrame(self.overviewColumn)
         self.shiftCard.setObjectName(u"shiftCard")
+        self.shiftCard.setFrameShape(QFrame.StyledPanel)
         sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         sizePolicy3.setHorizontalStretch(0)
         sizePolicy3.setVerticalStretch(0)

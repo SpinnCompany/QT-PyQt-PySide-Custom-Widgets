@@ -85,6 +85,7 @@ class Ui_SettingsComponent(object):
 
         self.appearanceCard = QFrame(self.SettingsColumn)
         self.appearanceCard.setObjectName(u"appearanceCard")
+        self.appearanceCard.setFrameShape(QFrame.StyledPanel)
         self.appearanceLayout = QVBoxLayout(self.appearanceCard)
         self.appearanceLayout.setSpacing(12)
         self.appearanceLayout.setObjectName(u"appearanceLayout")
@@ -130,6 +131,7 @@ class Ui_SettingsComponent(object):
 
         self.notifCard = QFrame(self.SettingsColumn)
         self.notifCard.setObjectName(u"notifCard")
+        self.notifCard.setFrameShape(QFrame.StyledPanel)
         self.notifLayout = QVBoxLayout(self.notifCard)
         self.notifLayout.setSpacing(10)
         self.notifLayout.setObjectName(u"notifLayout")
