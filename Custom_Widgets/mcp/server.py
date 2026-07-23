@@ -136,6 +136,47 @@ def designer_status() -> str:
     }, indent=2)
 
 
+@mcp.tool(annotations={"title": "Switch Designer workspace / project folder"})
+def designer_open_workspace(path: str) -> str:
+    """Re-point the RUNNING Designer AND this MCP at another Custom_Widgets
+    project folder in the same session: its workspace listing, QSS editor, theme
+    list, Run target and the bridge socket all follow. `path` is absolute or
+    relative to the current project dir. Use this instead of remounting the MCP
+    when you need to work on a different project mid-session. After it returns,
+    designer_status should report the new project_dir.
+
+    NB: the bridge rebinds its socket during the switch, so this MCP's client is
+    re-pointed at the new socket here too; a dropped reply to this call does not
+    mean the switch failed - confirm with designer_status."""
+    global _PROJECT_DIR
+    target = os.path.abspath(os.path.join(_projectDir(), path))
+    if not os.path.isdir(target):
+        raise RuntimeError("not a folder: %s" % target)
+    try:
+        reply = _request({"method": "openWorkspace", "path": target})
+        switched = reply.get("result")
+    except RuntimeError:
+        # The bridge closes/rebinds its socket as part of the switch, which can
+        # drop the reply to this very request; the switch itself still happens.
+        switched = "unknown (verify with designer_status)"
+    # Keep the MCP's client (which derives the socket name from the project dir)
+    # aligned with the bridge's new socket.
+    _PROJECT_DIR = target
+    try:
+        from Custom_Widgets.Project import setProjectRoot
+        setProjectRoot(target)
+    except Exception:
+        pass
+    try:
+        os.chdir(target)
+    except OSError:
+        pass
+    from Custom_Widgets.DesignerBridge import bridgeServerName
+    return json.dumps({"project_dir": target,
+                       "bridge_socket": bridgeServerName(target),
+                       "switched": switched}, indent=2)
+
+
 @mcp.tool(annotations={"title": "Launch Qt Designer"})
 def designer_launch() -> str:
     """Launch Qt Designer with the Custom_Widgets plugins, tool docks and
