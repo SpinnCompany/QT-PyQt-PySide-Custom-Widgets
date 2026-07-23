@@ -52,6 +52,7 @@ _TYPE_ALIGN = {
 RendererRole = Qt.UserRole + 1     # str: "" | status | link | colored | twoline | badge | currency
 SubtitleRole = Qt.UserRole + 2     # str: the second line for the twoline renderer
 CellColorRole = Qt.UserRole + 3    # str: an explicit dot/text/badge colour (hex or name)
+SubtitleStyleRole = Qt.UserRole + 4  # (scale, bold) per-column twoline subtitle style, or None
 
 # The renderers the delegate understands (also the allowed `renderer=` values).
 CELL_RENDERERS = ("status", "link", "colored", "twoline", "badge", "currency")
@@ -88,12 +89,17 @@ class DataTableColumn(object):
     colorKey   a row-dict key whose value IS the colour for that cell (fully
                per-row). Wins over colorMap/color.
     subtitleKey  row-dict key for the second line of a "twoline" cell.
+    subtitleScale  points to add to the subtitle font (None inherits the
+               delegate default; 0 = a peer line same size as the title,
+               -1 = a smaller caption). Per column so e.g. an address can be a
+               caption while a pair of timestamps are equal peers.
+    subtitleBold  force the subtitle weight (None inherits).
     """
 
     def __init__(self, key, title=None, type="text", width=None,
                  align=None, formatter=None, sortable=True,
                  renderer=None, color=None, colorMap=None, colorKey=None,
-                 subtitleKey=None):
+                 subtitleKey=None, subtitleScale=None, subtitleBold=None):
         self.key = key
         self.title = key if title is None else title
         self.type = type
@@ -106,6 +112,8 @@ class DataTableColumn(object):
         self.colorMap = colorMap
         self.colorKey = colorKey
         self.subtitleKey = subtitleKey
+        self.subtitleScale = subtitleScale
+        self.subtitleBold = subtitleBold
 
     @classmethod
     def ensure(cls, column):
@@ -242,6 +250,10 @@ class QCustomDataTableModel(QAbstractTableModel):
             return column.subtitle(self._rows[row])
         if role == CellColorRole:
             return column.resolveColor(value, self._rows[row])
+        if role == SubtitleStyleRole:
+            if column.subtitleScale is None and column.subtitleBold is None:
+                return None
+            return (column.subtitleScale, column.subtitleBold)
         return None
 
     def setData(self, index, value, role=Qt.EditRole):
@@ -715,7 +727,7 @@ class QCustomDataTableDelegate(QStyledItemDelegate):
             if renderer == "twoline":
                 self._paintTwoLine(painter, option, rect, text,
                                    str(index.data(SubtitleRole) or ""), color,
-                                   model_align)
+                                   model_align, index.data(SubtitleStyleRole))
             elif renderer == "badge":
                 self._paintBadge(painter, option, rect, text, color)
             elif renderer == "status":
@@ -807,7 +819,7 @@ class QCustomDataTableDelegate(QStyledItemDelegate):
         painter.restore()
 
     def _paintTwoLine(self, painter, option, rect, title, subtitle, color,
-                      model_align=None):
+                      model_align=None, sub_style=None):
         fm = option.fontMetrics
         line = fm.height()
         block = line * 2
@@ -824,10 +836,19 @@ class QCustomDataTableDelegate(QStyledItemDelegate):
         painter.setPen(QPen(title_col))
         painter.drawText(title_rect, align, self._elide(option, title, rect.width()))
         if subtitle:
+            # per-column (scale, bold) override the delegate defaults
+            scale = self._subtitleScale
+            bold = self._subtitleBold
+            if sub_style is not None:
+                s_scale, s_bold = sub_style
+                if s_scale is not None:
+                    scale = s_scale
+                if s_bold is not None:
+                    bold = s_bold
             f = QFont(option.font)
-            f.setPointSizeF(max(1.0, option.font.pointSizeF() + self._subtitleScale))
-            if self._subtitleBold is not None:
-                f.setBold(self._subtitleBold)
+            f.setPointSizeF(max(1.0, option.font.pointSizeF() + scale))
+            if bold is not None:
+                f.setBold(bold)
             painter.setFont(f)
             painter.setPen(QPen(sub_col))
             painter.drawText(sub_rect, align,

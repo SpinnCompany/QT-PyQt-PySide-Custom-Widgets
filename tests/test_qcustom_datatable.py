@@ -500,6 +500,19 @@ class TestCustomizationHooks:
         t.resize(700, 160)
         assert not t.grab().isNull()
 
+    def test_per_column_subtitle_style_role(self, qapp):
+        # a column can set its own subtitle scale/weight (caption vs peer line);
+        # the model serves it via SubtitleStyleRole, None when unset.
+        from Custom_Widgets.QCustomDataTable import (
+            QCustomDataTableModel, DataTableColumn, SubtitleStyleRole)
+        m = QCustomDataTableModel(
+            [DataTableColumn("a", renderer="twoline", subtitleKey="a2"),
+             DataTableColumn("b", renderer="twoline", subtitleKey="b2",
+                             subtitleScale=0, subtitleBold=True)],
+            [{"a": "x", "a2": "y", "b": "p", "b2": "q"}])
+        assert m.data(m.index(0, 0), SubtitleStyleRole) is None
+        assert m.data(m.index(0, 1), SubtitleStyleRole) == (0, True)
+
     def test_header_gear_click_signal(self, qapp):
         from Custom_Widgets.QCustomDataTable import QCustomDataTable, DataTableColumn
         t = QCustomDataTable()

@@ -119,10 +119,12 @@ class _FilterChip(QFrame):
 class _StatusPill(QFrame):
     clicked = Signal(str)
 
-    def __init__(self, key, label, count=None, color="#3b82f6", parent=None):
+    def __init__(self, key, label, count=None, color="#3b82f6", parent=None,
+                 plain=False):
         super().__init__(parent)
         self._key = str(key)
         self._color = color
+        self._plain = plain          # plain = borderless text label (the "All" pill)
         self._checked = False
         self._text = QColor("#0f172a")
         self._muted = QColor("#64748b")
@@ -132,14 +134,22 @@ class _StatusPill(QFrame):
         self.setCursor(Qt.PointingHandCursor)
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
         lay = QHBoxLayout(self)
-        lay.setContentsMargins(14, 5, 14, 5)
+        lay.setContentsMargins((6 if plain else 14), 5, (6 if plain else 14), 5)
         lay.setSpacing(9)
         self._name = QLabel(label, self)
         self._name.setObjectName("tableStatusPillName")
+        # thin vertical divider between label and count (like the reference)
+        self._divider = QFrame(self)
+        self._divider.setObjectName("tableStatusPillDivider")
+        self._divider.setFrameShape(QFrame.VLine)
+        self._divider.setFixedWidth(1)
         self._count = QLabel("" if count is None else str(count), self)
         self._count.setObjectName("tableStatusPillCount")
-        self._count.setVisible(count is not None)
+        has_count = count is not None and not plain
+        self._divider.setVisible(has_count)
+        self._count.setVisible(has_count)
         lay.addWidget(self._name)
+        lay.addWidget(self._divider)
         lay.addWidget(self._count)
         self._restyle()
 
@@ -157,7 +167,9 @@ class _StatusPill(QFrame):
 
     def setCount(self, count):
         self._count.setText("" if count is None else str(count))
-        self._count.setVisible(count is not None)
+        has_count = count is not None and not self._plain
+        self._count.setVisible(has_count)
+        self._divider.setVisible(has_count)
 
     def setColor(self, color):
         self._color = color
@@ -175,19 +187,29 @@ class _StatusPill(QFrame):
         super().mouseReleaseEvent(event)
 
     def _restyle(self):
-        # neutral pills (the "All" pill uses the muted colour as its hue)
         hue = self._color
-        h = self.sizeHint().height() or 30
         radius = 15
-        border = hue if self._checked else _rgba(hue, 0.55)
-        bg = _rgba(hue, 0.14) if self._checked else self._surface.name()
-        name_col = (QColor(hue).name() if self._checked else self._text.name())
+        if self._plain:
+            # borderless text label (the "All" pill): dark when active, muted otherwise
+            name_col = self._text.name() if self._checked else self._muted.name()
+            self.setStyleSheet(
+                "#tableStatusPill { border: none; background: transparent; }"
+                "#tableStatusPillName { color: %s; font-weight: 600;"
+                " background: transparent; }" % name_col)
+            return
+        # outlined pill: status-hue border, dark label, MUTED grey count with a
+        # thin divider (matches the reference - the count is not the hue colour)
+        border = hue if self._checked else _rgba(hue, 0.65)
+        bg = _rgba(hue, 0.12) if self._checked else self._surface.name()
+        name_col = self._text.name()
         self.setStyleSheet(
             "#tableStatusPill { border: 1.4px solid %s; border-radius: %dpx;"
             " background: %s; }"
             "#tableStatusPillName { color: %s; font-weight: 600; background: transparent; }"
-            "#tableStatusPillCount { color: %s; font-weight: 700; background: transparent; }"
-            % (border, radius, bg, name_col, QColor(hue).name()))
+            "#tableStatusPillDivider { color: %s; background: %s; border: none; }"
+            "#tableStatusPillCount { color: %s; font-weight: 600; background: transparent; }"
+            % (border, radius, bg, name_col, _rgba(self._muted, 0.5),
+               _rgba(self._muted, 0.5), self._muted.name()))
 
 
 # --------------------------------------------------------------------------- #
@@ -268,8 +290,9 @@ class QCustomTableToolbar(QWidget):
         self._input.setPlaceholderText("Search")
         self._input.setFrame(False)
         self._input.textChanged.connect(self.searchChanged.emit)
+        # input fills the field, magnifier sits on the RIGHT (matches the reference)
+        slay.addWidget(self._input, 1)
         slay.addWidget(self._searchIcon)
-        slay.addWidget(self._input)
         self._search.setFixedHeight(40)
         self._search.setMinimumWidth(240)
         row1.addWidget(self._search)
@@ -317,9 +340,9 @@ class QCustomTableToolbar(QWidget):
         row2.addStretch(1)
         root.addLayout(row2)
 
-        # the built-in "All" pill (neutral hue, selected by default)
+        # the built-in "All" pill (plain text, selected by default)
         self._allPill = _StatusPill(self.ALL_KEY, "All", None, self._c["muted"],
-                                    self._pillBox)
+                                    self._pillBox, plain=True)
         self._allPill.setChecked(True)
         self._allPill.clicked.connect(self._onStatusClicked)
         self._pillLay.addWidget(self._allPill)
