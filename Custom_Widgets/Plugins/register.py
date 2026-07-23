@@ -136,6 +136,21 @@ except Exception as e:
     logException(e, message="Error registering QCustomDataTable")
 
 
+from Custom_Widgets.QCustomTableToolbar import QCustomTableToolbar
+
+# Registering QCustomTableToolbar with error handling
+try:
+    logInfo("Registering QCustomTableToolbar")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomTableToolbar, module=QCustomTableToolbar.WIDGET_MODULE,
+        tool_tip=QCustomTableToolbar.WIDGET_TOOLTIP,
+        xml=QCustomTableToolbar.WIDGET_DOM_XML,
+        icon=QCustomTableToolbar.WIDGET_ICON, group="Item Views"
+    )
+except Exception as e:
+    logException(e, message="Error registering QCustomTableToolbar")
+
+
 from Custom_Widgets.QCustomComboBox import QCustomComboBox
 
 # Registering QCustomComboBox with error handling

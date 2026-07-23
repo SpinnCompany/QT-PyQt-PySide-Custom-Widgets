@@ -21,11 +21,13 @@ from enum import IntEnum
 
 from qtpy.QtCore import (
     Qt, QModelIndex, QAbstractTableModel, QAbstractProxyModel,
-    QSortFilterProxyModel, Signal, Property,
+    QSortFilterProxyModel, Signal, Property, QSize, QRect, QRectF,
 )
+from qtpy.QtGui import QColor, QFont, QPainter, QPen
 from qtpy.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QTableView, QAbstractItemView,
-    QLabel, QPushButton,
+    QLabel, QPushButton, QStyledItemDelegate, QStyle, QHeaderView,
+    QStyleOptionButton, QMenu,
 )
 
 
@@ -39,6 +41,25 @@ _TYPE_ALIGN = {
     "text":   Qt.AlignLeft | Qt.AlignVCenter,
 }
 
+########################################################################
+## Rich-cell model roles (read by QCustomDataTableDelegate)
+##
+## These extra roles ride the model/proxy chain, so the delegate on the view
+## receives them through the sort/filter/pagination proxies unchanged. They
+## describe HOW a cell should be drawn (renderer), plus the auxiliary bits a
+## rich cell needs (a second line, an explicit colour).
+########################################################################
+RendererRole = Qt.UserRole + 1     # str: "" | status | link | colored | twoline | badge | currency
+SubtitleRole = Qt.UserRole + 2     # str: the second line for the twoline renderer
+CellColorRole = Qt.UserRole + 3    # str: an explicit dot/text/badge colour (hex or name)
+
+# The renderers the delegate understands (also the allowed `renderer=` values).
+CELL_RENDERERS = ("status", "link", "colored", "twoline", "badge", "currency")
+
+# Synthetic renderer for the trailing row-actions (kebab ⋮) column. Not a valid
+# user `renderer=` value - the model advertises it for its own actions column.
+ACTIONS_RENDERER = "actions"
+
 
 class DataTableColumn(object):
     """Lightweight column descriptor for QCustomDataTable.
@@ -51,10 +72,28 @@ class DataTableColumn(object):
     align      Qt alignment flag, or None to use the type default.
     formatter  optional callable(value) -> str for display.
     sortable   whether this column may be sorted.
+
+    Rich-cell rendering (drawn by QCustomDataTableDelegate):
+    renderer   one of CELL_RENDERERS, or None for a plain text cell:
+                 "status"   coloured status dot + link-coloured text
+                 "link"     accent/link-coloured text
+                 "colored"  text painted in the resolved cell colour
+                 "twoline"  bold title (the value) over a muted subtitle
+                 "badge"    rounded pill filled with the resolved colour
+                 "currency" right-aligned money, optionally coloured
+    color      a fixed colour (hex like '#22c55e' or a Qt colour name) used as
+               the dot/text/badge colour for this column.
+    colorMap   dict {cell value -> colour} - per-value colouring (e.g. a
+               status label to its colour). Wins over `color`.
+    colorKey   a row-dict key whose value IS the colour for that cell (fully
+               per-row). Wins over colorMap/color.
+    subtitleKey  row-dict key for the second line of a "twoline" cell.
     """
 
     def __init__(self, key, title=None, type="text", width=None,
-                 align=None, formatter=None, sortable=True):
+                 align=None, formatter=None, sortable=True,
+                 renderer=None, color=None, colorMap=None, colorKey=None,
+                 subtitleKey=None):
         self.key = key
         self.title = key if title is None else title
         self.type = type
@@ -62,6 +101,11 @@ class DataTableColumn(object):
         self.align = align
         self.formatter = formatter
         self.sortable = sortable
+        self.renderer = renderer
+        self.color = color
+        self.colorMap = colorMap
+        self.colorKey = colorKey
+        self.subtitleKey = subtitleKey
 
     @classmethod
     def ensure(cls, column):
@@ -75,6 +119,24 @@ class DataTableColumn(object):
     def defaultAlign(self):
         return _TYPE_ALIGN.get(self.type, _TYPE_ALIGN["text"])
 
+    def resolveColor(self, value, row):
+        """The explicit colour for a cell, from colorKey > colorMap > color,
+        or "" when the column carries no colour rule."""
+        if self.colorKey and isinstance(row, dict):
+            got = row.get(self.colorKey)
+            if got:
+                return str(got)
+        if self.colorMap and value in self.colorMap:
+            return str(self.colorMap[value])
+        return str(self.color) if self.color else ""
+
+    def subtitle(self, row):
+        """The second-line text for a twoline cell (or "")."""
+        if self.subtitleKey and isinstance(row, dict):
+            val = row.get(self.subtitleKey)
+            return "" if val is None else str(val)
+        return ""
+
 
 class QCustomDataTableModel(QAbstractTableModel):
     """Simple in-memory table model backed by a list of row dicts.
@@ -87,12 +149,28 @@ class QCustomDataTableModel(QAbstractTableModel):
     QSortFilterProxyModel configured with ``setSortRole(Qt.UserRole)`` sorts
     by real Python types instead of the display string. This raw-value seam
     is part of the stable contract the Pro model relies on.
+
+    Two optional synthetic columns bracket the data columns:
+      * a leading **select** column (``selectable``) - a per-row checkbox via
+        ``Qt.CheckStateRole``; checked source rows live in ``_checked``.
+      * a trailing **actions** column (``rowActions``) - advertises the
+        ``ACTIONS_RENDERER`` so the delegate paints a kebab (⋮); the widget
+        turns a click into a menu + ``rowActionTriggered``.
+    Both keep the data columns' meaning intact - view/model column indices are
+    translated back to a ``DataTableColumn`` through the select offset.
     """
 
-    def __init__(self, columns=None, rows=None, parent=None):
+    # emitted whenever the set of checked rows changes (toggle / select-all)
+    checkedChanged = Signal()
+
+    def __init__(self, columns=None, rows=None, parent=None,
+                 selectable=False, rowActions=None):
         super().__init__(parent)
         self._columns = [DataTableColumn.ensure(c) for c in (columns or [])]
         self._rows = list(rows or [])
+        self._selectable = bool(selectable)
+        self._rowActions = self._normalizeActions(rowActions)
+        self._checked = set()          # source-row indices that are checked
 
     # ------------------------------------------------------------------ #
     ## Qt model interface
@@ -101,15 +179,54 @@ class QCustomDataTableModel(QAbstractTableModel):
         return 0 if parent.isValid() else len(self._rows)
 
     def columnCount(self, parent=QModelIndex()):
-        return 0 if parent.isValid() else len(self._columns)
+        if parent.isValid():
+            return 0
+        extra = (1 if self._selectable else 0) + (1 if self._rowActions else 0)
+        return len(self._columns) + extra
+
+    # -- synthetic-column geometry -------------------------------------- #
+    def _selOffset(self):
+        return 1 if self._selectable else 0
+
+    def _columnKind(self, col):
+        """'select' | 'actions' | 'data' for a view/model column index."""
+        if self._selectable and col == 0:
+            return "select"
+        if self._rowActions and col == self.columnCount() - 1:
+            return "actions"
+        return "data"
+
+    def _dataColumnAt(self, col):
+        """The DataTableColumn behind a view/model column, or None if the
+        column is a synthetic select/actions column or out of range."""
+        if self._columnKind(col) != "data":
+            return None
+        idx = col - self._selOffset()
+        return self._columns[idx] if 0 <= idx < len(self._columns) else None
 
     def data(self, index, role=Qt.DisplayRole):
         if not index.isValid():
             return None
         row, col = index.row(), index.column()
-        if not (0 <= row < len(self._rows)) or not (0 <= col < len(self._columns)):
+        if not (0 <= row < len(self._rows)) or not (0 <= col < self.columnCount()):
             return None
-        column = self._columns[col]
+        kind = self._columnKind(col)
+        if kind == "select":
+            if role == Qt.CheckStateRole:
+                return Qt.Checked if row in self._checked else Qt.Unchecked
+            if role == Qt.TextAlignmentRole:
+                return int(Qt.AlignCenter)
+            return None
+        if kind == "actions":
+            if role == RendererRole:
+                return ACTIONS_RENDERER
+            if role == Qt.TextAlignmentRole:
+                return int(Qt.AlignCenter)
+            return None
+
+        column = self._dataColumnAt(col)
+        if column is None:
+            return None
         value = self._rows[row].get(column.key)
 
         if role == Qt.DisplayRole or role == Qt.EditRole:
@@ -119,27 +236,52 @@ class QCustomDataTableModel(QAbstractTableModel):
             return int(align)
         if role == Qt.UserRole:
             return value
+        if role == RendererRole:
+            return column.renderer or ""
+        if role == SubtitleRole:
+            return column.subtitle(self._rows[row])
+        if role == CellColorRole:
+            return column.resolveColor(value, self._rows[row])
         return None
+
+    def setData(self, index, value, role=Qt.EditRole):
+        """Only the select column is writable (its checkbox) in the free tier."""
+        if not index.isValid():
+            return False
+        if role == Qt.CheckStateRole and self._columnKind(index.column()) == "select":
+            # value may arrive as an int or a Qt.CheckState enum (PySide6 6.x)
+            checked = Qt.CheckState(value) == Qt.CheckState.Checked
+            if self._applyChecked(index.row(), checked):
+                self.dataChanged.emit(index, index, [Qt.CheckStateRole])
+                self.checkedChanged.emit()
+            return True
+        return False
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         if role != Qt.DisplayRole:
             return None
         if orientation == Qt.Horizontal:
-            if 0 <= section < len(self._columns):
-                return self._columns[section].title
-            return None
+            kind = self._columnKind(section)
+            if kind != "data":
+                return ""  # select/actions headers are painted, not labelled
+            column = self._dataColumnAt(section)
+            return column.title if column is not None else None
         return section + 1  # 1-based row numbers on the vertical header
 
     def flags(self, index):
         if not index.isValid():
             return Qt.NoItemFlags
-        return Qt.ItemIsEnabled | Qt.ItemIsSelectable
+        base = Qt.ItemIsEnabled | Qt.ItemIsSelectable
+        if self._columnKind(index.column()) == "select":
+            return base | Qt.ItemIsUserCheckable
+        return base
 
     def removeRows(self, row, count, parent=QModelIndex()):
         if parent.isValid() or count <= 0 or row < 0 or row + count > len(self._rows):
             return False
         self.beginRemoveRows(QModelIndex(), row, row + count - 1)
         del self._rows[row:row + count]
+        self._shiftCheckedAfterRemoval(row, count)
         self.endRemoveRows()
         return True
 
@@ -160,7 +302,9 @@ class QCustomDataTableModel(QAbstractTableModel):
     def setRows(self, rows):
         self.beginResetModel()
         self._rows = list(rows or [])
+        self._checked.clear()
         self.endResetModel()
+        self.checkedChanged.emit()
 
     def addRow(self, row):
         pos = len(self._rows)
@@ -182,13 +326,112 @@ class QCustomDataTableModel(QAbstractTableModel):
             return
         self.beginResetModel()
         self._rows = []
+        self._checked.clear()
         self.endResetModel()
+        self.checkedChanged.emit()
 
     def rawValue(self, row, col):
-        """Unformatted cell value at (row, col) in source coordinates."""
+        """Unformatted cell value at (row, col) in source coordinates.
+
+        ``col`` indexes the DATA columns (0-based, ignoring any synthetic
+        select/actions columns), matching the stable Pro contract."""
         if 0 <= row < len(self._rows) and 0 <= col < len(self._columns):
             return self._rows[row].get(self._columns[col].key)
         return None
+
+    # ------------------------------------------------------------------ #
+    ## Selection (checkbox) column + row-actions (kebab) column
+    # ------------------------------------------------------------------ #
+    @staticmethod
+    def _normalizeActions(actions):
+        """Coerce a row-actions spec into a list of (key, label) tuples.
+        Accepts (key, label) pairs, {"key":, "label":} dicts, or bare strings."""
+        out = []
+        for a in (actions or []):
+            if isinstance(a, dict):
+                key = a.get("key", a.get("label"))
+                label = a.get("label", a.get("key"))
+                if key is not None:
+                    out.append((str(key), str(label)))
+            elif isinstance(a, (tuple, list)) and len(a) >= 2:
+                out.append((str(a[0]), str(a[1])))
+            elif a is not None:
+                out.append((str(a), str(a)))
+        return out
+
+    def _applyChecked(self, row, checked):
+        """Add/remove a source row from the checked set. Returns True if the
+        set actually changed."""
+        if not (0 <= row < len(self._rows)):
+            return False
+        if checked and row not in self._checked:
+            self._checked.add(row)
+            return True
+        if not checked and row in self._checked:
+            self._checked.discard(row)
+            return True
+        return False
+
+    def _shiftCheckedAfterRemoval(self, row, count):
+        shifted = set()
+        for r in self._checked:
+            if r < row:
+                shifted.add(r)
+            elif r >= row + count:
+                shifted.add(r - count)
+            # rows inside [row, row+count) were removed -> dropped
+        self._checked = shifted
+
+    def isSelectable(self):
+        return self._selectable
+
+    def setSelectable(self, on):
+        on = bool(on)
+        if on == self._selectable:
+            return
+        self.beginResetModel()
+        self._selectable = on
+        if not on:
+            self._checked.clear()
+        self.endResetModel()
+        self.checkedChanged.emit()
+
+    def rowActions(self):
+        return list(self._rowActions)
+
+    def setRowActions(self, actions):
+        self.beginResetModel()
+        self._rowActions = self._normalizeActions(actions)
+        self.endResetModel()
+
+    def checkedRows(self):
+        """Sorted source-row indices whose checkbox is ticked."""
+        return sorted(self._checked)
+
+    def setRowChecked(self, row, checked=True):
+        if self._applyChecked(row, bool(checked)):
+            if self._selectable:
+                idx = self.index(row, 0)
+                self.dataChanged.emit(idx, idx, [Qt.CheckStateRole])
+            self.checkedChanged.emit()
+
+    def setAllChecked(self, checked):
+        target = set(range(len(self._rows))) if checked else set()
+        if target == self._checked:
+            return
+        self._checked = target
+        if self._selectable and self._rows:
+            self.dataChanged.emit(self.index(0, 0),
+                                  self.index(len(self._rows) - 1, 0),
+                                  [Qt.CheckStateRole])
+        self.checkedChanged.emit()
+
+    def headerCheckState(self):
+        """Tri-state for the select-all header: 0 none, 1 some, 2 all."""
+        n = len(self._checked)
+        if n == 0:
+            return 0
+        return 2 if n >= len(self._rows) else 1
 
     # ------------------------------------------------------------------ #
     ## Formatting helpers
@@ -368,6 +611,245 @@ class _PaginationProxy(QAbstractProxyModel):
             src.sort(column, order)
 
 
+class QCustomDataTableDelegate(QStyledItemDelegate):
+    """Paints rich cells for QCustomDataTable from the model's RendererRole /
+    SubtitleRole / CellColorRole. Plain cells (no renderer) fall through to the
+    default QStyledItemDelegate, so ordinary columns are untouched.
+
+    Colours come from the column rules (hex or Qt colour names). The link/status
+    accent and the muted subtitle colour default to the view's palette (so they
+    track the active theme) and can be overridden with setAccentColor /
+    setMutedColor.
+    """
+
+    _PAD = 10       # horizontal text inset (matches the spacing token scale)
+    _DOT = 8        # status-dot diameter
+    _GAP = 8        # gap after the status dot
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._accent = None
+        self._muted = None
+
+    def setAccentColor(self, color):
+        """Colour for link text and (by default) status text. None -> palette."""
+        self._accent = QColor(color) if color else None
+
+    def setMutedColor(self, color):
+        """Colour for the muted second line of twoline cells. None -> palette."""
+        self._muted = QColor(color) if color else None
+
+    # ------------------------------------------------------------------ #
+    ## colour helpers
+    # ------------------------------------------------------------------ #
+    def _accentColor(self, option):
+        return QColor(self._accent) if self._accent else option.palette.link().color()
+
+    def _mutedColor(self, option):
+        if self._muted:
+            return QColor(self._muted)
+        c = QColor(option.palette.text().color())
+        c.setAlpha(150)
+        return c
+
+    def _onSelection(self, option):
+        return bool(option.state & QStyle.State_Selected)
+
+    def _textColor(self, option, explicit, fallback=None):
+        if self._onSelection(option):
+            return option.palette.highlightedText().color()
+        if explicit:
+            return QColor(explicit)
+        return fallback if fallback is not None else option.palette.text().color()
+
+    def _elide(self, option, text, width):
+        return option.fontMetrics.elidedText(text, Qt.ElideRight, max(0, int(width)))
+
+    # ------------------------------------------------------------------ #
+    ## paint
+    # ------------------------------------------------------------------ #
+    def paint(self, painter, option, index):
+        renderer = index.data(RendererRole) or ""
+        if renderer == ACTIONS_RENDERER:
+            return self._paintActions(painter, option, index)
+        if renderer not in CELL_RENDERERS:
+            return super().paint(painter, option, index)
+
+        self.initStyleOption(option, index)
+        text = str(index.data(Qt.DisplayRole) or "")
+        color = index.data(CellColorRole) or ""
+        rect = option.rect.adjusted(self._PAD, 0, -self._PAD, 0)
+
+        painter.save()
+        painter.setRenderHint(QPainter.Antialiasing, True)
+        if self._onSelection(option):
+            painter.fillRect(option.rect, option.palette.highlight())
+        try:
+            if renderer == "twoline":
+                self._paintTwoLine(painter, option, rect, text,
+                                   str(index.data(SubtitleRole) or ""), color)
+            elif renderer == "badge":
+                self._paintBadge(painter, option, rect, text, color)
+            elif renderer == "status":
+                self._paintStatus(painter, option, rect, text, color)
+            else:  # link | colored | currency
+                self._paintText(painter, option, rect, text, renderer, color)
+        finally:
+            painter.restore()
+
+    def _paintText(self, painter, option, rect, text, renderer, color):
+        if renderer == "link":
+            col = (option.palette.highlightedText().color()
+                   if self._onSelection(option)
+                   else (QColor(color) if color else self._accentColor(option)))
+        else:  # colored | currency
+            col = self._textColor(option, color)
+        align = Qt.AlignVCenter | (Qt.AlignRight if renderer == "currency"
+                                   else Qt.AlignLeft)
+        painter.setPen(QPen(col))
+        painter.drawText(rect, int(align), self._elide(option, text, rect.width()))
+
+    def _paintStatus(self, painter, option, rect, text, color):
+        cy = rect.center().y()
+        dot = QColor(color) if color else self._accentColor(option)
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(dot)
+        painter.drawEllipse(QRectF(rect.left(), cy - self._DOT / 2.0,
+                                   self._DOT, self._DOT))
+        text_rect = rect.adjusted(self._DOT + self._GAP, 0, 0, 0)
+        col = (option.palette.highlightedText().color()
+               if self._onSelection(option) else self._accentColor(option))
+        painter.setPen(QPen(col))
+        painter.drawText(text_rect, int(Qt.AlignVCenter | Qt.AlignLeft),
+                         self._elide(option, text, text_rect.width()))
+
+    def _paintBadge(self, painter, option, rect, text, color):
+        base = QColor(color) if color else self._accentColor(option)
+        fm = option.fontMetrics
+        tw = fm.horizontalAdvance(text)
+        h = min(rect.height() - 8, fm.height() + 8)
+        w = tw + 20
+        pill = QRectF(rect.left(), rect.center().y() - h / 2.0, w, h)
+        bg = QColor(base)
+        bg.setAlpha(38)                      # soft tinted fill
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(bg)
+        painter.drawRoundedRect(pill, h / 2.0, h / 2.0)
+        painter.setPen(QPen(base))
+        painter.drawText(pill, int(Qt.AlignCenter), text)
+
+    def _paintActions(self, painter, option, index):
+        """Trailing row-actions cell: a centred kebab (vertical ellipsis)."""
+        self.initStyleOption(option, index)
+        painter.save()
+        painter.setRenderHint(QPainter.Antialiasing, True)
+        selected = self._onSelection(option)
+        if selected:
+            painter.fillRect(option.rect, option.palette.highlight())
+        hovered = bool(option.state & QStyle.State_MouseOver)
+        col = (option.palette.highlightedText().color() if selected
+               else (self._accentColor(option) if hovered
+                     else self._mutedColor(option)))
+        f = QFont(option.font)
+        f.setPointSizeF(option.font.pointSizeF() + 3)
+        f.setBold(True)
+        painter.setFont(f)
+        painter.setPen(QPen(col))
+        painter.drawText(option.rect, int(Qt.AlignCenter), "⋮")  # ⋮
+        painter.restore()
+
+    def _paintTwoLine(self, painter, option, rect, title, subtitle, color):
+        fm = option.fontMetrics
+        line = fm.height()
+        block = line * 2
+        top = rect.top() + max(0, (rect.height() - block) // 2)
+        title_rect = QRectF(rect.left(), top, rect.width(), line)
+        sub_rect = QRectF(rect.left(), top + line, rect.width(), line)
+        title_col = self._textColor(option, color)
+        if color:
+            sub_col = self._textColor(option, color)
+        else:
+            sub_col = (option.palette.highlightedText().color()
+                       if self._onSelection(option) else self._mutedColor(option))
+        painter.setPen(QPen(title_col))
+        painter.drawText(title_rect, int(Qt.AlignVCenter | Qt.AlignLeft),
+                         self._elide(option, title, rect.width()))
+        if subtitle:
+            f = QFont(option.font)
+            f.setPointSizeF(max(1.0, option.font.pointSizeF() - 1))
+            painter.setFont(f)
+            painter.setPen(QPen(sub_col))
+            painter.drawText(sub_rect, int(Qt.AlignVCenter | Qt.AlignLeft),
+                             self._elide(option, subtitle, rect.width()))
+
+    def sizeHint(self, option, index):
+        base = super().sizeHint(option, index)
+        renderer = index.data(RendererRole) or ""
+        rich = renderer in CELL_RENDERERS or renderer == ACTIONS_RENDERER
+        min_h = 44 if rich else base.height()
+        if renderer == "twoline":
+            self.initStyleOption(option, index)
+            min_h = max(min_h, option.fontMetrics.height() * 2 + 16)
+        return QSize(base.width(), max(base.height(), min_h))
+
+
+class _SelectAllHeader(QHeaderView):
+    """Horizontal header that paints a tri-state select-all checkbox in the
+    select column and turns a click there into ``selectAllToggled`` instead of
+    a sort. All other sections behave like a normal sortable header.
+    """
+
+    selectAllToggled = Signal(bool)
+
+    def __init__(self, orientation=Qt.Horizontal, parent=None):
+        super().__init__(orientation, parent)
+        self._checkCol = -1
+        self._state = 0                 # 0 none, 1 some, 2 all
+        self.setSectionsClickable(True)
+        self.setHighlightSections(False)
+
+    def setCheckColumn(self, col):
+        if col == self._checkCol:
+            return
+        old = self._checkCol
+        self._checkCol = col
+        for c in (old, col):
+            if c is not None and c >= 0:
+                self.updateSection(c)
+
+    def setCheckState(self, state):
+        state = int(state)
+        if state != self._state:
+            self._state = state
+            if self._checkCol >= 0:
+                self.updateSection(self._checkCol)
+
+    def paintSection(self, painter, rect, logicalIndex):
+        super().paintSection(painter, rect, logicalIndex)
+        if logicalIndex != self._checkCol:
+            return
+        opt = QStyleOptionButton()
+        sz = 16
+        opt.rect = QRect(rect.center().x() - sz // 2,
+                         rect.center().y() - sz // 2, sz, sz)
+        if self._state == 2:
+            opt.state = QStyle.State_On | QStyle.State_Enabled
+        elif self._state == 1:
+            opt.state = QStyle.State_NoChange | QStyle.State_Enabled
+        else:
+            opt.state = QStyle.State_Off | QStyle.State_Enabled
+        self.style().drawPrimitive(QStyle.PE_IndicatorCheckBox, opt, painter, self)
+
+    def mouseReleaseEvent(self, event):
+        if (self._checkCol >= 0
+                and self.logicalIndexAt(event.pos()) == self._checkCol):
+            # not all -> select all; already all -> clear. Swallow the event so
+            # the section does not also emit a sort click.
+            self.selectAllToggled.emit(self._state != 2)
+            return
+        super().mouseReleaseEvent(event)
+
+
 class QCustomDataTable(QWidget):
     """Modern, read-only data table with client-side sort, filter and
     optional pagination. Styled through the theme/token system.
@@ -402,6 +884,7 @@ class QCustomDataTable(QWidget):
         {"name": "showPagination", "kind": "bool", "group": "Data Table"},
         {"name": "selectionMode", "kind": "choice", "enum": "SelectionMode",
          "group": "Data Table"},
+        {"name": "selectable", "kind": "bool", "group": "Data Table"},
         {"name": "sortable", "kind": "bool", "group": "Data Table"},
         {"name": "filterable", "kind": "bool", "group": "Data Table"},
         {"name": "alternatingRowColors", "kind": "bool", "group": "Appearance"},
@@ -425,7 +908,8 @@ class QCustomDataTable(QWidget):
             "sizeVariant": {"type": "enum", "values": ["sm", "md", "lg"],
                             "default": "md"},
         },
-        "signals": ["rowSelected", "cellClicked", "sortChanged", "pageChanged"],
+        "signals": ["rowSelected", "cellClicked", "sortChanged", "pageChanged",
+                    "rowActionTriggered", "selectionCheckedChanged"],
         "tokens_used": ["surface", "on-surface", "surface-muted", "outline",
                         "accent", "focus-ring"],
     }
@@ -441,6 +925,8 @@ class QCustomDataTable(QWidget):
     cellClicked = Signal(int, int)
     sortChanged = Signal(int, object)
     pageChanged = Signal(int)
+    rowActionTriggered = Signal(int, str)      # (source row, action key) from the ⋮ menu
+    selectionCheckedChanged = Signal(list)     # checked source rows (checkbox column)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -461,6 +947,8 @@ class QCustomDataTable(QWidget):
 
         # model chain: model -> sort/filter -> (pagination) -> view
         self._model = self._createModel()
+        # keep the select-all header + listeners in sync with checkbox state
+        self._model.checkedChanged.connect(self._onModelCheckedChanged)
         self._sortFilter = QSortFilterProxyModel(self)
         self._sortFilter.setSourceModel(self._model)
         self._sortFilter.setSortRole(Qt.UserRole)
@@ -481,6 +969,9 @@ class QCustomDataTable(QWidget):
     def _createView(self):
         return QTableView(self)
 
+    def _createDelegate(self):
+        return QCustomDataTableDelegate(self._view)
+
     # ------------------------------------------------------------------ #
     ## UI
     # ------------------------------------------------------------------ #
@@ -496,7 +987,16 @@ class QCustomDataTable(QWidget):
         self._view.verticalHeader().setVisible(False)
         self._view.setEditTriggers(QAbstractItemView.NoEditTriggers)  # read-only in free tier
         self._view.setWordWrap(False)
-        self._view.horizontalHeader().setStretchLastSection(True)
+        # select-all-aware header (paints the header checkbox for the select column)
+        self._hheader = _SelectAllHeader(Qt.Horizontal, self._view)
+        self._view.setHorizontalHeader(self._hheader)
+        self._hheader.setStretchLastSection(True)
+        self._hheader.selectAllToggled.connect(self._onSelectAllToggled)
+        # rich-cell painting (status dots, links, badges, two-line, currency);
+        # plain columns fall through to default rendering.
+        self._delegate = self._createDelegate()
+        self._view.setItemDelegate(self._delegate)
+        self._view.setMouseTracking(True)   # so the ⋮ cell can react to hover
         layout.addWidget(self._view)
 
         self._footer = QWidget(self)
@@ -536,7 +1036,7 @@ class QCustomDataTable(QWidget):
         else:
             self._setViewModel(self._sortFilter)
         self._footer.setVisible(paginate)
-        self._applyColumnWidths()
+        self._configureColumns()
         self._onPaginationChanged()
 
     def _setViewModel(self, model):
@@ -576,10 +1076,44 @@ class QCustomDataTable(QWidget):
             self._view.setSelectionBehavior(QAbstractItemView.SelectRows)
             self._view.setSelectionMode(QAbstractItemView.SingleSelection)
 
+    # -- column width unit for the synthetic select/actions columns --
+    _SYNTH_COL_WIDTH = 46
+
     def _applyColumnWidths(self):
+        """Apply DataTableColumn.width values, offset past the select column."""
+        off = self._model._selOffset()
         for i, col in enumerate(self._model.columns()):
             if col.width:
-                self._view.setColumnWidth(i, int(col.width))
+                self._view.setColumnWidth(i + off, int(col.width))
+
+    def _configureColumns(self):
+        """Size + resize-mode the columns, including the synthetic select/actions
+        columns (fixed & narrow), and tell the header which column carries the
+        select-all checkbox."""
+        header = self._hheader
+        vm = self._view.model()
+        n = vm.columnCount() if vm is not None else 0
+        selCol = 0 if self._model.isSelectable() else -1
+        actCol = n - 1 if self._model.rowActions() else -1
+
+        header.setCheckColumn(selCol)
+        # a trailing actions column must stay narrow, so don't stretch the last
+        # section; otherwise let the last data column fill the width.
+        header.setStretchLastSection(actCol < 0)
+        for i in range(n):
+            if i in (selCol, actCol):
+                header.setSectionResizeMode(i, QHeaderView.Fixed)
+                self._view.setColumnWidth(i, self._SYNTH_COL_WIDTH)
+            else:
+                header.setSectionResizeMode(i, QHeaderView.Interactive)
+        self._applyColumnWidths()
+        # with an actions column pinned last, stretch the final DATA column so
+        # the table still fills its width.
+        if actCol > 0:
+            stretch = actCol - 1
+            if stretch != selCol and stretch >= 0:
+                header.setSectionResizeMode(stretch, QHeaderView.Stretch)
+        self._syncHeaderCheckState()
 
     def _repolish(self):
         self.style().unpolish(self)
@@ -591,7 +1125,7 @@ class QCustomDataTable(QWidget):
     # ------------------------------------------------------------------ #
     def setColumns(self, columns):
         self._model.setColumns(columns)
-        self._applyColumnWidths()
+        self._configureColumns()
 
     def setData(self, rows):
         self._model.setRows(rows)
@@ -610,6 +1144,89 @@ class QCustomDataTable(QWidget):
 
     def view(self):
         return self._view
+
+    def delegate(self):
+        return self._delegate
+
+    def setCellAccentColor(self, color):
+        """Colour used for link/status cell text (blank/None -> palette link)."""
+        self._delegate.setAccentColor(color)
+
+    def setCellMutedColor(self, color):
+        """Colour used for the muted second line of twoline cells."""
+        self._delegate.setMutedColor(color)
+
+    # ------------------------------------------------------------------ #
+    ## Selection column (checkboxes) + row-actions (kebab)
+    # ------------------------------------------------------------------ #
+    def isSelectable(self):
+        return self._model.isSelectable()
+
+    def setSelectable(self, on):
+        """Show/hide the leading checkbox column (with a select-all header)."""
+        self._model.setSelectable(bool(on))
+        self._configureColumns()
+
+    def setRowActions(self, actions):
+        """Enable the trailing ⋮ column. ``actions`` is a list of (key, label)
+        pairs, {"key":, "label":} dicts, or bare strings; picking one emits
+        ``rowActionTriggered(sourceRow, key)``."""
+        self._model.setRowActions(actions)
+        self._configureColumns()
+
+    def rowActions(self):
+        return self._model.rowActions()
+
+    def checkedRows(self):
+        """Sorted SOURCE-model row indices whose checkbox is ticked."""
+        return self._model.checkedRows()
+
+    def setRowChecked(self, row, checked=True):
+        self._model.setRowChecked(row, checked)
+
+    def setAllChecked(self, checked=True):
+        self._model.setAllChecked(checked)
+
+    def clearChecked(self):
+        self._model.setAllChecked(False)
+
+    # -- internal wiring -------------------------------------------------- #
+    def _onSelectAllToggled(self, checked):
+        self._model.setAllChecked(checked)
+
+    def _onModelCheckedChanged(self):
+        self._syncHeaderCheckState()
+        self.selectionCheckedChanged.emit(self._model.checkedRows())
+
+    def _syncHeaderCheckState(self):
+        if getattr(self, "_hheader", None) is not None:
+            self._hheader.setCheckState(self._model.headerCheckState())
+
+    def _actionsColumn(self):
+        """The view/model column index of the ⋮ column, or -1 when disabled."""
+        vm = self._view.model()
+        if vm is None or not self._model.rowActions():
+            return -1
+        return vm.columnCount() - 1
+
+    def buildRowActionsMenu(self, srcRow):
+        """A QMenu of the configured row actions; each entry emits
+        ``rowActionTriggered(srcRow, key)`` when triggered. Exposed (not just
+        used by the popup) so the wiring is unit-testable without a modal exec."""
+        menu = QMenu(self)
+        menu.setObjectName("dataTableRowMenu")
+        for key, label in self._model.rowActions():
+            act = menu.addAction(label)
+            act.triggered.connect(
+                lambda _checked=False, k=key, r=srcRow:
+                self.rowActionTriggered.emit(r, k))
+        return menu
+
+    def _showRowActionsMenu(self, srcRow, viewIndex):
+        menu = self.buildRowActionsMenu(srcRow)
+        rect = self._view.visualRect(viewIndex)
+        pos = self._view.viewport().mapToGlobal(rect.center())
+        menu.exec_(pos)
 
     # ------------------------------------------------------------------ #
     ## Sorting / filtering
@@ -691,8 +1308,12 @@ class QCustomDataTable(QWidget):
 
     def _onCellClicked(self, viewIndex):
         row = self._toSourceRow(viewIndex)
-        if row >= 0:
-            self.cellClicked.emit(row, viewIndex.column())
+        if row < 0:
+            return
+        if viewIndex.column() == self._actionsColumn():
+            self._showRowActionsMenu(row, viewIndex)
+            return
+        self.cellClicked.emit(row, viewIndex.column())
 
     def _onSortIndicatorChanged(self, column, order):
         self.sortChanged.emit(column, order)
@@ -703,6 +1324,10 @@ class QCustomDataTable(QWidget):
     def customizeQCustomDataTable(self, **customValues):
         if "columns" in customValues:
             self.setColumns(customValues["columns"])
+        if "selectable" in customValues:
+            self.setSelectable(customValues["selectable"])
+        if "rowActions" in customValues:
+            self.setRowActions(customValues["rowActions"])
         if "data" in customValues:
             self.setData(customValues["data"])
         elif "rows" in customValues:
@@ -745,6 +1370,14 @@ class QCustomDataTable(QWidget):
     def selectionMode(self, value):
         self._selectionMode = QCustomDataTable.SelectionMode(int(value))
         self._applySelectionMode()
+
+    @Property(bool)
+    def selectable(self):
+        return self._model.isSelectable()
+
+    @selectable.setter
+    def selectable(self, value):
+        self.setSelectable(bool(value))
 
     @Property(bool)
     def sortable(self):
