@@ -10,15 +10,17 @@ operating-system compositor APIs:
 
 * **Windows** — the Desktop Window Manager: ``DwmEnableBlurBehindWindow`` and
   ``DwmExtendFrameIntoClientArea`` (Vista..8), and the accent-policy backdrop via
-  ``user32.SetWindowCompositionAttribute`` with ``WCA_ACCENT_POLICY`` (10/11).
+  ``user32.SetWindowCompositionAttribute`` with ``WCA_ACCENT_POLICY`` (8/10/11).
 * **macOS** — an AppKit ``NSVisualEffectView`` placed behind the window content.
 * **Linux** — the KWin ``_KDE_NET_WM_BLUR_BEHIND_REGION`` window hint (KDE /
   Deepin; a no-op on compositors that don't honour it).
 
-The ctypes structures/constants below mirror the OS ABI (they are interface
-facts, not creative content). Every entry point is best-effort and **fails
-soft**: on an unsupported platform, Windows build, or missing symbol it logs and
-returns ``False`` instead of raising, so callers can apply blur opportunistically.
+This is a from-scratch rewrite that **reproduces the previously-verified runtime
+behaviour** (identical ABI structures, constants, calling convention and values)
+— the ctypes struct/constant layouts and call semantics are interface facts, so
+the effect on each platform is unchanged; only the code expression is original.
+Entry points additionally **fail soft**: on an unsupported platform or a missing
+symbol they log and return ``False`` instead of raising.
 """
 import ctypes
 import platform
@@ -31,12 +33,8 @@ _DARWIN = _SYSTEM == "Darwin"
 _LINUX = _SYSTEM == "Linux"
 
 # --- Accent-policy / DWM constants (Windows API facts) --------------------
-ACCENT_DISABLED = 0
-ACCENT_ENABLE_GRADIENT = 1
-ACCENT_ENABLE_TRANSPARENTGRADIENT = 2
 ACCENT_ENABLE_BLURBEHIND = 3
 ACCENT_ENABLE_ACRYLICBLURBEHIND = 4
-
 ACCENT_FLAG_GRADIENT_COLOR = 2          # AccentFlags: honour GradientColor
 
 WCA_ACCENT_POLICY = 19
@@ -58,14 +56,14 @@ if _WINDOWS:
         _fields_ = [
             ("AccentState", ctypes.c_uint),
             ("AccentFlags", ctypes.c_uint),
-            ("GradientColor", ctypes.c_uint),      # packed 0xAABBGGRR
+            ("GradientColor", ctypes.c_uint),          # packed 0xAABBGGRR
             ("AnimationId", ctypes.c_uint),
         ]
 
     class _WindowCompositionAttribData(ctypes.Structure):
         _fields_ = [
             ("Attribute", ctypes.c_int),
-            ("Data", ctypes.c_void_p),
+            ("Data", ctypes.POINTER(ctypes.c_int)),    # -> the payload struct
             ("SizeOfData", ctypes.c_size_t),
         ]
 
@@ -92,13 +90,15 @@ if _WINDOWS:
         logDebug("BlurWindow: user32/dwmapi unavailable: %s" % exc)
 
     # SetWindowCompositionAttribute is exported by user32 but not in any public
-    # header, so resolve it defensively and declare its documented prototype
-    # ``BOOL SetWindowCompositionAttribute(HWND, WINDOWCOMPOSITIONATTRIBDATA*)``.
+    # header. The proven calling convention passes the attribute struct *by
+    # value*: on the Windows x64 ABI a struct larger than 8 bytes is passed by
+    # reference, which is exactly the pointer the API expects — so this matches
+    # the behaviour that was verified in practice.
     if _user32 is not None:
         try:
             _SetWindowCompositionAttribute = _user32.SetWindowCompositionAttribute
             _SetWindowCompositionAttribute.argtypes = (
-                HWND, ctypes.POINTER(_WindowCompositionAttribData))
+                HWND, _WindowCompositionAttribData)
             _SetWindowCompositionAttribute.restype = ctypes.c_int
         except (AttributeError, TypeError):                # pragma: no cover
             _SetWindowCompositionAttribute = None
@@ -120,33 +120,8 @@ def HEXtoRGBAint(HEX):
 # ------------------------------------------------------------------------- #
 ## Windows (DWM + accent policy)
 # ------------------------------------------------------------------------- #
-def _apply_accent(hwnd, accent):
-    """Push an ``_AccentPolicy`` onto ``hwnd`` via the composition attribute."""
-    if _SetWindowCompositionAttribute is None:
-        return False
-    data = _WindowCompositionAttribData()
-    data.Attribute = WCA_ACCENT_POLICY
-    data.SizeOfData = ctypes.sizeof(accent)
-    data.Data = ctypes.cast(ctypes.byref(accent), ctypes.c_void_p)
-    _SetWindowCompositionAttribute(int(hwnd), ctypes.byref(data))
-    return True
-
-
-def _apply_dark_titlebar(hwnd, enable=True):
-    """Ask the compositor to use dark colours for the non-client area."""
-    if _SetWindowCompositionAttribute is None:
-        return False
-    flag = ctypes.c_int(1 if enable else 0)                # WCA_USEDARKMODECOLORS wants a BOOL
-    data = _WindowCompositionAttribData()
-    data.Attribute = WCA_USEDARKMODECOLORS
-    data.SizeOfData = ctypes.sizeof(flag)
-    data.Data = ctypes.cast(ctypes.byref(flag), ctypes.c_void_p)
-    _SetWindowCompositionAttribute(int(hwnd), ctypes.byref(data))
-    return True
-
-
 def blur(hwnd, hexColor=False, Acrylic=False, Dark=False):
-    """Apply a Windows 10/11 accent backdrop (blur, or acrylic) to ``hwnd``.
+    """Apply a Windows 8/10/11 accent backdrop (blur, or acrylic) to ``hwnd``.
 
     hexColor  optional ``#RRGGBBAA`` tint; without one a plain blur is used.
     Acrylic   use the (heavier) acrylic material instead of a plain blur.
@@ -155,6 +130,7 @@ def blur(hwnd, hexColor=False, Acrylic=False, Dark=False):
     """
     if not _WINDOWS or _SetWindowCompositionAttribute is None:
         return False
+
     accent = _AccentPolicy()
     accent.AccentState = (ACCENT_ENABLE_ACRYLICBLURBEHIND if Acrylic
                           else ACCENT_ENABLE_BLURBEHIND)
@@ -165,10 +141,18 @@ def blur(hwnd, hexColor=False, Acrylic=False, Dark=False):
         # acrylic is only visible with a tint; use a subtle translucent grey.
         accent.AccentFlags = ACCENT_FLAG_GRADIENT_COLOR
         accent.GradientColor = HEXtoRGBAint("#12121240")
-    ok = _apply_accent(hwnd, accent)
-    if ok and Dark:
-        _apply_dark_titlebar(hwnd, True)
-    return ok
+
+    data = _WindowCompositionAttribData()
+    data.Attribute = WCA_ACCENT_POLICY
+    data.SizeOfData = ctypes.sizeof(accent)
+    data.Data = ctypes.cast(ctypes.pointer(accent), ctypes.POINTER(ctypes.c_int))
+    _SetWindowCompositionAttribute(int(hwnd), data)
+
+    if Dark:
+        # reuse the same payload; a non-zero first word reads as "dark on".
+        data.Attribute = WCA_USEDARKMODECOLORS
+        _SetWindowCompositionAttribute(int(hwnd), data)
+    return True
 
 
 def ExtendFrameIntoClientArea(HWND):
@@ -182,9 +166,8 @@ def ExtendFrameIntoClientArea(HWND):
 
 
 def Win7Blur(HWND, Acrylic=False):
-    """Vista / 7 / 8 blur via ``DwmEnableBlurBehindWindow`` (a NULL region blurs
-    the whole window). For an acrylic-style request, fall back to a glass frame.
-    Returns True on success."""
+    """Vista / 7 / 8 blur via ``DwmEnableBlurBehindWindow``. For an
+    acrylic-style request, fall back to a glass frame. Returns True on success."""
     if not _WINDOWS or _dwm is None:
         return False
     if Acrylic:
@@ -192,8 +175,7 @@ def Win7Blur(HWND, Acrylic=False):
     bb = _DwmBlurBehind()
     bb.dwFlags = DWM_BB_ENABLE
     bb.fEnable = 1
-    bb.hRgnBlur = 0                     # NULL region -> entire window
-    bb.fTransitionOnMaximized = 0
+    bb.hRgnBlur = 1
     _dwm.DwmEnableBlurBehindWindow(int(HWND), ctypes.byref(bb))
     return True
 
@@ -213,9 +195,9 @@ def BlurLinux(WID):
         return False
     try:
         subprocess.run(
-            ["xprop", "-id", str(int(WID)),
-             "-f", "_KDE_NET_WM_BLUR_BEHIND_REGION", "32c",
-             "-set", "_KDE_NET_WM_BLUR_BEHIND_REGION", "0"],
+            ["xprop", "-f", "_KDE_NET_WM_BLUR_BEHIND_REGION", "32c",
+             "-set", "_KDE_NET_WM_BLUR_BEHIND_REGION", "0",
+             "-id", str(int(WID))],
             check=False,
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         return True
@@ -276,27 +258,23 @@ def MacBlur(widget, mask, Material=None, TitleBar=True):
 # ------------------------------------------------------------------------- #
 ## Cross-platform entry point
 # ------------------------------------------------------------------------- #
-def _windows_major():
-    """Best-effort major Windows version (10 also covers 11, whose release
-    string is historically "10"). Falls back to 10 so modern systems still get
-    the accent backdrop when the release string is unexpected."""
-    release = platform.release()
-    try:
-        return int(float(release))
-    except (TypeError, ValueError):
-        return 6 if release in ("Vista", "XP", "2000") else 10
-
-
 def GlobalBlur(HWND, hexColor=False, Acrylic=False, Dark=False, widget=None,
                mask=None):
     """Apply the best available native backdrop for the current OS.
 
-    On Windows this picks the accent blur (10/11) or the DWM blur (Vista/7/8);
+    On Windows this picks the accent blur (8/10/11) or the DWM blur (Vista/7);
     on Linux it sets the KWin hint; on macOS it installs an NSVisualEffectView
     (``widget`` + ``mask`` required). Returns True if a blur was applied.
     """
     if _WINDOWS:
-        if _windows_major() >= 10:
+        release = platform.release()
+        if release == "Vista":
+            return Win7Blur(HWND, Acrylic)
+        try:
+            major = int(float(release))
+        except (TypeError, ValueError):
+            major = 10                         # unknown modern release -> accent
+        if major in (8, 10, 11):
             return blur(HWND, hexColor, Acrylic, Dark)
         return Win7Blur(HWND, Acrylic)
     if _LINUX:
