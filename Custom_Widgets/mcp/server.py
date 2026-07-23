@@ -26,12 +26,17 @@ import os
 from Custom_Widgets.Project import projectRoot
 import subprocess
 import sys
+import traceback
 
 try:
     from mcp.server.fastmcp import FastMCP, Image
 except ImportError:  # pragma: no cover
     sys.exit("The MCP server needs the 'mcp' package:\n"
              "    pip install QT-PyQt-PySide-Custom-Widgets[mcp]")
+try:
+    from mcp.server.fastmcp.exceptions import ToolError
+except ImportError:  # pragma: no cover
+    ToolError = RuntimeError
 
 ########################################################################
 ## AGENT OPERATING GUIDE
@@ -44,6 +49,60 @@ except ImportError:  # pragma: no cover
 from Custom_Widgets.mcp.guide import AGENT_GUIDE  # noqa: E402
 
 mcp = FastMCP("custom_widgets_mcp", instructions=AGENT_GUIDE)
+
+
+########################################################################
+## UNIFORM STRUCTURED ERRORS
+##
+## Every tool failure reaches the agent as the SAME parseable JSON shape:
+##   {"error": {"kind": "<machine-readable>", "message": "...",
+##              "hint": "<what to do>", "details": {...}}}
+## `_fail(kind, message, ...)` raises it; the `_tool` decorator (used in place
+## of `@mcp.tool`) also converts any UNEXPECTED exception into the same envelope
+## with kind="internal" (+ a traceback tail), so no tool ever emits an ad-hoc
+## error string. FastMCP marks the result isError and forwards str(exc) verbatim.
+########################################################################
+class _ToolFailure(Exception):
+    """An expected, classified tool failure. str() is the JSON envelope."""
+    def __init__(self, kind, message, hint=None, details=None):
+        error = {"kind": kind, "message": message}
+        if hint:
+            error["hint"] = hint
+        if details is not None:
+            error["details"] = details
+        self.envelope = {"error": error}
+        super().__init__(json.dumps(self.envelope))
+
+
+def _fail(kind, message, hint=None, details=None):
+    """Raise a uniform structured tool error."""
+    raise _ToolFailure(kind, message, hint=hint, details=details)
+
+
+def _tool(*args, **kwargs):
+    """Drop-in for @mcp.tool that guarantees uniform structured errors: expected
+    _ToolFailure passes through as its JSON envelope; anything unexpected becomes
+    an {"error":{"kind":"internal",...}} envelope instead of a bare string."""
+    register = mcp.tool(*args, **kwargs)
+
+    def decorate(fn):
+        @functools.wraps(fn)
+        def wrapper(*a, **kw):
+            try:
+                return fn(*a, **kw)
+            except _ToolFailure as exc:
+                raise ToolError(str(exc))
+            except ToolError:
+                raise
+            except Exception as exc:  # noqa: BLE001 - normalise everything
+                env = {"error": {
+                    "kind": "internal",
+                    "message": str(exc) or type(exc).__name__,
+                    "details": {"traceback": traceback.format_exc()[-1200:]}}}
+                raise ToolError(json.dumps(env))
+        return register(wrapper)
+
+    return decorate
 
 
 @mcp.resource("customwidgets://agent-guide")
@@ -113,9 +172,12 @@ _NOT_RUNNING = ("Qt Designer is not reachable. Launch it with the "
 def _request(message, reply_timeout_ms=10000):
     reply = _client().request(message, reply_timeout_ms=reply_timeout_ms)
     if reply is None:
-        raise RuntimeError(_NOT_RUNNING.format(dir=_projectDir()))
+        _fail("designer_not_running", _NOT_RUNNING.format(dir=_projectDir()),
+              hint="Call designer_launch, wait ~5s, then retry (check "
+                   "designer_status).")
     if "error" in reply:
-        raise RuntimeError(f"Designer reported: {reply['error']}")
+        _fail("bridge_error", "Designer reported: %s" % reply["error"],
+              details={"method": message.get("method")})
     return reply
 
 
@@ -151,13 +213,15 @@ def designer_open_workspace(path: str) -> str:
     global _PROJECT_DIR
     target = os.path.abspath(os.path.join(_projectDir(), path))
     if not os.path.isdir(target):
-        raise RuntimeError("not a folder: %s" % target)
+        _fail("invalid_argument", "not a folder: %s" % target,
+              hint="Pass a path to an existing Custom_Widgets project folder.")
     try:
         reply = _request({"method": "openWorkspace", "path": target})
         switched = reply.get("result")
-    except RuntimeError:
+    except (_ToolFailure, RuntimeError):
         # The bridge closes/rebinds its socket as part of the switch, which can
-        # drop the reply to this very request; the switch itself still happens.
+        # drop the reply to this very request (surfacing as a designer_not_running
+        # _ToolFailure); the switch itself still happens.
         switched = "unknown (verify with designer_status)"
     # Keep the MCP's client (which derives the socket name from the project dir)
     # aligned with the bridge's new socket.
@@ -450,8 +514,9 @@ def _find_widget(name):
                      if w["name"].lower() == needle or w["class"].lower() == needle),
                     None)
     if info is None:
-        raise RuntimeError("no widget named %r; call widgets_catalog() to list them"
-                           % name)
+        _fail("unknown_widget",
+              "no widget named %r" % name,
+              hint="Call widgets_catalog() to list the available widgets.")
     return info
 
 
@@ -555,7 +620,9 @@ def render_widget(name: str, props: dict = {}, width: int = 0, height: int = 0,
              "CW_RENDER_SPEC": json.dumps(spec)})
     data = proc.stdout.strip().splitlines()[-1] if proc.stdout.strip() else ""
     if proc.returncode != 0 or not data:
-        raise RuntimeError("render failed:\n%s" % (proc.stderr[-2000:] or "no output"))
+        _fail("render_failed", "could not render %s" % info["name"],
+              hint="Check the widget name/props against widgets_catalog.",
+              details={"stderr": (proc.stderr or "no output")[-1500:]})
     return Image(data=base64.b64decode(data), format="png")
 
 
@@ -631,7 +698,9 @@ def designer_qss_screenshot() -> Image:
                      reply_timeout_ms=20000)
     data = reply.get("result", "")
     if not data:
-        raise RuntimeError(reply.get("error", "no QSS window screenshot data"))
+        _fail("no_screenshot",
+              reply.get("error", "no QSS window screenshot data"),
+              hint="Open it first with designer_qss_window(action='open').")
     return Image(data=base64.b64decode(data), format="png")
 
 
@@ -698,9 +767,12 @@ _APP_NOT_RUNNING = ("The project app is not reachable. Start it with "
 def _app_request(message, reply_timeout_ms=15000):
     reply = _app_client().request(message, reply_timeout_ms=reply_timeout_ms)
     if reply is None:
-        raise RuntimeError(_APP_NOT_RUNNING)
+        _fail("app_not_running", _APP_NOT_RUNNING,
+              hint="Start the app with designer_run_app, then retry (check "
+                   "app_status).")
     if "error" in reply:
-        raise RuntimeError(f"App reported: {reply['error']}")
+        _fail("app_error", "App reported: %s" % reply["error"],
+              details={"method": message.get("method")})
     return reply
 
 
@@ -884,7 +956,8 @@ def project_new_ui(name: str) -> str:
         from Custom_Widgets.ProjectMaker import create_ui_file
         path = create_ui_file(name)
         if path is None:
-            raise RuntimeError(f"ui/{name}.ui already exists")
+            _fail("already_exists", "ui/%s.ui already exists" % name,
+                  hint="Pick another name or edit the existing form.")
         return os.path.relpath(path, _projectDir())
     finally:
         os.chdir(previous)
@@ -901,7 +974,9 @@ def project_convert_ui(ui_path: str = "ui", src_output_dir: str = "src") -> str:
         cwd=_projectDir(), capture_output=True, text=True, timeout=300,
         env={**os.environ, "QT_QPA_PLATFORM": os.environ.get("QT_QPA_PLATFORM", "offscreen")})
     if proc.returncode != 0:
-        raise RuntimeError(f"conversion failed:\n{proc.stderr[-2000:]}")
+        _fail("convert_failed", "ui-to-Python conversion failed",
+              hint="Fix the .ui/scss error in the details, then retry.",
+              details={"stderr": proc.stderr[-1500:]})
     generated = [line for line in proc.stdout.splitlines()
                  if "Python:" in line or "Completed" in line]
     return "\n".join(generated) or "converted"
