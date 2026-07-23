@@ -3,6 +3,31 @@
 Continuity for the next MCP-mounted session. Everything here is committed on
 `feat/qcustom-datatable` (per the commit-locally rule; nothing pushed).
 
+## ⏩ SESSION 3 STATUS (2026-07-23) — Phases 1–4 DONE, Phase 5 mid-flight
+
+Committed through `acc2cb7`. Built entirely via MCP:
+- **Phase 1 done** — `Qss/scss/chrome.scss` ($TOKEN chrome, imported into
+  defaultStyle.scss). **Phase 2 done** — `ui/MainWindow.ui` shell (sidebar +
+  animated `pageStack` + 6 `QCustomComponentContainer`s, glyph nav, no qrc).
+  **Phase 3 done** — all six `ui/*Component.ui` pages; all compile via
+  `project_convert_ui`. **Phase 4 done** — `main.py` (framework hot-reload boot)
+  + `gui/GuiFunctions.py` (one manager per page, navigateTo by widget).
+- **Phase 5 in progress.** First run surfaced real bugs, now fixed:
+  (a) `main.py` missing `QApplication` import; (b) `QCustomKbd`/`QCustomBadge`
+  took a non-parent first ctor arg → crashed under uic `Widget(parent)` — FIXED
+  in the **library** (commit 91f87de, see [[uic-parent-first-ctor-gotcha]]);
+  (c) Analytics used a layout `stretch` string → sizePolicy horstretch instead.
+- **⚠️ WHY THE RESTART:** the library widget edits (QCustomKbd/QCustomBadge) only
+  take effect once the MCP/Designer process reloads. On resume: `designer_status`
+  → `designer_launch` → `designer_run_app` → `app_screenshot`/`designer_app_logs`.
+  Overview + Gallery were blank last run *only* because of the Kbd/Badge crash;
+  they should populate now. Then walk all 6 pages in **both** themes (flip via the
+  sidebar `themeToggle` — QCustomThemeDarkLightToggle, app_click it), then Phase 6
+  teardown. NOTE: token-dense forms still crash Designer's *live canvas*; author/
+  edit forms as XML + verify in the **running app**, not the Designer preview.
+
+---
+
 ## ⚠️ FIRST: the MCP has been remounted at a dedicated folder — RESTART REQUIRED
 
 This session discovered that the `custom-widgets` MCP was pinned to the **repo
