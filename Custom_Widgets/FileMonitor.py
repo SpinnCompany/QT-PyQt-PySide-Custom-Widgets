@@ -792,16 +792,19 @@ class QSsFileMonitor(QObject):
         default_sass_path = os.path.join(scss_dir, 'defaultStyle.scss')
 
         if os.path.isdir(scss_dir):
-            # Watch EVERY .scss input, not just defaultStyle.scss. The compiled
-            # stylesheet @import-s partials (chrome.scss, _variables.scss,
-            # _styles.scss, main.scss and any user files); editing ANY of them
-            # must live-recompile (the compile cache already keys on all .scss
-            # mtimes, so it only needed the change to be noticed). Recursive so
-            # nested imports are covered too.
+            # Watch every SOURCE .scss input, not just defaultStyle.scss, so
+            # editing an @import-ed partial (chrome.scss and any user files)
+            # live-recompiles. EXCLUDE the theme-engine's GENERATED outputs
+            # (_variables.scss, _styles.scss): they are rewritten on every theme
+            # apply, so watching them creates a rewrite->recompile->rewrite
+            # feedback loop that hangs the app on a theme switch. (The compile
+            # cache already keys on all .scss mtimes, so only source files need
+            # to be noticed.) Recursive so nested imports are covered too.
+            _GENERATED = {'_variables.scss', '_styles.scss'}
             scss_files = []
             for _root, _dirs, _files in os.walk(scss_dir):
                 for _fn in _files:
-                    if _fn.endswith('.scss'):
+                    if _fn.endswith('.scss') and _fn not in _GENERATED:
                         scss_files.append(os.path.join(_root, _fn))
             self._watched_scss = scss_files
             for sp in scss_files:
