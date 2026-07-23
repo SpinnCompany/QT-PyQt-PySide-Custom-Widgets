@@ -291,10 +291,22 @@ class DesignerBridgeServer(QObject):
             return self._designerWindow(message)
         if method == "quit":
             from qtpy.QtCore import QTimer
+            # Mark open forms clean so Designer doesn't pop a modal
+            # "Save changes before exiting?" that blocks the quit — forms are
+            # persisted explicitly (setFormXml save=True / Designer save).
+            dirty = []
+            for fw in self._formWindows():
+                try:
+                    if fw.isDirty():
+                        dirty.append(os.path.basename(fw.fileName() or "form"))
+                    fw.setDirty(False)
+                except Exception:
+                    pass
             # Flush this reply before tearing Designer down.
             QTimer.singleShot(80, lambda: (QApplication.quit()
                                            if QApplication.instance() else None))
-            return {"result": "ok", "quitting": True}
+            return {"result": "ok", "quitting": True,
+                    "had_unsaved": dirty}
         return {"error": f"unknown method '{method}'"}
 
     ####################################################################

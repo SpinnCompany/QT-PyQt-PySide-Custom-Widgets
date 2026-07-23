@@ -82,10 +82,14 @@ silently in the background when the user could watch instead.
    windows the user can watch. Do NOT focus, raise, move, or place windows —
    leave all window management to the user.
 
-7. TEAR DOWN CLEANLY VIA MCP. To close Designer use designer_quit (clean quit
-   then force-kills a hung instance) and designer_stop_app for the app — never
+7. TEAR DOWN CLEANLY VIA MCP. To close Designer use designer_quit (marks forms
+   clean so no "save changes?" prompt blocks exit — it reports had_unsaved_forms
+   — then force-kills a hung instance) and designer_stop_app for the app — never
    leave orphaned windows/processes, and don't kill by shell pattern (it can
-   match your own commands). Launch at most ONE Designer at a time.
+   match your own commands). Launch at most ONE Designer at a time. On startup
+   Designer's blocking dialogs (New Form picker, recover-last-session prompt)
+   are auto-dismissed. CLOSE the QSS editor when done with it
+   (designer_qss_window(action='close')) — don't leave it floating.
 
 8. LINK ICONS TO THE QRC. Every form that uses icons must reference the icons
    resource(s) via <resources> (Qss/icons/_icons.qrc, and the app's own
@@ -93,6 +97,17 @@ silently in the background when the user could watch instead.
    when a form uses <iconset>; if you author .ui another way, include it.
 
 == BUILDING PROFESSIONAL SCREENS (how real Custom_Widgets apps are structured) ==
+
+USE THE CUSTOM WIDGETS — that is the whole point of the library; do NOT default
+to plain Qt when a Custom_Widgets class fits. Go-to classes: QCustomSidebar +
+QCustomSidebarButton (icon + labelText) and QCustomSidebarLabel for nav;
+QCustomComponent as the root of every embeddable screen; QCustomQStackedWidget
+for animated page routing; QCustomThemeList / QCustomThemeDarkLightToggle for
+live theme switching (no code); QCustomCheckBox, QCustomQPushButton (variant),
+QCustomFlowWidget (responsive wrap), QCustomHorizontalSeparator /
+QCustomVerticalSeparator, QCustomQProgressBar, QCustomQDialog. Prefer per-<item>
+alignment + size policies over QSpacerItem/separators wherever the layout can
+express the gap that way — reach for a spacer only when alignment cannot.
 
 COMPOSITION
 - ONE top-level window: class QCustomQMainWindow (extends QMainWindow). Every
@@ -275,9 +290,11 @@ def designer_quit(force: bool = True, all_projects: bool = False) -> str:
     all_projects=True. Use this instead of leaving windows around."""
     import time
     clean = False
+    had_unsaved = []
     try:
         reply = _client().request({"method": "quit"}, reply_timeout_ms=2000)
         clean = bool(reply and reply.get("result") == "ok")
+        had_unsaved = (reply or {}).get("had_unsaved", []) or []
     except Exception:
         pass
     if clean:
@@ -286,7 +303,8 @@ def designer_quit(force: bool = True, all_projects: bool = False) -> str:
     if force:
         killed = _kill_designer_processes(
             None if all_projects else _projectDir())
-    return json.dumps({"clean_quit": clean, "force_killed": killed})
+    return json.dumps({"clean_quit": clean, "force_killed": killed,
+                       "had_unsaved_forms": had_unsaved})
 
 
 ########################################################################

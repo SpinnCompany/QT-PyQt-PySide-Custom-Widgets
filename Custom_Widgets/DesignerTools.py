@@ -2257,26 +2257,44 @@ def _install(attempt=0):
         # it sits in front and blocks autonomous / MCP-driven control until a
         # human closes it. Dismiss it shortly after startup.
         for delay in (200, 900, 1800):
-            QTimer.singleShot(delay, _dismissStartupNewForm)
+            QTimer.singleShot(delay, _dismissStartupDialogs)
     except Exception as e:
         logException(e, message="Designer tools installation failed")
 
 
-def _dismissStartupNewForm():
-    """Close Designer's startup 'New Form' dialog if it is showing."""
+def _dismissStartupDialogs():
+    """Close Designer's blocking startup dialogs so they don't wall off
+    autonomous / MCP-driven control: the modal 'New Form' picker AND the
+    'recover last session' prompt Designer shows after an unclean exit. Both
+    are dismissed (start fresh - the Workspace dock manages forms)."""
     try:
-        from qtpy.QtWidgets import QDialog
+        from qtpy.QtWidgets import QDialog, QMessageBox
         app = QApplication.instance()
         for w in (app.topLevelWidgets() if app else []):
-            if isinstance(w, QDialog) and w.isVisible():
-                haystack = (w.windowTitle() + " "
-                            + w.metaObject().className()).lower()
-                if "new form" in haystack or "newform" in haystack:
+            if not w.isVisible() or not isinstance(w, (QDialog, QMessageBox)):
+                continue
+            hay = (w.windowTitle() + " " + w.metaObject().className()).lower()
+            # include button/label text so we recognise recover prompts
+            try:
+                for child in w.findChildren(QWidget):
+                    getter = getattr(child, "text", None)
+                    if callable(getter):
+                        hay += " " + str(getter())
+            except Exception:
+                pass
+            hay = hay.lower()
+            if "new form" in hay or "newform" in hay:
+                w.reject()
+                logInfo("Designer tools: dismissed startup New Form dialog")
+            elif any(k in hay for k in ("recover", "restore", "last session",
+                                        "not shut down", "unsaved")):
+                try:
                     w.reject()
-                    logInfo("Designer tools: dismissed startup New Form dialog")
-                    return
+                except Exception:
+                    w.close()
+                logInfo("Designer tools: dismissed recover-session dialog")
     except Exception as e:
-        logDebug(f"Designer tools: dismiss startup New Form failed: {e}")
+        logDebug(f"Designer tools: dismiss startup dialogs failed: {e}")
 
 
 _scheduled = False
