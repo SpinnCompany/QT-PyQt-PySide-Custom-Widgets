@@ -17,7 +17,10 @@
 ## Requires the optional dependency:  pip install QT-PyQt-PySide-Custom-Widgets[mcp]
 ########################################################################
 import argparse
+import ast
 import base64
+import functools
+import glob
 import json
 import os
 from Custom_Widgets.Project import projectRoot
@@ -66,7 +69,20 @@ def skills() -> str:
         "   here and how to mount this MCP.\n"
         "4. Build & run ONLY through this MCP's tools (designer_* / app_* /\n"
         "   designer_run_app). If a capability is missing, add it here.\n"
+        "5. Before choosing/configuring a widget, read the catalog: the\n"
+        "   widgets_catalog tool or customwidgets://catalog resource lists every\n"
+        "   widget's props, allowed enum values, signals and tokens. Preview any\n"
+        "   widget in isolation with render_widget (headless, no Designer).\n"
     )
+
+
+@mcp.resource("customwidgets://catalog")
+def catalog_resource() -> str:
+    """Full machine-readable catalog of the Custom_Widgets widget library as
+    JSON: every widget's module/class, each property with its type and allowed
+    enum values, signals, the design tokens it honours, and whether it is
+    Designer-droppable. Same data the widgets_catalog tool returns."""
+    return json.dumps(_discover_widgets(), indent=2)
 
 
 _PROJECT_DIR = projectRoot()
@@ -308,6 +324,197 @@ def designer_get_object_info() -> str:
     geometries as JSON. Useful to understand a form before editing it."""
     reply = _request({"method": "getObjectInfos"})
     return json.dumps(reply["result"], indent=2)
+
+
+########################################################################
+## WIDGET CATALOG + HEADLESS RENDER  (agent knowledge; no Designer needed)
+##
+## These tools answer "which widget, configured how" and "what does it look
+## like" WITHOUT a running Designer or app. The catalog is read straight from
+## each widget's `__catalog__` (via AST, so importing/instantiating nothing);
+## render_widget draws one widget offscreen in an isolated subprocess.
+########################################################################
+def _widgets_package_dir():
+    import Custom_Widgets
+    return os.path.dirname(Custom_Widgets.__file__)
+
+
+def _ast_literal(node):
+    try:
+        return ast.literal_eval(node)
+    except (ValueError, SyntaxError):
+        return None
+
+
+def _class_catalog(node, stem):
+    """Extract a widget's catalog entry from its ClassDef, or None if the class
+    declares no `__catalog__`."""
+    catalog = None
+    attrs = {}
+    for stmt in node.body:
+        if not isinstance(stmt, ast.Assign):
+            continue
+        for tgt in stmt.targets:
+            if not isinstance(tgt, ast.Name):
+                continue
+            if tgt.id == "__catalog__":
+                catalog = _ast_literal(stmt.value)
+            elif tgt.id in ("WIDGET_MODULE", "WIDGET_TOOLTIP", "WIDGET_DOM_XML"):
+                attrs[tgt.id] = _ast_literal(stmt.value)
+    if not isinstance(catalog, dict):
+        return None
+    doc = ast.get_docstring(node)
+    summary = (doc.strip().splitlines()[0] if doc
+               else (attrs.get("WIDGET_TOOLTIP") or ""))
+    return {
+        "name": catalog.get("name") or node.name,
+        "class": node.name,
+        "module": attrs.get("WIDGET_MODULE") or "Custom_Widgets.%s" % stem,
+        "summary": summary,
+        "props": catalog.get("props", {}),
+        "signals": catalog.get("signals", []),
+        "tokens_used": catalog.get("tokens_used", []),
+        "droppable": "WIDGET_DOM_XML" in attrs,
+    }
+
+
+@functools.lru_cache(maxsize=1)
+def _discover_widgets():
+    """Scan the Custom_Widgets package for widgets declaring `__catalog__` and
+    return {name: entry}. Parsed via AST — nothing is imported or instantiated,
+    so it's safe and fast in the headless server process."""
+    out = {}
+    for path in sorted(glob.glob(os.path.join(_widgets_package_dir(), "QCustom*.py"))):
+        stem = os.path.splitext(os.path.basename(path))[0]
+        try:
+            with open(path, encoding="utf-8") as fh:
+                tree = ast.parse(fh.read(), filename=path)
+        except (OSError, SyntaxError):
+            continue
+        for node in tree.body:
+            if isinstance(node, ast.ClassDef):
+                entry = _class_catalog(node, stem)
+                if entry:
+                    out[entry["name"]] = entry
+    return out
+
+
+def _find_widget(name):
+    widgets = _discover_widgets()
+    info = widgets.get(name)
+    if info is None:
+        needle = name.lower()
+        info = next((w for w in widgets.values()
+                     if w["name"].lower() == needle or w["class"].lower() == needle),
+                    None)
+    if info is None:
+        raise RuntimeError("no widget named %r; call widgets_catalog() to list them"
+                           % name)
+    return info
+
+
+@mcp.tool(annotations={"title": "Widget catalog (machine-readable API)",
+                       "readOnlyHint": True})
+def widgets_catalog(name: str = "", query: str = "") -> str:
+    """Machine-readable catalog of the Custom_Widgets library so an agent can
+    pick and configure a widget WITHOUT reading source.
+
+      no args   -> compact list of every widget {name, summary, droppable}.
+      query     -> filter that list by substring of name / summary / token.
+      name      -> FULL detail for one widget: module + class (feed to
+                   render_widget / imports), every property with its type and
+                   allowed enum 'values' (feed to app_set_property /
+                   designer_set_widget_property), signals, the design tokens it
+                   honours, and whether it is Designer-droppable.
+    """
+    if name:
+        return json.dumps(_find_widget(name), indent=2)
+    items = sorted(_discover_widgets().values(), key=lambda w: w["name"])
+    if query:
+        q = query.lower()
+        items = [w for w in items
+                 if q in w["name"].lower() or q in w["summary"].lower()
+                 or any(q in t.lower() for t in w["tokens_used"])]
+    compact = [{"name": w["name"], "summary": w["summary"],
+                "droppable": w["droppable"]} for w in items]
+    return json.dumps({"count": len(compact), "widgets": compact}, indent=2)
+
+
+# Runs in a subprocess (offscreen Qt). Reads its spec from CW_RENDER_SPEC so we
+# avoid quoting a JSON blob through `python -c`.
+_RENDER_SCRIPT = r"""
+import base64, importlib, json, os, sys
+spec = json.loads(os.environ["CW_RENDER_SPEC"])
+from qtpy.QtWidgets import QApplication
+from qtpy.QtCore import QByteArray, QBuffer, QIODevice
+app = QApplication.instance() or QApplication([])
+if spec.get("theme", True):
+    try:
+        from Custom_Widgets.JSonStyles.tokens import applyDesignTokens
+        applyDesignTokens(app, theme=spec.get("theme_name", "light"))
+    except Exception:
+        pass
+mod = importlib.import_module(spec["module"])
+widget = getattr(mod, spec["class"])()
+for key, value in (spec.get("props") or {}).items():
+    setter = "set" + key[:1].upper() + key[1:]
+    try:
+        getattr(widget, setter)(value) if hasattr(widget, setter) \
+            else widget.setProperty(key, value)
+    except Exception:
+        widget.setProperty(key, value)
+try:
+    widget.style().unpolish(widget); widget.style().polish(widget)
+except Exception:
+    pass
+w, h = int(spec.get("width") or 0), int(spec.get("height") or 0)
+if w > 0 and h > 0:
+    widget.resize(w, h)
+else:
+    widget.adjustSize()
+    if widget.width() < 2 or widget.height() < 2:
+        widget.resize(widget.sizeHint())
+widget.ensurePolished()
+app.processEvents()
+ba = QByteArray()                 # keep alive: QBuffer holds it by pointer
+buf = QBuffer(ba)
+buf.open(QIODevice.WriteOnly)
+widget.grab().save(buf, "PNG")
+sys.stdout.write(base64.b64encode(bytes(ba)).decode("ascii"))
+"""
+
+
+@mcp.tool(annotations={"title": "Render a widget headless (offscreen)",
+                       "readOnlyHint": True})
+def render_widget(name: str, props: dict = {}, width: int = 0, height: int = 0,
+                  theme: bool = True, theme_name: str = "light") -> Image:
+    """Render ONE Custom_Widgets widget to a PNG headlessly — no Designer, no
+    running app, no display (offscreen Qt). Use it to SEE and self-verify a
+    widget in isolation while writing UI code.
+
+    name        a widget from widgets_catalog (its name or class).
+    props       {prop: value} applied after construction (setter or Qt
+                property); use the enum 'values' from widgets_catalog, e.g.
+                {"text": "Save", "variant": "primary", "sizeVariant": "lg"}.
+    width/height  pixel size; 0 (default) uses the widget's own sizeHint.
+    theme       apply the built token theme QSS so tokenized colours show.
+    theme_name  'light' or 'dark'.
+
+    The widget is constructed with default args in an isolated subprocess (a bad
+    widget can't affect the server); configure it through props."""
+    info = _find_widget(name)
+    spec = {"module": info["module"], "class": info["class"],
+            "props": props or {}, "width": width, "height": height,
+            "theme": theme, "theme_name": theme_name}
+    proc = subprocess.run(
+        [sys.executable, "-c", _RENDER_SCRIPT],
+        cwd=_projectDir(), capture_output=True, text=True, timeout=60,
+        env={**os.environ, "QT_QPA_PLATFORM": "offscreen",
+             "CW_RENDER_SPEC": json.dumps(spec)})
+    data = proc.stdout.strip().splitlines()[-1] if proc.stdout.strip() else ""
+    if proc.returncode != 0 or not data:
+        raise RuntimeError("render failed:\n%s" % (proc.stderr[-2000:] or "no output"))
+    return Image(data=base64.b64decode(data), format="png")
 
 
 ########################################################################

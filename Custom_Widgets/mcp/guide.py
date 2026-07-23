@@ -84,7 +84,13 @@ silently in the background when the user could watch instead.
 == BUILDING PROFESSIONAL SCREENS (how real Custom_Widgets apps are structured) ==
 
 USE THE CUSTOM WIDGETS — that is the whole point of the library; do NOT default
-to plain Qt when a Custom_Widgets class fits. Go-to classes: QCustomSidebar +
+to plain Qt when a Custom_Widgets class fits. To find the right one and how to
+configure it, read the CATALOG first (widgets_catalog tool, or the
+customwidgets://catalog resource): it lists every widget with its properties,
+allowed enum values (variant/sizeVariant/...), signals and design tokens — so you
+never guess a property name or value. Preview any widget in isolation with
+render_widget (headless offscreen PNG, no Designer/app needed) before wiring it
+into a form. Go-to classes: QCustomSidebar +
 QCustomSidebarButton (icon + labelText) and QCustomSidebarLabel for nav;
 QCustomComponent as the root of every embeddable screen; QCustomQStackedWidget
 for animated page routing; QCustomThemeList / QCustomThemeDarkLightToggle for
