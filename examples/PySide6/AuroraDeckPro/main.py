@@ -15,6 +15,7 @@ setProjectRoot(__file__)
 # INSIDE build() so hot reload picks up freshly regenerated modules.
 from Custom_Widgets import *
 from Custom_Widgets.QAppSettings import QAppSettings
+from qtpy.QtWidgets import QApplication
 
 from gui.GuiFunctions import GuiFunctions
 
