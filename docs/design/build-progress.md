@@ -116,10 +116,11 @@ bar the licence hook + native compile.
     `loadProductSansFont`→`loadAppFont` (already loaded OFL Rosario).
   - ✅ **`mock` runtime dep** — confirmed already resolved (not in pyproject, no
     runtime import).
-  - 🔬 **BlurWindow.py provenance** — researched: GWSL = ambiguous "Modified MIT",
-    digsby = PSF-derived permissive, zhiyiYo = unlicensed blog (usually GPLv3).
-    No confirmed copyleft; **clean-room rewrite recommended** (owner decision;
-    needs Windows/macOS to verify).
+  - ✅ **BlurWindow.py** — **clean-room rewritten** from the documented OS APIs
+    (DWM / SetWindowCompositionAttribute, NSVisualEffectView, KWin hint); source
+    header dropped, public API preserved + fail-soft. Removed the provenance risk
+    (GWSL ambiguous "Modified MIT" / zhiyiYo unlicensed). *Windows/macOS blur
+    behaviour still needs on-target verification.*
   - ⏳ **Font Awesome attribution** — CC BY 4.0 text added to the notices;
     in-app/About placement still pending.
   - ⏳ **License-text bundle** (`licenses/`) + confirm all "(verify)" licenses,
