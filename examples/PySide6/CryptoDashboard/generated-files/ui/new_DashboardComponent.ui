@@ -1,0 +1,465 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>DashboardComponent</class>
+ <widget class="QCustomComponent" name="DashboardComponent">
+  <property name="geometry">
+   <rect><x>0</x><y>0</y><width>1280</width><height>840</height></rect>
+  </property>
+  <layout class="QVBoxLayout" name="dashOuter">
+   <property name="spacing"><number>0</number></property>
+   <property name="leftMargin"><number>0</number></property>
+   <property name="topMargin"><number>0</number></property>
+   <property name="rightMargin"><number>0</number></property>
+   <property name="bottomMargin"><number>0</number></property>
+   <item>
+    <widget class="QScrollArea" name="dashScroll">
+     <property name="widgetResizable"><bool>true</bool></property>
+     <property name="frameShape"><enum>QFrame::NoFrame</enum></property>
+     <property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property>
+     <widget class="QWidget" name="dashScrollContents">
+      <property name="geometry"><rect><x>0</x><y>0</y><width>1280</width><height>840</height></rect></property>
+      <layout class="QVBoxLayout" name="dashBody">
+       <property name="spacing"><number>20</number></property>
+       <property name="leftMargin"><number>4</number></property>
+       <property name="topMargin"><number>2</number></property>
+       <property name="rightMargin"><number>4</number></property>
+       <property name="bottomMargin"><number>6</number></property>
+
+       
+       <item>
+        <widget class="QWidget" name="topBar" native="true">
+         <layout class="QHBoxLayout" name="topBarLayout">
+          <property name="spacing"><number>12</number></property>
+          <property name="leftMargin"><number>6</number></property>
+          <property name="topMargin"><number>4</number></property>
+          <property name="rightMargin"><number>6</number></property>
+          <property name="bottomMargin"><number>0</number></property>
+          <item>
+           <widget class="QLabel" name="pageTitle">
+            <property name="text"><string>Dashboard</string></property>
+            <property name="role" stdset="0"><string>pageTitle</string></property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="topBarSpacer">
+            <property name="orientation"><enum>Qt::Horizontal</enum></property>
+            <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QFrame" name="userChip">
+            <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+            <property name="role" stdset="0"><string>userChip</string></property>
+            <layout class="QHBoxLayout" name="userChipLayout">
+             <property name="spacing"><number>10</number></property>
+             <property name="leftMargin"><number>6</number></property>
+             <property name="topMargin"><number>6</number></property>
+             <property name="rightMargin"><number>14</number></property>
+             <property name="bottomMargin"><number>6</number></property>
+             <item>
+              <widget class="QCustomAvatar" name="userAvatar">
+               <property name="minimumSize"><size><width>42</width><height>42</height></size></property>
+               <property name="maximumSize"><size><width>42</width><height>42</height></size></property>
+               <property name="text" stdset="0"><string>A</string></property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" name="userTextCol">
+               <property name="spacing"><number>0</number></property>
+               <item><widget class="QLabel" name="userName"><property name="text"><string>Anna cathcart</string></property><property name="role" stdset="0"><string>userName</string></property></widget></item>
+               <item><widget class="QLabel" name="userId"><property name="text"><string>ID: 32324254</string></property><property name="role" stdset="0"><string>userId</string></property></widget></item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QPushButton" name="userChevron">
+               <property name="minimumSize"><size><width>26</width><height>26</height></size></property>
+               <property name="maximumSize"><size><width>26</width><height>26</height></size></property>
+               <property name="iconSize"><size><width>16</width><height>16</height></size></property>
+               <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
+               <property name="text"><string /></property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+
+       
+       <item>
+        <layout class="QHBoxLayout" name="contentRow" stretch="1,0">
+         <property name="spacing"><number>20</number></property>
+         <property name="leftMargin"><number>6</number></property>
+         <property name="topMargin"><number>0</number></property>
+         <property name="rightMargin"><number>6</number></property>
+         <property name="bottomMargin"><number>4</number></property>
+
+         
+         <item>
+          <layout class="QVBoxLayout" name="leftCol" stretch="0,1">
+           <property name="spacing"><number>20</number></property>
+
+           
+           <item>
+            <widget class="QFrame" name="overviewCard">
+             <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+             <property name="role" stdset="0"><string>card</string></property>
+             <layout class="QVBoxLayout" name="overviewLayout">
+              <property name="spacing"><number>12</number></property>
+              <property name="leftMargin"><number>26</number></property>
+              <property name="topMargin"><number>22</number></property>
+              <property name="rightMargin"><number>26</number></property>
+              <property name="bottomMargin"><number>18</number></property>
+              <item>
+               <layout class="QHBoxLayout" name="overviewHead">
+                <item><widget class="QLabel" name="overviewTitle"><property name="text"><string>Overview of all wallets</string></property><property name="role" stdset="0"><string>cardTitle</string></property></widget></item>
+                <item><spacer name="overviewHeadSpacer"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+                <item>
+                 <widget class="QCustomSegmentedControl" name="rangeControl">
+                  <property name="minimumSize"><size><width>216</width><height>38</height></size></property>
+                  <property name="maximumSize"><size><width>216</width><height>38</height></size></property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="overviewValueRow">
+                <property name="spacing"><number>10</number></property>
+                <item><widget class="QLabel" name="bigValue"><property name="text"><string>0.00263788 BTC</string></property><property name="role" stdset="0"><string>bigValue</string></property></widget></item>
+                <item>
+                 <widget class="QPushButton" name="coinPick">
+                  <property name="minimumSize"><size><width>26</width><height>26</height></size></property>
+                  <property name="maximumSize"><size><width>26</width><height>26</height></size></property>
+                  <property name="iconSize"><size><width>15</width><height>15</height></size></property>
+                  <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
+                  <property name="text"><string /></property>
+                 </widget>
+                </item>
+                <item><widget class="QLabel" name="approxValue"><property name="text"><string>≈ $69.82</string></property><property name="role" stdset="0"><string>approx</string></property></widget></item>
+                <item><spacer name="overviewValueSpacer"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="overviewChangeRow">
+                <property name="spacing"><number>8</number></property>
+                <item><widget class="QCustomTrendChip" name="changeChip"><property name="minimumSize"><size><width>24</width><height>24</height></size></property><property name="maximumSize"><size><width>24</width><height>24</height></size></property><property name="direction" stdset="0"><string>up</string></property><property name="variant" stdset="0"><string>plain</string></property></widget></item>
+                <item><widget class="QLabel" name="changeValue"><property name="text"><string>8.89%</string></property><property name="role" stdset="0"><string>changePos</string></property></widget></item>
+                <item><spacer name="overviewChangeSpacer"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+               </layout>
+              </item>
+              <item>
+               <widget class="QCustomAreaChart" name="overviewChart">
+                <property name="minimumSize"><size><width>0</width><height>172</height></size></property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QWidget" name="timeRow" native="true">
+                <layout class="QHBoxLayout" name="timeRowLayout">
+                 <property name="spacing"><number>0</number></property>
+                 <property name="leftMargin"><number>6</number></property>
+                 <property name="topMargin"><number>0</number></property>
+                 <property name="rightMargin"><number>6</number></property>
+                 <property name="bottomMargin"><number>0</number></property>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+
+           
+           <item>
+            <widget class="QFrame" name="marketCard">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Expanding"><horstretch>0</horstretch><verstretch>1</verstretch></sizepolicy>
+             </property>
+             <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+             <property name="role" stdset="0"><string>card</string></property>
+             <layout class="QVBoxLayout" name="marketLayout">
+              <property name="spacing"><number>14</number></property>
+              <property name="leftMargin"><number>26</number></property>
+              <property name="topMargin"><number>22</number></property>
+              <property name="rightMargin"><number>26</number></property>
+              <property name="bottomMargin"><number>18</number></property>
+              <item>
+               <layout class="QHBoxLayout" name="marketHead">
+                <item><widget class="QLabel" name="marketTitle"><property name="text"><string>Market</string></property><property name="role" stdset="0"><string>cardTitle</string></property></widget></item>
+                <item><spacer name="marketHeadSpacer"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+                <item>
+                 <widget class="QCustomSegmentedControl" name="marketTabs">
+                  <property name="minimumSize"><size><width>268</width><height>38</height></size></property>
+                  <property name="maximumSize"><size><width>268</width><height>38</height></size></property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <widget class="QCustomDataTable" name="marketTable" native="true">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding"><horstretch>0</horstretch><verstretch>1</verstretch></sizepolicy>
+                </property>
+                <property name="minimumSize"><size><width>0</width><height>256</height></size></property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </item>
+
+         
+         <item>
+          <widget class="QWidget" name="rightPanel" native="true">
+           <property name="minimumSize"><size><width>352</width><height>0</height></size></property>
+           <property name="maximumSize"><size><width>368</width><height>16777215</height></size></property>
+           <layout class="QVBoxLayout" name="rightCol" stretch="0,1">
+            <property name="spacing"><number>20</number></property>
+            <property name="leftMargin"><number>0</number></property>
+            <property name="topMargin"><number>0</number></property>
+            <property name="rightMargin"><number>0</number></property>
+            <property name="bottomMargin"><number>0</number></property>
+
+            
+            <item>
+             <widget class="QFrame" name="promoCard">
+              <property name="minimumSize"><size><width>0</width><height>178</height></size></property>
+              <property name="maximumSize"><size><width>16777215</width><height>178</height></size></property>
+              <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+              <property name="role" stdset="0"><string>promoCard</string></property>
+              <layout class="QVBoxLayout" name="promoLayout">
+               <property name="spacing"><number>0</number></property>
+               <property name="leftMargin"><number>26</number></property>
+               <property name="topMargin"><number>24</number></property>
+               <property name="rightMargin"><number>26</number></property>
+               <property name="bottomMargin"><number>22</number></property>
+               <item>
+                <widget class="QLabel" name="promoTitle">
+                 <property name="text"><string>Unlimited access to
+130+ assets</string></property>
+                 <property name="role" stdset="0"><string>promoTitle</string></property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="promoSub">
+                 <property name="text"><string>Start earning today with
+My Container and avg. APY of 10%</string></property>
+                 <property name="role" stdset="0"><string>promoSub</string></property>
+                </widget>
+               </item>
+               <item><spacer name="promoMidSpacer"><property name="orientation"><enum>Qt::Vertical</enum></property><property name="sizeHint" stdset="0"><size><width>10</width><height>10</height></size></property></spacer></item>
+               <item>
+                <layout class="QHBoxLayout" name="promoFoot">
+                 <item><spacer name="promoFootSpacer"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+                 <item>
+                  <widget class="QCustomAvatarGroup" name="promoCoins">
+                   <property name="maxVisible" stdset="0"><number>5</number></property>
+                   <property name="avatarSize" stdset="0"><number>36</number></property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+
+            
+            <item>
+             <widget class="QFrame" name="tradeCard">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Expanding"><horstretch>0</horstretch><verstretch>1</verstretch></sizepolicy>
+              </property>
+              <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+              <property name="role" stdset="0"><string>card</string></property>
+              <layout class="QVBoxLayout" name="tradeLayout">
+               <property name="spacing"><number>12</number></property>
+               <property name="leftMargin"><number>24</number></property>
+               <property name="topMargin"><number>22</number></property>
+               <property name="rightMargin"><number>24</number></property>
+               <property name="bottomMargin"><number>22</number></property>
+               <item><widget class="QLabel" name="tradeTitle"><property name="text"><string>Trade</string></property><property name="role" stdset="0"><string>cardTitle</string></property></widget></item>
+               <item>
+                <widget class="QCustomSegmentedControl" name="tradeTabs">
+                 <property name="minimumSize"><size><width>0</width><height>38</height></size></property>
+                </widget>
+               </item>
+               <item><widget class="QLabel" name="coinLabel"><property name="text"><string>Coin</string></property><property name="role" stdset="0"><string>fieldLabel</string></property></widget></item>
+               <item>
+                <widget class="QFrame" name="coinField">
+                 <property name="minimumSize"><size><width>0</width><height>54</height></size></property>
+                 <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+                 <property name="role" stdset="0"><string>field</string></property>
+                 <layout class="QHBoxLayout" name="coinFieldLayout">
+                  <property name="spacing"><number>10</number></property>
+                  <property name="leftMargin"><number>12</number></property>
+                  <property name="topMargin"><number>6</number></property>
+                  <property name="rightMargin"><number>14</number></property>
+                  <property name="bottomMargin"><number>6</number></property>
+                  <item>
+                   <widget class="QCustomAvatar" name="coinAvatar">
+                    <property name="minimumSize"><size><width>30</width><height>30</height></size></property>
+                    <property name="maximumSize"><size><width>30</width><height>30</height></size></property>
+                    <property name="text" stdset="0"><string>E</string></property>
+                    <property name="showStatus" stdset="0"><bool>false</bool></property>
+                   </widget>
+                  </item>
+                  <item><widget class="QLabel" name="coinName"><property name="text"><string>Ethereum</string></property><property name="role" stdset="0"><string>fieldValue</string></property></widget></item>
+                  <item><widget class="QLabel" name="coinTicker"><property name="text"><string>ETH</string></property><property name="role" stdset="0"><string>fieldMuted</string></property></widget></item>
+                  <item><spacer name="coinFieldSpacer"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+                  <item>
+                   <widget class="QPushButton" name="coinFieldChevron">
+                    <property name="minimumSize"><size><width>22</width><height>22</height></size></property>
+                    <property name="maximumSize"><size><width>22</width><height>22</height></size></property>
+                    <property name="iconSize"><size><width>16</width><height>16</height></size></property>
+                    <property name="text"><string /></property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item><widget class="QLabel" name="amountLabel"><property name="text"><string>Amount</string></property><property name="role" stdset="0"><string>fieldLabel</string></property></widget></item>
+               <item>
+                <widget class="QFrame" name="amountField">
+                 <property name="minimumSize"><size><width>0</width><height>54</height></size></property>
+                 <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+                 <property name="role" stdset="0"><string>field</string></property>
+                 <layout class="QHBoxLayout" name="amountFieldLayout">
+                  <property name="spacing"><number>10</number></property>
+                  <property name="leftMargin"><number>12</number></property>
+                  <property name="topMargin"><number>6</number></property>
+                  <property name="rightMargin"><number>14</number></property>
+                  <property name="bottomMargin"><number>6</number></property>
+                  <item>
+                   <widget class="QCustomAvatar" name="amountBadge">
+                    <property name="minimumSize"><size><width>30</width><height>30</height></size></property>
+                    <property name="maximumSize"><size><width>30</width><height>30</height></size></property>
+                    <property name="text" stdset="0"><string>$</string></property>
+                    <property name="showStatus" stdset="0"><bool>false</bool></property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLineEdit" name="amountEdit">
+                    <property name="text"><string>34994</string></property>
+                    <property name="frame"><bool>false</bool></property>
+                    <property name="role" stdset="0"><string>amountEdit</string></property>
+                   </widget>
+                  </item>
+                  <item><widget class="QLabel" name="amountCurrency"><property name="text"><string>USD</string></property><property name="role" stdset="0"><string>fieldMuted</string></property></widget></item>
+                  <item>
+                   <widget class="QPushButton" name="amountChevron">
+                    <property name="minimumSize"><size><width>22</width><height>22</height></size></property>
+                    <property name="maximumSize"><size><width>22</width><height>22</height></size></property>
+                    <property name="iconSize"><size><width>16</width><height>16</height></size></property>
+                    <property name="text"><string /></property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="tradeRate">
+                 <property name="alignment"><set>Qt::AlignCenter</set></property>
+                 <property name="text"><string>Exchange rate, 1 ETH = 1844.29</string></property>
+                 <property name="role" stdset="0"><string>exchangeRate</string></property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QFrame" name="receiptBox">
+                 <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+                 <property name="role" stdset="0"><string>receipt</string></property>
+                 <layout class="QVBoxLayout" name="receiptLayout">
+                  <property name="spacing"><number>10</number></property>
+                  <property name="leftMargin"><number>16</number></property>
+                  <property name="topMargin"><number>14</number></property>
+                  <property name="rightMargin"><number>16</number></property>
+                  <property name="bottomMargin"><number>14</number></property>
+                  <item>
+                   <layout class="QHBoxLayout" name="promoRow">
+                    <item><widget class="QPushButton" name="promoCodeBtn"><property name="text"><string>Promo Code</string></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="layoutDirection"><enum>Qt::RightToLeft</enum></property><property name="iconSize"><size><width>15</width><height>15</height></size></property><property name="role" stdset="0"><string>link</string></property></widget></item>
+                    <item><spacer name="promoRowSpacer"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="feeRow">
+                    <item><widget class="QLabel" name="feeLabel"><property name="text"><string>Transfer fee:</string></property><property name="role" stdset="0"><string>receiptLabel</string></property></widget></item>
+                    <item><spacer name="feeSpacer"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+                    <item><widget class="QLabel" name="feeValue"><property name="text"><string>2322.40</string></property><property name="role" stdset="0"><string>receiptValue</string></property></widget></item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="recvRow">
+                    <item><widget class="QLabel" name="receivedLabel"><property name="text"><string>You received:</string></property><property name="role" stdset="0"><string>receiptLabel</string></property></widget></item>
+                    <item><spacer name="recvSpacer"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+                    <item><widget class="QLabel" name="receivedValue"><property name="text"><string>$33831.90</string></property><property name="role" stdset="0"><string>receiptBig</string></property></widget></item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item><spacer name="tradeBottomSpacer"><property name="orientation"><enum>Qt::Vertical</enum></property><property name="sizeHint" stdset="0"><size><width>10</width><height>6</height></size></property></spacer></item>
+               <item>
+                <widget class="QCustomQPushButton" name="buyBtn">
+                 <property name="minimumSize"><size><width>0</width><height>52</height></size></property>
+                 <property name="text"><string>Buy ETH</string></property>
+                 <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomComponent</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomComponent</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomSegmentedControl</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomSegmentedControl</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomAreaChart</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomCharts.QCustomAreaChart</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomTrendChip</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomTrendChip</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomAvatar</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomAvatar</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomAvatarGroup</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomAvatarGroup</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomDataTable</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomDataTable</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomQPushButton</class>
+   <extends>QPushButton</extends>
+   <header>Custom_Widgets.QCustomQPushButton</header>
+  </customwidget>
+ <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>
