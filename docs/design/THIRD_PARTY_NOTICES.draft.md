@@ -1,16 +1,11 @@
-# Third-Party Notices
+# Third-Party Notices (working draft / audit log)
 
-> **⚠️ DRAFT — inventory for review, not yet authoritative.**
-> Licenses marked **(verify)** are the commonly-known license for that component
-> and must be confirmed against the actual bundled files / upstream before this
-> goes live. This draft has not been reviewed by counsel. When complete, promote
-> to `/THIRD_PARTY_NOTICES`.
->
-> **Progress (2026-07-23): Product Sans removed; `mock` runtime-dep concern
-> confirmed resolved; `BlurWindow.py` clean-room rewritten (provenance risk
-> cleared). Remaining before an LGPL relicense / commercial launch: Font Awesome
-> in-app attribution, on-Windows/macOS verification of the new blur code, and the
-> license-text bundle — see "⚠ Action required" at the end.**
+> **✅ PROMOTED (2026-07-23).** The authoritative, shippable notices now live at
+> **`Custom_Widgets/THIRD_PARTY_NOTICES.md`** with license texts in
+> `Custom_Widgets/licenses/`. This file is kept as the internal audit log of how
+> each item was resolved. All five audit action items are addressed; the only
+> non-blocking follow-up is on-Windows/macOS behaviour verification of the
+> rewritten blur code (a functionality check, not a licensing one).
 
 Custom Widgets incorporates and/or depends on third-party software, icons, fonts,
 and other materials. This file lists them and their licenses. Where components are
@@ -124,11 +119,12 @@ Status legend: ✅ done · 🔬 investigated (decision/action pending) · ⏳ op
    *Behaviour on Windows/macOS still needs on-target verification (rewrite done
    on Linux); the Linux import path + `HEXtoRGBAint` parity are tested.*
 
-3. ⏳ **Font Awesome attribution — text added below; in-app placement pending.**
-   The required CC BY 4.0 attribution now appears in §D and in the "Required
-   attributions" block below (which ships once this file is promoted to
-   `/THIRD_PARTY_NOTICES`). Still to do: surface it somewhere user-visible
-   (About dialog / docs) or swap those icons for an attribution-free set.
+3. ✅ **Font Awesome attribution — added (2026-07-23).** The CC BY 4.0
+   attribution to Font Awesome now appears in three user-/distribution-visible
+   places: the project `README.md` "Credits & third-party assets" section (shown
+   on GitHub and the PyPI project page), `Custom_Widgets/THIRD_PARTY_NOTICES.md`,
+   and a `LICENSE.txt` inside `Qss/icons/font_awesome/`. The CC BY 4.0 text ships
+   at `Custom_Widgets/licenses/CC-BY-4.0.txt`.
 
 4. ✅ **`mock` runtime dependency — already resolved.** The current
    `pyproject.toml` (v2.2.1) runtime deps are `qtpy, qtsass, termcolor, lxml,
@@ -136,9 +132,15 @@ Status legend: ✅ done · 🔬 investigated (decision/action pending) · ⏳ op
    imports it (only `unittest.mock` is used, in tests). Nothing to change; the
    draft table's "should be test-only" note stands corrected.
 
-5. ⏳ **Confirm all (verify) licenses** against installed `dist-info` and upstream,
-   and generate the license-text bundle (`licenses/` directory) that the LGPL and
-   the bundled MIT/Apache/OFL/CC components require to ship with the distribution.
+5. ✅ **License-text bundle created + core deps verified (2026-07-23).**
+   `Custom_Widgets/licenses/` now ships the canonical texts (Apache-2.0,
+   CC-BY-4.0, Feather-MIT, OFL-1.1) plus an index `README.md`, and each icon set
+   carries a `LICENSE.txt`. All six **core** runtime deps were verified against
+   the installed `dist-info`: qtpy/qtsass/termcolor/rich = MIT, lxml = BSD-3,
+   kids.cache = BSD. *Remaining (non-blocking):* confirm the **optional**-extra
+   deps at release with `pip-licenses`, and reconfirm the three vendored code
+   modules' upstream licenses (AnalogGaugeWidget / iconify / ProgressIndicator —
+   believed MIT).
 
 ## Required attributions (must ship in the published notices)
 

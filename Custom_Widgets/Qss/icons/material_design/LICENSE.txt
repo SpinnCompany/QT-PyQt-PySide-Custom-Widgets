@@ -1,0 +1,8 @@
+Material Design Icons
+=====================
+
+Source: https://github.com/google/material-design-icons
+License: Apache License 2.0 — Copyright Google and contributors
+
+See also the bundled attribution.svg in this directory.
+Full license text: ../../../licenses/Apache-2.0.txt
