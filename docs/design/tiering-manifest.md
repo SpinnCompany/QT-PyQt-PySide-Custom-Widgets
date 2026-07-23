@@ -4,10 +4,16 @@
 `__catalog__` / Designer-registration / `.pyi` coverage per widget). This is the
 launch gate artifact: no free/pro SKU split is locked until every user-facing row
 below is **tested, stable, secure, and tier-classified**, then the whole product
-ships at once. Tiers here are **first-pass proposals for ratification**, not final.
+ships at once.
+
+> **Tiers RATIFIED 2026-07-24:** everything is **free** except the 5 anchors
+> (`free -> Pro`); DataTable Pro is locked, Charts Pro is a candidate. No Pro
+> "watchlist" earmarks - mini data-viz, editors, tree and timeline all stay free
+> for now. `internal` = engine + infrastructure (still open-source, not a
+> sellable widget). Remaining gate work: the per-widget **Stable/Secure** review.
 
 > Regenerate: `python tools/scan_widgets.py`. Presence signals are objective; the
-> **Tier** and **Stable/Secure** judgments are human.
+> tier decisions above are ratified; Stable/Secure remain a human review pass.
 
 ## Coverage summary (108 widget modules)
 
@@ -19,8 +25,8 @@ ships at once. Tiers here are **first-pass proposals for ratification**, not fin
 | Designer-registered | 74/108 (69%) |
 | `.pyi` type stub | 54/108 (50%) |
 
-Breakdown: **5** free-base-with-Pro-extension, **89** free
-standalone, **14** internal/engine (not shipped as standalone).
+Breakdown: **5** free-base-with-Pro-extension, **84** free
+standalone, **19** internal/engine (not shipped as standalone).
 
 ## Legend
 - **Test / Example / Catalog / Designer / .pyi** -- objective presence signals.
@@ -44,22 +50,21 @@ Stay free in the core; the Pro package extends them (never bundles them).
 | `QCustomPieChart` | ✅ | ✅ | — | ✅ | — | 1612 | Custom_Widgets/QCustomCharts/QCustomPieChart.py |
 
 Pro mapping:
-- `QCustomDataTable` -> DataTable Pro (SKU-1, built)
+- `QCustomDataTable` -> DataTable Pro (SKU-1, LOCKED - built)
 - `QCustomAreaChart` -> Charts Pro (SKU-2, candidate)
 - `QCustomLineChart` -> Charts Pro (SKU-2, candidate)
 - `QCustomBarChart` -> Charts Pro (SKU-2, candidate)
 - `QCustomPieChart` -> Charts Pro (SKU-2, candidate)
 
-## Tier: free -- standalone (89)
+## Tier: free -- standalone (84)
 
 | Widget | Test | Example | Catalog | Designer | .pyi | LOC | Module |
 |---|:--:|:--:|:--:|:--:|:--:|--:|---|
 | `AnalogGaugeWidget` | ✅ | ✅ | — | ✅ | — | 1014 | Custom_Widgets/AnalogGaugeWidget.py |
-| `Canvas` | ✅ | — | — | — | — | 547 | Custom_Widgets/QCustomAnnotationWidget.py |
-| `LoadForm` | ✅ | ✅ | — | — | — | 873 | Custom_Widgets/QCustomModals.py |
 | `QCustomAccordion` | ✅ | ✅ | ✅ | ✅ | ✅ | 150 | Custom_Widgets/QCustomAccordion.py |
 | `QCustomActionButton` | ✅ | ✅ | ✅ | ✅ | ✅ | 153 | Custom_Widgets/QCustomActionButton.py |
 | `QCustomAlert` | ✅ | ✅ | ✅ | ✅ | ✅ | 166 | Custom_Widgets/QCustomAlert.py |
+| `QCustomAnnotationWidget` | ✅ | — | — | — | — | 547 | Custom_Widgets/QCustomAnnotationWidget.py |
 | `QCustomAvatar` | ✅ | ✅ | ✅ | ✅ | ✅ | 253 | Custom_Widgets/QCustomAvatar.py |
 | `QCustomAvatarGroup` | ✅ | ✅ | ✅ | ✅ | ✅ | 150 | Custom_Widgets/QCustomAvatarGroup.py |
 | `QCustomBadge` | ✅ | ✅ | ✅ | ✅ | ✅ | 224 | Custom_Widgets/QCustomBadge.py |
@@ -70,7 +75,7 @@ Pro mapping:
 | `QCustomChatDivider` | ✅ | — | ✅ | ✅ | ✅ | 183 | Custom_Widgets/QCustomChatDivider.py |
 | `QCustomChatInput` | ✅ | ✅ | ✅ | ✅ | ✅ | 174 | Custom_Widgets/QCustomChatInput.py |
 | `QCustomChatList` | ✅ | ✅ | ✅ | ✅ | ✅ | 262 | Custom_Widgets/QCustomChatList.py |
-| `QCustomChatListItem` | ✅ | ✅ | ✅ | ✅ | ✅ | 406 | Custom_Widgets/QCustomChatListItem.py |
+| `QCustomChatListItem` | ✅ | ✅ | ✅ | ✅ | ✅ | 396 | Custom_Widgets/QCustomChatListItem.py |
 | `QCustomChatThread` | ✅ | ✅ | ✅ | ✅ | ✅ | 281 | Custom_Widgets/QCustomChatThread.py |
 | `QCustomCheckBox` | ✅ | ✅ | — | ✅ | — | 269 | Custom_Widgets/QCustomCheckBox.py |
 | `QCustomChip` | ✅ | ✅ | ✅ | ✅ | ✅ | 181 | Custom_Widgets/QCustomChip.py |
@@ -78,9 +83,6 @@ Pro mapping:
 | `QCustomColorPicker` | ✅ | ✅ | ✅ | ✅ | ✅ | 139 | Custom_Widgets/QCustomColorPicker.py |
 | `QCustomComboBox` | ✅ | ✅ | ✅ | ✅ | ✅ | 140 | Custom_Widgets/QCustomComboBox.py |
 | `QCustomCommandPalette` | ✅ | ✅ | ✅ | — | ✅ | 247 | Custom_Widgets/QCustomCommandPalette.py |
-| `QCustomComponent` | ✅ | ✅ | — | ✅ | — | 114 | Custom_Widgets/QCustomComponent.py |
-| `QCustomComponentContainer` | ✅ | ✅ | — | ✅ | — | 171 | Custom_Widgets/QCustomComponentContainer.py |
-| `QCustomComponentLoader` | ✅ | — | — | — | — | 678 | Custom_Widgets/QCustomComponentLoader.py |
 | `QCustomDateEdit` | ✅ | ✅ | ✅ | ✅ | ✅ | 181 | Custom_Widgets/QCustomDateTimeEdit.py |
 | `QCustomDonut` | ✅ | ✅ | ✅ | — | ✅ | 241 | Custom_Widgets/QCustomDonut.py |
 | `QCustomDrawer` | ✅ | ✅ | ✅ | — | ✅ | 138 | Custom_Widgets/QCustomDrawer.py |
@@ -97,6 +99,7 @@ Pro mapping:
 | `QCustomLoadingIndicators` | ✅ | ✅ | — | ✅ | — | 7 | Custom_Widgets/QCustomLoadingIndicators.py |
 | `QCustomMediaGrid` | ✅ | ✅ | ✅ | ✅ | ✅ | 189 | Custom_Widgets/QCustomMediaGrid.py |
 | `QCustomMiniBarChart` | ✅ | ✅ | ✅ | ✅ | ✅ | 288 | Custom_Widgets/QCustomMiniBarChart.py |
+| `QCustomModals` | ✅ | ✅ | — | — | — | 873 | Custom_Widgets/QCustomModals.py |
 | `QCustomNumberInput` | ✅ | ✅ | ✅ | ✅ | ✅ | 196 | Custom_Widgets/QCustomNumberInput.py |
 | `QCustomPageDots` | ✅ | ✅ | ✅ | ✅ | ✅ | 236 | Custom_Widgets/QCustomPageDots.py |
 | `QCustomPagination` | ✅ | ✅ | ✅ | ✅ | ✅ | 122 | Custom_Widgets/QCustomPagination.py |
@@ -130,9 +133,7 @@ Pro mapping:
 | `QCustomSwitch` | ✅ | ✅ | ✅ | ✅ | ✅ | 190 | Custom_Widgets/QCustomSwitch.py |
 | `QCustomTableToolbar` | ✅ | ✅ | ✅ | ✅ | ✅ | 541 | Custom_Widgets/QCustomTableToolbar.py |
 | `QCustomTabWidget` | ✅ | ✅ | ✅ | ✅ | ✅ | 76 | Custom_Widgets/QCustomTabWidget.py |
-| `QCustomTheme` | ✅ | ✅ | — | — | — | 1654 | Custom_Widgets/QCustomTheme.py |
 | `QCustomThemeDarkLightToggle` | ✅ | ✅ | — | ✅ | — | 140 | Custom_Widgets/QCustomThemeDarkLightToggle.py |
-| `QCustomThemeList` | ✅ | ✅ | — | ✅ | — | 139 | Custom_Widgets/QCustomThemeList.py |
 | `QCustomTimeline` | ✅ | ✅ | ✅ | ✅ | ✅ | 143 | Custom_Widgets/QCustomTimeline.py |
 | `QCustomTipOverlay` | ✅ | ✅ | — | — | — | 1043 | Custom_Widgets/QCustomTipOverlay.py |
 | `QCustomToast` | ✅ | ✅ | ✅ | — | ✅ | 233 | Custom_Widgets/QCustomToast.py |
@@ -144,7 +145,7 @@ Pro mapping:
 | `QFlowProgressBar` | ✅ | ✅ | — | — | — | 381 | Custom_Widgets/QFlowProgressBar.py |
 | `QTagEdit` | ✅ | — | — | — | — | 269 | Custom_Widgets/QCustomTagEdit.py |
 
-## Internal / engine -- not standalone widgets (14)
+## Internal / engine -- not standalone widgets (19)
 
 Chart-subsystem engine + shared helpers. Ship as free library internals; no
 separate tier. (Most surface through the public chart types above.)
@@ -161,9 +162,14 @@ separate tier. (Most surface through the public chart types above.)
 | `QCustomChartToolbar` | — | — | — | — | — | 511 | Custom_Widgets/QCustomCharts/QCustomChartToolbar.py |
 | `QCustomChartTooltip` | — | — | — | — | — | 415 | Custom_Widgets/QCustomCharts/QCustomChartTooltip.py |
 | `QCustomChartView` | — | — | — | — | — | 483 | Custom_Widgets/QCustomCharts/QCustomChartView.py |
+| `QCustomComponent` | ✅ | ✅ | — | ✅ | — | 114 | Custom_Widgets/QCustomComponent.py |
+| `QCustomComponentContainer` | ✅ | ✅ | — | ✅ | — | 171 | Custom_Widgets/QCustomComponentContainer.py |
+| `QCustomComponentLoader` | ✅ | — | — | — | — | 678 | Custom_Widgets/QCustomComponentLoader.py |
 | `QCustomHorizontalBarSeries` | ✅ | — | — | ✅ | — | 271 | Custom_Widgets/QCustomCharts/QCustomHorizontalBarSeries.py |
 | `QCustomLegendManager` | — | — | — | — | — | 431 | Custom_Widgets/QCustomCharts/QCustomLegendManager.py |
 | `QCustomQLineSeries` | — | — | — | — | — | 127 | Custom_Widgets/QCustomCharts/QCustomQLineSeries.py |
+| `QCustomTheme` | ✅ | ✅ | — | — | — | 1654 | Custom_Widgets/QCustomTheme.py |
+| `QCustomThemeList` | ✅ | ✅ | — | ✅ | — | 139 | Custom_Widgets/QCustomThemeList.py |
 | `QCustomVerticalBarSeries` | ✅ | — | — | ✅ | — | 272 | Custom_Widgets/QCustomCharts/QCustomVerticalBarSeries.py |
 
 ---
@@ -173,17 +179,13 @@ separate tier. (Most surface through the public chart types above.)
 ### Untested user-facing widgets (0) -- highest priority
 
 
-### Missing `__catalog__` entry (40)
+### Missing `__catalog__` entry (35)
 - `AnalogGaugeWidget`
-- `Canvas`
-- `LoadForm`
+- `QCustomAnnotationWidget`
 - `QCustomAreaChart`
 - `QCustomBarChart`
 - `QCustomCheckBox`
 - `QCustomCodeEditor`
-- `QCustomComponent`
-- `QCustomComponentContainer`
-- `QCustomComponentLoader`
 - `QCustomEmbeddedWindow`
 - `QCustomEmojiPicker`
 - `QCustomFlowLayout`
@@ -192,6 +194,7 @@ separate tier. (Most surface through the public chart types above.)
 - `QCustomHorizontalSeparator`
 - `QCustomLineChart`
 - `QCustomLoadingIndicators`
+- `QCustomModals`
 - `QCustomPieChart`
 - `QCustomProgressBars`
 - `QCustomProgressIndicator`
@@ -207,18 +210,15 @@ separate tier. (Most surface through the public chart types above.)
 - `QCustomSidebarContainer`
 - `QCustomSidebarLabel`
 - `QCustomSlideMenu`
-- `QCustomTheme`
 - `QCustomThemeDarkLightToggle`
-- `QCustomThemeList`
 - `QCustomTipOverlay`
 - `QCustomVerticalSeparator`
 - `QFlowProgressBar`
 - `QTagEdit`
 
-### Missing example (10)
-- `Canvas`
+### Missing example (9)
+- `QCustomAnnotationWidget`
 - `QCustomChatDivider`
-- `QCustomComponentLoader`
 - `QCustomHamburgerMenu`
 - `QCustomHorizontalSeparator`
 - `QCustomQRGenerator`

@@ -66,28 +66,6 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomAnnotationWidget.py",
-    "widget": "Canvas",
-    "loc": 547,
-    "pyi": false,
-    "catalog": false,
-    "test": true,
-    "example": false,
-    "designer": false,
-    "tier": "free"
-  },
-  {
-    "module": "Custom_Widgets/QCustomModals.py",
-    "widget": "LoadForm",
-    "loc": 873,
-    "pyi": false,
-    "catalog": false,
-    "test": true,
-    "example": true,
-    "designer": false,
-    "tier": "free"
-  },
-  {
     "module": "Custom_Widgets/QCustomAccordion.py",
     "widget": "QCustomAccordion",
     "loc": 150,
@@ -118,6 +96,17 @@
     "test": true,
     "example": true,
     "designer": true,
+    "tier": "free"
+  },
+  {
+    "module": "Custom_Widgets/QCustomAnnotationWidget.py",
+    "widget": "QCustomAnnotationWidget",
+    "loc": 547,
+    "pyi": false,
+    "catalog": false,
+    "test": true,
+    "example": false,
+    "designer": false,
     "tier": "free"
   },
   {
@@ -233,7 +222,7 @@
   {
     "module": "Custom_Widgets/QCustomChatListItem.py",
     "widget": "QCustomChatListItem",
-    "loc": 406,
+    "loc": 396,
     "pyi": true,
     "catalog": true,
     "test": true,
@@ -315,39 +304,6 @@
     "catalog": true,
     "test": true,
     "example": true,
-    "designer": false,
-    "tier": "free"
-  },
-  {
-    "module": "Custom_Widgets/QCustomComponent.py",
-    "widget": "QCustomComponent",
-    "loc": 114,
-    "pyi": false,
-    "catalog": false,
-    "test": true,
-    "example": true,
-    "designer": true,
-    "tier": "free"
-  },
-  {
-    "module": "Custom_Widgets/QCustomComponentContainer.py",
-    "widget": "QCustomComponentContainer",
-    "loc": 171,
-    "pyi": false,
-    "catalog": false,
-    "test": true,
-    "example": true,
-    "designer": true,
-    "tier": "free"
-  },
-  {
-    "module": "Custom_Widgets/QCustomComponentLoader.py",
-    "widget": "QCustomComponentLoader",
-    "loc": 678,
-    "pyi": false,
-    "catalog": false,
-    "test": true,
-    "example": false,
     "designer": false,
     "tier": "free"
   },
@@ -525,6 +481,17 @@
     "test": true,
     "example": true,
     "designer": true,
+    "tier": "free"
+  },
+  {
+    "module": "Custom_Widgets/QCustomModals.py",
+    "widget": "QCustomModals",
+    "loc": 873,
+    "pyi": false,
+    "catalog": false,
+    "test": true,
+    "example": true,
+    "designer": false,
     "tier": "free"
   },
   {
@@ -891,31 +858,9 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomTheme.py",
-    "widget": "QCustomTheme",
-    "loc": 1654,
-    "pyi": false,
-    "catalog": false,
-    "test": true,
-    "example": true,
-    "designer": false,
-    "tier": "free"
-  },
-  {
     "module": "Custom_Widgets/QCustomThemeDarkLightToggle.py",
     "widget": "QCustomThemeDarkLightToggle",
     "loc": 140,
-    "pyi": false,
-    "catalog": false,
-    "test": true,
-    "example": true,
-    "designer": true,
-    "tier": "free"
-  },
-  {
-    "module": "Custom_Widgets/QCustomThemeList.py",
-    "widget": "QCustomThemeList",
-    "loc": 139,
     "pyi": false,
     "catalog": false,
     "test": true,
@@ -1144,6 +1089,39 @@
     "tier": "internal"
   },
   {
+    "module": "Custom_Widgets/QCustomComponent.py",
+    "widget": "QCustomComponent",
+    "loc": 114,
+    "pyi": false,
+    "catalog": false,
+    "test": true,
+    "example": true,
+    "designer": true,
+    "tier": "internal"
+  },
+  {
+    "module": "Custom_Widgets/QCustomComponentContainer.py",
+    "widget": "QCustomComponentContainer",
+    "loc": 171,
+    "pyi": false,
+    "catalog": false,
+    "test": true,
+    "example": true,
+    "designer": true,
+    "tier": "internal"
+  },
+  {
+    "module": "Custom_Widgets/QCustomComponentLoader.py",
+    "widget": "QCustomComponentLoader",
+    "loc": 678,
+    "pyi": false,
+    "catalog": false,
+    "test": true,
+    "example": false,
+    "designer": false,
+    "tier": "internal"
+  },
+  {
     "module": "Custom_Widgets/QCustomCharts/QCustomHorizontalBarSeries.py",
     "widget": "QCustomHorizontalBarSeries",
     "loc": 271,
@@ -1174,6 +1152,28 @@
     "test": false,
     "example": false,
     "designer": false,
+    "tier": "internal"
+  },
+  {
+    "module": "Custom_Widgets/QCustomTheme.py",
+    "widget": "QCustomTheme",
+    "loc": 1654,
+    "pyi": false,
+    "catalog": false,
+    "test": true,
+    "example": true,
+    "designer": false,
+    "tier": "internal"
+  },
+  {
+    "module": "Custom_Widgets/QCustomThemeList.py",
+    "widget": "QCustomThemeList",
+    "loc": 139,
+    "pyi": false,
+    "catalog": false,
+    "test": true,
+    "example": true,
+    "designer": true,
     "tier": "internal"
   },
   {
