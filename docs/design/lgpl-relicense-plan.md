@@ -132,8 +132,11 @@ license contributions under *other* terms (including proprietary). So:
       flip*
 - [ ] Land CLA + CLA bot + `CONTRIBUTING.md` (gates new contributions) — drafts
       ready in `docs/design/`; counsel to review the §2 relicense grant first
-- [ ] Execute relicense mechanics (COPYING.LESSER, LICENSE, `pyproject.toml`,
-      SPDX headers, README) — **only after legal review**
+- [x] **Prepare** the relicense mechanics as a ready-to-run kit — **done**,
+      `docs/relicense/changeset/` (`apply_relicense.py`, dry-run verified: 198
+      SPDX stamps, vendored/generated excluded, live tree untouched)
+- [ ] **Execute** the kit (`apply_relicense.py --apply`) — **only after legal
+      review**; commit as a single "Relicense to LGPLv3"
 - [ ] Record consents in `docs/relicense/`
 - [ ] Promote `LICENSING.md`; announce the change
 

@@ -138,6 +138,9 @@ bar the licence hook + native compile.
     imports + 3 tool-generated example lines); 4/5 externals have **zero**
     surviving lines. Consent axis effectively clear pending counsel.
   - ✅ Ready-to-post consent tracking issue + template.
+  - ✅ **Relicense changeset staged** (`docs/relicense/changeset/`): dry-run-tested
+    `apply_relicense.py` + COPYING/COPYING.LESSER/LICENSE — ready to run after
+    counsel sign-off (not applied; live tree stays GPL).
   - ⏳ **Counsel review** of the de-minimis calls → then execute the flip
     (COPYING.LESSER, LICENSE, `pyproject.toml`, SPDX, README) and land the
     CLA + bot + CONTRIBUTING.md + promote LICENSING.md. Drafts ready in
@@ -178,6 +181,25 @@ In-repo code batch (**done**):
   end-to-end against a live pyside6-designer** (open → paint on → screenshot →
   paint off, all over the bridge). This closes the original "live GUI
   verification" gap.
+- **Running-app observe + navigate** — the app `runApp` launches is a separate
+  process Designer couldn't see into. It now hosts an in-app control server
+  (`Custom_Widgets/AppControl.py`, per-project socket, auto-started by
+  `QAppSettings.updateAppSettings` when the dev server sets
+  `CUSTOM_WIDGETS_APP_CONTROL=1`). Nine MCP tools drive it: `app_status`,
+  `app_list_windows`, `app_screenshot`, `app_object_tree`, `app_find`,
+  `app_click`, `app_set_text`, `app_set_property`, `app_invoke`. Headless-tested
+  (`tests/test_app_control.py`) and **verified live** — screenshotted the real
+  running window, toggled a checkbox, and set a QLineEdit, all observed via
+  screenshot. Agents can now SEE and DRIVE the running app, not just Designer.
+- **Bridge quirk fixes** (verified live) — `openFiles` dedupes (reveals an
+  already-open form instead of duplicating it); `getScreenShot type=current`
+  follows `activeFormWindow()` instead of `forms[0]`.
+- **SCSS unresolved-import error** — a dangling `@import` (e.g. a leftover
+  `@import 'custom'`) made qtsass fail opaquely and `applyCompiledSass` silently
+  fall back to STALE CSS (wrong/"red" theme). Now `tokens.find_unresolved_imports`
+  / `describe_scss_compile_error` surface a clear "…could not be resolved…"
+  message at both apply sites; the demo's stray import was removed.
+  (`tests/test_design_tokens.py::TestScssImportDiagnostics`.)
 
 Still open:
 
@@ -185,7 +207,7 @@ Still open:
   `.ui` auto-resolve, hot reload (component + main-window), the QSS/Theme editor,
   Paint entire Designer, and the new MCP tools (`designer_new_form`,
   `designer_list_templates`, `designer_list_dialogs`, `designer_qss_window`,
-  `designer_qss_screenshot`, `entireApp`).
+  `designer_qss_screenshot`, the `app_*` running-app tools, `entireApp`).
 
 See: `modernization-roadmap.md`, `commercial-product.md`, `variant-token-system.md`,
 `datatable-pro-spec.md`, `lgpl-relicense-plan.md`, `THIRD_PARTY_NOTICES.draft.md`,
