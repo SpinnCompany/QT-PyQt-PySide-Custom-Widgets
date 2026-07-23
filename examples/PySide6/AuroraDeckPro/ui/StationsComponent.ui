@@ -5,13 +5,39 @@
   <property name="geometry">
    <rect><x>0</x><y>0</y><width>940</width><height>680</height></rect>
   </property>
-  <layout class="QVBoxLayout" name="stationsRoot">
-   <property name="spacing"><number>14</number></property>
-   <property name="leftMargin"><number>24</number></property>
-   <property name="topMargin"><number>24</number></property>
-   <property name="rightMargin"><number>24</number></property>
-   <property name="bottomMargin"><number>24</number></property>
-   <item>
+  <layout class="QVBoxLayout" name="StationsOuter">
+ <property name="spacing"><number>0</number></property>
+ <property name="leftMargin"><number>0</number></property>
+ <property name="topMargin"><number>0</number></property>
+ <property name="rightMargin"><number>0</number></property>
+ <property name="bottomMargin"><number>0</number></property>
+ <item>
+  <widget class="QScrollArea" name="StationsScroll">
+   <property name="widgetResizable"><bool>true</bool></property>
+   <property name="frameShape"><enum>QFrame::NoFrame</enum></property>
+   <property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property>
+   <widget class="QWidget" name="StationsScrollContents">
+    <property name="geometry"><rect><x>0</x><y>0</y><width>1200</width><height>760</height></rect></property>
+    <layout class="QHBoxLayout" name="StationsCenterRow">
+     <property name="spacing"><number>0</number></property>
+     <property name="leftMargin"><number>28</number></property>
+     <property name="topMargin"><number>24</number></property>
+     <property name="rightMargin"><number>28</number></property>
+     <property name="bottomMargin"><number>24</number></property>
+     <item>
+      <spacer name="StationsLeftSp"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>0</width><height>0</height></size></property></spacer>
+     </item>
+     <item>
+      <widget class="QWidget" name="StationsColumn" native="true">
+       <property name="sizePolicy"><sizepolicy hsizetype="Expanding" vsizetype="Preferred"><horstretch>20</horstretch><verstretch>0</verstretch></sizepolicy></property>
+       <property name="maximumSize"><size><width>1360</width><height>16777215</height></size></property>
+       <layout class="QVBoxLayout" name="StationsColLayout">
+        <property name="spacing"><number>14</number></property>
+        <property name="leftMargin"><number>0</number></property>
+        <property name="topMargin"><number>0</number></property>
+        <property name="rightMargin"><number>0</number></property>
+        <property name="bottomMargin"><number>0</number></property>
+       <item>
     <layout class="QVBoxLayout" name="stationsHeader">
      <property name="spacing"><number>2</number></property>
      <item>
@@ -87,7 +113,7 @@
          <widget class="QLineEdit" name="searchBox">
           <property name="minimumSize"><size><width>180</width><height>0</height></size></property>
           <property name="maximumSize"><size><width>180</width><height>16777215</height></size></property>
-          <property name="placeholderText"><string>Search&#8230;</string></property>
+          <property name="placeholderText"><string>Search…</string></property>
          </widget>
         </item>
        </layout>
@@ -120,14 +146,23 @@
       <item>
        <widget class="QLabel" name="stationsStatus">
         <property name="role" stdset="0"><string>muted</string></property>
-        <property name="text"><string/></property>
+        <property name="text"><string /></property>
        </widget>
       </item>
      </layout>
     </widget>
    </item>
   </layout>
- </widget>
+      </widget>
+     </item>
+     <item>
+      <spacer name="StationsRightSp"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>0</width><height>0</height></size></property></spacer>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+ </item>
+</layout></widget>
  <customwidgets>
   <customwidget><class>QCustomComponent</class><extends>QWidget</extends><header>Custom_Widgets.QCustomComponent</header><container>1</container></customwidget>
   <customwidget><class>QCustomComboBox</class><extends>QComboBox</extends><header>Custom_Widgets.QCustomComboBox</header></customwidget>
@@ -136,6 +171,6 @@
   <customwidget><class>QCustomRangeSlider</class><extends>QWidget</extends><header>Custom_Widgets.QCustomRangeSlider</header></customwidget>
   <customwidget><class>QCustomDataTable</class><extends>QWidget</extends><header>Custom_Widgets.QCustomDataTable</header></customwidget>
  </customwidgets>
- <resources/>
- <connections/>
+ <resources />
+ <connections />
 </ui>
