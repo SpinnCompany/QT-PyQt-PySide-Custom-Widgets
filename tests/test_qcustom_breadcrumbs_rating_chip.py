@@ -92,3 +92,16 @@ class TestChips:
         assert c.property("selected") is False
         c.setSelected(True)
         assert c.isSelected() and c.property("selected") is True
+
+    def test_chip_pill_radius_tracks_height(self, qapp):
+        # Qt does not clamp an oversized border-radius, so the chip sets its
+        # own radius to half its height (a pill). Applied at construction and
+        # on every resize.
+        from Custom_Widgets.QCustomChip import QCustomChip
+        c = QCustomChip("Tag")
+        assert c._pill_r == c.height() // 2
+        assert "border-radius: %dpx" % c._pill_r in c.styleSheet()
+        c.setFixedHeight(40)                   # taller -> larger radius
+        c._applyPillRadius()
+        assert c._pill_r == 20
+        assert "border-radius: 20px" in c.styleSheet()

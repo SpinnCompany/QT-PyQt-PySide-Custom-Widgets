@@ -48,6 +48,29 @@ class QCustomChip(QWidget):
             self._close.clicked.connect(self.removed)
             row.addWidget(self._close)
 
+        # Apply an initial pill radius from the size hint so the shape is
+        # correct even before the first layout-driven resize.
+        self._pill_r = None
+        self.adjustSize()
+        self._applyPillRadius()
+
+    def resizeEvent(self, e):
+        super().resizeEvent(e)
+        self._applyPillRadius()
+
+    def _applyPillRadius(self):
+        """Qt QSS does not clamp an oversized border-radius (it renders square
+        instead of a pill), so `radius.full` cannot produce a pill on its own.
+        Set the radius to half the actual height here; colours still come from
+        the app-level token QSS (a widget-local stylesheet composes with it)."""
+        r = max(0, self.height() // 2)
+        if getattr(self, "_pill_r", None) == r:
+            return
+        self._pill_r = r
+        self.setStyleSheet(
+            "QCustomChip { border-radius: %dpx; }"
+            " QCustomChip #chipClose { border-radius: 8px; }" % r)
+
     def text(self):
         return self._text
 
