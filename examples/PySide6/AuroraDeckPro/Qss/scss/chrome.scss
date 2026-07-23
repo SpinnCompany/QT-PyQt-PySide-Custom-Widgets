@@ -13,25 +13,34 @@ QCustomComponent {
 }
 
 /* --- Elevated surfaces (big radius; frameShape=StyledPanel required) ------ */
+/* Soft, borderless cards — elevation is carried by fill + the code-applied
+   drop shadow (like the reference), NOT an outline. Big radius. */
 QFrame[role="card"], QCustomStatCard {
     background-color: $COLOR_BACKGROUND_1;
-    border: 1px solid $COLOR_TEXT_4;
-    border-radius: 18px;
-}
-QFrame[role="card"]:hover {
-    border: 1px solid $COLOR_ACCENT_1;
-}
-/* Hero = the feature block: accent-tinted gradient + accent edge for rhythm */
-QFrame[role="hero"] {
-    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-        stop:0 $COLOR_BACKGROUND_1, stop:1 $COLOR_BACKGROUND_2);
-    border: 1px solid $COLOR_ACCENT_1;
+    border: none;
     border-radius: 22px;
 }
+QFrame[role="card"]:hover {
+    background-color: $COLOR_BACKGROUND_2;
+}
+/* Big, confident KPI numbers (the reference's oversized stats). */
+QCustomStatCard #statLabel   { background: transparent; color: $COLOR_TEXT_3; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; }
+QCustomStatCard #statValue   { background: transparent; color: $COLOR_TEXT_1; font-size: 36px; font-weight: 800; letter-spacing: -1px; }
+QCustomStatCard #statCaption { background: transparent; color: $COLOR_TEXT_3; font-size: 12px; }
+QCustomStatCard #statDelta   { background: transparent; color: $COLOR_ACCENT_1; font-weight: 700; }
+/* Hero = the bold accent COLOUR BLOCK (the "wow" anchor, like the reference's
+   coloured calendar). Accent gradient fill, dark text. */
+QFrame[role="hero"] {
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 $COLOR_ACCENT_2, stop:0.55 $COLOR_ACCENT_1, stop:1 $COLOR_ACCENT_2);
+    border: none;
+    border-radius: 24px;
+}
+QFrame[role="hero"] QLabel { background: transparent; color: #0a1120; }
 QFrame[role="panel"] {
     background-color: $COLOR_BACKGROUND_1;
-    border: 1px solid $COLOR_TEXT_4;
-    border-radius: 18px;
+    border: none;
+    border-radius: 22px;
 }
 QFrame[role="toolbar"] {
     background-color: $COLOR_BACKGROUND_2;
@@ -42,7 +51,7 @@ QFrame[role="toolbar"] {
 /* --- Typography roles — big confident hierarchy (bg transparent so labels
        never paint an opaque box over gradient/card surfaces) --------------- */
 QLabel[role="kicker"] { background: transparent; color: $COLOR_ACCENT_1; font-weight: 800; font-size: 11px; letter-spacing: 2px; }
-QLabel[role="h1"]     { background: transparent; color: $COLOR_TEXT_1; font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+QLabel[role="h1"]     { background: transparent; color: $COLOR_TEXT_1; font-size: 30px; font-weight: 800; letter-spacing: -0.5px; }
 QLabel[role="h2"]     { background: transparent; color: $COLOR_TEXT_1; font-size: 17px; font-weight: 700; }
 QLabel[role="body"]   { background: transparent; color: $COLOR_TEXT_1; }
 QLabel[role="muted"]  { background: transparent; color: $COLOR_TEXT_3; }

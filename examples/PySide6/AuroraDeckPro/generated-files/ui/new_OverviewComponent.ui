@@ -106,36 +106,36 @@
             <property name="autoFillHeight" stdset="0"><bool>false</bool></property>
             <property name="justifySpacing" stdset="0"><bool>false</bool></property>
             <widget class="QCustomStatCard" name="statLive">
-             <property name="geometry"><rect><x>0</x><y>0</y><width>300</width><height>112</height></rect></property>
-             <property name="minimumSize"><size><width>300</width><height>112</height></size></property>
-             <property name="maximumSize"><size><width>300</width><height>112</height></size></property>
+             <property name="geometry"><rect><x>0</x><y>0</y><width>300</width><height>150</height></rect></property>
+             <property name="minimumSize"><size><width>300</width><height>150</height></size></property>
+             <property name="maximumSize"><size><width>300</width><height>150</height></size></property>
              <property name="label" stdset="0"><string>STATIONS LIVE</string></property>
              <property name="value" stdset="0"><string>8 / 12</string></property>
              <property name="caption" stdset="0"><string>Arctic belt</string></property>
              <property name="trend" stdset="0"><string>up</string></property>
             </widget>
             <widget class="QCustomStatCard" name="statKp">
-             <property name="geometry"><rect><x>316</x><y>0</y><width>300</width><height>112</height></rect></property>
-             <property name="minimumSize"><size><width>300</width><height>112</height></size></property>
-             <property name="maximumSize"><size><width>300</width><height>112</height></size></property>
+             <property name="geometry"><rect><x>316</x><y>0</y><width>300</width><height>150</height></rect></property>
+             <property name="minimumSize"><size><width>300</width><height>150</height></size></property>
+             <property name="maximumSize"><size><width>300</width><height>150</height></size></property>
              <property name="label" stdset="0"><string>PLANETARY Kp</string></property>
              <property name="value" stdset="0"><string>6.2</string></property>
              <property name="caption" stdset="0"><string>G2 watch</string></property>
              <property name="trend" stdset="0"><string>up</string></property>
             </widget>
             <widget class="QCustomStatCard" name="statOdds">
-             <property name="geometry"><rect><x>632</x><y>0</y><width>300</width><height>112</height></rect></property>
-             <property name="minimumSize"><size><width>300</width><height>112</height></size></property>
-             <property name="maximumSize"><size><width>300</width><height>112</height></size></property>
+             <property name="geometry"><rect><x>632</x><y>0</y><width>300</width><height>150</height></rect></property>
+             <property name="minimumSize"><size><width>300</width><height>150</height></size></property>
+             <property name="maximumSize"><size><width>300</width><height>150</height></size></property>
              <property name="label" stdset="0"><string>AURORA ODDS</string></property>
              <property name="value" stdset="0"><string>87%</string></property>
              <property name="caption" stdset="0"><string>≥65°N</string></property>
              <property name="trend" stdset="0"><string>up</string></property>
             </widget>
             <widget class="QCustomStatCard" name="statClear">
-             <property name="geometry"><rect><x>948</x><y>0</y><width>300</width><height>112</height></rect></property>
-             <property name="minimumSize"><size><width>300</width><height>112</height></size></property>
-             <property name="maximumSize"><size><width>300</width><height>112</height></size></property>
+             <property name="geometry"><rect><x>948</x><y>0</y><width>300</width><height>150</height></rect></property>
+             <property name="minimumSize"><size><width>300</width><height>150</height></size></property>
+             <property name="maximumSize"><size><width>300</width><height>150</height></size></property>
              <property name="label" stdset="0"><string>CLEAR SKIES</string></property>
              <property name="value" stdset="0"><string>5</string></property>
              <property name="caption" stdset="0"><string>cloud moving in</string></property>
