@@ -170,8 +170,9 @@ class DashboardManager(PageManager):
         except TypeError:
             c.addSeries("Wallet", list(zip(xs, D.OVERVIEW_SERIES)))
         try:
+            c.setAreaBorderEdges(False)   # no vertical closing walls; crisp top line only
             c.setGradientFill(True)
-            c.setFillOpacity(0.16)
+            c.setFillOpacity(0.22)
         except Exception:
             pass
         lo, hi = min(D.OVERVIEW_SERIES), max(D.OVERVIEW_SERIES)
