@@ -24,7 +24,6 @@ from Custom_Widgets.QCustomQStackedWidget import QCustomQStackedWidget
 from Custom_Widgets.QCustomSidebar import QCustomSidebar
 from Custom_Widgets.QCustomSidebarButton import QCustomSidebarButton
 from Custom_Widgets.QCustomSidebarLabel import QCustomSidebarLabel
-from Custom_Widgets.QCustomThemeDarkLightToggle import QCustomThemeDarkLightToggle
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
@@ -120,9 +119,10 @@ class Ui_MainWindow(object):
 
         self.sidebarLayout.addItem(self.sidebarSpacer)
 
-        self.themeToggle = QCustomThemeDarkLightToggle(self.sidebar)
+        self.themeToggle = QPushButton(self.sidebar)
         self.themeToggle.setObjectName(u"themeToggle")
         self.themeToggle.setMinimumSize(QSize(0, 36))
+        self.themeToggle.setIconSize(QSize(18, 18))
 
         self.sidebarLayout.addWidget(self.themeToggle)
 
@@ -183,7 +183,7 @@ class Ui_MainWindow(object):
         self.navAnalytics.setProperty(u"labelText", QCoreApplication.translate("MainWindow", u"Analytics", None))
         self.navGallery.setProperty(u"labelText", QCoreApplication.translate("MainWindow", u"Gallery", None))
         self.navSettings.setProperty(u"labelText", QCoreApplication.translate("MainWindow", u"Settings", None))
-        self.themeToggle.setText(QCoreApplication.translate("MainWindow", u"Theme", None))
+        self.themeToggle.setText(QCoreApplication.translate("MainWindow", u"  Light theme", None))
         self.overviewContainer.setProperty(u"filePath", QCoreApplication.translate("MainWindow", u"ui/OverviewComponent.ui", None))
         self.stationsContainer.setProperty(u"filePath", QCoreApplication.translate("MainWindow", u"ui/StationsComponent.ui", None))
         self.forecastContainer.setProperty(u"filePath", QCoreApplication.translate("MainWindow", u"ui/ForecastComponent.ui", None))
