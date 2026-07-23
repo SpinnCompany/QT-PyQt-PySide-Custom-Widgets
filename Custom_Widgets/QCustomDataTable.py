@@ -22,6 +22,7 @@ from enum import IntEnum
 from qtpy.QtCore import (
     Qt, QModelIndex, QAbstractTableModel, QAbstractProxyModel,
     QSortFilterProxyModel, Signal, Property, QSize, QRect, QRectF, QPointF,
+    QEvent, QTimer,
 )
 from qtpy.QtGui import QColor, QFont, QPainter, QPen
 from qtpy.QtWidgets import (
@@ -846,7 +847,18 @@ class QCustomDataTableDelegate(QStyledItemDelegate):
                 if s_bold is not None:
                     bold = s_bold
             f = QFont(option.font)
-            f.setPointSizeF(max(1.0, option.font.pointSizeF() + scale))
+            # `scale` is a delta in points. Apply it in the font's OWN unit:
+            # on Linux/xcb the default font is often pixel-sized, so
+            # pointSizeF() returns -1 and adding to it would collapse the
+            # subtitle to ~1pt (invisible) — the real-display-only bug where the
+            # second line vanished. Scale the pixel size instead (1pt ~= 96/72 px).
+            ps = option.font.pointSizeF()
+            if ps > 0:
+                f.setPointSizeF(max(1.0, ps + scale))
+            else:
+                px = option.font.pixelSize()
+                if px > 0:
+                    f.setPixelSize(max(1, int(round(px + scale * (96.0 / 72.0)))))
             if bold is not None:
                 f.setBold(bold)
             painter.setFont(f)
@@ -1150,6 +1162,16 @@ class QCustomDataTable(QWidget):
         self._selModel = None
         self._lastPage = -1
 
+        # Flex column: the data column that absorbs slack so the table fills its
+        # width, yet NEVER collapses its content — when the viewport is too
+        # narrow it holds a floor and the table scrolls instead. This replaces a
+        # raw QHeaderView.Stretch on the last data column (which starves to 0 at
+        # small widths and hides its text). Defaults preserve the old look.
+        self._flexColumn = -1        # explicit DATA-column index (-1 = auto: last)
+        self._flexMinWidth = 120     # the flex column never shrinks below this
+        self._autoFlex = True        # manage a flex column at all
+        self._flexViewCol = -1       # resolved VIEW-column index (internal)
+
         # model chain: model -> sort/filter -> (pagination) -> view
         self._model = self._createModel()
         # keep the select-all header + listeners in sync with checkbox state
@@ -1203,6 +1225,8 @@ class QCustomDataTable(QWidget):
         self._delegate = self._createDelegate()
         self._view.setItemDelegate(self._delegate)
         self._view.setMouseTracking(True)   # so the ⋮ cell can react to hover
+        # re-balance the flex column whenever the viewport width changes
+        self._view.viewport().installEventFilter(self)
         layout.addWidget(self._view)
 
         self._footer = QWidget(self)
@@ -1309,9 +1333,10 @@ class QCustomDataTable(QWidget):
         off = self._model._selOffset()
         header.setSortableColumns(
             {i + off for i, c in enumerate(self._model.columns()) if c.sortable})
-        # a trailing actions column must stay narrow, so don't stretch the last
-        # section; otherwise let the last data column fill the width.
-        header.setStretchLastSection(actCol < 0)
+        # We size the flex column MANUALLY (see _applyFlexWidth), so the header's
+        # own last-section stretch must be off — otherwise it fights our sizing
+        # and can still starve a column to 0 at small widths.
+        header.setStretchLastSection(False)
         for i in range(n):
             if i in (selCol, actCol):
                 header.setSectionResizeMode(i, QHeaderView.Fixed)
@@ -1319,13 +1344,79 @@ class QCustomDataTable(QWidget):
             else:
                 header.setSectionResizeMode(i, QHeaderView.Interactive)
         self._applyColumnWidths()
-        # with an actions column pinned last, stretch the final DATA column so
-        # the table still fills its width.
-        if actCol > 0:
-            stretch = actCol - 1
-            if stretch != selCol and stretch >= 0:
-                header.setSectionResizeMode(stretch, QHeaderView.Stretch)
+        # Resolve + apply the flex column: it fills remaining width on wide
+        # viewports but never collapses below _flexMinWidth (table scrolls).
+        self._flexViewCol = self._resolveFlexViewCol(n, selCol, actCol)
+        self._applyFlexWidth()
         self._syncHeaderCheckState()
+
+    def _resolveFlexViewCol(self, n, selCol, actCol):
+        """Which VIEW column absorbs slack. Auto = the last DATA column (the one
+        just before a trailing actions column, or the final column otherwise).
+        An explicit _flexColumn is a DATA-column index, offset past the select
+        column. Returns -1 when there is no eligible data column."""
+        if not self._autoFlex or n <= 0:
+            return -1
+        off = self._model._selOffset()
+        lastData = (actCol - 1) if actCol > 0 else (n - 1)
+        if self._flexColumn is not None and self._flexColumn >= 0:
+            cand = self._flexColumn + off
+        else:
+            cand = lastData
+        # must be a real, non-synthetic data column
+        if cand <= selCol or cand == actCol or cand < 0 or cand >= n:
+            cand = lastData
+        if cand <= selCol or cand == actCol or cand < 0 or cand >= n:
+            return -1
+        return cand
+
+    def _applyFlexWidth(self):
+        """Grow/shrink the flex column so the columns fill the viewport, clamped
+        so the flex column never drops below _flexMinWidth (then the horizontal
+        scrollbar takes over instead of hiding the column's content)."""
+        if not self._autoFlex:
+            return
+        flex = self._flexViewCol
+        vm = self._view.model()
+        n = vm.columnCount() if vm is not None else 0
+        if flex is None or flex < 0 or flex >= n:
+            return
+        header = self._hheader
+        avail = self._view.viewport().width()
+        if avail <= 0:
+            return
+        others = sum(header.sectionSize(i) for i in range(n) if i != flex)
+        target = max(int(self._flexMinWidth), avail - others)
+        if header.sectionSize(flex) != target:
+            header.resizeSection(flex, target)
+
+    def eventFilter(self, obj, event):
+        if (event.type() == QEvent.Resize and self._view is not None
+                and obj is self._view.viewport()):
+            # defer so section sizes settle before we recompute the remainder
+            QTimer.singleShot(0, self._applyFlexWidth)
+        return super().eventFilter(obj, event)
+
+    # ------------------------------------------------------------------ #
+    ## Flex-column customization (opt-in; defaults preserve the old look)
+    # ------------------------------------------------------------------ #
+    def setFlexColumn(self, dataColumnIndex):
+        """Choose which DATA column (0-based, ignoring the select column) fills
+        remaining width. -1 = auto (the last data column)."""
+        self._flexColumn = int(dataColumnIndex)
+        self._configureColumns()
+
+    def setFlexMinWidth(self, px):
+        """Floor width the flex column never shrinks below (table scrolls once
+        the viewport can't fit it). Default 120."""
+        self._flexMinWidth = max(0, int(px))
+        self._applyFlexWidth()
+
+    def setAutoFlex(self, on):
+        """Enable/disable managed flex sizing. When off, columns keep their
+        configured widths and the table scrolls horizontally as needed."""
+        self._autoFlex = bool(on)
+        self._configureColumns()
 
     def _repolish(self):
         self.style().unpolish(self)
