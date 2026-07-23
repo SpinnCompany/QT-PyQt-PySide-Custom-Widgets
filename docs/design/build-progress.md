@@ -107,10 +107,9 @@ bar the licence hook + native compile.
 
 - ~~More free widgets (switch, number-stepper, alert, stat card, progress ring,
   card, badge)~~ **done** — 6 added + `QBadgeWidget` modernized into
-  `QCustomBadge` (clean break; legacy file removed). Further ideas: splitter,
-  carousel, kbd. **Migration note owed in the docs repo** (QBadgeWidget →
-  QCustomBadge: `variant`/`sizeVariant`/count/dot instead of
-  `backgroundColor`/`textColor`).
+  `QCustomBadge` (clean break; legacy file removed). Docs-repo migration note +
+  `QCustomBadge` page written (v3-migration.md, `#qbadgewidget-to-qcustombadge`).
+  Further ideas: splitter, carousel, kbd.
 - **Compliance fixes before any launch** (see THIRD_PARTY_NOTICES.draft.md):
   remove bundled **Product Sans** (proprietary), verify **BlurWindow.py** provenance,
   Font Awesome attribution, `mock` runtime dep.
@@ -118,5 +117,39 @@ bar the licence hook + native compile.
   promote LICENSING.md — then real Gumroad/LemonSqueezy/Patreon verification.
 - Go-to-market: refocus the YouTube channel, PPP price ladder, point-of-need selling.
 
+## Designer follow-ups
+
+In-repo code batch (**done**):
+
+- **Container `.ui` back-compat** — the component loader accepts compiled `.py`
+  only, but `QCustomComponentContainer`/`QCustomComponentLoader` now transparently
+  resolve a `filePath` that still points at a raw `.ui` to the sibling
+  `ui_<stem>.py` (`_resolve_ui_to_compiled`: checks alongside the `.ui`, then the
+  default `src/` output dir). Users' existing forms load with no edit; only a
+  form with no compiled module at all is rejected (with a clearer message).
+  Covered by `tests/test_component_loader_resolve.py`.
+- **Hot reload in new projects** — ProjectMaker's `components/python/main.py`
+  template now uses the `build()` + `enable_hot_reload(self, self.build)` pattern
+  (Ui import moved *inside* `build()`), so generated apps get main-window hot
+  reload for free.
+- **Polish** — designer faulthandler log truncates on startup with a timestamped
+  session header (stale dumps no longer read as current); the benign
+  "already deleted" selection-read `RuntimeError` on form replace is swallowed
+  silently; `examples/svg_icons_demo/ui/testnew.ui` **kept** — it is the inner
+  form of the nested-container demo (`mainwindow.ui` → `ui_newtest.py` →
+  `ui_testnew.py`), not stray.
+
+Still open:
+
+- **Live GUI verification of the QSS/theming window** — add a bridge/MCP method
+  to drive the floating QSS Editor window (open, toggle "Paint entire Designer",
+  screenshot by objectName) so that surface is MCP-verifiable; the bridge can't
+  currently click QToolButtons/checkboxes or screenshot a separate top-level.
+- **User-facing docs** (Docusaurus repo) — pages for container `.py`-only +
+  `.ui` auto-resolve, hot reload (component + main-window), the QSS/Theme editor,
+  Paint entire Designer, and the new MCP tools (`designer_new_form`,
+  `designer_list_templates`, `designer_list_dialogs`, `entireApp`).
+
 See: `modernization-roadmap.md`, `commercial-product.md`, `variant-token-system.md`,
-`datatable-pro-spec.md`, `lgpl-relicense-plan.md`, `THIRD_PARTY_NOTICES.draft.md`.
+`datatable-pro-spec.md`, `lgpl-relicense-plan.md`, `THIRD_PARTY_NOTICES.draft.md`,
+`designer-theming-tooling.md`.
