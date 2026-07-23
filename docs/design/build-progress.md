@@ -130,8 +130,19 @@ bar the licence hook + native compile.
     verified (MIT/BSD).
   - *Non-blocking follow-ups:* confirm optional-extra + 3 vendored-code licenses
     at release; on-Windows/macOS functionality check of the new blur code.
-- **Licensing prerequisites**: CLA + GPLv3→LGPLv3 relicense (owner holds ~97.6%),
-  promote LICENSING.md — then real Gumroad/LemonSqueezy/Patreon verification.
+- **Licensing prerequisites** — *groundwork done (2026-07-23), execution
+  counsel-gated:*
+  - ✅ `.mailmap` consolidates owner identities (owner = 408/414 ≈ 98.6%).
+  - ✅ **External-contribution audit** (`docs/relicense/`): authoritative
+    git-blame sweep — only **11 de-minimis lines** survive (8 package-dictated
+    imports + 3 tool-generated example lines); 4/5 externals have **zero**
+    surviving lines. Consent axis effectively clear pending counsel.
+  - ✅ Ready-to-post consent tracking issue + template.
+  - ⏳ **Counsel review** of the de-minimis calls → then execute the flip
+    (COPYING.LESSER, LICENSE, `pyproject.toml`, SPDX, README) and land the
+    CLA + bot + CONTRIBUTING.md + promote LICENSING.md. Drafts ready in
+    `docs/design/`. **Not done autonomously — legal + owner decision.**
+  - Then: real Gumroad/LemonSqueezy/Patreon verification.
 - Go-to-market: refocus the YouTube channel, PPP price ladder, point-of-need selling.
 
 ## Designer follow-ups
