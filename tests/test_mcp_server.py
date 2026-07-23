@@ -12,7 +12,7 @@ import pytest
 
 mcp_sdk = pytest.importorskip("mcp", reason="mcp extra not installed")
 
-from Custom_Widgets import McpServer  # noqa: E402
+from Custom_Widgets.mcp import server as McpServer  # noqa: E402
 
 
 @pytest.fixture
