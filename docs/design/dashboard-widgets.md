@@ -10,6 +10,13 @@ constants + `__catalog__` + typed `@Property`s + `valuesCsv`-style Designer
 inputs), mirroring `QCustomSparkline` / `QCustomDonut`. Colours are qproperties
 so a theme/manager tokenises them and they flip on theme switch.
 
+> **Guideline — promote, don't hand-paint.** When an app design needs a data
+> surface no widget covers, build the widget (this convention), register it in
+> `Plugins/register.py`, regenerate stubs, and use it — don't leave hand-painted
+> surfaces in a manager. The end-to-end **development procedure and rules** are
+> documented in `examples/PySide6/FinanceDashboard/README.md`, the reference app
+> that these widgets were extracted from.
+
 ## QCustomPaymentCard
 `Custom_Widgets/QCustomPaymentCard.py` — a painted credit/debit card surface.
 
