@@ -192,7 +192,7 @@
     "loc": 366,
     "pyi": true,
     "catalog": true,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": true,
     "tier": "free"
@@ -203,7 +203,7 @@
     "loc": 183,
     "pyi": true,
     "catalog": true,
-    "test": false,
+    "test": true,
     "example": false,
     "designer": true,
     "tier": "free"
@@ -214,7 +214,7 @@
     "loc": 174,
     "pyi": true,
     "catalog": true,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": true,
     "tier": "free"
@@ -225,7 +225,7 @@
     "loc": 262,
     "pyi": true,
     "catalog": true,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": true,
     "tier": "free"
@@ -236,7 +236,7 @@
     "loc": 406,
     "pyi": true,
     "catalog": true,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": true,
     "tier": "free"
@@ -247,7 +247,7 @@
     "loc": 281,
     "pyi": true,
     "catalog": true,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": true,
     "tier": "free"
@@ -368,7 +368,7 @@
     "loc": 241,
     "pyi": true,
     "catalog": true,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": false,
     "tier": "free"
@@ -500,7 +500,7 @@
     "loc": 7,
     "pyi": false,
     "catalog": false,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": true,
     "tier": "free"
@@ -522,7 +522,7 @@
     "loc": 288,
     "pyi": true,
     "catalog": true,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": true,
     "tier": "free"
@@ -544,7 +544,7 @@
     "loc": 236,
     "pyi": true,
     "catalog": true,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": true,
     "tier": "free"
@@ -588,7 +588,7 @@
     "loc": 1,
     "pyi": false,
     "catalog": false,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": true,
     "tier": "free"
@@ -599,7 +599,7 @@
     "loc": 375,
     "pyi": false,
     "catalog": false,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": false,
     "tier": "free"
@@ -819,7 +819,7 @@
     "loc": 207,
     "pyi": true,
     "catalog": true,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": false,
     "tier": "free"
@@ -973,7 +973,7 @@
     "loc": 251,
     "pyi": true,
     "catalog": true,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": true,
     "tier": "free"
@@ -984,7 +984,7 @@
     "loc": 144,
     "pyi": true,
     "catalog": true,
-    "test": false,
+    "test": true,
     "example": false,
     "designer": true,
     "tier": "free"
@@ -1006,7 +1006,7 @@
     "loc": 302,
     "pyi": true,
     "catalog": true,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": true,
     "tier": "free"
@@ -1017,7 +1017,7 @@
     "loc": 381,
     "pyi": false,
     "catalog": false,
-    "test": false,
+    "test": true,
     "example": true,
     "designer": false,
     "tier": "free"
