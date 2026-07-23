@@ -7,6 +7,16 @@ Custom_Widgets Designer project, authored and driven entirely through the
 **Preconditions:** `custom-widgets` MCP mounted (see [AGENTS.md](../../AGENTS.md));
 read `customwidgets://agent-guide` + `customwidgets://skills` first.
 
+> **Session-2 corrections (read [deck-pro-session-handoff.md](deck-pro-session-handoff.md) first).**
+> The project now lives in `examples/PySide6/AuroraDeckPro/` and the MCP is
+> remounted there (a restart is required). Also: there are **no `$SPACING_*` or
+> `_R/_G/_B` tokens** — use `$COLOR_BACKGROUND_1..6` / `$COLOR_TEXT_1..4` /
+> `$COLOR_ACCENT_1..4` / `$SIZE_BORDER_RADIUS` with literal layout spacing; page
+> canvas = `$COLOR_BACKGROUND_3`, cards/panels = `$COLOR_BACKGROUND_1` (flips
+> correctly). Charts are `Custom_Widgets.QCustomCharts.QCustomLineChart` /
+> `…QCustomPieChart` (subpackage, not top-level). The handoff has the verified
+> token model, structural-widget property names and promotion XML.
+
 **Golden loop for every form:** `designer_new_form_xml`/`designer_set_form_xml`
 → `designer_open_files` → `designer_screenshot` → refine via
 `designer_set_widget_property` → (later) `project_convert_ui` → run via

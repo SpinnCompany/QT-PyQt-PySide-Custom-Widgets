@@ -1,0 +1,39 @@
+{
+    "ShowLogs": true,
+    "QtBinding": "PySide6",
+    "LiveCompileQss": true,
+    "CheckForMissingicons": true,
+    "QMainWindow": {
+        "title": "Aurora Deck Pro"
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "AuroraDeckPro",
+            "OrganizationDomain": "spinncode.com"
+        },
+        "ThemeSettings": {
+            "QtDesignerIconsColor": "theme",
+            "CustomThemes": [
+                {
+                    "Theme-name": "Aurora Dark",
+                    "Default-Theme": true,
+                    "Create-icons": true,
+                    "Background-color": "#121a2e",
+                    "Text-color": "#e8edf9",
+                    "Accent-color": "#4fe3a6",
+                    "Icons-color": "#e8edf9"
+                },
+                {
+                    "Theme-name": "Aurora Light",
+                    "Default-Theme": false,
+                    "Create-icons": true,
+                    "Background-color": "#ffffff",
+                    "Text-color": "#0c1122",
+                    "Accent-color": "#12a074",
+                    "Icons-color": "#0c1122"
+                }
+            ]
+        }
+    }
+}

@@ -2,7 +2,7 @@
   "mcpServers": {
     "custom-widgets": {
       "command": ".venv/bin/python",
-      "args": ["-m", "Custom_Widgets.mcp", "--project-dir", "."],
+      "args": ["-m", "Custom_Widgets.mcp", "--project-dir", "/home/p/git/QT-PyQt-PySide-Custom-Widgets/examples/PySide6/AuroraDeckPro"],
       "description": "Custom Widgets MCP — drive Qt Designer, the QSS/theme editor, and run/observe the project app. RULE #1: read customwidgets://agent-guide before any task and work through these tools, not ad-hoc shell."
     }
   }
