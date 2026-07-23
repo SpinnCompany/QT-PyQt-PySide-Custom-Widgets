@@ -4,15 +4,17 @@
 ## Exposes the Qt Designer bridge and the project workflow to autonomous
 ## agents over the Model Context Protocol (stdio transport).
 ##
-## Run from the project folder (the same folder the app and Designer run
-## from - the bridge socket name is derived from it):
+## Per-session and dir-agnostic: the default project is the cwd (repo root)
+## and every tool takes a `project` arg to target any folder. Prefer mounting
+## WITHOUT --project-dir; pass project= per call. --project-dir only moves the
+## fallback default and should not pin a specific example in shared config:
 ##
 ##     Custom_Widgets-mcp
-##     Custom_Widgets-mcp --project-dir /path/to/project
+##     Custom_Widgets-mcp --project-dir /path/to/project   # optional: move default
 ##
 ## Register with Claude Code:
 ##
-##     claude mcp add custom-widgets -- Custom_Widgets-mcp --project-dir .
+##     claude mcp add custom-widgets -- Custom_Widgets-mcp
 ##
 ## Requires the optional dependency:  pip install QT-PyQt-PySide-Custom-Widgets[mcp]
 ########################################################################
@@ -160,7 +162,8 @@ from Custom_Widgets.mcp.workspace import ProjectRegistry  # noqa: E402
 ## PER-PROJECT SERIALIZATION
 ##
 ## Every tool takes an optional `project` (a folder, absolute or relative to the
-## session's --project-dir; blank = the default) and an optional `agent` tag.
+## session default; blank = the default, which is the cwd / repo root unless
+## moved with designer_open_workspace) and an optional `agent` tag.
 ## Bridge/app access for a project is funnelled through ONE worker thread
 ## (ProjectRegistry -> ProjectWorker), so multiple MCP clients sharing this
 ## server - e.g. several sessions over the HTTP transport - can never interleave
@@ -1204,9 +1207,12 @@ def main():
     global _PROJECT_DIR
     parser = argparse.ArgumentParser(description="Custom Widgets MCP server")
     parser.add_argument("--project-dir", default=projectRoot(),
-                        help="Default project folder (where Qss/, ui/ and "
-                             "json-styles/ live). Individual tools can target "
-                             "another folder via their `project` argument.")
+                        help="Optional: move the FALLBACK default project "
+                             "folder (defaults to cwd / the repo root). Prefer "
+                             "leaving this unset and targeting each folder via "
+                             "the per-tool `project` argument — pinning a "
+                             "specific example here bakes it into shared config "
+                             "and collides with other sessions.")
     parser.add_argument("--transport", choices=["stdio", "http"], default="stdio",
                         help="stdio (default): one client per process. http: a "
                              "single SHARED daemon many sessions/agents connect "
