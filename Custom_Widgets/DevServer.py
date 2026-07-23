@@ -56,12 +56,31 @@ def _scan(root):
     return snapshot
 
 
-def _classify(changed):
-    """Split changed paths into (ui_files, restart_needed, style_files)."""
+def _under(path, folder):
+    try:
+        return os.path.abspath(path).startswith(os.path.abspath(folder) + os.sep)
+    except Exception:
+        return False
+
+
+def _classify(changed, generated_dir):
+    """Split changed paths into buckets.
+
+    - ui_files    : *.ui (regenerate the compiled .py)
+    - source_py   : hand-written *.py OUTSIDE the generated dir (main.py, app
+                    modules) -> full restart
+    - gen_py      : generated *.py INSIDE the generated dir (src/ui_*.py) ->
+                    the running app's component loaders hot-reload these in
+                    place; never a restart trigger on their own
+    - style_files : *.scss / *.json -> the app live-reloads
+    """
     ui_files = [p for p in changed if p.endswith(_CONVERT_SUFFIXES)]
-    py_files = [p for p in changed if p.endswith(_RESTART_SUFFIXES)]
     style_files = [p for p in changed if p.endswith(_STYLE_SUFFIXES)]
-    return ui_files, py_files, style_files
+    gen_py = [p for p in changed if p.endswith(_RESTART_SUFFIXES)
+              and _under(p, generated_dir)]
+    source_py = [p for p in changed if p.endswith(_RESTART_SUFFIXES)
+                 and not _under(p, generated_dir)]
+    return ui_files, source_py, style_files, gen_py
 
 
 class DevServer:
@@ -78,6 +97,9 @@ class DevServer:
         env = os.environ.copy()
         env["CUSTOM_WIDGETS_PROJECT_ROOT"] = self.root
         env.setdefault("QT_API", self.qt_binding.lower())
+        # Let Designer / the MCP observe and navigate this running app (the
+        # in-app control server starts only when this flag is set).
+        env["CUSTOM_WIDGETS_APP_CONTROL"] = "1"
         logInfo(f"dev: starting {os.path.relpath(self.script, self.root)}")
         self.child = subprocess.Popen([sys.executable, self.script],
                                       cwd=self.root, env=env)
@@ -96,6 +118,29 @@ class DevServer:
         logInfo(f"dev: restarting app ({reason})")
         self.stop_app()
         self.start_app()
+
+    def _entryForms(self):
+        """Base names of .ui forms whose compiled ``ui_<base>`` module is
+        imported by the entry script. These build the main window / top-level
+        UI, whose widgets the app's own code holds references to - rebuilding
+        them in place would orphan those connections, so a change to one of
+        them triggers a full restart. Every OTHER form is assumed to be loaded
+        via a component loader and hot-reloads in place.
+        """
+        try:
+            import re
+            text = open(self.script, encoding="utf-8").read()
+            # If the app opts into main-window hot reload, it rebuilds every
+            # form in place - nothing needs a restart.
+            if "enable_hot_reload" in text:
+                return set()
+            # Only IMPORTED ui_<name> modules count as entry forms - matching a
+            # bare string would false-positive on a component's filePath (e.g.
+            # container.filePath = "src/ui_card.py"), which is hot-reloadable.
+            return set(re.findall(
+                r"(?:from|import)\s+[\w.]*\bui_([A-Za-z0-9_]+)", text))
+        except Exception:
+            return set()
 
     def convert_ui(self, ui_file):
         """Regenerate src/ui_*.py + metadata for one changed .ui file."""
@@ -117,9 +162,12 @@ class DevServer:
         logInfo(" CUSTOM WIDGETS DEV SERVER")
         logInfo(f" project : {self.root}")
         logInfo(f" app     : {self.script}")
-        logInfo(" watching: *.ui (regenerate+restart)  *.py (restart)  "
-                "*.scss/*.json (app live-reloads)")
+        logInfo(" watching: *.ui (regenerate -> app hot-reloads component "
+                "forms)  main-window/*.py (restart)  *.scss/*.json (live)")
         logInfo(" " + "=" * 60)
+
+        generated_dir = os.path.abspath(os.path.join(self.root, self.src_output_dir))
+        entry_forms = self._entryForms()
 
         # A supervisor killed with SIGTERM (e.g. Designer's Stop button via
         # QProcess.terminate) must still tear down the child app - route it
@@ -157,24 +205,48 @@ class DevServer:
                 if not changed:
                     continue
 
-                ui_files, py_files, style_files = _classify(changed)
+                ui_files, source_py, style_files, gen_py = _classify(
+                    changed, generated_dir)
+
                 for path in style_files:
                     logInfo(f"dev: style changed: "
                             f"{os.path.relpath(path, self.root)} "
                             "(live-reloaded by the app)")
+
+                # Regenerate the compiled .py for every changed .ui. A form
+                # imported by the entry script builds the main window and needs
+                # a restart; any other form hot-reloads in the running app.
+                restart_ui = []
                 for path in ui_files:
-                    logInfo(f"dev: ui changed: {os.path.relpath(path, self.root)}")
+                    base = os.path.splitext(os.path.basename(path))[0]
+                    is_entry = base in entry_forms
+                    logInfo(f"dev: ui changed: {os.path.relpath(path, self.root)}"
+                            + (" -> restart (main-window form)" if is_entry
+                               else " -> app hot-reloads component form"))
                     self.convert_ui(path)
-                # a .ui conversion rewrites src/*.py, which the NEXT scan
-                # would catch - restart once now instead
-                if ui_files or py_files:
+                    if is_entry:
+                        restart_ui.append(path)
+
+                for path in gen_py:
+                    logDebug(f"dev: generated {os.path.relpath(path, self.root)} "
+                             "(hot-reload target)")
+
+                # Hand-written source or an entry (main-window) form -> restart.
+                # main.py itself changing also re-reads the entry-form list.
+                if source_py:
+                    entry_forms = self._entryForms()
+                restart_paths = source_py + restart_ui
+                if restart_paths:
                     reason = ", ".join(os.path.relpath(p, self.root)
-                                       for p in (ui_files + py_files)[:3])
+                                       for p in restart_paths[:3])
                     if self.child is None:
                         self.start_app()
                     else:
                         self.restart_app(reason)
-                    # swallow the regenerated-file changes from this action
+                    snapshot = _scan(self.root)  # swallow regenerated files
+                elif self.child is None and (ui_files or gen_py):
+                    # App was closed and a form changed - bring it back fresh.
+                    self.start_app()
                     snapshot = _scan(self.root)
         except KeyboardInterrupt:
             logInfo("dev: shutting down")
