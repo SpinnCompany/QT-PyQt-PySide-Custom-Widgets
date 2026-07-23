@@ -1,0 +1,66 @@
+// Aurora Jobs — chrome styles. TOKENS ONLY (no hard-coded hex).
+// Background-color in style.json IS the card/surface (BG_1); the generator
+// derives slightly darker shades for higher indices, so the page uses BG_2 and
+// separators use BG_4. Text: TEXT_1 primary, TEXT_3 muted, TEXT_4 faint. The
+// dark rail is styled in code from the Brand palette (theme-independent), and
+// the QCustomTableToolbar themes itself via setThemeColors — both intentionally
+// outside this file.
+
+// -- window shell ---------------------------------------------------------- //
+QCustomQMainWindow, #centralwidget, #mainColumn { background-color: $COLOR_BACKGROUND_3; }
+QCustomQStackedWidget, #pageStack, #JobsComponent, #jobsScrollContents { background: transparent; }
+QScrollArea, QScrollArea > QWidget > QWidget { background: transparent; border: 0; }
+
+// -- topbar ---------------------------------------------------------------- //
+QFrame#topbar {
+    background-color: $COLOR_BACKGROUND_1;
+    border: 0;
+    border-bottom: 1px solid $COLOR_BACKGROUND_4;
+}
+QLabel#crumb { background: transparent; color: $COLOR_TEXT_1; font-size: 16px; }
+QLabel#searchIcon, QLabel#helpIcon, QLabel#bellIcon, QLabel#avatarCaret { background: transparent; }
+QPushButton#avatar {
+    background-color: $COLOR_ACCENT_1; color: #ffffff; border: 0;
+    border-radius: 18px; font-weight: 700;
+}
+
+// -- page: title + add button ---------------------------------------------- //
+QLabel[role="h1"] { background: transparent; color: $COLOR_TEXT_1; font-size: 26px; font-weight: 800; }
+QPushButton#addJobBtn {
+    background-color: $COLOR_ACCENT_1; color: #ffffff; border: 0;
+    border-radius: 10px; padding: 10px 20px; font-weight: 700; font-size: 14px;
+}
+QPushButton#addJobBtn:hover { background-color: $COLOR_ACCENT_2; }
+
+// -- the card holding toolbar + table -------------------------------------- //
+QFrame[role="card"] { background-color: $COLOR_BACKGROUND_1; border-radius: 22px; }
+
+// -- the DataTable's internal view (objectName dataTableView) -------------- //
+#dataTableView {
+    background: transparent;
+    border: 0;
+    outline: 0;
+    gridline-color: transparent;
+}
+#dataTableView::item {
+    border-bottom: 1px solid $COLOR_BACKGROUND_4;
+    padding-left: 4px;
+}
+#dataTableView QHeaderView {
+    background: transparent;
+}
+#dataTableView QHeaderView::section {
+    background: transparent;
+    color: $COLOR_TEXT_3;
+    border: 0;
+    border-bottom: 1px solid $COLOR_BACKGROUND_4;
+    padding: 8px 6px;
+    font-weight: 700;
+}
+#dataTableView QScrollBar:vertical {
+    background: transparent; width: 10px; margin: 2px;
+}
+#dataTableView QScrollBar::handle:vertical {
+    background: $COLOR_BACKGROUND_4; border-radius: 5px; min-height: 30px;
+}
+#dataTableView QScrollBar::add-line:vertical, #dataTableView QScrollBar::sub-line:vertical { height: 0; }
