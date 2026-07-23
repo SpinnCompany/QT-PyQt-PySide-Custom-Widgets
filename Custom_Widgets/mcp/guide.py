@@ -209,12 +209,33 @@ widget to any brand or mockup.
   looks) and, for colours, that can track the active theme. Prefer many small
   orthogonal knobs over a single "style" enum. Then EXTEND THIS MCP / the widget,
   and note the new knob in the catalog.
+- PROMOTE, DON'T HAND-PAINT. When a design needs a data surface NO existing
+  widget covers, BUILD a real widget (painted; WIDGET_* metadata + a __catalog__
+  entry + typed @Property inputs, e.g. a `valuesCsv`-style string), register it,
+  stub it, THEN use it — never leave a hand-painted surface living in a Manager /
+  GuiFunctions. Anything hand-rolled in GuiFunctions is the signal for a missing
+  widget. Widget-authoring gotchas: (a) do NOT give a method and a @Property the
+  same name — the Property shadows the method, so `w.count()` throws "int object
+  is not callable"; expose the read via the Property only. (b) Use real
+  `QFontMetrics.height()` (not the point size) to size a painted label band or the
+  text clips at the bottom edge. (c) A new `QCustom*.py` only appears in
+  widgets_catalog / render_widget after a SERVER RESTART (the catalog is
+  lru-cached per process) — until you restart, validate the new widget with
+  `stubgen` (it imports each module) + the live app.
 - Reference: QCustomDataTable exposes per-column `align`, twoline subtitle
   scale/weight, kebab colour + status-dot size, and opt-in header affordances
   (persistent per-column sort carets, select caret, actions gear) — enough to
   match a real SaaS "Jobs" table exactly (examples/PySide6/AuroraJobsTable).
 - Verify rendering with a PIXEL PROBE (render_widget / grab -> toImage ->
   pixelColor) under a stable harness, never by eyeballing a downscaled shot.
+  BUT offscreen != the real display: anything font/metric/style-sensitive (text
+  metrics, delegate paint, pill/border-radius, hover/focus, native style) MUST be
+  verified on the REAL running window via the MCP (designer_run_app ->
+  app_screenshot) — offscreen grabs missed three real-display-only bugs (a
+  pixel-sized-font subtitle collapse, square-instead-of-pill radius, a starved
+  Stretch column). Use offscreen probes for colour/geometry; use the live window
+  for anything the platform font/style engine touches, and keep a pytest probe
+  that forces the failing condition so the bug stays reproducible headlessly.
 
 COMPOSITION
 - ONE top-level window: class QCustomQMainWindow (extends QMainWindow). Every
@@ -232,6 +253,14 @@ NAVIGATION
   QCustomQStackedWidget. Switch with setCurrentWidget(<pageWidget>), NEVER by
   index. Sidebar buttons call a navigateTo(name) that maps name -> page widget,
   switches, sets the active button, and lazy-inits the page.
+- Track the ACTIVE page yourself and RE-ASSERT setChecked(True) on the active nav
+  button whenever you repaint chrome — a theme switch or a sidebar collapse/expand
+  can steal an autoExclusive checked state, so isChecked() is NOT trustworthy
+  after one.
+- QCustomSidebarButton auto-shows its labelText on expand and hides it on collapse
+  — "no label when expanded" just means labelText was never set (set labelText,
+  not text). Style it text-align:left + padding-left so the icon still centers when
+  the rail is collapsed.
 
 LAYOUT
 - Zero the ROOT layout margins/spacing so components own their padding. Inside,
@@ -251,6 +280,10 @@ CUSTOM WIDGETS & PROPERTIES
   QCustomFlowWidget order is data-driven via orderJsonPath -> style.json
   QCustomFlowLayoutOrder. Declare every promoted widget in the form's
   <customwidgets> block (class/extends/header, <container>1 for containers).
+- .ui custom-property order is NOT guaranteed against dependencies — a widget's
+  activeIndex/selected prop can be applied BEFORE its count/data prop, so set
+  index-dependent props from the Manager in code (after setCount/data), not in
+  the .ui.
 
 THEMING
 - Keep colors/fonts/flow-order in json-styles/style.json (CustomThemes each
