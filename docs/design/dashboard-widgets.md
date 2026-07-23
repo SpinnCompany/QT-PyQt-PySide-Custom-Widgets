@@ -115,6 +115,30 @@ series at once. New:
   rounded-top rendering match. Rounded tops themselves already existed via
   `setBarCornerRadius(px)`.
 
+## QCustomAreaChart — borderless fill / top-line only (upgrade)
+`Custom_Widgets/QCustomCharts/QCustomAreaChart.py` (added 2026-07-24, from the
+`examples/PySide6/CryptoDashboard` build). A `QAreaSeries` pen strokes the
+**whole** polygon outline, so a filled trend line shows steep vertical "walls"
+where the fill closes down to the baseline at the first and last x (plus a
+stroked baseline). New opt-in:
+
+- `setAreaBorderEdges(enabled)` — `False` sets the area pen to `NoPen` (no side
+  walls, no baseline stroke) and overlays a crisp **top-only** `QLineSeries`
+  (kept out of the legend), giving the modern filled-trend-line look. `True`
+  (default) preserves the original full-outline behaviour. `areaBorderEdges()`
+  reads it back.
+- Pair with `setGradientFill(True)` + `setFillOpacity(...)` for a fill that fades
+  toward the baseline.
+
+```python
+chart.addSeries("Wallet", list(zip(xs, ys)), color=QColor(pal["chartLine"]), line_width=2.6)
+chart.setAreaBorderEdges(False)   # no vertical edge walls; crisp top line only
+chart.setGradientFill(True); chart.setFillOpacity(0.22)
+```
+
+Note: the `QCustomCharts` subpackage has **no `.pyi` stubs** (stubgen only covers
+top-level `QCustom*`), so there's nothing to regenerate — verify on the live app.
+
 ## Registration / stubs
 All three new widgets are registered in `Custom_Widgets/Plugins/register.py`
 (Designer palette) and have regenerated `.pyi` stubs
