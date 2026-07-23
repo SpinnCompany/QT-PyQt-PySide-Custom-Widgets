@@ -11,13 +11,16 @@ the "no push until the full commercial product is ready" decision).
 
 | Repo | Location | Branch | Commits (this effort) | Tests |
 |---|---|---|---|---|
-| Free core | `QT-PyQt-PySide-Custom-Widgets` | `feat/qcustom-datatable` | 23 ahead of `main` | 238 passing¹ |
-| Pro (private) | `custom-widgets-pro` (dist `QT-PyQt-PySide-Custom-Widgets-Pro`) | `main` | 12 (+demo) | 86 passing |
+| Free core | `QT-PyQt-PySide-Custom-Widgets` | `feat/qcustom-datatable` | 42 ahead of `main`² | 259 passing¹ |
+| Pro (private) | `custom-widgets-pro` (dist `QT-PyQt-PySide-Custom-Widgets-Pro`) | `main` | 11 | 86 passing |
 
 ¹ Two unrelated failures are excluded: `test_dev_server.py::test_classify` (an
 uncommitted parallel-session change to `DevServer.py`) and
 `test_mcp_server.py::test_expected_tools_registered` (needs `pytest-asyncio`,
 not installed).
+
+² Total divergence from `main`; includes parallel-session Designer/DevServer
+commits, not only this effort's widget/compliance/licensing work.
 
 ## Design-token system (foundation)
 
@@ -33,7 +36,7 @@ not installed).
   `sass_functions`) bridged into `QCustomTheme`, following the live theme.
 - Every widget below is tokenized; each commit includes a pixel-verified paint test.
 
-## Free widgets added (30 new widgets across 32 classes)
+## Free widgets added (31 modern widgets — 30 new + `QCustomBadge` modernization)
 
 | Widget | Notes |
 |---|---|
