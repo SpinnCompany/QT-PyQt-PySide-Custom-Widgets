@@ -14,6 +14,31 @@ Build and run apps **through the MCP** (runApp / app-control / Designer + QSS br
 and ask the user to connect it; do not silently fall back to a shell. This rule ships
 with the product and applies to every agent that touches this repo.
 
+## ⭐ RULE #2 — don't ship a BORING GUI (hard-won, 2026-07-23)
+
+Clean chrome is not the goal; a **rich, dense, widget-heavy** screen is. Repeated
+user feedback on a "competent but boring" build:
+
+1. **USE the custom widgets — densely.** The library is the point. A page of
+   label-in-card + empty space is a failure. Fill screens with real data-viz:
+   charts (`QCustomLineChart/AreaChart/BarChart/PieChart` — gradient/glow fills),
+   `QCustomProgressRing` (show REAL values, not 0%), progress bars/meters,
+   `QCustomStepper`, `QCustomCarousel`, `QCustomTabWidget`, `QCustomBadge`,
+   `QCustomAvatarGroup`, `QCustomTimeline`, sparklines, colour-blocked/active
+   cards. Run `widgets_catalog` and actually place many of them.
+2. **Exploit QSS + CustomTheme freedom.** Gradients (`qlineargradient`),
+   `qproperty-icon`, per-role/per-objectName styling, oversized bold numbers,
+   bold accent COLOUR-BLOCK panels. Reach for the boldest option, not the safest.
+3. **Depth = borderless fill + big radius (~22px). NO drop shadows unless truly
+   necessary** (`QGraphicsDropShadowEffect` was explicitly rejected). Hairline
+   borders read as technical/boring.
+4. **Design to a real modern reference** (Dribbble/product dashboards), matching
+   its DENSITY and colour energy — not just tidy spacing.
+
+See memory `modern-ui-design-bar` + `custom-widgets-theme-icon-pipeline`
+(switch custom themes BY NAME via `setTheme`, never the generic dark/light
+toggle; study `examples/svg_icons_demo` rather than hacking the theme engine).
+
 ## The demo pattern
 
 The token widgets need **no `.ui`, no `.qrc`, no JSON** — instantiate widgets in
