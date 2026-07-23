@@ -788,13 +788,27 @@ class QSsFileMonitor(QObject):
             logInfo("Live QSS compile disabled.")
             return
 
-        default_sass_path = os.path.abspath(os.path.join(projectRoot(), 'Qss/scss/defaultStyle.scss'))
+        scss_dir = os.path.abspath(os.path.join(projectRoot(), 'Qss/scss'))
+        default_sass_path = os.path.join(scss_dir, 'defaultStyle.scss')
 
-        if os.path.isfile(default_sass_path):
-            if not self.shared_data.url_exists(default_sass_path):
-                self.qss_watcher.addPath(default_sass_path)
-                self.shared_data.add_file_url(default_sass_path)
-                logDebug(f"Added SASS file to watcher: {default_sass_path}")
+        if os.path.isdir(scss_dir):
+            # Watch EVERY .scss input, not just defaultStyle.scss. The compiled
+            # stylesheet @import-s partials (chrome.scss, _variables.scss,
+            # _styles.scss, main.scss and any user files); editing ANY of them
+            # must live-recompile (the compile cache already keys on all .scss
+            # mtimes, so it only needed the change to be noticed). Recursive so
+            # nested imports are covered too.
+            scss_files = []
+            for _root, _dirs, _files in os.walk(scss_dir):
+                for _fn in _files:
+                    if _fn.endswith('.scss'):
+                        scss_files.append(os.path.join(_root, _fn))
+            self._watched_scss = scss_files
+            for sp in scss_files:
+                if not self.shared_data.url_exists(sp):
+                    self.qss_watcher.addPath(sp)
+                    self.shared_data.add_file_url(sp)
+                    logDebug(f"Added SASS file to watcher: {os.path.basename(sp)}")
 
             # Monitor JSON files
             for json_file in self.jsonStyleSheets:
@@ -815,12 +829,13 @@ class QSsFileMonitor(QObject):
             self.qss_watcher.fileChanged.connect(self.qss_file_changed)
             self.qss_watcher.connected = True
             logSuccess(f" Live monitoring QSS/SCSS files")
-            logInfo(f"   • {os.path.basename(default_sass_path)}")
+            for sp in scss_files:
+                logInfo(f"   • {os.path.basename(sp)}")
             for json_file in self.jsonStyleSheets:
                 logInfo(f"   • {json_file}")
 
         else:
-            logError(f" SASS file not found: {default_sass_path}")
+            logError(f" SASS dir not found: {scss_dir}")
 
     def qss_file_changed(self, file_path, live_compile=False):
         """Handle QSS/SCSS file changes."""
@@ -841,6 +856,15 @@ class QSsFileMonitor(QObject):
             logInfo(" Recompiling styles...")
             QAppSettings.updateAppSettings(self, generateIcons=False, reloadJson=False)
             logSuccess(" Styles recompiled")
+
+        # QFileSystemWatcher drops a path when the file is replaced (most editors
+        # write a new inode on save), which would silently stop live-reload after
+        # the first change. Re-arm the watch if the file is still present.
+        try:
+            if os.path.exists(file_path) and file_path not in self.qss_watcher.files():
+                self.qss_watcher.addPath(file_path)
+        except Exception:
+            pass
 
     def stop_qss_file_listener(self):
         """Stop monitoring QSS/SCSS files."""
