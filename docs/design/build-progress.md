@@ -107,6 +107,24 @@ This completes all five DataTable Pro capability layers (virtualization, frozen
 columns, inline editing, grouping/pivot, export); the SKU is feature-complete
 bar native compile + filling the store/campaign ids.
 
+## Documentation (separate Docusaurus repo)
+
+User docs live in `Docs-QT-PyQt-PySide-Custom-Widgets`. Written this effort (all
+local, not pushed; internal tracker at that repo's root `BUILD-PROGRESS.md`):
+
+- Reference pages for the 6 new widgets (Switch, NumberInput, Alert, StatCard,
+  ProgressRing, Card) + `QCustomBadge` + its migration note.
+- `QCustomDataTable` + `QCustomDataTablePro` reference pages ("Data & Tables").
+- 5 DataTable usage recipes (basics, virtualization/server-side, editing,
+  grouping/pivot, frozen/export).
+- A **Licensing** page (current = GPLv3; Qt responsibility; third-party
+  attributions — no LGPL/pricing claims yet).
+- A **draft** release blog post (`draft: true`, not published).
+
+✅ **Full site build verified** (2026-07-23): `npm ci && npm run build` passes
+(`onBrokenLinks: throw`) with every new page + the draft post. Also fixed two
+**pre-existing** broken Troubleshooting links that had been failing the build.
+
 ## What's next (open threads)
 
 - ~~More free widgets (switch, number-stepper, alert, stat card, progress ring,
