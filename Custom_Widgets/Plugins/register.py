@@ -732,6 +732,84 @@ try:
 except Exception as e:
     logException(e, message="Error registering QCustomSplitter")
 
+from Custom_Widgets.QCustomPaymentCard import QCustomPaymentCard
+
+# Registering QCustomPaymentCard with error handling
+try:
+    logInfo("Registering QCustomPaymentCard")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomPaymentCard, module=QCustomPaymentCard.WIDGET_MODULE,
+        tool_tip=QCustomPaymentCard.WIDGET_TOOLTIP, xml=QCustomPaymentCard.WIDGET_DOM_XML,
+        icon=QCustomPaymentCard.WIDGET_ICON, group="Display Widgets")
+except Exception as e:
+    logException(e, message="Error registering QCustomPaymentCard")
+
+
+from Custom_Widgets.QCustomMiniBarChart import QCustomMiniBarChart
+
+# Registering QCustomMiniBarChart with error handling
+try:
+    logInfo("Registering QCustomMiniBarChart")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomMiniBarChart, module=QCustomMiniBarChart.WIDGET_MODULE,
+        tool_tip=QCustomMiniBarChart.WIDGET_TOOLTIP, xml=QCustomMiniBarChart.WIDGET_DOM_XML,
+        icon=QCustomMiniBarChart.WIDGET_ICON, group="Charts")
+except Exception as e:
+    logException(e, message="Error registering QCustomMiniBarChart")
+
+
+from Custom_Widgets.QCustomListRow import QCustomListRow
+
+# Registering QCustomListRow with error handling
+try:
+    logInfo("Registering QCustomListRow")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomListRow, module=QCustomListRow.WIDGET_MODULE,
+        tool_tip=QCustomListRow.WIDGET_TOOLTIP, xml=QCustomListRow.WIDGET_DOM_XML,
+        icon=QCustomListRow.WIDGET_ICON, group="Display Widgets")
+except Exception as e:
+    logException(e, message="Error registering QCustomListRow")
+
+
+from Custom_Widgets.QCustomAvatar import QCustomAvatar
+
+# Registering QCustomAvatar with error handling
+try:
+    logInfo("Registering QCustomAvatar")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomAvatar, module=QCustomAvatar.WIDGET_MODULE,
+        tool_tip=QCustomAvatar.WIDGET_TOOLTIP, xml=QCustomAvatar.WIDGET_DOM_XML,
+        icon=QCustomAvatar.WIDGET_ICON, group="Display Widgets")
+except Exception as e:
+    logException(e, message="Error registering QCustomAvatar")
+
+
+from Custom_Widgets.QCustomTrendChip import QCustomTrendChip
+
+# Registering QCustomTrendChip with error handling
+try:
+    logInfo("Registering QCustomTrendChip")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomTrendChip, module=QCustomTrendChip.WIDGET_MODULE,
+        tool_tip=QCustomTrendChip.WIDGET_TOOLTIP, xml=QCustomTrendChip.WIDGET_DOM_XML,
+        icon=QCustomTrendChip.WIDGET_ICON, group="Charts")
+except Exception as e:
+    logException(e, message="Error registering QCustomTrendChip")
+
+
+from Custom_Widgets.QCustomPageDots import QCustomPageDots
+
+# Registering QCustomPageDots with error handling
+try:
+    logInfo("Registering QCustomPageDots")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomPageDots, module=QCustomPageDots.WIDGET_MODULE,
+        tool_tip=QCustomPageDots.WIDGET_TOOLTIP, xml=QCustomPageDots.WIDGET_DOM_XML,
+        icon=QCustomPageDots.WIDGET_ICON, group="Navigation")
+except Exception as e:
+    logException(e, message="Error registering QCustomPageDots")
+
+
 ########################################################################
 ## DESIGNER BRIDGE - lets a running app push theme changes into Designer
 ## (refresh icons / restyle open forms). See Custom_Widgets/DesignerBridge.py

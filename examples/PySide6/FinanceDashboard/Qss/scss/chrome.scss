@@ -1,0 +1,125 @@
+// Finance dashboard — chrome styles.
+// Tokens ONLY (no hard-coded hex): $COLOR_BACKGROUND_1..6, $COLOR_TEXT_1..4,
+// $COLOR_ACCENT_1..4. Light theme: BG_1 is the base (white) and higher numbers
+// get DARKER, so: panels/sidebar = BG_1 (white), page band = BG_2 (grey).
+// Data-viz colours (cards, bars, money, chips) are painted in the manager from
+// the token-driven ChartPalette so they flip with the theme too.
+
+// -- window shell ---------------------------------------------------------- //
+QCustomQMainWindow, #centralwidget { background-color: $COLOR_BACKGROUND_1; }
+QWidget#sidebar { background-color: $COLOR_BACKGROUND_1; border-right: 1px solid $COLOR_BACKGROUND_3; }
+
+QCustomQStackedWidget, #pageStack { background: transparent; }
+QScrollArea, QScrollArea > QWidget > QWidget { background: transparent; border: 0; }
+#dashScrollContents, #topBar { background: transparent; }
+
+// -- top bar --------------------------------------------------------------- //
+QLabel[role="crumbActive"] { background: transparent; color: $COLOR_ACCENT_1; font-size: 15px; font-weight: 700; }
+QLabel[role="crumbHello"]  { background: transparent; color: $COLOR_TEXT_1; font-size: 15px; font-weight: 600; }
+QLabel[role="crumbSep"]    { color: $COLOR_BACKGROUND_4; }
+QLabel[role="clock"]       { background: transparent; color: $COLOR_TEXT_3; font-size: 13px; }
+
+// -- section surfaces ------------------------------------------------------ //
+QFrame[role="topPanel"] { background-color: $COLOR_BACKGROUND_1; border: 0; }
+QFrame[role="bottomPanel"] {
+    background-color: $COLOR_BACKGROUND_2;
+    border: 0;
+    border-top-left-radius: 26px;
+}
+
+QFrame[role="vdivider"] { background: transparent; color: $COLOR_BACKGROUND_3; border: none; }
+
+// -- typography roles ------------------------------------------------------ //
+QLabel[role="panelTitle"]  { background: transparent; color: $COLOR_TEXT_1; font-size: 18px; font-weight: 700; }
+QLabel[role="panelSub"]    { background: transparent; color: $COLOR_TEXT_1; font-size: 13px; font-weight: 600; }
+QLabel[role="statLabel"]   { background: transparent; color: $COLOR_TEXT_3; font-size: 12px; }
+QLabel[role="statValue"]   { background: transparent; color: $COLOR_TEXT_1; font-size: 15px; font-weight: 700; }
+QLabel[role="balanceBig"]  { background: transparent; color: $COLOR_ACCENT_1; font-size: 36px; font-weight: 800; }
+QLabel[role="balanceNumber"] { background: transparent; color: $COLOR_ACCENT_1; font-size: 13px; font-weight: 600; letter-spacing: 1px; }
+
+// txn text roles
+QLabel[role="txnName"]  { background: transparent; color: $COLOR_TEXT_1; font-size: 14px; font-weight: 700; }
+QLabel[role="txnMeta"]  { background: transparent; color: $COLOR_ACCENT_1; font-size: 12px; font-weight: 600; }
+QLabel[role="txnDate"]  { background: transparent; color: $COLOR_TEXT_3; font-size: 12px; }
+
+// -- sidebar --------------------------------------------------------------- //
+// Left-aligned with a padding that also centres the icon when collapsed (~50px
+// wide); labels appear on expand and hide on collapse (QCustomSidebarButton).
+QCustomSidebarButton, #sidebarToggle {
+    background-color: transparent;
+    border: 0;
+    border-radius: 13px;
+    text-align: left;
+    padding-left: 14px;
+    color: $COLOR_TEXT_2;
+    font-size: 14px;
+    font-weight: 600;
+}
+QCustomSidebarButton:hover, #sidebarToggle:hover { background-color: $COLOR_BACKGROUND_2; }
+QCustomSidebarButton:checked { background-color: $COLOR_BACKGROUND_2; color: $COLOR_ACCENT_1; }
+#navDivider { background-color: $COLOR_BACKGROUND_3; border: 0; }
+QLabel[role="avatarName"] { background: transparent; color: $COLOR_TEXT_2; font-size: 13px; font-weight: 600; }
+
+// -- add-card dashed tile -------------------------------------------------- //
+#addCardBtn {
+    background-color: transparent;
+    border: 2px dashed $COLOR_BACKGROUND_4;
+    border-radius: 16px;
+}
+#addCardBtn:hover { border-color: $COLOR_ACCENT_1; }
+
+// -- dashed summary box ---------------------------------------------------- //
+QFrame[role="dashBox"] {
+    background: transparent;
+    border: 1px dashed $COLOR_BACKGROUND_4;
+    border-radius: 14px;
+}
+
+// -- link buttons ---------------------------------------------------------- //
+QPushButton[role="link"] {
+    background: transparent;
+    border: 0;
+    color: $COLOR_ACCENT_1;
+    font-size: 13px;
+    font-weight: 600;
+}
+QPushButton[role="link"]:hover { color: $COLOR_TEXT_1; }
+
+#lastMonthBtn {
+    background: transparent;
+    border: 0;
+    color: $COLOR_TEXT_2;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 2px 4px;
+}
+#lastMonthBtn:hover { color: $COLOR_ACCENT_1; }
+
+// -- primary / outline action buttons ------------------------------------- //
+QCustomQPushButton#newTransactionBtn {
+    background-color: $COLOR_ACCENT_1;
+    color: #ffffff;
+    border: 0;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 0 22px;
+}
+QCustomQPushButton#newTransactionBtn:hover { background-color: $COLOR_ACCENT_2; }
+
+QCustomQPushButton#settingsBtn {
+    background-color: $COLOR_BACKGROUND_1;
+    color: $COLOR_TEXT_1;
+    border: 1px solid $COLOR_BACKGROUND_4;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 0 22px;
+}
+QCustomQPushButton#settingsBtn:hover { border-color: $COLOR_ACCENT_1; color: $COLOR_ACCENT_1; }
+
+// -- scrollbar ------------------------------------------------------------- //
+QScrollBar:vertical { background: transparent; width: 8px; margin: 0; }
+QScrollBar::handle:vertical { background: $COLOR_BACKGROUND_4; border-radius: 4px; min-height: 40px; }
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
+QScrollBar::add-page, QScrollBar::sub-page { background: transparent; }

@@ -1,0 +1,26 @@
+# Auto-generated type stub — DO NOT EDIT.
+# Regenerate with:  python -m Custom_Widgets.mcp.stubgen --write
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QWidget
+from typing import Any, ClassVar
+
+
+class QCustomPageDots(QWidget):
+    pageChanged: ClassVar[Signal]
+    count: int
+    activeIndex: int
+    dotColor: str
+    activeColor: str
+    dotDiameter: int
+    activePillLength: int
+    spacing: int
+    orientation: str
+    clickable: bool
+    def __init__(self, parent = ..., count = ..., active = ...) -> None: ...
+    def setCount(self, n) -> None: ...
+    def setActiveIndex(self, i) -> None: ...
+    def setColors(self, dot = ..., active = ...) -> None: ...
+    def sizeHint(self): ...
+    def minimumSizeHint(self): ...
+    def paintEvent(self, e): ...
+    def mousePressEvent(self, e): ...
