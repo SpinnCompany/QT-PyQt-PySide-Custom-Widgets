@@ -108,3 +108,20 @@ class TestPaintAndTheme:
         tb.resize(1000, 120)
         pm = tb.grab()
         assert not pm.isNull() and pm.width() > 0
+
+    def test_status_pill_radius_never_exceeds_half_height(self, qapp):
+        # REGRESSION: Qt does NOT clamp border-radius — a radius > height/2
+        # renders SQUARE corners (this only bit on the real xcb display where
+        # font metrics made the pill 29px tall vs a 15px radius). The pill must
+        # keep an EVEN pinned height and a radius == height/2 so it stays a pill.
+        import re
+        tb = _toolbar()
+        tb.resize(1000, 120)
+        tb.show()
+        qapp.processEvents()
+        pill = next(p for k, p in tb._pills.items() if k != tb.ALL_KEY)
+        h = pill.height()
+        assert h > 0 and h % 2 == 0                    # even, so height/2 is exact
+        m = re.search(r"border-radius:\s*(\d+)px", pill.styleSheet())
+        assert m, "pill has no border-radius"
+        assert int(m.group(1)) <= h // 2               # never square

@@ -480,6 +480,61 @@ class TestCustomizationHooks:
                 bands.append([y])
         assert len(bands) >= 2
 
+    def test_twoline_subtitle_survives_pixel_size_font(self, qapp):
+        # REGRESSION: on Linux/xcb the app font is often pixel-sized, so
+        # font.pointSizeF() returns -1; adding the subtitle scale delta to that
+        # collapsed the second line to ~1pt (invisible) — a real-display-only
+        # bug offscreen point-fonts never reproduced. The subtitle must still
+        # paint two peer bands with a pixel-size font.
+        from qtpy.QtGui import QColor, QFont
+        from Custom_Widgets.QCustomDataTable import QCustomDataTable, DataTableColumn
+        HUE = "#f97316"
+        t = QCustomDataTable()
+        t.customizeQCustomDataTable(
+            columns=[DataTableColumn("s", renderer="twoline", subtitleKey="s2",
+                                     colorKey="c", subtitleScale=0)],
+            showPagination=False)
+        t.setData([{"s": "line one", "s2": "line two", "c": HUE}])
+        f = QFont(t.view().font()); f.setPixelSize(14); t.view().setFont(f)
+        assert t.view().font().pointSizeF() < 0        # genuinely pixel-sized
+        t.view().verticalHeader().setDefaultSectionSize(64)
+        t.resize(360, 120)
+        img = t.grab().toImage()
+        oc = QColor(HUE)
+        inky = [y for y in range(img.height())
+                if sum(1 for x in range(img.width())
+                       if _close(img.pixelColor(x, y), oc)) > 3]
+        bands = []
+        for y in inky:
+            if bands and y - bands[-1][-1] <= 2:
+                bands[-1].append(y)
+            else:
+                bands.append([y])
+        assert len(bands) >= 2, "subtitle vanished with a pixel-size font"
+
+    def test_flex_column_never_collapses_and_fills_width(self, qapp):
+        # The last data column flexes to fill the viewport but never collapses
+        # below its floor when the viewport is too narrow (it scrolls instead) —
+        # so e.g. an "assigned to" column can't render empty.
+        from Custom_Widgets.QCustomDataTable import QCustomDataTable, DataTableColumn
+        t = QCustomDataTable()
+        t.customizeQCustomDataTable(
+            columns=[DataTableColumn("a", width=200), DataTableColumn("b", width=200),
+                     DataTableColumn("assigned")],
+            selectable=True, rowActions=[("x", "X")], showPagination=False)
+        t.setData([{"a": "1", "b": "2", "assigned": "John Graham"}])
+        t.setFlexMinWidth(140)
+        hdr = t.view().horizontalHeader()
+        flex = t._flexViewCol
+        assert flex >= 0
+        t.show()
+        # wide viewport: flex column fills remaining width (> its floor)
+        t.resize(1000, 160); qapp.processEvents(); t._applyFlexWidth()
+        assert hdr.sectionSize(flex) > 140
+        # narrow viewport: flex column holds its floor, never 0
+        t.resize(320, 160); qapp.processEvents(); t._applyFlexWidth()
+        assert hdr.sectionSize(flex) >= 140
+
     def test_header_affordances_toggle_and_paint(self, qapp):
         from Custom_Widgets.QCustomDataTable import QCustomDataTable, DataTableColumn
         t = QCustomDataTable()

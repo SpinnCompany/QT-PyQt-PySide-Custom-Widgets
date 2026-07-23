@@ -352,12 +352,14 @@ class JobsWindow(QWidget):
         self._table.setPersistentSortIndicators(True)   # sort caret on every column
         self._table.setHeaderSelectCaret(True)          # caret beside select-all
         self._table.setHeaderActionsGlyph("gear")       # ⚙ in the actions header
-        self._table.view().setColumnWidth(1, 150)   # JOB
+        # widths sized so no cell elides its content (the reference shows every
+        # value in full); ASSIGNED TO is the flex column and absorbs the slack.
+        self._table.view().setColumnWidth(1, 168)   # JOB (fits "Leak inspection")
         self._table.view().setColumnWidth(2, 90)     # INVOICED
         self._table.view().setColumnWidth(3, 90)     # AMOUNT
-        self._table.view().setColumnWidth(4, 150)    # CUSTOMER
-        self._table.view().setColumnWidth(5, 170)    # SITE
-        self._table.view().setColumnWidth(6, 110)    # DUE DATE
+        self._table.view().setColumnWidth(4, 168)    # CUSTOMER (fits "Bright Spark Ltd")
+        self._table.view().setColumnWidth(5, 192)    # SITE (fits "Manchester, M3 4LX")
+        self._table.view().setColumnWidth(6, 132)    # DUE DATE (fits "16th Mar 21")
         self._table.view().setColumnWidth(7, 160)    # SCHEDULED
         card.addWidget(self._table, 1)
 
@@ -528,6 +530,15 @@ def main():
     app = QApplication.instance() or QApplication(sys.argv)
     win = JobsWindow(theme="light")
     win.show()
+
+    # Opt in to the in-app control server so the Custom_Widgets MCP can OBSERVE
+    # and screenshot the REAL rendered window (no-op unless the dev server sets
+    # CUSTOM_WIDGETS_APP_CONTROL). Offscreen grabs missed real-display bugs.
+    try:
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        maybe_start_app_control(os.path.dirname(os.path.abspath(__file__)))
+    except Exception:
+        pass
 
     if shots:
         os.makedirs(shots, exist_ok=True)

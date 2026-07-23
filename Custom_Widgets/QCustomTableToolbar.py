@@ -81,6 +81,11 @@ class _FilterChip(QFrame):
         self.setObjectName("tableFilterChip")
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
+        # Pin an EVEN height so the pill radius (height/2) is exact. Qt does NOT
+        # clamp border-radius: a radius > height/2 falls back to SQUARE corners
+        # (platform font metrics made this 29px -> square on xcb/Breeze while it
+        # was 30px -> round offscreen). See qt-border-radius-pill-gotcha.
+        self.setFixedHeight(30)
         lay = QHBoxLayout(self)
         lay.setContentsMargins(12, 4, 8, 4)
         lay.setSpacing(6)
@@ -133,6 +138,10 @@ class _StatusPill(QFrame):
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.setCursor(Qt.PointingHandCursor)
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
+        # EVEN height so the pill radius (height/2) is exact; a radius that
+        # exceeds height/2 makes Qt render SQUARE corners (no clamping). See
+        # qt-border-radius-pill-gotcha — this only bit on the real xcb display.
+        self.setFixedHeight(30)
         lay = QHBoxLayout(self)
         lay.setContentsMargins((6 if plain else 14), 5, (6 if plain else 14), 5)
         lay.setSpacing(9)
@@ -186,9 +195,14 @@ class _StatusPill(QFrame):
             self.clicked.emit(self._key)
         super().mouseReleaseEvent(event)
 
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self._restyle()   # keep the pill radius == height/2 at any size
+
     def _restyle(self):
         hue = self._color
-        radius = 15
+        # radius must never exceed half the height or Qt draws square corners.
+        radius = max(2, self.height() // 2)
         if self._plain:
             # borderless text label (the "All" pill): dark when active, muted otherwise
             name_col = self._text.name() if self._checked else self._muted.name()
@@ -300,6 +314,9 @@ class QCustomTableToolbar(QWidget):
         self._filtersBtn = QPushButton("Filters", self)
         self._filtersBtn.setObjectName("tableFiltersBtn")
         self._filtersBtn.setCursor(Qt.PointingHandCursor)
+        # match the 40px search field so its radius (20px in _chromeQss) is
+        # exactly height/2 — a larger radius would render square (see the pill).
+        self._filtersBtn.setFixedHeight(40)
         self._filtersBtn.clicked.connect(self.filtersClicked.emit)
         row1.addWidget(self._filtersBtn)
 
