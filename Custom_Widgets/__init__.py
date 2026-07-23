@@ -13,6 +13,7 @@ from qtpy.QtWidgets import QPushButton, QLabel, QTabWidget, QCheckBox, QMainWind
 import re
 
 from Custom_Widgets.JSonStyles import loadJsonStyle
+from Custom_Widgets.HotReload import enable_hot_reload
 from Custom_Widgets.QCustomTheme import QCustomTheme
 from Custom_Widgets.Utils import is_in_designer, SharedData
 

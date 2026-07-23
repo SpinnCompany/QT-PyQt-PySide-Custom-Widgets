@@ -9,6 +9,7 @@ from qtpy.QtCore import Property, Qt
 from Custom_Widgets.QCustomTheme import QCustomTheme
 from Custom_Widgets.Utils import is_in_designer
 from Custom_Widgets.QCustomComponentLoader import QCustomComponentLoader
+from Custom_Widgets.Log import logError, logException
 
 class QCustomComponentContainer(QWidget):
     """A custom widget to load and display a UI class defined in an external file."""
@@ -29,9 +30,10 @@ class QCustomComponentContainer(QWidget):
     # DesignerTools.CustomPropertiesDock).
     DESIGNER_CUSTOM_PROPS = [
         {"name": "filePath", "kind": "file",
-         "filter": "Qt UI files (*.ui);;All files (*)", "group": "Component"},
+         "filter": "Compiled Python UI (*.py);;All files (*)", "group": "Component"},
         {"name": "formClassName", "kind": "str", "group": "Component"},
         {"name": "previewComponent", "kind": "bool", "group": "Component"},
+        {"name": "hotReload", "kind": "bool", "group": "Component"},
     ]
 
     def __init__(self, parent=None):
@@ -46,6 +48,7 @@ class QCustomComponentContainer(QWidget):
 
         self._designer_preview = False
         self._is_designer_mode = False
+        self._hot_reload = True
         self.form = QCustomComponentLoader()
     
     def showEvent(self, e):
@@ -56,31 +59,46 @@ class QCustomComponentContainer(QWidget):
             QTimer.singleShot(0, self._refresh_component)
 
     def _refresh_component(self):
-        # Clear any existing layout and labels
-        if self.layout() is not None:
-            QWidget().setLayout(self.layout())  # Reset layout
-        
-        self._layout = QVBoxLayout(self)
-        self._layout.setContentsMargins(0, 0, 0, 0)
-        self._layout.setSpacing(0)
-        self.setLayout(self._layout)
+        """(Re)load the embedded component. Guarded end-to-end: this runs from
+        Designer property-set callbacks, so an escaping exception would crash
+        the host.
 
-        self.form = QCustomComponentLoader()
-        self.form.previewComponent = self.previewComponent
-        self.form.loadComponent(formClassName=self._form_class, filePath=self._file_path)
-
-        self.layout().addWidget(self.form) 
-        
+        A single QCustomComponentLoader is created once and reused across
+        refreshes. Recreating it on every property change (the old behaviour)
+        left each discarded loader's ``onThemeChanged`` connection dangling on
+        a deleted C++ object; the next theme signal then fired into freed
+        memory, crashing Qt Designer."""
         try:
-            #older versions
-            self.form.form =  self.form.ui 
-            self.shownForm =  self.form.ui  
+            # Create the loader once and keep it; never tear it down mid-edit.
+            if getattr(self, "form", None) is None:
+                self.form = QCustomComponentLoader()
 
-            # for components
-            self.component =  self.form.ui
+            # Ensure our own layout exists exactly once and hosts the loader.
+            if self.layout() is None:
+                self._layout = QVBoxLayout(self)
+                self._layout.setContentsMargins(0, 0, 0, 0)
+                self._layout.setSpacing(0)
+                self.setLayout(self._layout)
+            if self.form.parent() is not self:
+                self.layout().addWidget(self.form)
 
-        except:
-            self.shownForm = None
+            # Push the current config into the reused loader. The loader clears
+            # and rebuilds its own content safely (see QCustomComponentLoader).
+            self.form.hotReload = self._hot_reload
+            self.form.previewComponent = self.previewComponent
+            self.form.loadComponent(formClassName=self._form_class,
+                                    filePath=self._file_path)
+
+            try:
+                # Back-compat aliases used by older example code.
+                self.form.form = self.form.ui
+                self.shownForm = self.form.ui
+                self.component = self.form.ui
+            except Exception:
+                self.shownForm = None
+        except Exception as e:
+            logError(f"QCustomComponentContainer: refresh failed: {e}")
+            logException(e)
 
     @Property(str)
     def filePath(self):
@@ -118,14 +136,31 @@ class QCustomComponentContainer(QWidget):
 
             self._refresh_component()
 
+    @Property(bool)
+    def hotReload(self):
+        """When True (default), the embedded component rebuilds itself in place
+        whenever its compiled .py source changes - no app/Designer restart."""
+        return self._hot_reload
+
+    @hotReload.setter
+    def hotReload(self, value: bool):
+        value = bool(value)
+        if self._hot_reload != value:
+            self._hot_reload = value
+            if getattr(self, "form", None) is not None:
+                self.form.hotReload = value
+
     def paintEvent(self, e):
         """Handle the paint event to customize the appearance of the widget."""
         super().paintEvent(e)
-        opt = QStyleOption()
-        opt.initFrom(self)
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
-        self.style().drawPrimitive(QStyle.PE_Widget, opt, painter, self)
+        try:
+            opt = QStyleOption()
+            opt.initFrom(self)
+            painter = QPainter(self)
+            painter.setRenderHint(QPainter.Antialiasing)
+            self.style().drawPrimitive(QStyle.PE_Widget, opt, painter, self)
+        except Exception as ex:
+            logError(f"QCustomComponentContainer: paintEvent error: {ex}")
     
     def resizeEvent(self, event: QResizeEvent) -> None:  
         # self.adjustSize()

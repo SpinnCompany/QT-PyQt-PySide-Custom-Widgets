@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CustomComponent</class>
+ <widget class="QCustomComponent" name="CustomComponent">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>320</width>
+    <height>240</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>CustomComponent</string>
+  </property>
+  <widget class="QCustomRoundProgressBar" name="customRoundProgressBar">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>40</y>
+     <width>160</width>
+     <height>160</height>
+    </rect>
+   </property>
+   <property name="value" stdset="0">
+    <number>30</number>
+   </property>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomRoundProgressBar</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomProgressBars</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomComponent</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomComponent</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
