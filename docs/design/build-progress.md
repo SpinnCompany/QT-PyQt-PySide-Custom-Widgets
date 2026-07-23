@@ -12,7 +12,7 @@ the "no push until the full commercial product is ready" decision).
 | Repo | Location | Branch | Commits (this effort) | Tests |
 |---|---|---|---|---|
 | Free core | `QT-PyQt-PySide-Custom-Widgets` | `feat/qcustom-datatable` | 23 ahead of `main` | 238 passing¹ |
-| Pro (private) | `custom-widgets-pro` (dist `QT-PyQt-PySide-Custom-Widgets-Pro`) | `main` | 10 (+demo) | 66 passing |
+| Pro (private) | `custom-widgets-pro` (dist `QT-PyQt-PySide-Custom-Widgets-Pro`) | `main` | 12 (+demo) | 86 passing |
 
 ¹ Two unrelated failures are excluded: `test_dev_server.py::test_classify` (an
 uncommitted parallel-session change to `DevServer.py`) and
@@ -98,10 +98,14 @@ runtime), 100% original code (no bundled assets).
   a pure `pivot_table` transform rendered through the ordinary flat table;
   `clearPivot` restores; mutually exclusive with grouping.
 
-Licence verification is still **stubbed** (deliberately deferred to last).
+Licence verification is **implemented** (2026-07-23): real Gumroad / LemonSqueezy
+key verification + Patreon membership via stdlib `urllib` (no new dep), with a
+signed offline-grace/perpetual-fallback cache and an `activate()` flow — see
+`custom_widgets_pro/_license.py` (20 tests, HTTP mocked). Product ids /
+campaign id are env-overridable baked constants to fill at launch.
 This completes all five DataTable Pro capability layers (virtualization, frozen
-columns, inline editing, grouping/pivot, export) — the SKU is feature-complete
-bar the licence hook + native compile.
+columns, inline editing, grouping/pivot, export); the SKU is feature-complete
+bar native compile + filling the store/campaign ids.
 
 ## What's next (open threads)
 
@@ -145,7 +149,9 @@ bar the licence hook + native compile.
     (COPYING.LESSER, LICENSE, `pyproject.toml`, SPDX, README) and land the
     CLA + bot + CONTRIBUTING.md + promote LICENSING.md. Drafts ready in
     `docs/design/`. **Not done autonomously — legal + owner decision.**
-  - Then: real Gumroad/LemonSqueezy/Patreon verification.
+  - ✅ **Real Gumroad/LemonSqueezy/Patreon verification** implemented in the Pro
+    package (stdlib-only, signed cache, offline grace, `activate()`; 20 tests).
+    Left for launch: fill the baked store product id + Patreon campaign id.
 - Go-to-market: refocus the YouTube channel, PPP price ladder, point-of-need selling.
 
 ## Designer follow-ups
