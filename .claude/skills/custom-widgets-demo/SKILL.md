@@ -5,6 +5,17 @@ description: Build a runnable, screenshot-verified demo app with the design-toke
 
 # Building a Custom Widgets demo
 
+## ⛔ RULE #1 — MCP first (do this before anything below)
+
+Before ANY custom-widgets task: **mount the `customwidgets` MCP server, then read its
+shipped agent knowledge (AGENT_GUIDE / instructions) and its skills.** Only then start.
+Build and run apps **through the MCP** (runApp / app-control / Designer + QSS bridge) —
+**never** via ad-hoc `python`/Bash. If the MCP is not connected in your session, STOP
+and ask the user to connect it; do not silently fall back to a shell. This rule ships
+with the product and applies to every agent that touches this repo.
+
+## The demo pattern
+
 The token widgets need **no `.ui`, no `.qrc`, no JSON** — instantiate widgets in
 plain layouts and style the whole app with one call. This is the preferred path
 for any new `examples/PySide6/*` showcase. Reference implementation:

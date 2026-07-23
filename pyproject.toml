@@ -54,7 +54,7 @@ Documentation = "https://khamisikibet.github.io/Docs-QT-PyQt-PySide-Custom-Widge
 
 [project.scripts]
 Custom_Widgets = "Custom_Widgets.CMD:run_command"
-Custom_Widgets-mcp = "Custom_Widgets.McpServer:main"
+Custom_Widgets-mcp = "Custom_Widgets.mcp:main"
 
 [tool.setuptools.packages.find]
 include = ["Custom_Widgets*"]
