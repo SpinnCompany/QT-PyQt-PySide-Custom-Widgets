@@ -33,13 +33,30 @@ INTERNAL = re.compile(r'(ChartBase|ChartView|ChartDataManager|ChartExporter|'
                       r'LegendManager|QLineSeries|BarSeries|BarChartBase|'
                       r'ChartConstants|ChartEnums)')
 
+# --- Ratified tiers (2026-07-24) ------------------------------------------
+# Decision: everything is FREE except the 5 anchors below; no Pro "watchlist"
+# earmarks (mini data-viz, editors, tree, timeline all stay free for now).
+
 # Free base classes that already have (or anchor) a separate compiled Pro widget.
 PRO_EXT = {
-    "QCustomDataTable": "DataTable Pro (SKU-1, built)",
+    "QCustomDataTable": "DataTable Pro (SKU-1, LOCKED - built)",
     "QCustomAreaChart": "Charts Pro (SKU-2, candidate)",
     "QCustomLineChart": "Charts Pro (SKU-2, candidate)",
     "QCustomBarChart": "Charts Pro (SKU-2, candidate)",
     "QCustomPieChart": "Charts Pro (SKU-2, candidate)",
+}
+
+# Library infrastructure, not standalone catalog widgets. Still free/open-source;
+# just not sellable/tierable widgets, so they carry no free/Pro tier.
+INFRA = {
+    "QCustomComponent", "QCustomComponentContainer", "QCustomComponentLoader",
+    "QCustomTheme", "QCustomThemeList",
+}
+
+# Display-name fixups where the scanned primary class isn't the public widget.
+WIDGET_OVERRIDE = {
+    "Custom_Widgets/QCustomAnnotationWidget.py": "QCustomAnnotationWidget",
+    "Custom_Widgets/QCustomModals.py": "QCustomModals",
 }
 
 CLASS_RE = re.compile(r'^class\s+([A-Z]\w+)\s*\(([^)]*)\)', re.M)
@@ -81,7 +98,9 @@ def scan():
         primary = (stem if any(c == stem for c, _ in classes)
                    else (widget_classes[0] if widget_classes
                          else (classes[0][0] if classes else stem)))
+        rel = os.path.relpath(m, ROOT)
         names = {primary, stem} | set(widget_classes)
+        primary = WIDGET_OVERRIDE.get(rel, primary)   # public-widget display name
 
         def hit(corpus):
             return any(re.search(r'\b%s\b' % re.escape(nm), corpus) for nm in names)
@@ -100,7 +119,7 @@ def scan():
 
 
 def tier(r):
-    if INTERNAL.search(r["module"]):
+    if INTERNAL.search(r["module"]) or r["widget"] in INFRA:
         return "internal"
     if r["widget"] in PRO_EXT:
         return "pro-ext"
@@ -146,10 +165,16 @@ def render(rows):
 `__catalog__` / Designer-registration / `.pyi` coverage per widget). This is the
 launch gate artifact: no free/pro SKU split is locked until every user-facing row
 below is **tested, stable, secure, and tier-classified**, then the whole product
-ships at once. Tiers here are **first-pass proposals for ratification**, not final.
+ships at once.
+
+> **Tiers RATIFIED {DATE}:** everything is **free** except the 5 anchors
+> (`free -> Pro`); DataTable Pro is locked, Charts Pro is a candidate. No Pro
+> "watchlist" earmarks - mini data-viz, editors, tree and timeline all stay free
+> for now. `internal` = engine + infrastructure (still open-source, not a
+> sellable widget). Remaining gate work: the per-widget **Stable/Secure** review.
 
 > Regenerate: `python tools/scan_widgets.py`. Presence signals are objective; the
-> **Tier** and **Stable/Secure** judgments are human.
+> tier decisions above are ratified; Stable/Secure remain a human review pass.
 
 ## Coverage summary ({n} widget modules)
 
