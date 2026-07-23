@@ -1,0 +1,7 @@
+Feather Icons
+=============
+
+Source: https://github.com/feathericons/feather
+License: MIT — Copyright (c) 2013-2017 Cole Bemis
+
+Full license text: ../../../licenses/Feather-MIT.txt

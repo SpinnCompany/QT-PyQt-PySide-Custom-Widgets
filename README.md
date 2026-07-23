@@ -72,3 +72,19 @@ Thanks to all the [contributors](https://qtcustomwidgets.spinncode.com/docs/cont
 ## App Gallery
 
 View a collection of modern GUIs made using the custom widgets module: [View Gallery](https://qtcustomwidgets.spinncode.com/docs/gallery)
+
+## Credits & third-party assets
+
+This package bundles third-party icon sets and a font. Full notices and the
+license texts ship inside the package under
+[`Custom_Widgets/THIRD_PARTY_NOTICES.md`](Custom_Widgets/THIRD_PARTY_NOTICES.md)
+and [`Custom_Widgets/licenses/`](Custom_Widgets/licenses/).
+
+- **Icons by [Font Awesome](https://fontawesome.com)** — Free icons licensed under
+  [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (© Fonticons, Inc.);
+  fonts under SIL OFL 1.1, code under MIT. Icons may be recoloured/resized.
+- **[Material Design Icons](https://github.com/google/material-design-icons)** —
+  Apache License 2.0 (© Google and contributors).
+- **[Feather](https://github.com/feathericons/feather)** — MIT (© 2013-2017 Cole Bemis).
+- **[Rosario](https://github.com/Omnibus-Type/Rosario)** — SIL Open Font License 1.1
+  (the bundled UI font).
