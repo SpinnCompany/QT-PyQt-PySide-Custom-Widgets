@@ -310,14 +310,22 @@ tight). All default to the prior behaviour:
   -1 caption) and `setTwoLineSubtitleBold(bool)`.
 - `setActionsColor()` (kebab drawn as three legible filled dots) and
   `setStatusDotSize()`.
+- `setRowSeparatorColor()` — a uniform per-cell bottom border drawn BY THE
+  DELEGATE. Rich cells (status/link/twoline/currency/badge) are fully
+  custom-painted and never call the default delegate, so a QSS
+  `#dataTableView::item { border-bottom }` renders only under the *plain* cells,
+  leaving some cells with a separator and some without. Setting this draws the
+  border under every cell; pair it with dropping the QSS `::item` border so it is
+  not drawn twice. Default off (None) = the old behaviour.
 - opt-in header affordances on `_SelectAllHeader`, exposed on the widget:
   `setPersistentSortIndicators()` (an up/down caret on EVERY sortable column,
   active one accented), `setHeaderSelectCaret()`, `setHeaderActionsGlyph('gear')`
   (→ `headerActionsGlyphClicked`), plus `setHeaderGlyphColor()` /
   `setHeaderAccentColor()` so the glyphs track the theme.
 
-`examples/PySide6/AuroraJobsTable` uses exactly these to reproduce the WorkEver
-"Jobs" table one-to-one.
+`examples/PySide6/AuroraJobsTable` (pure-code) and
+`examples/PySide6/AuroraJobsTable_CorrectArchitecture` (forms pipeline) use
+exactly these to reproduce the WorkEver "Jobs" table one-to-one.
 
 ## Pro extension seams (design for datatable-pro-spec.md)
 
