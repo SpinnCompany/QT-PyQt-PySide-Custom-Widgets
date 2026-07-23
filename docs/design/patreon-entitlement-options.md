@@ -1,9 +1,34 @@
-# Patreon entitlement — delivery options
+# Pro entitlement & distribution — delivery options
 
-**Status:** Open question — documented, **decide later**. Nothing implemented.
+**Status:** Direction chosen 2026-07-23 — **distribution-as-entitlement via
+private repos**. Not implemented yet.
 **Created:** 2026-07-23
 **Related:** commercial-product.md, datatable-pro-spec.md,
 `custom_widgets_pro/_license.py` (Pro repo)
+
+## Direction chosen (2026-07-23)
+
+**Entitlement = access to a private repo.** No hosting, no offline keys, no
+license-key verification as the primary gate. If a buyer/patron can install
+`custom_widgets_pro` from the **private repo** they were granted access to, they
+are entitled. The real protection stays what it always was: **native-compiled
+wheels + the licence agreement** (see commercial-product.md). This supersedes the
+key/OAuth/offline-file options below, which are kept only for the record.
+
+- **Mechanism:** paid users are granted read access to a private GitHub repo (or
+  its private package registry / release assets); they `pip install` from it.
+  GitHub hosts everything — nothing self-run.
+- **Churn:** manual — remove repo access / revoke the token when a patron lapses.
+  Acceptable at < 100 patrons (periodic reconcile, not a service). If Patreon's
+  GitHub connection is currently available for the tier setup, it can auto-sync
+  patrons into the repo and automate churn — verify before relying on it.
+- **`_license.py`:** not needed as a gate for this path. The built online
+  Gumroad/LemonSqueezy key check can stay as an *optional* commercial-invoice
+  convenience, but is not the entitlement mechanism.
+
+Everything below is the prior options analysis, retained for context.
+
+---
 
 ## Context
 
