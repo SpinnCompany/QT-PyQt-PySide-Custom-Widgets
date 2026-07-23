@@ -7,7 +7,6 @@ from Custom_Widgets.FileMonitor import QSsFileMonitor
 from Custom_Widgets.JSonStyles import updateJson, loadJsonStyle
 from Custom_Widgets.Log import logInfo, logError
 from Custom_Widgets.Utils import SharedData, is_in_designer
-from Custom_Widgets.QAppSettings import QAppSettings as QCustomAppSettings
 from Custom_Widgets.QCustomTheme import QCustomTheme
 
 class QCustomComponent(QWidget):
@@ -32,8 +31,6 @@ class QCustomComponent(QWidget):
     DESIGNER_CUSTOM_PROPS = [
         {"name": "jsonStylesheetFilePath", "kind": "file",
          "filter": "JSON (*.json);;All files (*)", "group": "Stylesheet"},
-        {"name": "liveCompileStylesheet", "kind": "bool", "group": "Stylesheet"},
-        {"name": "paintQtDesignerUI", "kind": "bool", "group": "Stylesheet"},
     ]
 
     def __init__(self, parent=None):
@@ -41,8 +38,6 @@ class QCustomComponent(QWidget):
 
         # Initialize file monitor and stylesheet options
         self._json_file = "json-styles/style.json"
-        self.liveCompileQss = False
-        self._paint_qt_designer = False
         self.qss_watcher = None
 
         self.showCustomWidgetsLogs = True
@@ -51,9 +46,9 @@ class QCustomComponent(QWidget):
         self._qss_file_monitor = QSsFileMonitor.instance()
 
         # Lightweight at design time: no main-window lookup, no file watcher,
-        # no JSON loading in Qt Designer. That work happens at app runtime, or
-        # in Designer only when the user opts in via liveCompileStylesheet /
-        # paintQtDesignerUI (compileStylesheet starts the monitor on demand).
+        # no JSON loading in Qt Designer. Design-time live compile / painting is
+        # handled by the Designer plugin (QSS Editor dock + 'Paint entire
+        # Designer'), not per-widget. That runtime work happens below.
         if is_in_designer(self):
             self.win = None
         else:
@@ -69,35 +64,6 @@ class QCustomComponent(QWidget):
     def jsonStylesheetFilePath(self, value: str = ""):
         self._json_file = value
         loadJsonStyle(self, self, jsonFiles={self._json_file})
-        self.compileStylesheet()
-
-    # Property for enabling or disabling live compilation of the stylesheet
-    @Property(bool)
-    def liveCompileStylesheet(self):
-        return self.liveCompileQss
-
-    @liveCompileStylesheet.setter
-    def liveCompileStylesheet(self, value: bool):
-        self.liveCompileQss = value
-        self.compileStylesheet()
-
-    @Property(bool)
-    def paintQtDesignerUI(self):
-        return self._paint_qt_designer
-    
-    @paintQtDesignerUI.setter
-    def paintQtDesignerUI(self, value):
-        self._paint_qt_designer = value
-
-        self.compileStylesheet()
-
-    # Method to compile the stylesheet
-    def compileStylesheet(self):
-        if self.liveCompileQss and self._json_file:
-            QCustomAppSettings.updateAppSettings(self, generateIcons = False, reloadJson = False, paintEntireApp = self._paint_qt_designer, QtDesignerMode = True)
-            if not self.qss_watcher:
-                self.startFileMonitor()
-   
 
     # Method to start the file monitor
     def startFileMonitor(self):
@@ -129,10 +95,10 @@ class QCustomComponent(QWidget):
     def resizeEvent(self, e):
         super().resizeEvent(e)
 
-        # Reloading the JSON style on every resize is only useful at runtime
-        # (or in Designer when the user opts into design-time painting) -
-        # otherwise it needlessly thrashes while resizing in Qt Designer.
-        if self._json_file and (not is_in_designer(self) or self._paint_qt_designer):
+        # Reloading the JSON style on every resize is only useful at runtime -
+        # in Qt Designer it needlessly thrashes while resizing (design-time
+        # painting is handled by the Designer plugin now).
+        if self._json_file and not is_in_designer(self):
             loadJsonStyle(self, self, jsonFiles={self._json_file})
 
     # Paint event for applying QSS
