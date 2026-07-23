@@ -61,7 +61,22 @@ except Exception as e:
     logException(e, message="Error registering QCustomQMainWindow")
 
 
-from Custom_Widgets.QAvatarWidget import QAvatarWidget 
+from Custom_Widgets.QCustomQPushButton import QCustomQPushButton
+
+# Registering QCustomQPushButton with error handling
+try:
+    logInfo("Registering QCustomQPushButton")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomQPushButton, module=QCustomQPushButton.WIDGET_MODULE,
+        tool_tip=QCustomQPushButton.WIDGET_TOOLTIP,
+        xml=QCustomQPushButton.WIDGET_DOM_XML,
+        icon=QCustomQPushButton.WIDGET_ICON, group="Buttons"
+    )
+except Exception as e:
+    logException(e, message="Error registering QCustomQPushButton")
+
+
+from Custom_Widgets.QAvatarWidget import QAvatarWidget
 
 # Registering QAvatarWidget with error handling
 try:

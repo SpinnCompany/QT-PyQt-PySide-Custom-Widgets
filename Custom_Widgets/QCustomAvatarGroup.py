@@ -59,6 +59,10 @@ class QCustomAvatarGroup(QWidget):
         self._size = int(size)
         self._names = []
         self._ring = QColor("#ffffff")
+        # Overflow ("+N") chip colours - token-driven (surface-muted / on-surface)
+        # via the qproperties below; these literals are just first-paint fallbacks.
+        self._overflow_bg = QColor("#94a3b8")
+        self._overflow_text = QColor("#ffffff")
         self._row = QHBoxLayout(self)
         self._row.setContentsMargins(0, 0, 0, 0)
         self._row.setSpacing(-self._size // 3)     # overlap
@@ -97,7 +101,8 @@ class QCustomAvatarGroup(QWidget):
             lbl.setStyleSheet(
                 "border-radius: %dpx; border: 2px solid %s; background-color: %s;"
                 " color: %s; font-weight: 600;"
-                % (self._size // 2, self._ring.name(), "#94a3b8", "#ffffff"))
+                % (self._size // 2, self._ring.name(),
+                   self._overflow_bg.name(), self._overflow_text.name()))
         else:
             lbl.setStyleSheet(
                 "border-radius: %dpx; border: 2px solid %s; background-color: %s;"
@@ -122,6 +127,22 @@ class QCustomAvatarGroup(QWidget):
     @ringColor.setter
     def ringColor(self, color):
         self._ring = QColor(color)
+
+    @Property(QColor)
+    def overflowBg(self):
+        return self._overflow_bg
+
+    @overflowBg.setter
+    def overflowBg(self, color):
+        self._overflow_bg = QColor(color)
+
+    @Property(QColor)
+    def overflowText(self):
+        return self._overflow_text
+
+    @overflowText.setter
+    def overflowText(self, color):
+        self._overflow_text = QColor(color)
         self._rebuild()
 
     def names(self):

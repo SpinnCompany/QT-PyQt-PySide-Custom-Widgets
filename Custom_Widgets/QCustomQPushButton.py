@@ -18,6 +18,32 @@ from qtpy.QtGui import QColor
 from qtpy.QtWidgets import QPushButton, QGraphicsDropShadowEffect
 
 class QCustomQPushButton(QPushButton):
+    """Modern push button with design-token variants and sizes.
+
+    A drop-in ``QPushButton`` replacement exposing two declared Qt properties
+    that drive tokenized QSS attribute selectors
+    (``QCustomQPushButton[variant="..."]``):
+
+    - ``variant``     - primary / secondary / outline / ghost / destructive
+    - ``sizeVariant`` - sm / md / lg  (named ``sizeVariant`` so it does not
+      shadow ``QWidget.size()``)
+
+    It also carries the legacy animated-gradient "BTN" theme system (hover /
+    click colour animation, drop shadow) for backward-compatible styling.
+    """
+
+    WIDGET_ICON = "components/icons/smart_button.png"
+    WIDGET_TOOLTIP = "A modern push button with variant / size styling"
+    WIDGET_MODULE = "Custom_Widgets.QCustomQPushButton"
+    WIDGET_DOM_XML = """
+    <ui language='c++'>
+        <widget class='QCustomQPushButton' name='customPushButton'>
+            <property name='geometry'><rect><x>0</x><y>0</y><width>120</width><height>34</height></rect></property>
+            <property name='text'><string>Button</string></property>
+        </widget>
+    </ui>
+    """
+
     def __init__(self, parent=None):
         super().__init__(parent)
         ########################################################################

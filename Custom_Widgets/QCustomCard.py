@@ -31,6 +31,7 @@ class QCustomCard(QWidget):
         "name": "QCustomCard",
         "props": {"title": {"type": "string", "default": ""},
                   "subtitle": {"type": "string", "default": ""}},
+        "signals": [],
         "tokens_used": ["surface", "on-surface", "outline", "surface-muted"],
     }
 

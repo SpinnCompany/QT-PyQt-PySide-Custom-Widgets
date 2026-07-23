@@ -35,6 +35,7 @@ class QCustomStatCard(QWidget):
                   "caption": {"type": "string", "default": ""},
                   "trend": {"type": "enum", "values": ["up", "down", "flat"],
                             "default": "flat"}},
+        "signals": [],
         "tokens_used": ["surface", "on-surface", "outline", "surface-muted",
                         "success", "destructive"],
     }
