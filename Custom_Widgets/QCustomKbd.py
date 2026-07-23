@@ -37,6 +37,12 @@ class QCustomKbd(QWidget):
     }
 
     def __init__(self, keys="Ctrl+K", parent=None, separator="+"):
+        # Qt Designer / uic instantiate custom widgets as ``Widget(parent)``.
+        # ``keys`` is the first positional arg, so a parent passed positionally
+        # would be mistaken for the shortcut string. Detect a QWidget here and
+        # treat it as the parent so promoted .ui forms load correctly.
+        if isinstance(keys, QWidget) and parent is None:
+            keys, parent = "Ctrl+K", keys
         super().__init__(parent)
         self.setObjectName("QCustomKbd")
         self._separator = separator or "+"
