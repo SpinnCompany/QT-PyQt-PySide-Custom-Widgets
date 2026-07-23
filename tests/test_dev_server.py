@@ -35,11 +35,13 @@ class TestScanClassify:
         assert changed == [str(f)]
 
     def test_classify(self):
-        ui, py, style = _classify([
+        ui, py, style, gen_py = _classify([
             "/p/ui/a.ui", "/p/main.py", "/p/Qss/scss/defaultStyle.scss",
-            "/p/json-styles/style.json"])
+            "/p/json-styles/style.json", "/p/src/ui_a.py"],
+            generated_dir="/p/src")
         assert ui == ["/p/ui/a.ui"]
         assert py == ["/p/main.py"]
+        assert gen_py == ["/p/src/ui_a.py"]
         assert set(style) == {"/p/Qss/scss/defaultStyle.scss",
                               "/p/json-styles/style.json"}
 
