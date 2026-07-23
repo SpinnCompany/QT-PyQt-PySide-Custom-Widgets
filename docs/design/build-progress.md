@@ -241,11 +241,13 @@ In-repo code batch (**done**):
 
 Still open:
 
-- **User-facing docs** (Docusaurus repo) — pages for container `.py`-only +
+- ~~**User-facing docs** (Docusaurus repo) — pages for container `.py`-only +
   `.ui` auto-resolve, hot reload (component + main-window), the QSS/Theme editor,
-  Paint entire Designer, and the new MCP tools (`designer_new_form`,
-  `designer_list_templates`, `designer_list_dialogs`, `designer_qss_window`,
-  `designer_qss_screenshot`, the `app_*` running-app tools, `entireApp`).
+  Paint entire Designer, and the new MCP tools~~ **done** — new
+  `03-Advanced/hot-reload.md` (component + main-window + `.ui` auto-resolve),
+  refreshed `03-Advanced/designer-tools.md` MCP section (QSS-window driving +
+  `app_*` running-app tools + form/template/dialog tools), and container-page
+  updates (`.ui` auto-resolve + `hotReload` property). Full-site build green.
 
 See: `modernization-roadmap.md`, `commercial-product.md`, `variant-token-system.md`,
 `datatable-pro-spec.md`, `lgpl-relicense-plan.md`, `THIRD_PARTY_NOTICES.draft.md`,
