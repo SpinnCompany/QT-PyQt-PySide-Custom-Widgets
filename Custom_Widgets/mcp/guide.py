@@ -92,7 +92,9 @@ never guess a property name or value. For exact constructor/method signatures
 call widget_signature (a live-generated .pyi — base class, signals, typed props,
 every public method), since qtpy hides these from normal introspection. Preview
 any widget in isolation with render_widget (headless offscreen PNG, no
-Designer/app needed) before wiring it into a form. Go-to classes: QCustomSidebar +
+Designer/app needed) before wiring it into a form. For HOW to wire it up, search
+the bundled recipes with search_examples (e.g. "sidebar navigation with stacked
+pages") and open the top hit. Go-to classes: QCustomSidebar +
 QCustomSidebarButton (icon + labelText) and QCustomSidebarLabel for nav;
 QCustomComponent as the root of every embeddable screen; QCustomQStackedWidget
 for animated page routing; QCustomThemeList / QCustomThemeDarkLightToggle for

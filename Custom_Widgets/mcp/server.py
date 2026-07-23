@@ -648,6 +648,27 @@ def widget_signature(name: str) -> str:
     return stubgen.stub_for_class(cls, prop_types)
 
 
+@_tool(annotations={"title": "Search examples & docs (recipes)",
+                    "readOnlyHint": True})
+def search_examples(query: str, k: int = 5, full: bool = False) -> str:
+    """Search the bundled example projects and the repo docs for task->code
+    recipes — grounding for HOW to use the widgets, straight from real code
+    instead of guesswork. Lexical (BM25) ranking; a query is natural language or
+    keywords (e.g. "badge with a count", "dark/light theme toggle", "sidebar
+    navigation with stacked pages").
+
+    Returns the top-k matches as JSON: {path, kind (example|doc), title, line,
+    score, excerpt}. Open the `path` for the full recipe (or pass full=true to
+    inline each match's text). Covers examples/ + README/AGENTS.md, plus an
+    external docs tree if CUSTOM_WIDGETS_DOCS_DIR is set; internal design docs
+    are not indexed."""
+    from Custom_Widgets.mcp import retrieval
+    k = max(1, min(int(k), 20))
+    hits = retrieval.search(query, k=k, project_dir=_projectDir(), full=full)
+    return json.dumps({"query": query, "count": len(hits), "results": hits},
+                      indent=2)
+
+
 ########################################################################
 ## THEME / STYLING
 ########################################################################
