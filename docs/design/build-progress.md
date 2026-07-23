@@ -139,7 +139,9 @@ local, not pushed; internal tracker at that repo's root `BUILD-PROGRESS.md`):
   `QCustomBadge` page written (v3-migration.md, `#qbadgewidget-to-qcustombadge`).
   ~~Further ideas: splitter, carousel, kbd~~ **done** — `QCustomKbd`,
   `QCustomSplitter`, `QCustomCarousel` added (tokenized QSS + `__catalog__` +
-  Designer registration + tests + a combined demo). Docs-repo pages still to write.
+  Designer registration + tests + a combined demo). Docs-repo reference pages
+  written for all three (Display & Information / Navigation & Layout; full-site
+  build re-verified green).
 - **Compliance fixes before any launch** (see THIRD_PARTY_NOTICES.draft.md) —
   *in progress:*
   - ✅ **Product Sans removed** — 12 unused proprietary `.ttf` deleted;
