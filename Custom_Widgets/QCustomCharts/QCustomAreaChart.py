@@ -129,6 +129,11 @@ class QCustomAreaChart(QCustomChartBase, AxisChartProps, SeriesStyleProps, Chart
         self._baseline_value = 0.0
         self._stacked_area = False
         self._percentage_area = False
+        # When False, the area is filled with NO polygon border (so the vertical
+        # left/right closing edges and the baseline are not stroked) and the top
+        # line is drawn as a separate overlay QLineSeries instead. Default True
+        # preserves the original "stroke the whole outline" behaviour.
+        self._area_border_edges = True
         
         # Crosshair properties
         self._crosshair_color = QColor(0, 0, 0, 180)
@@ -161,6 +166,7 @@ class QCustomAreaChart(QCustomChartBase, AxisChartProps, SeriesStyleProps, Chart
         self._area_series_cache = {}  # Cache for area series to prevent deletion
         self._upper_series_cache = {}  # Cache for upper series
         self._lower_series_cache = {}  # Cache for lower series
+        self._line_overlay_cache = {}  # Cache for top-line overlays (border-edges off)
         
         # Add dummy data if in designer mode
         self._addDummyDataForDesigner()
@@ -311,6 +317,7 @@ class QCustomAreaChart(QCustomChartBase, AxisChartProps, SeriesStyleProps, Chart
         self._area_series_cache.clear()
         self._upper_series_cache.clear()
         self._lower_series_cache.clear()
+        self._line_overlay_cache.clear()
         
         # Create series from data manager
         series_data = self._data_manager.getVisibleSeriesData()
@@ -327,15 +334,20 @@ class QCustomAreaChart(QCustomChartBase, AxisChartProps, SeriesStyleProps, Chart
         # Create all area series first
         area_series_list = []
         marker_series_list = []
-        
+        line_overlay_list = []
+
         for series_name, data_points in series_data.items():
             if not data_points:
                 continue
-            
+
             # Create area series
             area_series = self._createAreaSeries(series_name, data_points)
             if area_series:
                 area_series_list.append(area_series)
+                if not self._area_border_edges:
+                    line_overlay = self._createLineOverlay(series_name, data_points)
+                    if line_overlay:
+                        line_overlay_list.append(line_overlay)
             
             # Add markers if enabled
             marker_style = self._data_manager.getSeriesMarkerStyle(series_name)
@@ -366,6 +378,19 @@ class QCustomAreaChart(QCustomChartBase, AxisChartProps, SeriesStyleProps, Chart
                 marker_series.attachAxis(self._axis_y)
             except Exception as e:
                 print(f"Error adding marker series {marker_series.name()} to chart: {e}")
+
+        # Top-line overlays sit ABOVE the fills so the trend line is crisp and has
+        # no vertical closing walls (area border edges disabled).
+        for line_overlay in line_overlay_list:
+            try:
+                self._chart.addSeries(line_overlay)
+                line_overlay.attachAxis(self._axis_x)
+                line_overlay.attachAxis(self._axis_y)
+                marker = self._chart.legend().markers(line_overlay)
+                if marker:
+                    marker[0].setVisible(False)   # keep it out of the legend
+            except Exception as e:
+                print(f"Error adding line overlay {line_overlay.name()} to chart: {e}")
         
         # Auto-scale if data exists
         if all_x and all_y and self._auto_scale:
@@ -504,8 +529,13 @@ class QCustomAreaChart(QCustomChartBase, AxisChartProps, SeriesStyleProps, Chart
             else:
                 pen.setStyle(Qt.SolidLine)
             
-            area_series.setPen(pen)
-            
+            if not self._area_border_edges:
+                # No polygon outline: kills the vertical wall at the first/last x
+                # and the baseline stroke. The top line is added as an overlay.
+                area_series.setPen(QPen(Qt.NoPen))
+            else:
+                area_series.setPen(pen)
+
             # Apply fill color with opacity
             fill_color = QColor(color)
             fill_color.setAlpha(int(255 * self._fill_opacity))
@@ -525,6 +555,44 @@ class QCustomAreaChart(QCustomChartBase, AxisChartProps, SeriesStyleProps, Chart
             
         except Exception as e:
             print(f"Error creating area series for {name}: {e}")
+            return None
+
+    def _createLineOverlay(self, name: str, data: List[Tuple[float, float]]) -> Optional[QLineSeries]:
+        """A crisp top-line drawn on top of a border-less area fill (used when
+        area border edges are disabled) so the trend line has no vertical
+        closing walls."""
+        try:
+            color = self._data_manager.getSeriesColor(name)
+            line_width = self._data_manager.getSeriesLineWidth(name)
+            line_style = self._data_manager.getSeriesLineStyle(name)
+
+            line = QLineSeries()
+            line.setName(f"{name}_line")
+            for x, y in data:
+                line.append(x, y)
+
+            pen = QPen(color)
+            pen.setWidthF(line_width)
+            pen.setCapStyle(Qt.RoundCap)
+            pen.setJoinStyle(Qt.RoundJoin)
+            if line_style == self.LINE_DASH:
+                pen.setStyle(Qt.DashLine)
+            elif line_style == self.LINE_DOT:
+                pen.setStyle(Qt.DotLine)
+            elif line_style == self.LINE_DASH_DOT:
+                pen.setStyle(Qt.DashDotLine)
+            elif line_style == self.LINE_DASH_DOT_DOT:
+                pen.setStyle(Qt.DashDotDotLine)
+            elif line_style == self.LINE_NONE:
+                pen.setStyle(Qt.NoPen)
+            else:
+                pen.setStyle(Qt.SolidLine)
+            line.setPen(pen)
+
+            self._line_overlay_cache[name] = line
+            return line
+        except Exception as e:
+            print(f"Error creating line overlay for {name}: {e}")
             return None
 
     def _createGradient(self, base_color: QColor) -> QBrush:
@@ -767,6 +835,18 @@ class QCustomAreaChart(QCustomChartBase, AxisChartProps, SeriesStyleProps, Chart
         """Get the baseline value"""
         return self._baseline_value
     
+    def setAreaBorderEdges(self, enabled: bool):
+        """Draw the area polygon's full outline (True, default) or only the top
+        trend line (False). When False the vertical left/right closing walls and
+        the baseline stroke are removed and a crisp top line is overlaid instead
+        — the modern 'filled trend line' look."""
+        self._area_border_edges = bool(enabled)
+        self.updateChart()
+
+    def areaBorderEdges(self) -> bool:
+        """Whether the full area outline is stroked (see setAreaBorderEdges)."""
+        return self._area_border_edges
+
     def setGradientFill(self, enabled: bool):
         """Enable or disable gradient fill"""
         self._gradient_fill = enabled
