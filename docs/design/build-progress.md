@@ -36,7 +36,7 @@ commits, not only this effort's widget/compliance/licensing work.
   `sass_functions`) bridged into `QCustomTheme`, following the live theme.
 - Every widget below is tokenized; each commit includes a pixel-verified paint test.
 
-## Free widgets added (31 modern widgets — 30 new + `QCustomBadge` modernization)
+## Free widgets added (34 modern widgets — 33 new + `QCustomBadge` modernization)
 
 | Widget | Notes |
 |---|---|
@@ -71,6 +71,9 @@ commits, not only this effort's widget/compliance/licensing work.
 | QCustomProgressRing | painted determinate circular %, tokenized ring/track |
 | QCustomCard | surface container w/ optional header + body (Designer container) |
 | QCustomBadge | pill/count/dot, 8 variants, overlay attach (replaces legacy QBadgeWidget) |
+| QCustomKbd | keyboard-shortcut keycaps (`<kbd>` equivalent), string/list, separator |
+| QCustomSplitter | QSplitter with tokenized hover-accent handle |
+| QCustomCarousel | one-slide-at-a-time + prev/next + dot indicators, wrap, auto-advance |
 
 Also: `QCustomQPushButton` gained variant/sizeVariant; `QCustomFlowLayout`
 teardown crash fixed; `QCustomTheme` gained the `token()` SCSS integration.
@@ -134,7 +137,9 @@ local, not pushed; internal tracker at that repo's root `BUILD-PROGRESS.md`):
   card, badge)~~ **done** — 6 added + `QBadgeWidget` modernized into
   `QCustomBadge` (clean break; legacy file removed). Docs-repo migration note +
   `QCustomBadge` page written (v3-migration.md, `#qbadgewidget-to-qcustombadge`).
-  Further ideas: splitter, carousel, kbd.
+  ~~Further ideas: splitter, carousel, kbd~~ **done** — `QCustomKbd`,
+  `QCustomSplitter`, `QCustomCarousel` added (tokenized QSS + `__catalog__` +
+  Designer registration + tests + a combined demo). Docs-repo pages still to write.
 - **Compliance fixes before any launch** (see THIRD_PARTY_NOTICES.draft.md) —
   *in progress:*
   - ✅ **Product Sans removed** — 12 unused proprietary `.ttf` deleted;

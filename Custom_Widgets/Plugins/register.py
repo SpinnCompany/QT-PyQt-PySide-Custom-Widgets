@@ -678,6 +678,45 @@ except Exception as e:
 
 logInfo(" All chart widgets registered successfully!")
 
+
+from Custom_Widgets.QCustomKbd import QCustomKbd
+
+# Registering QCustomKbd with error handling
+try:
+    logInfo("Registering QCustomKbd")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomKbd, module=QCustomKbd.WIDGET_MODULE,
+        tool_tip=QCustomKbd.WIDGET_TOOLTIP, xml=QCustomKbd.WIDGET_DOM_XML,
+        icon=QCustomKbd.WIDGET_ICON, group="Display Widgets")
+except Exception as e:
+    logException(e, message="Error registering QCustomKbd")
+
+
+from Custom_Widgets.QCustomCarousel import QCustomCarousel
+
+# Registering QCustomCarousel with error handling
+try:
+    logInfo("Registering QCustomCarousel")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomCarousel, module=QCustomCarousel.WIDGET_MODULE,
+        tool_tip=QCustomCarousel.WIDGET_TOOLTIP, xml=QCustomCarousel.WIDGET_DOM_XML,
+        icon=QCustomCarousel.WIDGET_ICON, group="Containers")
+except Exception as e:
+    logException(e, message="Error registering QCustomCarousel")
+
+
+from Custom_Widgets.QCustomSplitter import QCustomSplitter
+
+# Registering QCustomSplitter with error handling (container: widgets drop in)
+try:
+    logInfo("Registering QCustomSplitter")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomSplitter, module=QCustomSplitter.WIDGET_MODULE,
+        tool_tip=QCustomSplitter.WIDGET_TOOLTIP, xml=QCustomSplitter.WIDGET_DOM_XML,
+        icon=QCustomSplitter.WIDGET_ICON, container=True, group="Containers")
+except Exception as e:
+    logException(e, message="Error registering QCustomSplitter")
+
 ########################################################################
 ## DESIGNER BRIDGE - lets a running app push theme changes into Designer
 ## (refresh icons / restyle open forms). See Custom_Widgets/DesignerBridge.py
