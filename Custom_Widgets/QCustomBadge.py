@@ -17,7 +17,7 @@
 ## It can also float over another widget's corner via attachTo(). Emits clicked.
 ########################################################################
 from qtpy.QtCore import Qt, Signal, Property, QEvent
-from qtpy.QtWidgets import QLabel, QSizePolicy
+from qtpy.QtWidgets import QLabel, QSizePolicy, QWidget
 
 
 class QCustomBadge(QLabel):
@@ -57,6 +57,12 @@ class QCustomBadge(QLabel):
     _DOT_SIZE = {"sm": 8, "md": 10, "lg": 12}
 
     def __init__(self, text="", parent=None, variant="default"):
+        # Qt Designer / uic instantiate custom widgets as ``Widget(parent)``.
+        # ``text`` is the first positional arg, so a parent passed positionally
+        # would be mistaken for the badge text (calling setText with a QWidget).
+        # Detect a QWidget here and treat it as the parent instead.
+        if isinstance(text, QWidget) and parent is None:
+            text, parent = "", text
         super().__init__(parent)
         self.setObjectName("QCustomBadge")
         self._variant = variant if variant in self._VARIANTS else "default"
