@@ -145,6 +145,10 @@ bar native compile + filling the store/campaign ids.
   - ✅ **Relicense changeset staged** (`docs/relicense/changeset/`): dry-run-tested
     `apply_relicense.py` + COPYING/COPYING.LESSER/LICENSE — ready to run after
     counsel sign-off (not applied; live tree stays GPL).
+  - ✅ **Docs-repo Licensing page** added (`docs/07-Appendices/licensing.md`,
+    Resources sidebar): states the current license = **GPLv3** + the Qt
+    responsibility + third-party attributions; deliberately does **not** claim
+    LGPL or publish commercial terms. Update it when the flip lands.
   - ⏳ **Counsel review** of the de-minimis calls → then execute the flip
     (COPYING.LESSER, LICENSE, `pyproject.toml`, SPDX, README) and land the
     CLA + bot + CONTRIBUTING.md + promote LICENSING.md. Drafts ready in
