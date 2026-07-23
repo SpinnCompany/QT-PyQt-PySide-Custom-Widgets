@@ -71,8 +71,9 @@ def skills() -> str:
         "   designer_run_app). If a capability is missing, add it here.\n"
         "5. Before choosing/configuring a widget, read the catalog: the\n"
         "   widgets_catalog tool or customwidgets://catalog resource lists every\n"
-        "   widget's props, allowed enum values, signals and tokens. Preview any\n"
-        "   widget in isolation with render_widget (headless, no Designer).\n"
+        "   widget's props, allowed enum values, signals and tokens. Get exact\n"
+        "   signatures with widget_signature, and preview any widget in isolation\n"
+        "   with render_widget (both headless, no Designer needed).\n"
     )
 
 
@@ -515,6 +516,23 @@ def render_widget(name: str, props: dict = {}, width: int = 0, height: int = 0,
     if proc.returncode != 0 or not data:
         raise RuntimeError("render failed:\n%s" % (proc.stderr[-2000:] or "no output"))
     return Image(data=base64.b64decode(data), format="png")
+
+
+@mcp.tool(annotations={"title": "Widget type signature (.pyi)", "readOnlyHint": True})
+def widget_signature(name: str) -> str:
+    """The PEP 484 type signature of one widget, generated LIVE from the real
+    class (so it is never stale): its base class, signals, typed properties, and
+    every public method with its parameters. Use it to call constructors/methods
+    with the right names and arity — qtpy's dynamic imports otherwise hide these.
+    The same generator writes the on-disk .pyi stubs (py.typed) that type-checkers
+    and IDEs consume; regenerate those with `python -m Custom_Widgets.mcp.stubgen
+    --write`."""
+    import importlib
+    from Custom_Widgets.mcp import stubgen
+    info = _find_widget(name)
+    cls = getattr(importlib.import_module(info["module"]), info["class"])
+    prop_types = stubgen._catalog_props().get(info["class"], {})
+    return stubgen.stub_for_class(cls, prop_types)
 
 
 ########################################################################

@@ -1,0 +1,19 @@
+# Auto-generated type stub — DO NOT EDIT.
+# Regenerate with:  python -m Custom_Widgets.mcp.stubgen --write
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QWidget
+from typing import Any, ClassVar
+
+
+class QCustomAlert(QWidget):
+    closed: ClassVar[Signal]
+    variant: str
+    title: str
+    text: str
+    dismissible: bool
+    def __init__(self, parent = ..., title = ..., text = ..., variant = ..., dismissible = ...) -> None: ...
+    def setTitle(self, title) -> None: ...
+    def setText(self, text) -> None: ...
+    def setDismissible(self, dismissible) -> None: ...
+    def isDismissible(self): ...
+    def closeButton(self): ...
