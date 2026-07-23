@@ -110,9 +110,20 @@ bar the licence hook + native compile.
   `QCustomBadge` (clean break; legacy file removed). Docs-repo migration note +
   `QCustomBadge` page written (v3-migration.md, `#qbadgewidget-to-qcustombadge`).
   Further ideas: splitter, carousel, kbd.
-- **Compliance fixes before any launch** (see THIRD_PARTY_NOTICES.draft.md):
-  remove bundled **Product Sans** (proprietary), verify **BlurWindow.py** provenance,
-  Font Awesome attribution, `mock` runtime dep.
+- **Compliance fixes before any launch** (see THIRD_PARTY_NOTICES.draft.md) —
+  *in progress:*
+  - ✅ **Product Sans removed** — 12 unused proprietary `.ttf` deleted;
+    `loadProductSansFont`→`loadAppFont` (already loaded OFL Rosario).
+  - ✅ **`mock` runtime dep** — confirmed already resolved (not in pyproject, no
+    runtime import).
+  - 🔬 **BlurWindow.py provenance** — researched: GWSL = ambiguous "Modified MIT",
+    digsby = PSF-derived permissive, zhiyiYo = unlicensed blog (usually GPLv3).
+    No confirmed copyleft; **clean-room rewrite recommended** (owner decision;
+    needs Windows/macOS to verify).
+  - ⏳ **Font Awesome attribution** — CC BY 4.0 text added to the notices;
+    in-app/About placement still pending.
+  - ⏳ **License-text bundle** (`licenses/`) + confirm all "(verify)" licenses,
+    then promote the notices to `/THIRD_PARTY_NOTICES`.
 - **Licensing prerequisites**: CLA + GPLv3→LGPLv3 relicense (owner holds ~97.6%),
   promote LICENSING.md — then real Gumroad/LemonSqueezy/Patreon verification.
 - Go-to-market: refocus the YouTube channel, PPP price ladder, point-of-need selling.
@@ -138,17 +149,26 @@ In-repo code batch (**done**):
   silently; `examples/svg_icons_demo/ui/testnew.ui` **kept** — it is the inner
   form of the nested-container demo (`mainwindow.ui` → `ui_newtest.py` →
   `ui_testnew.py`), not stray.
+- **QSS-window MCP driver** — the floating QSS / Theme editor is a separate
+  top-level window the dock/screenshot/action helpers can't reach, so the
+  bridge gained a `qssWindow` method (`DesignerBridge._qssWindow`) with actions
+  `open` / `close` / `status` / `paint` (the "Paint entire Designer" toggle) /
+  `screenshot`. Two MCP tools expose it: `designer_qss_window(action, enabled)`
+  and `designer_qss_screenshot()`. The whole QSS/theming surface is now
+  MCP-verifiable (open the window, toggle Paint-entire-Designer, grab a PNG by
+  objectName `customWidgetsQssWindow`). Headless-tested in
+  `tests/test_designer_bridge.py` (fake-window injection), and **verified
+  end-to-end against a live pyside6-designer** (open → paint on → screenshot →
+  paint off, all over the bridge). This closes the original "live GUI
+  verification" gap.
 
 Still open:
 
-- **Live GUI verification of the QSS/theming window** — add a bridge/MCP method
-  to drive the floating QSS Editor window (open, toggle "Paint entire Designer",
-  screenshot by objectName) so that surface is MCP-verifiable; the bridge can't
-  currently click QToolButtons/checkboxes or screenshot a separate top-level.
 - **User-facing docs** (Docusaurus repo) — pages for container `.py`-only +
   `.ui` auto-resolve, hot reload (component + main-window), the QSS/Theme editor,
   Paint entire Designer, and the new MCP tools (`designer_new_form`,
-  `designer_list_templates`, `designer_list_dialogs`, `entireApp`).
+  `designer_list_templates`, `designer_list_dialogs`, `designer_qss_window`,
+  `designer_qss_screenshot`, `entireApp`).
 
 See: `modernization-roadmap.md`, `commercial-product.md`, `variant-token-system.md`,
 `datatable-pro-spec.md`, `lgpl-relicense-plan.md`, `THIRD_PARTY_NOTICES.draft.md`,
