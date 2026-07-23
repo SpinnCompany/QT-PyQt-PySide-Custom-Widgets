@@ -126,6 +126,33 @@ it once as a shared daemon: `Custom_Widgets-mcp --transport http --port 8765`
 and point each .mcp.json at http://127.0.0.1:8765/mcp. Plain stdio (the default)
 is one client per process and needs none of this.
 
+== DESIGN RULES (ENFORCED — run design_lint) ==
+
+The library ships a design-rule linter (Custom_Widgets.lint) that enforces the
+VISUAL rules a type checker can't see. It runs automatically on every file edit
+(project hook) and in CI/pre-commit; call the design_lint tool yourself before
+you consider a screen done. Rules (full text: docs/design/design-rules.md):
+
+  * glyph-icons   [error]   NEVER use a unicode glyph as an icon in button/label
+                            text — geometric shapes, dingbats, arrows, emoji,
+                            fullwidth symbols (a half-filled circle, a fullwidth
+                            plus, a gear, a sparkle, a checkmark, and the like).
+                            They don't recolour on theme, vanish when a rail
+                            collapses, and render differently per font/OS. Use a
+                            REAL icon — a themed SVG (qproperty-icon:
+                            url(theme-icons:icons/<set>/<name>.svg) / setIcon) or
+                            a painted QPixmap you recolour per theme (see
+                            examples/PySide6/AuroraJobsTable `_icon`).
+  * hardcoded-hex [warning] don't bury #rrggbb in chrome — drive colour from
+                            token roles / a named ALL-CAPS palette constant so it
+                            flips with the theme.
+  * drop-shadow   [warning] no QGraphicsDropShadowEffect unless justified with a
+                            trailing `# allow-shadow: <reason>`; prefer a
+                            borderless fill + big radius for depth.
+
+A NEW glyph-icons error will block the edit hook — fix it or, for a genuine false
+positive, add `# noqa: <rule-id>`. Add/adjust rules in Custom_Widgets/lint/rules.py.
+
 == BUILDING PROFESSIONAL SCREENS (how real Custom_Widgets apps are structured) ==
 
 USE THE CUSTOM WIDGETS — that is the whole point of the library; do NOT default

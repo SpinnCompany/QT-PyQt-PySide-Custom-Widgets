@@ -779,6 +779,56 @@ def search_examples(query: str, k: int = 5, full: bool = False,
                       indent=2)
 
 
+@_tool(annotations={"title": "Lint design rules (glyph icons / hex / shadows)",
+                       "readOnlyHint": True})
+def design_lint(paths: list[str] = [], select: str = "", ignore: str = "",
+                strict: bool = False, use_baseline: bool = True,
+                project: str = "") -> str:
+    """Check .py/.ui sources against the Custom_Widgets DESIGN rules — the visual
+    rules a type checker can't see. RUN THIS before you finish a screen (and it
+    also runs automatically on every file edit via the project hook).
+
+    Rules:
+      glyph-icons   [error]   no unicode glyph (◑ ＋ ⚙ ✦ …) used as an icon —
+                              use a real painted/SVG icon asset instead
+      hardcoded-hex [warning] no raw #rrggbb in chrome — drive colour from token
+                              roles / a named palette constant so it flips theme
+      drop-shadow   [warning] no QGraphicsDropShadowEffect without a justifying
+                              `# allow-shadow:` comment
+
+    paths        files/dirs (default: the project's configured lint paths).
+    select/ignore comma-separated rule ids to run-only / skip.
+    strict       treat warnings as failures too.
+    use_baseline apply the repo baseline so only NEW violations surface.
+
+    Returns JSON {summary:{errors,warnings,failed}, findings:[...]}. `failed`
+    true means fix the findings (or justify with `# noqa: <rule-id>`). Rules are
+    defined in Custom_Widgets/lint/rules.py and documented in
+    docs/design/design-rules.md."""
+    from Custom_Widgets import lint as _lint
+    root = _resolve(project)
+    cfg = _lint.load_config(root)
+    csv = lambda v: frozenset(t.strip() for t in v.split(",") if t.strip()) or None
+    cfg = cfg.with_overrides(
+        paths=tuple(paths) or None,
+        select=csv(select) if select else None,
+        ignore=csv(ignore) if ignore else None,
+        strict=True if strict else None)
+    base = _lint.baseline.load(_lint.baseline.default_path(root)) if use_baseline else None
+    findings = _lint.lint_paths(cfg.paths or (root,), cfg, baseline=base)
+    errors = [f for f in findings if f.severity == _lint.ERROR]
+    warnings = [f for f in findings if f.severity != _lint.ERROR]
+    failed = bool(errors) or (cfg.strict and bool(findings))
+    return json.dumps({
+        "summary": {"errors": len(errors), "warnings": len(warnings),
+                    "failed": failed,
+                    "files": len({f.path for f in findings})},
+        "findings": [{"rule": f.rule, "path": f.path, "line": f.line,
+                      "col": f.col, "severity": f.severity,
+                      "message": f.message} for f in findings],
+    }, indent=2)
+
+
 ########################################################################
 ## THEME / STYLING
 ########################################################################
