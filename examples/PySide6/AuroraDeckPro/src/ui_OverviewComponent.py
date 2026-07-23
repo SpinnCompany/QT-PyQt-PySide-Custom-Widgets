@@ -1,0 +1,236 @@
+# -*- coding: utf-8 -*-
+
+################################################################################
+## Form generated from reading UI file 'new_OverviewComponent.ui'
+##
+## Created by: Qt User Interface Compiler version 6.11.1
+##
+## WARNING! All changes made in this file will be lost when recompiling UI file!
+################################################################################
+
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QLabel,
+    QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout,
+    QWidget)
+
+from Custom_Widgets.QCustomAlert import QCustomAlert
+from Custom_Widgets.QCustomAvatarGroup import QCustomAvatarGroup
+from Custom_Widgets.QCustomBadge import QCustomBadge
+from Custom_Widgets.QCustomComponent import QCustomComponent
+from Custom_Widgets.QCustomKbd import QCustomKbd
+from Custom_Widgets.QCustomStatCard import QCustomStatCard
+from Custom_Widgets.QCustomTimeline import QCustomTimeline
+class Ui_OverviewComponent(object):
+    def setupUi(self, OverviewComponent):
+        if not OverviewComponent.objectName():
+            OverviewComponent.setObjectName(u"OverviewComponent")
+        OverviewComponent.resize(940, 680)
+        self.overviewLayout = QVBoxLayout(OverviewComponent)
+        self.overviewLayout.setSpacing(16)
+        self.overviewLayout.setObjectName(u"overviewLayout")
+        self.overviewLayout.setContentsMargins(24, 24, 24, 24)
+        self.heroFrame = QFrame(OverviewComponent)
+        self.heroFrame.setObjectName(u"heroFrame")
+        self.heroFrame.setMinimumSize(QSize(0, 96))
+        self.heroLayout = QHBoxLayout(self.heroFrame)
+        self.heroLayout.setObjectName(u"heroLayout")
+        self.heroLayout.setContentsMargins(24, 20, 24, 20)
+        self.heroTextLayout = QVBoxLayout()
+        self.heroTextLayout.setSpacing(4)
+        self.heroTextLayout.setObjectName(u"heroTextLayout")
+        self.heroTitle = QLabel(self.heroFrame)
+        self.heroTitle.setObjectName(u"heroTitle")
+
+        self.heroTextLayout.addWidget(self.heroTitle)
+
+        self.heroSub = QLabel(self.heroFrame)
+        self.heroSub.setObjectName(u"heroSub")
+
+        self.heroTextLayout.addWidget(self.heroSub)
+
+
+        self.heroLayout.addLayout(self.heroTextLayout)
+
+        self.heroSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.heroLayout.addItem(self.heroSpacer)
+
+        self.paletteHint = QLabel(self.heroFrame)
+        self.paletteHint.setObjectName(u"paletteHint")
+
+        self.heroLayout.addWidget(self.paletteHint)
+
+        self.paletteKbd = QCustomKbd(self.heroFrame)
+        self.paletteKbd.setObjectName(u"paletteKbd")
+
+        self.heroLayout.addWidget(self.paletteKbd)
+
+
+        self.overviewLayout.addWidget(self.heroFrame)
+
+        self.statsLayout = QHBoxLayout()
+        self.statsLayout.setSpacing(14)
+        self.statsLayout.setObjectName(u"statsLayout")
+        self.statLive = QCustomStatCard(OverviewComponent)
+        self.statLive.setObjectName(u"statLive")
+
+        self.statsLayout.addWidget(self.statLive)
+
+        self.statKp = QCustomStatCard(OverviewComponent)
+        self.statKp.setObjectName(u"statKp")
+
+        self.statsLayout.addWidget(self.statKp)
+
+        self.statOdds = QCustomStatCard(OverviewComponent)
+        self.statOdds.setObjectName(u"statOdds")
+
+        self.statsLayout.addWidget(self.statOdds)
+
+        self.statClear = QCustomStatCard(OverviewComponent)
+        self.statClear.setObjectName(u"statClear")
+
+        self.statsLayout.addWidget(self.statClear)
+
+
+        self.overviewLayout.addLayout(self.statsLayout)
+
+        self.stormAlert = QCustomAlert(OverviewComponent)
+        self.stormAlert.setObjectName(u"stormAlert")
+        self.stormAlert.setProperty(u"dismissible", True)
+
+        self.overviewLayout.addWidget(self.stormAlert)
+
+        self.cardsRow = QHBoxLayout()
+        self.cardsRow.setSpacing(14)
+        self.cardsRow.setObjectName(u"cardsRow")
+        self.activityCard = QFrame(OverviewComponent)
+        self.activityCard.setObjectName(u"activityCard")
+        self.activityLayout = QVBoxLayout(self.activityCard)
+        self.activityLayout.setSpacing(10)
+        self.activityLayout.setObjectName(u"activityLayout")
+        self.activityLayout.setContentsMargins(18, 16, 18, 16)
+        self.activityTitle = QLabel(self.activityCard)
+        self.activityTitle.setObjectName(u"activityTitle")
+
+        self.activityLayout.addWidget(self.activityTitle)
+
+        self.activityTimeline = QCustomTimeline(self.activityCard)
+        self.activityTimeline.setObjectName(u"activityTimeline")
+
+        self.activityLayout.addWidget(self.activityTimeline)
+
+
+        self.cardsRow.addWidget(self.activityCard)
+
+        self.shiftCard = QFrame(OverviewComponent)
+        self.shiftCard.setObjectName(u"shiftCard")
+        self.shiftLayout = QVBoxLayout(self.shiftCard)
+        self.shiftLayout.setSpacing(12)
+        self.shiftLayout.setObjectName(u"shiftLayout")
+        self.shiftLayout.setContentsMargins(18, 16, 18, 16)
+        self.shiftTitle = QLabel(self.shiftCard)
+        self.shiftTitle.setObjectName(u"shiftTitle")
+
+        self.shiftLayout.addWidget(self.shiftTitle)
+
+        self.shiftAvatars = QCustomAvatarGroup(self.shiftCard)
+        self.shiftAvatars.setObjectName(u"shiftAvatars")
+        self.shiftAvatars.setProperty(u"maxVisible", 5)
+        self.shiftAvatars.setProperty(u"avatarSize", 36)
+
+        self.shiftLayout.addWidget(self.shiftAvatars)
+
+        self.badgeRow = QHBoxLayout()
+        self.badgeRow.setSpacing(8)
+        self.badgeRow.setObjectName(u"badgeRow")
+        self.badgeLive = QCustomBadge(self.shiftCard)
+        self.badgeLive.setObjectName(u"badgeLive")
+
+        self.badgeRow.addWidget(self.badgeLive)
+
+        self.badgeG2 = QCustomBadge(self.shiftCard)
+        self.badgeG2.setObjectName(u"badgeG2")
+
+        self.badgeRow.addWidget(self.badgeG2)
+
+        self.badgeAlerts = QCustomBadge(self.shiftCard)
+        self.badgeAlerts.setObjectName(u"badgeAlerts")
+
+        self.badgeRow.addWidget(self.badgeAlerts)
+
+        self.badgeSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.badgeRow.addItem(self.badgeSpacer)
+
+
+        self.shiftLayout.addLayout(self.badgeRow)
+
+        self.shiftVSpacer = QSpacerItem(20, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.shiftLayout.addItem(self.shiftVSpacer)
+
+
+        self.cardsRow.addWidget(self.shiftCard)
+
+
+        self.overviewLayout.addLayout(self.cardsRow)
+
+        self.pageSpacer = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.overviewLayout.addItem(self.pageSpacer)
+
+
+        self.retranslateUi(OverviewComponent)
+
+        QMetaObject.connectSlotsByName(OverviewComponent)
+    # setupUi
+
+    def retranslateUi(self, OverviewComponent):
+        self.heroFrame.setProperty(u"role", QCoreApplication.translate("OverviewComponent", u"hero", None))
+        self.heroTitle.setProperty(u"role", QCoreApplication.translate("OverviewComponent", u"h1", None))
+        self.heroTitle.setText(QCoreApplication.translate("OverviewComponent", u"\u2726  Good evening, Operator", None))
+        self.heroSub.setProperty(u"role", QCoreApplication.translate("OverviewComponent", u"muted", None))
+        self.heroSub.setText(QCoreApplication.translate("OverviewComponent", u"G2 storm watch is active. 8 of 12 stations reporting live.", None))
+        self.paletteHint.setProperty(u"role", QCoreApplication.translate("OverviewComponent", u"muted", None))
+        self.paletteHint.setText(QCoreApplication.translate("OverviewComponent", u"Command palette", None))
+        self.paletteKbd.setProperty(u"keys", QCoreApplication.translate("OverviewComponent", u"Ctrl+K", None))
+        self.statLive.setProperty(u"label", QCoreApplication.translate("OverviewComponent", u"STATIONS LIVE", None))
+        self.statLive.setProperty(u"value", QCoreApplication.translate("OverviewComponent", u"8 / 12", None))
+        self.statLive.setProperty(u"caption", QCoreApplication.translate("OverviewComponent", u"Arctic belt", None))
+        self.statLive.setProperty(u"trend", QCoreApplication.translate("OverviewComponent", u"up", None))
+        self.statKp.setProperty(u"label", QCoreApplication.translate("OverviewComponent", u"PLANETARY Kp", None))
+        self.statKp.setProperty(u"value", QCoreApplication.translate("OverviewComponent", u"6.2", None))
+        self.statKp.setProperty(u"caption", QCoreApplication.translate("OverviewComponent", u"G2 watch", None))
+        self.statKp.setProperty(u"trend", QCoreApplication.translate("OverviewComponent", u"up", None))
+        self.statOdds.setProperty(u"label", QCoreApplication.translate("OverviewComponent", u"AURORA ODDS", None))
+        self.statOdds.setProperty(u"value", QCoreApplication.translate("OverviewComponent", u"87%", None))
+        self.statOdds.setProperty(u"caption", QCoreApplication.translate("OverviewComponent", u"\u226565\u00b0N", None))
+        self.statOdds.setProperty(u"trend", QCoreApplication.translate("OverviewComponent", u"up", None))
+        self.statClear.setProperty(u"label", QCoreApplication.translate("OverviewComponent", u"CLEAR SKIES", None))
+        self.statClear.setProperty(u"value", QCoreApplication.translate("OverviewComponent", u"5", None))
+        self.statClear.setProperty(u"caption", QCoreApplication.translate("OverviewComponent", u"cloud moving in", None))
+        self.statClear.setProperty(u"trend", QCoreApplication.translate("OverviewComponent", u"down", None))
+        self.stormAlert.setProperty(u"variant", QCoreApplication.translate("OverviewComponent", u"warning", None))
+        self.stormAlert.setProperty(u"title", QCoreApplication.translate("OverviewComponent", u"Geomagnetic storm in progress", None))
+        self.stormAlert.setProperty(u"text", QCoreApplication.translate("OverviewComponent", u"Kp has crossed 6. Aurora may be visible down to 60\u00b0N tonight.", None))
+        self.activityCard.setProperty(u"role", QCoreApplication.translate("OverviewComponent", u"card", None))
+        self.activityTitle.setProperty(u"role", QCoreApplication.translate("OverviewComponent", u"h2", None))
+        self.activityTitle.setText(QCoreApplication.translate("OverviewComponent", u"Activity", None))
+        self.shiftCard.setProperty(u"role", QCoreApplication.translate("OverviewComponent", u"card", None))
+        self.shiftTitle.setProperty(u"role", QCoreApplication.translate("OverviewComponent", u"h2", None))
+        self.shiftTitle.setText(QCoreApplication.translate("OverviewComponent", u"On shift", None))
+        self.badgeLive.setProperty(u"text", QCoreApplication.translate("OverviewComponent", u"LIVE", None))
+        self.badgeLive.setProperty(u"variant", QCoreApplication.translate("OverviewComponent", u"success", None))
+        self.badgeG2.setProperty(u"text", QCoreApplication.translate("OverviewComponent", u"G2", None))
+        self.badgeG2.setProperty(u"variant", QCoreApplication.translate("OverviewComponent", u"warning", None))
+        self.badgeAlerts.setProperty(u"text", QCoreApplication.translate("OverviewComponent", u"3 alerts", None))
+        self.badgeAlerts.setProperty(u"variant", QCoreApplication.translate("OverviewComponent", u"destructive", None))
+        pass
+    # retranslateUi
+

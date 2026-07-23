@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GalleryComponent</class>
+ <widget class="QCustomComponent" name="GalleryComponent">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>940</width><height>680</height></rect></property>
+  <layout class="QVBoxLayout" name="galleryRoot">
+   <property name="spacing"><number>12</number></property>
+   <property name="leftMargin"><number>24</number></property>
+   <property name="topMargin"><number>24</number></property>
+   <property name="rightMargin"><number>24</number></property>
+   <property name="bottomMargin"><number>8</number></property>
+   <item>
+    <layout class="QVBoxLayout" name="galleryHeader">
+     <property name="spacing"><number>2</number></property>
+     <item><widget class="QLabel" name="galleryKicker"><property name="role" stdset="0"><string>kicker</string></property><property name="text"><string>EVERYTHING</string></property></widget></item>
+     <item><widget class="QLabel" name="galleryTitle"><property name="role" stdset="0"><string>h1</string></property><property name="text"><string>Widget Gallery</string></property></widget></item>
+     <item><widget class="QLabel" name="gallerySub"><property name="role" stdset="0"><string>muted</string></property><property name="text"><string>A tour of the design-token widget set.</string></property></widget></item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QScrollArea" name="galleryScroll">
+     <property name="widgetResizable"><bool>true</bool></property>
+     <property name="frameShape"><enum>QFrame::NoFrame</enum></property>
+     <widget class="QWidget" name="galleryContent">
+      <layout class="QGridLayout" name="galleryGrid">
+       <property name="horizontalSpacing"><number>16</number></property>
+       <property name="verticalSpacing"><number>16</number></property>
+       <property name="leftMargin"><number>2</number></property>
+       <property name="topMargin"><number>6</number></property>
+       <property name="rightMargin"><number>12</number></property>
+       <property name="bottomMargin"><number>20</number></property>
+       <item row="0" column="0">
+        <widget class="QFrame" name="cardRating"><property name="role" stdset="0"><string>card</string></property>
+         <layout class="QVBoxLayout" name="lRating"><property name="spacing"><number>10</number></property><property name="leftMargin"><number>16</number></property><property name="topMargin"><number>16</number></property><property name="rightMargin"><number>16</number></property><property name="bottomMargin"><number>16</number></property>
+          <item><widget class="QLabel" name="tRating"><property name="role" stdset="0"><string>kicker</string></property><property name="text"><string>RATING</string></property></widget></item>
+          <item><widget class="QCustomRating" name="gRating"><property name="maximum" stdset="0"><number>5</number></property><property name="value" stdset="0"><number>4</number></property></widget></item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QFrame" name="cardBadges"><property name="role" stdset="0"><string>card</string></property>
+         <layout class="QVBoxLayout" name="lBadges"><property name="spacing"><number>10</number></property><property name="leftMargin"><number>16</number></property><property name="topMargin"><number>16</number></property><property name="rightMargin"><number>16</number></property><property name="bottomMargin"><number>16</number></property>
+          <item><widget class="QLabel" name="tBadges"><property name="role" stdset="0"><string>kicker</string></property><property name="text"><string>BADGES</string></property></widget></item>
+          <item><layout class="QHBoxLayout" name="badgesRow"><property name="spacing"><number>8</number></property>
+           <item><widget class="QCustomBadge" name="gBadgeDefault"><property name="text" stdset="0"><string>Default</string></property><property name="variant" stdset="0"><string>default</string></property></widget></item>
+           <item><widget class="QCustomBadge" name="gBadgeSuccess"><property name="text" stdset="0"><string>Success</string></property><property name="variant" stdset="0"><string>success</string></property></widget></item>
+           <item><widget class="QCustomBadge" name="gBadgeWarning"><property name="text" stdset="0"><string>Warning</string></property><property name="variant" stdset="0"><string>warning</string></property></widget></item>
+           <item><widget class="QCustomBadge" name="gBadgeDanger"><property name="text" stdset="0"><string>Danger</string></property><property name="variant" stdset="0"><string>destructive</string></property></widget></item>
+           <item><spacer name="badgesSp"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+          </layout></item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QFrame" name="cardSwitches"><property name="role" stdset="0"><string>card</string></property>
+         <layout class="QVBoxLayout" name="lSwitches"><property name="spacing"><number>10</number></property><property name="leftMargin"><number>16</number></property><property name="topMargin"><number>16</number></property><property name="rightMargin"><number>16</number></property><property name="bottomMargin"><number>16</number></property>
+          <item><widget class="QLabel" name="tSwitches"><property name="role" stdset="0"><string>kicker</string></property><property name="text"><string>SWITCHES</string></property></widget></item>
+          <item><layout class="QHBoxLayout" name="switchRow"><property name="spacing"><number>14</number></property>
+           <item><widget class="QLabel" name="swAlertsLbl"><property name="role" stdset="0"><string>muted</string></property><property name="text"><string>Alerts</string></property></widget></item>
+           <item><widget class="QCustomSwitch" name="gSwAlerts"><property name="checked" stdset="0"><bool>true</bool></property></widget></item>
+           <item><widget class="QLabel" name="swCapLbl"><property name="role" stdset="0"><string>muted</string></property><property name="text"><string>Auto-capture</string></property></widget></item>
+           <item><widget class="QCustomSwitch" name="gSwCapture"><property name="checked" stdset="0"><bool>false</bool></property></widget></item>
+           <item><spacer name="switchSp"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+          </layout></item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QFrame" name="cardSegmented"><property name="role" stdset="0"><string>card</string></property>
+         <layout class="QVBoxLayout" name="lSeg"><property name="spacing"><number>10</number></property><property name="leftMargin"><number>16</number></property><property name="topMargin"><number>16</number></property><property name="rightMargin"><number>16</number></property><property name="bottomMargin"><number>16</number></property>
+          <item><widget class="QLabel" name="tSeg"><property name="role" stdset="0"><string>kicker</string></property><property name="text"><string>SEGMENTED CONTROL</string></property></widget></item>
+          <item><widget class="QCustomSegmentedControl" name="gSegmented"><property name="currentIndex" stdset="0"><number>1</number></property></widget></item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QFrame" name="cardRange"><property name="role" stdset="0"><string>card</string></property>
+         <layout class="QVBoxLayout" name="lRange"><property name="spacing"><number>10</number></property><property name="leftMargin"><number>16</number></property><property name="topMargin"><number>16</number></property><property name="rightMargin"><number>16</number></property><property name="bottomMargin"><number>16</number></property>
+          <item><widget class="QLabel" name="tRange"><property name="role" stdset="0"><string>kicker</string></property><property name="text"><string>RANGE SLIDER</string></property></widget></item>
+          <item><widget class="QCustomRangeSlider" name="gRange"><property name="minimum" stdset="0"><number>0</number></property><property name="maximum" stdset="0"><number>100</number></property><property name="lowerValue" stdset="0"><number>20</number></property><property name="upperValue" stdset="0"><number>80</number></property></widget></item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QFrame" name="cardNumber"><property name="role" stdset="0"><string>card</string></property>
+         <layout class="QVBoxLayout" name="lNumber"><property name="spacing"><number>10</number></property><property name="leftMargin"><number>16</number></property><property name="topMargin"><number>16</number></property><property name="rightMargin"><number>16</number></property><property name="bottomMargin"><number>16</number></property>
+          <item><widget class="QLabel" name="tNumber"><property name="role" stdset="0"><string>kicker</string></property><property name="text"><string>NUMBER INPUT</string></property></widget></item>
+          <item><widget class="QCustomNumberInput" name="gNumber"><property name="minimum" stdset="0"><double>0.0</double></property><property name="maximum" stdset="0"><double>9.0</double></property><property name="singleStep" stdset="0"><double>1.0</double></property><property name="decimals" stdset="0"><number>0</number></property></widget></item>
+         </layout>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QFrame" name="cardKbd"><property name="role" stdset="0"><string>card</string></property>
+         <layout class="QVBoxLayout" name="lKbd"><property name="spacing"><number>10</number></property><property name="leftMargin"><number>16</number></property><property name="topMargin"><number>16</number></property><property name="rightMargin"><number>16</number></property><property name="bottomMargin"><number>16</number></property>
+          <item><widget class="QLabel" name="tKbd"><property name="role" stdset="0"><string>kicker</string></property><property name="text"><string>KEYBOARD SHORTCUTS</string></property></widget></item>
+          <item><layout class="QHBoxLayout" name="kbdRow"><property name="spacing"><number>10</number></property>
+           <item><widget class="QCustomKbd" name="gKbd1"><property name="keys" stdset="0"><string>Ctrl+K</string></property></widget></item>
+           <item><widget class="QCustomKbd" name="gKbd2"><property name="keys" stdset="0"><string>Ctrl+Shift+P</string></property></widget></item>
+           <item><spacer name="kbdSp"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+          </layout></item>
+         </layout>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QFrame" name="cardPagination"><property name="role" stdset="0"><string>card</string></property>
+         <layout class="QVBoxLayout" name="lPag"><property name="spacing"><number>10</number></property><property name="leftMargin"><number>16</number></property><property name="topMargin"><number>16</number></property><property name="rightMargin"><number>16</number></property><property name="bottomMargin"><number>16</number></property>
+          <item><widget class="QLabel" name="tPag"><property name="role" stdset="0"><string>kicker</string></property><property name="text"><string>PAGINATION</string></property></widget></item>
+          <item><widget class="QCustomPagination" name="gPagination"><property name="pageCount" stdset="0"><number>8</number></property><property name="currentPage" stdset="0"><number>3</number></property></widget></item>
+         </layout>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QFrame" name="cardColor"><property name="role" stdset="0"><string>card</string></property>
+         <layout class="QVBoxLayout" name="lColor"><property name="spacing"><number>10</number></property><property name="leftMargin"><number>16</number></property><property name="topMargin"><number>16</number></property><property name="rightMargin"><number>16</number></property><property name="bottomMargin"><number>16</number></property>
+          <item><widget class="QLabel" name="tColor"><property name="role" stdset="0"><string>kicker</string></property><property name="text"><string>COLOR PICKER</string></property></widget></item>
+          <item><widget class="QCustomColorPicker" name="gColorPicker"/></item>
+         </layout>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QFrame" name="cardRings"><property name="role" stdset="0"><string>card</string></property>
+         <layout class="QVBoxLayout" name="lRings"><property name="spacing"><number>10</number></property><property name="leftMargin"><number>16</number></property><property name="topMargin"><number>16</number></property><property name="rightMargin"><number>16</number></property><property name="bottomMargin"><number>16</number></property>
+          <item><widget class="QLabel" name="tRings"><property name="role" stdset="0"><string>kicker</string></property><property name="text"><string>PROGRESS RINGS</string></property></widget></item>
+          <item><layout class="QHBoxLayout" name="ringsGalRow"><property name="spacing"><number>14</number></property>
+           <item><widget class="QCustomProgressRing" name="gRing1"><property name="minimumSize"><size><width>72</width><height>72</height></size></property><property name="maximumSize"><size><width>72</width><height>72</height></size></property><property name="value" stdset="0"><number>34</number></property></widget></item>
+           <item><widget class="QCustomProgressRing" name="gRing2"><property name="minimumSize"><size><width>72</width><height>72</height></size></property><property name="maximumSize"><size><width>72</width><height>72</height></size></property><property name="value" stdset="0"><number>62</number></property></widget></item>
+           <item><widget class="QCustomProgressRing" name="gRing3"><property name="minimumSize"><size><width>72</width><height>72</height></size></property><property name="maximumSize"><size><width>72</width><height>72</height></size></property><property name="value" stdset="0"><number>87</number></property></widget></item>
+           <item><spacer name="ringsGalSp"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+          </layout></item>
+         </layout>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QFrame" name="cardChips"><property name="role" stdset="0"><string>card</string></property>
+         <layout class="QVBoxLayout" name="lChips"><property name="spacing"><number>10</number></property><property name="leftMargin"><number>16</number></property><property name="topMargin"><number>16</number></property><property name="rightMargin"><number>16</number></property><property name="bottomMargin"><number>16</number></property>
+          <item><widget class="QLabel" name="tChips"><property name="role" stdset="0"><string>kicker</string></property><property name="text"><string>CHIPS</string></property></widget></item>
+          <item><widget class="QCustomChipGroup" name="gChips"><property name="selectable" stdset="0"><bool>true</bool></property></widget></item>
+         </layout>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QFrame" name="cardCombo"><property name="role" stdset="0"><string>card</string></property>
+         <layout class="QVBoxLayout" name="lCombo"><property name="spacing"><number>10</number></property><property name="leftMargin"><number>16</number></property><property name="topMargin"><number>16</number></property><property name="rightMargin"><number>16</number></property><property name="bottomMargin"><number>16</number></property>
+          <item><widget class="QLabel" name="tCombo"><property name="role" stdset="0"><string>kicker</string></property><property name="text"><string>COMBO BOX</string></property></widget></item>
+          <item><widget class="QCustomComboBox" name="gCombo"><property name="editable" stdset="0"><bool>false</bool></property></widget></item>
+         </layout>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QFrame" name="cardAvatars"><property name="role" stdset="0"><string>card</string></property>
+         <layout class="QVBoxLayout" name="lAvatars"><property name="spacing"><number>10</number></property><property name="leftMargin"><number>16</number></property><property name="topMargin"><number>16</number></property><property name="rightMargin"><number>16</number></property><property name="bottomMargin"><number>16</number></property>
+          <item><widget class="QLabel" name="tAvatars"><property name="role" stdset="0"><string>kicker</string></property><property name="text"><string>AVATAR GROUP</string></property></widget></item>
+          <item><widget class="QCustomAvatarGroup" name="gAvatars"><property name="maxVisible" stdset="0"><number>5</number></property><property name="avatarSize" stdset="0"><number>34</number></property></widget></item>
+         </layout>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QFrame" name="cardSkeleton"><property name="role" stdset="0"><string>card</string></property>
+         <layout class="QVBoxLayout" name="lSkel"><property name="spacing"><number>8</number></property><property name="leftMargin"><number>16</number></property><property name="topMargin"><number>16</number></property><property name="rightMargin"><number>16</number></property><property name="bottomMargin"><number>16</number></property>
+          <item><widget class="QLabel" name="tSkel"><property name="role" stdset="0"><string>kicker</string></property><property name="text"><string>LOADING SKELETON</string></property></widget></item>
+          <item><widget class="QCustomSkeleton" name="gSkel1"><property name="minimumSize"><size><width>0</width><height>14</height></size></property><property name="shape" stdset="0"><string>line</string></property></widget></item>
+          <item><widget class="QCustomSkeleton" name="gSkel2"><property name="minimumSize"><size><width>0</width><height>14</height></size></property><property name="shape" stdset="0"><string>line</string></property></widget></item>
+         </layout>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QFrame" name="cardBreadcrumbs"><property name="role" stdset="0"><string>card</string></property>
+         <layout class="QVBoxLayout" name="lBc"><property name="spacing"><number>10</number></property><property name="leftMargin"><number>16</number></property><property name="topMargin"><number>16</number></property><property name="rightMargin"><number>16</number></property><property name="bottomMargin"><number>16</number></property>
+          <item><widget class="QLabel" name="tBc"><property name="role" stdset="0"><string>kicker</string></property><property name="text"><string>BREADCRUMBS</string></property></widget></item>
+          <item><widget class="QCustomBreadcrumbs" name="gBreadcrumbs"/></item>
+         </layout>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QFrame" name="cardToasts"><property name="role" stdset="0"><string>card</string></property>
+         <layout class="QVBoxLayout" name="lToasts"><property name="spacing"><number>10</number></property><property name="leftMargin"><number>16</number></property><property name="topMargin"><number>16</number></property><property name="rightMargin"><number>16</number></property><property name="bottomMargin"><number>16</number></property>
+          <item><widget class="QLabel" name="tToasts"><property name="role" stdset="0"><string>kicker</string></property><property name="text"><string>TOASTS</string></property></widget></item>
+          <item><layout class="QHBoxLayout" name="toastRow"><property name="spacing"><number>8</number></property>
+           <item><widget class="QCustomQPushButton" name="gToastInfo"><property name="text"><string>Info</string></property><property name="variant" stdset="0"><string>outline</string></property><property name="sizeVariant" stdset="0"><string>sm</string></property></widget></item>
+           <item><widget class="QCustomQPushButton" name="gToastSuccess"><property name="text"><string>Success</string></property><property name="variant" stdset="0"><string>outline</string></property><property name="sizeVariant" stdset="0"><string>sm</string></property></widget></item>
+           <item><widget class="QCustomQPushButton" name="gToastWarning"><property name="text"><string>Warning</string></property><property name="variant" stdset="0"><string>outline</string></property><property name="sizeVariant" stdset="0"><string>sm</string></property></widget></item>
+           <item><spacer name="toastSp"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+          </layout></item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget><class>QCustomComponent</class><extends>QWidget</extends><header>Custom_Widgets.QCustomComponent</header><container>1</container></customwidget>
+  <customwidget><class>QCustomRating</class><extends>QWidget</extends><header>Custom_Widgets.QCustomRating</header></customwidget>
+  <customwidget><class>QCustomBadge</class><extends>QLabel</extends><header>Custom_Widgets.QCustomBadge</header></customwidget>
+  <customwidget><class>QCustomSwitch</class><extends>QWidget</extends><header>Custom_Widgets.QCustomSwitch</header></customwidget>
+  <customwidget><class>QCustomSegmentedControl</class><extends>QWidget</extends><header>Custom_Widgets.QCustomSegmentedControl</header></customwidget>
+  <customwidget><class>QCustomRangeSlider</class><extends>QWidget</extends><header>Custom_Widgets.QCustomRangeSlider</header></customwidget>
+  <customwidget><class>QCustomNumberInput</class><extends>QWidget</extends><header>Custom_Widgets.QCustomNumberInput</header></customwidget>
+  <customwidget><class>QCustomKbd</class><extends>QWidget</extends><header>Custom_Widgets.QCustomKbd</header></customwidget>
+  <customwidget><class>QCustomPagination</class><extends>QWidget</extends><header>Custom_Widgets.QCustomPagination</header></customwidget>
+  <customwidget><class>QCustomColorPicker</class><extends>QWidget</extends><header>Custom_Widgets.QCustomColorPicker</header></customwidget>
+  <customwidget><class>QCustomProgressRing</class><extends>QWidget</extends><header>Custom_Widgets.QCustomProgressRing</header></customwidget>
+  <customwidget><class>QCustomChipGroup</class><extends>QWidget</extends><header>Custom_Widgets.QCustomChip</header></customwidget>
+  <customwidget><class>QCustomComboBox</class><extends>QComboBox</extends><header>Custom_Widgets.QCustomComboBox</header></customwidget>
+  <customwidget><class>QCustomAvatarGroup</class><extends>QWidget</extends><header>Custom_Widgets.QCustomAvatarGroup</header></customwidget>
+  <customwidget><class>QCustomSkeleton</class><extends>QWidget</extends><header>Custom_Widgets.QCustomSkeleton</header></customwidget>
+  <customwidget><class>QCustomBreadcrumbs</class><extends>QWidget</extends><header>Custom_Widgets.QCustomBreadcrumbs</header></customwidget>
+  <customwidget><class>QCustomQPushButton</class><extends>QPushButton</extends><header>Custom_Widgets.QCustomQPushButton</header></customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

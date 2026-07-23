@@ -1,0 +1,353 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QCustomQMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>760</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Aurora Deck Pro</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="rootLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QCustomSidebar" name="sidebar">
+      <property name="minimumSize">
+       <size>
+        <width>216</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>216</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="collapsedWidth" stdset="0">
+       <number>64</number>
+      </property>
+      <property name="expandedWidth" stdset="0">
+       <number>216</number>
+      </property>
+      <property name="defaultWidth" stdset="0">
+       <number>216</number>
+      </property>
+      <property name="toggleButtonName" stdset="0">
+       <string>sidebarToggle</string>
+      </property>
+      <property name="animationDuration" stdset="0">
+       <number>320</number>
+      </property>
+      <layout class="QVBoxLayout" name="sidebarLayout">
+       <property name="spacing">
+        <number>8</number>
+       </property>
+       <property name="leftMargin">
+        <number>12</number>
+       </property>
+       <property name="topMargin">
+        <number>14</number>
+       </property>
+       <property name="rightMargin">
+        <number>12</number>
+       </property>
+       <property name="bottomMargin">
+        <number>14</number>
+       </property>
+       <item>
+        <widget class="QPushButton" name="sidebarToggle">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>34</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>≡</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomSidebarLabel" name="brandLabel">
+         <property name="text" stdset="0">
+          <string>✦ AURORA</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomSidebarButton" name="navOverview">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <property name="labelText" stdset="0">
+          <string>◉   Overview</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomSidebarButton" name="navStations">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>true</bool>
+         </property>
+         <property name="labelText" stdset="0">
+          <string>▤   Stations</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomSidebarButton" name="navForecast">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>true</bool>
+         </property>
+         <property name="labelText" stdset="0">
+          <string>◈   Forecast</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomSidebarButton" name="navAnalytics">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>true</bool>
+         </property>
+         <property name="labelText" stdset="0">
+          <string>◔   Analytics</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomSidebarButton" name="navGallery">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>true</bool>
+         </property>
+         <property name="labelText" stdset="0">
+          <string>▧   Gallery</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomSidebarButton" name="navSettings">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>true</bool>
+         </property>
+         <property name="labelText" stdset="0">
+          <string>⚙   Settings</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="sidebarSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QCustomThemeDarkLightToggle" name="themeToggle">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>36</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Theme</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCustomQStackedWidget" name="pageStack">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>1</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="slideTransition" stdset="0">
+       <bool>true</bool>
+      </property>
+      <property name="transitionTime" stdset="0">
+       <number>420</number>
+      </property>
+      <widget class="QCustomComponentContainer" name="overviewContainer">
+       <property name="filePath" stdset="0">
+        <string>ui/OverviewComponent.ui</string>
+       </property>
+       <property name="previewComponent" stdset="0">
+        <bool>false</bool>
+       </property>
+      </widget>
+      <widget class="QCustomComponentContainer" name="stationsContainer">
+       <property name="filePath" stdset="0">
+        <string>ui/StationsComponent.ui</string>
+       </property>
+       <property name="previewComponent" stdset="0">
+        <bool>false</bool>
+       </property>
+      </widget>
+      <widget class="QCustomComponentContainer" name="forecastContainer">
+       <property name="filePath" stdset="0">
+        <string>ui/ForecastComponent.ui</string>
+       </property>
+       <property name="previewComponent" stdset="0">
+        <bool>false</bool>
+       </property>
+      </widget>
+      <widget class="QCustomComponentContainer" name="analyticsContainer">
+       <property name="filePath" stdset="0">
+        <string>ui/AnalyticsComponent.ui</string>
+       </property>
+       <property name="previewComponent" stdset="0">
+        <bool>false</bool>
+       </property>
+      </widget>
+      <widget class="QCustomComponentContainer" name="galleryContainer">
+       <property name="filePath" stdset="0">
+        <string>ui/GalleryComponent.ui</string>
+       </property>
+       <property name="previewComponent" stdset="0">
+        <bool>false</bool>
+       </property>
+      </widget>
+      <widget class="QCustomComponentContainer" name="settingsContainer">
+       <property name="filePath" stdset="0">
+        <string>ui/SettingsComponent.ui</string>
+       </property>
+       <property name="previewComponent" stdset="0">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomQMainWindow</class>
+   <extends>QMainWindow</extends>
+   <header>Custom_Widgets.QCustomQMainWindow</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomSidebar</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomSidebar</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomSidebarLabel</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomSidebarLabel</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomSidebarButton</class>
+   <extends>QPushButton</extends>
+   <header>Custom_Widgets.QCustomSidebarButton</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomThemeDarkLightToggle</class>
+   <extends>QPushButton</extends>
+   <header>Custom_Widgets.QCustomThemeDarkLightToggle</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomQStackedWidget</class>
+   <extends>QStackedWidget</extends>
+   <header>Custom_Widgets.QCustomQStackedWidget</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomComponentContainer</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomComponentContainer</header>
+   <container>1</container>
+  </customwidget>
+ <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>
