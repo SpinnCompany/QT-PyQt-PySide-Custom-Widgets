@@ -133,6 +133,11 @@ def skills() -> str:
         "   widget's props, allowed enum values, signals and tokens. Get exact\n"
         "   signatures with widget_signature, and preview any widget in isolation\n"
         "   with render_widget (both headless, no Designer needed).\n"
+        "6. On failure, every tool returns a uniform JSON error:\n"
+        "   {\"error\": {\"kind\", \"message\", \"hint\", \"details\"}}. Read `kind`\n"
+        "   to branch (e.g. designer_not_running, app_not_running, bridge_error,\n"
+        "   unknown_widget, invalid_argument, render_failed, internal) and follow\n"
+        "   `hint`. Don't retry verbatim on a *_not_running kind — act on the hint.\n"
     )
 
 
@@ -184,7 +189,7 @@ def _request(message, reply_timeout_ms=10000):
 ########################################################################
 ## STATUS / LIFECYCLE
 ########################################################################
-@mcp.tool(annotations={"title": "Designer status", "readOnlyHint": True})
+@_tool(annotations={"title": "Designer status", "readOnlyHint": True})
 def designer_status() -> str:
     """Check whether Qt Designer (with the Custom_Widgets bridge) is running
     for this project, and report the project folder and bridge socket name."""
@@ -198,7 +203,7 @@ def designer_status() -> str:
     }, indent=2)
 
 
-@mcp.tool(annotations={"title": "Switch Designer workspace / project folder"})
+@_tool(annotations={"title": "Switch Designer workspace / project folder"})
 def designer_open_workspace(path: str) -> str:
     """Re-point the RUNNING Designer AND this MCP at another Custom_Widgets
     project folder in the same session: its workspace listing, QSS editor, theme
@@ -241,7 +246,7 @@ def designer_open_workspace(path: str) -> str:
                        "switched": switched}, indent=2)
 
 
-@mcp.tool(annotations={"title": "Launch Qt Designer"})
+@_tool(annotations={"title": "Launch Qt Designer"})
 def designer_launch() -> str:
     """Launch Qt Designer with the Custom_Widgets plugins, tool docks and
     control bridge, working in this project folder. Returns immediately;
@@ -285,7 +290,7 @@ def _kill_designer_processes(project_dir=None):
     return killed
 
 
-@mcp.tool(annotations={"title": "Quit Qt Designer", "destructiveHint": True})
+@_tool(annotations={"title": "Quit Qt Designer", "destructiveHint": True})
 def designer_quit(force: bool = True, all_projects: bool = False) -> str:
     """Tear Designer down cleanly. Asks it to quit over the bridge first; if
     force (default) it then force-kills any lingering Designer process (a hung
@@ -313,7 +318,7 @@ def designer_quit(force: bool = True, all_projects: bool = False) -> str:
 ########################################################################
 ## FORMS
 ########################################################################
-@mcp.tool(annotations={"title": "Open .ui files in Designer"})
+@_tool(annotations={"title": "Open .ui files in Designer"})
 def designer_open_files(files: list[str], new_window: bool = False) -> str:
     """Open one or more .ui files. Default: create the form in the running
     Designer process - you can then inspect it (designer_get_object_info,
@@ -328,14 +333,14 @@ def designer_open_files(files: list[str], new_window: bool = False) -> str:
     return json.dumps(reply)
 
 
-@mcp.tool(annotations={"title": "List form templates", "readOnlyHint": True})
+@_tool(annotations={"title": "List form templates", "readOnlyHint": True})
 def designer_list_templates() -> str:
     """List the form templates available to designer_new_form (e.g. the blank
     icons-prewired form, dashboard, login, settings page)."""
     return json.dumps(_request({"method": "listTemplates"}))
 
 
-@mcp.tool(annotations={"title": "Create a new form in Designer"})
+@_tool(annotations={"title": "Create a new form in Designer"})
 def designer_new_form(name: str, template: str = "", folder: str = "",
                       open_after: bool = True) -> str:
     """Create a new .ui form from a template and open it in the running
@@ -352,7 +357,7 @@ def designer_new_form(name: str, template: str = "", folder: str = "",
     return json.dumps(reply)
 
 
-@mcp.tool(annotations={"title": "Close forms in Designer", "destructiveHint": True})
+@_tool(annotations={"title": "Close forms in Designer", "destructiveHint": True})
 def designer_close_files(files: list[str] = [], close_all: bool = False) -> str:
     """Close open forms in Qt Designer, by file path or all of them.
     Unsaved changes in closed forms may prompt the user in Designer."""
@@ -362,7 +367,7 @@ def designer_close_files(files: list[str] = [], close_all: bool = False) -> str:
     return json.dumps(reply)
 
 
-@mcp.tool(annotations={"title": "Reload forms from disk"})
+@_tool(annotations={"title": "Reload forms from disk"})
 def designer_reload_forms() -> str:
     """Reload open, unmodified forms from disk. Use after editing a .ui
     file on disk so Designer shows the new content (dirty forms are left
@@ -373,7 +378,7 @@ def designer_reload_forms() -> str:
 ########################################################################
 ## INSPECTION (agent eyes)
 ########################################################################
-@mcp.tool(annotations={"title": "Screenshot Designer", "readOnlyHint": True})
+@_tool(annotations={"title": "Screenshot Designer", "readOnlyHint": True})
 def designer_screenshot(target: str = "current") -> Image:
     """Take a screenshot inside Qt Designer. target='current' captures the
     active form preview, 'main' captures the whole Designer window. Use it
@@ -386,7 +391,7 @@ def designer_screenshot(target: str = "current") -> Image:
     return Image(data=base64.b64decode(data), format="png")
 
 
-@mcp.tool(annotations={"title": "Get form source code", "readOnlyHint": True})
+@_tool(annotations={"title": "Get form source code", "readOnlyHint": True})
 def designer_get_ui_code(code_type: str = "xml") -> str:
     """Get the ACTIVE form's current contents (including unsaved edits).
     code_type='xml' returns the .ui XML; 'pyside6' returns the generated
@@ -396,7 +401,7 @@ def designer_get_ui_code(code_type: str = "xml") -> str:
     return reply["result"]
 
 
-@mcp.tool(annotations={"title": "Build/replace a form from .ui XML (live)"})
+@_tool(annotations={"title": "Build/replace a form from .ui XML (live)"})
 def designer_set_form_xml(xml: str, file: str = "", save: bool = False) -> str:
     """Design a form by pushing its .ui XML into Designer LIVE — Designer
     re-renders it immediately so the user watches it take shape. Use this to
@@ -411,7 +416,7 @@ def designer_set_form_xml(xml: str, file: str = "", save: bool = False) -> str:
     return json.dumps(reply)
 
 
-@mcp.tool(annotations={"title": "Create a new form from .ui XML (live)"})
+@_tool(annotations={"title": "Create a new form from .ui XML (live)"})
 def designer_new_form_xml(name: str, xml: str, folder: str = "",
                           save: bool = True) -> str:
     """Create a NEW form from .ui XML and open it live in Designer. Writes
@@ -424,7 +429,7 @@ def designer_new_form_xml(name: str, xml: str, folder: str = "",
     return json.dumps(reply)
 
 
-@mcp.tool(annotations={"title": "Get widget tree", "readOnlyHint": True})
+@_tool(annotations={"title": "Get widget tree", "readOnlyHint": True})
 def designer_get_object_info() -> str:
     """Widget tree of every open form: class names, object names and
     geometries as JSON. Useful to understand a form before editing it."""
@@ -520,7 +525,7 @@ def _find_widget(name):
     return info
 
 
-@mcp.tool(annotations={"title": "Widget catalog (machine-readable API)",
+@_tool(annotations={"title": "Widget catalog (machine-readable API)",
                        "readOnlyHint": True})
 def widgets_catalog(name: str = "", query: str = "") -> str:
     """Machine-readable catalog of the Custom_Widgets library so an agent can
@@ -591,7 +596,7 @@ sys.stdout.write(base64.b64encode(bytes(ba)).decode("ascii"))
 """
 
 
-@mcp.tool(annotations={"title": "Render a widget headless (offscreen)",
+@_tool(annotations={"title": "Render a widget headless (offscreen)",
                        "readOnlyHint": True})
 def render_widget(name: str, props: dict = {}, width: int = 0, height: int = 0,
                   theme: bool = True, theme_name: str = "light") -> Image:
@@ -626,7 +631,7 @@ def render_widget(name: str, props: dict = {}, width: int = 0, height: int = 0,
     return Image(data=base64.b64decode(data), format="png")
 
 
-@mcp.tool(annotations={"title": "Widget type signature (.pyi)", "readOnlyHint": True})
+@_tool(annotations={"title": "Widget type signature (.pyi)", "readOnlyHint": True})
 def widget_signature(name: str) -> str:
     """The PEP 484 type signature of one widget, generated LIVE from the real
     class (so it is never stale): its base class, signals, typed properties, and
@@ -646,7 +651,7 @@ def widget_signature(name: str) -> str:
 ########################################################################
 ## THEME / STYLING
 ########################################################################
-@mcp.tool(annotations={"title": "Style Designer forms"})
+@_tool(annotations={"title": "Style Designer forms"})
 def designer_set_stylesheet(qss: str) -> str:
     """Apply a stylesheet to all open form previews in Designer (live
     preview only - it does not modify the .ui files)."""
@@ -654,7 +659,7 @@ def designer_set_stylesheet(qss: str) -> str:
     return "stylesheet applied to open forms"
 
 
-@mcp.tool(annotations={"title": "Refresh Designer icon caches"})
+@_tool(annotations={"title": "Refresh Designer icon caches"})
 def designer_refresh_icons() -> str:
     """Clear Designer's pixmap caches and repaint open forms. Use after
     the shared icon set (Qss/icons/icons) was regenerated on disk."""
@@ -662,7 +667,7 @@ def designer_refresh_icons() -> str:
     return "icon caches refreshed"
 
 
-@mcp.tool(annotations={"title": "Drive the QSS / Theme editor window"})
+@_tool(annotations={"title": "Drive the QSS / Theme editor window"})
 def designer_qss_window(action: str = "status", enabled: bool = True) -> str:
     """Drive the standalone QSS / Theme editor window - a floating top-level
     window the dock tools can't reach.
@@ -678,7 +683,7 @@ def designer_qss_window(action: str = "status", enabled: bool = True) -> str:
                                 "action": action, "enabled": enabled}))
 
 
-@mcp.tool(annotations={"title": "Move/raise the Designer window"})
+@_tool(annotations={"title": "Move/raise the Designer window"})
 def designer_window(action: str = "raise", x: int = 0, y: int = 0,
                     width: int = 1100, height: int = 750) -> str:
     """Position the Designer main window (multi-monitor compositors often park
@@ -689,7 +694,7 @@ def designer_window(action: str = "raise", x: int = 0, y: int = 0,
                                 "x": x, "y": y, "width": width, "height": height}))
 
 
-@mcp.tool(annotations={"title": "Screenshot the QSS editor window",
+@_tool(annotations={"title": "Screenshot the QSS editor window",
                        "readOnlyHint": True})
 def designer_qss_screenshot() -> Image:
     """Screenshot the floating QSS / Theme editor window. Open it first with
@@ -707,7 +712,7 @@ def designer_qss_screenshot() -> Image:
 ########################################################################
 ## APP RUN (the project's main.py under the dev server, inside Designer)
 ########################################################################
-@mcp.tool(annotations={"title": "Run the project app"})
+@_tool(annotations={"title": "Run the project app"})
 def designer_run_app() -> dict:
     """Start the project's main.py under the dev-server supervisor from
     inside Designer. While running, saving a form in Designer regenerates
@@ -716,25 +721,25 @@ def designer_run_app() -> dict:
     return _request({"method": "runApp"})
 
 
-@mcp.tool(annotations={"title": "Stop the project app"})
+@_tool(annotations={"title": "Stop the project app"})
 def designer_stop_app() -> dict:
     """Stop the app started with designer_run_app."""
     return _request({"method": "stopApp"})
 
 
-@mcp.tool(annotations={"title": "Restart the project app"})
+@_tool(annotations={"title": "Restart the project app"})
 def designer_restart_app() -> dict:
     """Restart the app started with designer_run_app."""
     return _request({"method": "restartApp"})
 
 
-@mcp.tool(annotations={"title": "Project app status", "readOnlyHint": True})
+@_tool(annotations={"title": "Project app status", "readOnlyHint": True})
 def designer_app_status() -> dict:
     """Whether the project app is running, and which script it runs."""
     return _request({"method": "appStatus"})
 
 
-@mcp.tool(annotations={"title": "Read project app output", "readOnlyHint": True})
+@_tool(annotations={"title": "Read project app output", "readOnlyHint": True})
 def designer_app_logs(lines: int = 100) -> dict:
     """The last stdout/stderr lines of the running (or last-run) app -
     includes crash tracebacks."""
@@ -776,7 +781,7 @@ def _app_request(message, reply_timeout_ms=15000):
     return reply
 
 
-@mcp.tool(annotations={"title": "Running app status", "readOnlyHint": True})
+@_tool(annotations={"title": "Running app status", "readOnlyHint": True})
 def app_status() -> str:
     """Whether the running app's control server is reachable (the app must be
     started with designer_run_app). Use before the other app_* tools."""
@@ -784,14 +789,14 @@ def app_status() -> str:
     return json.dumps({"app_reachable": reachable})
 
 
-@mcp.tool(annotations={"title": "List running-app windows", "readOnlyHint": True})
+@_tool(annotations={"title": "List running-app windows", "readOnlyHint": True})
 def app_list_windows() -> str:
     """List the running app's top-level windows (objectName, class, title,
     geometry, which is active)."""
     return json.dumps(_app_request({"method": "listWindows"})["result"], indent=2)
 
 
-@mcp.tool(annotations={"title": "Screenshot the running app", "readOnlyHint": True})
+@_tool(annotations={"title": "Screenshot the running app", "readOnlyHint": True})
 def app_screenshot(target: str = "active") -> Image:
     """Screenshot a window of the RUNNING app (not Designer). target='active'
     (default), 'main' (the QMainWindow), or a window objectName."""
@@ -800,7 +805,7 @@ def app_screenshot(target: str = "active") -> Image:
     return Image(data=base64.b64decode(reply["result"]), format="png")
 
 
-@mcp.tool(annotations={"title": "Running app widget tree", "readOnlyHint": True})
+@_tool(annotations={"title": "Running app widget tree", "readOnlyHint": True})
 def app_object_tree(window: str = "active") -> str:
     """The live widget tree of a running-app window: class, objectName,
     geometry, text, visible/enabled. Use it to find things to click/edit."""
@@ -808,7 +813,7 @@ def app_object_tree(window: str = "active") -> str:
                       indent=2)
 
 
-@mcp.tool(annotations={"title": "Find widgets in the running app", "readOnlyHint": True})
+@_tool(annotations={"title": "Find widgets in the running app", "readOnlyHint": True})
 def app_find(query: str, by: str = "any") -> str:
     """Find widgets in the running app by=name|text|class|any (substring,
     case-insensitive). Returns objectName, class, text, visibility."""
@@ -816,21 +821,21 @@ def app_find(query: str, by: str = "any") -> str:
                       indent=2)
 
 
-@mcp.tool(annotations={"title": "Click a widget in the running app"})
+@_tool(annotations={"title": "Click a widget in the running app"})
 def app_click(widget: str) -> str:
     """Click a widget in the running app by objectName (buttons via click();
     others via a synthesized mouse click). Navigate the live app this way."""
     return json.dumps(_app_request({"method": "click", "widget": widget}))
 
 
-@mcp.tool(annotations={"title": "Set text in the running app"})
+@_tool(annotations={"title": "Set text in the running app"})
 def app_set_text(widget: str, text: str) -> str:
     """Set a widget's text in the running app by objectName (setText or
     setPlainText)."""
     return json.dumps(_app_request({"method": "setText", "widget": widget, "text": text}))
 
 
-@mcp.tool(annotations={"title": "Set a widget property in the running app"})
+@_tool(annotations={"title": "Set a widget property in the running app"})
 def app_set_property(widget: str, property_name: str, value) -> str:
     """Set a Qt property on a running-app widget by objectName (repolishes so
     QSS re-evaluates). E.g. set 'variant' on a themed button."""
@@ -838,14 +843,14 @@ def app_set_property(widget: str, property_name: str, value) -> str:
                                     "property": property_name, "value": value}))
 
 
-@mcp.tool(annotations={"title": "Invoke a slot in the running app"})
+@_tool(annotations={"title": "Invoke a slot in the running app"})
 def app_invoke(widget: str, slot: str) -> str:
     """Call a no-arg method/slot on a running-app widget by objectName (e.g.
     'showMaximized', 'clear', a custom slot)."""
     return json.dumps(_app_request({"method": "invoke", "widget": widget, "slot": slot}))
 
 
-@mcp.tool(annotations={"title": "Move/raise the running-app window"})
+@_tool(annotations={"title": "Move/raise the running-app window"})
 def app_window(action: str = "raise", x: int = 0, y: int = 0,
                width: int = 900, height: int = 600, target: str = "active") -> str:
     """Position a running-app window (multi-monitor compositors often park it
@@ -860,7 +865,7 @@ def app_window(action: str = "raise", x: int = 0, y: int = 0,
 ########################################################################
 ## WINDOW MANAGEMENT (panes, dialogs, actions)
 ########################################################################
-@mcp.tool(annotations={"title": "List Designer panes", "readOnlyHint": True})
+@_tool(annotations={"title": "List Designer panes", "readOnlyHint": True})
 def designer_list_docks() -> str:
     """List Designer's dock panes (Widget Box, Property Editor, Object
     Inspector, Custom Widgets docks...) with visibility, area and floating
@@ -868,7 +873,7 @@ def designer_list_docks() -> str:
     return json.dumps(_request({"method": "getDocks"})["result"], indent=2)
 
 
-@mcp.tool(annotations={"title": "Arrange a Designer pane"})
+@_tool(annotations={"title": "Arrange a Designer pane"})
 def designer_arrange_dock(dock: str, visible: bool = True, area: str = "",
                           floating: bool = False, raise_: bool = False) -> str:
     """Arrange a Designer dock pane matched by name/title substring:
@@ -881,7 +886,7 @@ def designer_arrange_dock(dock: str, visible: bool = True, area: str = "",
     return json.dumps(_request(message))
 
 
-@mcp.tool(annotations={"title": "List open dialogs", "readOnlyHint": True})
+@_tool(annotations={"title": "List open dialogs", "readOnlyHint": True})
 def designer_list_dialogs() -> str:
     """List visible dialogs / popups / prompts / error boxes in Designer
     (e.g. the startup New Form dialog or a save prompt), with their title,
@@ -889,7 +894,7 @@ def designer_list_dialogs() -> str:
     return json.dumps(_request({"method": "getDialogs"})["result"], indent=2)
 
 
-@mcp.tool(annotations={"title": "Dismiss a dialog"})
+@_tool(annotations={"title": "Dismiss a dialog"})
 def designer_dismiss_dialog(match: str = "", button: str = "") -> str:
     """Close an open dialog matched by title/class substring (empty match =
     first open dialog). Pass button text to click a specific button
@@ -899,7 +904,7 @@ def designer_dismiss_dialog(match: str = "", button: str = "") -> str:
                                 "match": match, "button": button}))
 
 
-@mcp.tool(annotations={"title": "List Designer actions", "readOnlyHint": True})
+@_tool(annotations={"title": "List Designer actions", "readOnlyHint": True})
 def designer_list_actions(contains: str = "") -> str:
     """List Designer's menu/toolbar actions (Save, Save All, Preview,
     Close, ...). Optionally filter by substring. Trigger any of them with
@@ -912,7 +917,7 @@ def designer_list_actions(contains: str = "") -> str:
     return json.dumps(actions, indent=2)
 
 
-@mcp.tool(annotations={"title": "Trigger a Designer action"})
+@_tool(annotations={"title": "Trigger a Designer action"})
 def designer_trigger_action(action: str) -> str:
     """Trigger a Designer menu/toolbar action by text or objectName
     (e.g. 'Save Form', 'Save All', 'Preview'). Use it to save forms after
@@ -920,7 +925,7 @@ def designer_trigger_action(action: str) -> str:
     return json.dumps(_request({"method": "triggerAction", "action": action}))
 
 
-@mcp.tool(annotations={"title": "Set a widget property (undoable)"})
+@_tool(annotations={"title": "Set a widget property (undoable)"})
 def designer_set_widget_property(widget: str, property_name: str, value) -> str:
     """Set a property on a widget of the ACTIVE form (matched by
     objectName) through Designer's undo stack, like a manual edit - e.g.
@@ -933,7 +938,7 @@ def designer_set_widget_property(widget: str, property_name: str, value) -> str:
 ########################################################################
 ## PROJECT WORKFLOW
 ########################################################################
-@mcp.tool(annotations={"title": "List project .ui files", "readOnlyHint": True})
+@_tool(annotations={"title": "List project .ui files", "readOnlyHint": True})
 def project_list_ui_files() -> str:
     """List the .ui files of the project (excluding generated copies)."""
     found = []
@@ -946,7 +951,7 @@ def project_list_ui_files() -> str:
     return json.dumps(sorted(found), indent=2)
 
 
-@mcp.tool(annotations={"title": "Create a new .ui form"})
+@_tool(annotations={"title": "Create a new .ui form"})
 def project_new_ui(name: str) -> str:
     """Create ui/<name>.ui pre-wired to the theme icons resource
     (Qss/icons/_icons.qrc), ready to design in Qt Designer."""
@@ -963,7 +968,7 @@ def project_new_ui(name: str) -> str:
         os.chdir(previous)
 
 
-@mcp.tool(annotations={"title": "Convert ui/ to Python sources"})
+@_tool(annotations={"title": "Convert ui/ to Python sources"})
 def project_convert_ui(ui_path: str = "ui", src_output_dir: str = "src") -> str:
     """Convert the project's .ui files to Python (src/ui_*.py) plus the
     generated-files/ intermediates the theme engine needs. Run after
@@ -982,7 +987,7 @@ def project_convert_ui(ui_path: str = "ui", src_output_dir: str = "src") -> str:
     return "\n".join(generated) or "converted"
 
 
-@mcp.tool(annotations={"title": "Write project styles (scss)"})
+@_tool(annotations={"title": "Write project styles (scss)"})
 def project_write_style(scss: str, file: str = "") -> str:
     """Persist custom styles the Custom_Widgets way: appended to
     Qss/scss/defaultStyle.scss, or written to a separate scss file that
