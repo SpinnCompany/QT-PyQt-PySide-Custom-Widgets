@@ -121,10 +121,15 @@ bar the licence hook + native compile.
     header dropped, public API preserved + fail-soft. Removed the provenance risk
     (GWSL ambiguous "Modified MIT" / zhiyiYo unlicensed). *Windows/macOS blur
     behaviour still needs on-target verification.*
-  - ⏳ **Font Awesome attribution** — CC BY 4.0 text added to the notices;
-    in-app/About placement still pending.
-  - ⏳ **License-text bundle** (`licenses/`) + confirm all "(verify)" licenses,
-    then promote the notices to `/THIRD_PARTY_NOTICES`.
+  - ✅ **Font Awesome attribution** — CC BY 4.0 attribution now visible in the
+    README Credits section (GitHub + PyPI), the shipped notices, and
+    `font_awesome/LICENSE.txt`.
+  - ✅ **License-text bundle** — `Custom_Widgets/licenses/` ships Apache-2.0 /
+    CC-BY-4.0 / Feather-MIT / OFL-1.1 + index; per-icon-set `LICENSE.txt`; notices
+    promoted to `Custom_Widgets/THIRD_PARTY_NOTICES.md`. Core runtime-dep licenses
+    verified (MIT/BSD).
+  - *Non-blocking follow-ups:* confirm optional-extra + 3 vendored-code licenses
+    at release; on-Windows/macOS functionality check of the new blur code.
 - **Licensing prerequisites**: CLA + GPLv3→LGPLv3 relicense (owner holds ~97.6%),
   promote LICENSING.md — then real Gumroad/LemonSqueezy/Patreon verification.
 - Go-to-market: refocus the YouTube channel, PPP price ladder, point-of-need selling.
