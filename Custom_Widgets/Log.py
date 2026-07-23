@@ -3,8 +3,17 @@ import os
 import sys
 import threading
 import traceback
+import functools as _functools
 from logging.handlers import RotatingFileHandler
 from qtpy.QtCore import QSettings
+
+# Every plain print() in THIS module is diagnostic/log output - none of it is
+# real program output. Route it all to stderr: a stdio MCP server speaks
+# JSON-RPC over stdout, so any stray byte on stdout corrupts the protocol
+# stream. Shadowing the builtin here (rather than editing each call site) also
+# guarantees no future print() in this module can leak onto stdout. The rich
+# `console` is likewise created with stderr=True below.
+print = _functools.partial(print, file=sys.stderr)
 # NOTE: no module-level import of Custom_Widgets.Utils here - Utils
 # star-imports this module, and a top-level circular import left Utils
 # with an EMPTY snapshot of Log's names (latent NameError on logError).
@@ -37,7 +46,11 @@ if RICH_AVAILABLE:
             "folder": "magenta",
             "monitor": "bold blue"
         })
-        console = Console(theme=custom_theme)
+        # Write to stderr, not stdout: this console is shared by the RichHandler
+        # (see setupLogger) and any panel/rprint output. A stdio MCP server
+        # speaks JSON-RPC over stdout, so any log byte on stdout corrupts the
+        # protocol stream. stderr keeps stdout clean for that transport.
+        console = Console(theme=custom_theme, stderr=True)
     except Exception as e:
         print(f"Failed to initialize Rich theme: {e}")
         RICH_AVAILABLE = False
