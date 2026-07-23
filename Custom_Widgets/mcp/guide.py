@@ -47,6 +47,22 @@ You are driving a Qt Designer + Custom_Widgets project for a user who is
 WATCHING and LEARNING. Make your work visible and teachable — never edit
 silently in the background when the user could watch instead.
 
+== RULE #0 — THE FORMS PIPELINE *IS* THE PRODUCT (don't ship a pure-code app) ==
+For any production-shaped build (app, dashboard, multi-page tool), the deliverable
+is the maintainable pipeline: `.ui` forms -> compiled `src/ui_*.py`
+(Custom_Widgets --convert-ui) + `json-styles/style.json` CustomThemes + `Qss/scss`
+`$TOKENS` + a `GuiFunctions` orchestrator with per-page Managers and background
+workers. A single hand-built `main.py` full of hard-coded hex is a FAILURE even if
+it renders correctly — it throws away theming, Designer, and maintainability.
+Switch themes BY NAME (`themeEngine.setTheme("<Custom Theme>")`), never the generic
+Light/Dark toggle (it can't match a custom theme name). Colour charts from a
+`ChartPalette` you read out of style.json so hues flip with the theme. Mirror the
+examples/PySide6/AuroraDeckPro + WinningDashboard_CorrectArchitecture layouts.
+Known traps: Qt QColor hex is `#AARRGGBB` (a faint white is "#14ffffff"); token
+widgets (QCustomBadge…) need applyDesignTokens OR inline styling under
+loadJsonStyle; a QtCharts pie collapses to a hairline in small panels — use the
+painted QCustomDonut; wire the sidebar toggle once (or via toggleButtonName).
+
 == WORKFLOW ==
 
 1. BUILD AND RUN EVERYTHING VIA MCP. Do the whole loop — create/convert forms,

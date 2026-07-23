@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DashboardComponent</class>
+ <widget class="QCustomComponent" name="DashboardComponent">
+  <property name="geometry">
+   <rect><x>0</x><y>0</y><width>1000</width><height>760</height></rect>
+  </property>
+  <layout class="QVBoxLayout" name="dashOuter">
+   <property name="spacing"><number>0</number></property>
+   <property name="leftMargin"><number>0</number></property>
+   <property name="topMargin"><number>0</number></property>
+   <property name="rightMargin"><number>0</number></property>
+   <property name="bottomMargin"><number>0</number></property>
+   <item>
+    <widget class="QScrollArea" name="dashScroll">
+     <property name="widgetResizable"><bool>true</bool></property>
+     <property name="frameShape"><enum>QFrame::NoFrame</enum></property>
+     <property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAsNeeded</enum></property>
+     <widget class="QWidget" name="dashScrollContents">
+      <property name="geometry"><rect><x>0</x><y>0</y><width>1000</width><height>860</height></rect></property>
+      <layout class="QVBoxLayout" name="dashBody">
+       <property name="spacing"><number>18</number></property>
+       <property name="leftMargin"><number>26</number></property>
+       <property name="topMargin"><number>22</number></property>
+       <property name="rightMargin"><number>26</number></property>
+       <property name="bottomMargin"><number>22</number></property>
+
+       <!-- header -->
+       <item>
+        <layout class="QHBoxLayout" name="headerRow">
+         <property name="spacing"><number>12</number></property>
+         <item>
+          <layout class="QVBoxLayout" name="headerText">
+           <property name="spacing"><number>3</number></property>
+           <item>
+            <widget class="QLabel" name="pageTitle">
+             <property name="text"><string>Welcome back</string></property>
+             <property name="role" stdset="0"><string>h1</string></property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="pageSub">
+             <property name="text"><string>Check your last activity today</string></property>
+             <property name="role" stdset="0"><string>sub</string></property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="headerSpacer">
+           <property name="orientation"><enum>Qt::Horizontal</enum></property>
+           <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QFrame" name="searchChip">
+           <property name="minimumSize"><size><width>40</width><height>40</height></size></property>
+           <property name="maximumSize"><size><width>40</width><height>40</height></size></property>
+           <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+           <property name="role" stdset="0"><string>iconChip</string></property>
+           <layout class="QHBoxLayout" name="searchChipLayout">
+            <property name="leftMargin"><number>0</number></property>
+            <property name="topMargin"><number>0</number></property>
+            <property name="rightMargin"><number>0</number></property>
+            <property name="bottomMargin"><number>0</number></property>
+            <item><widget class="QLabel" name="searchIcon"><property name="alignment"><set>Qt::AlignCenter</set></property></widget></item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="bellChip">
+           <property name="minimumSize"><size><width>40</width><height>40</height></size></property>
+           <property name="maximumSize"><size><width>40</width><height>40</height></size></property>
+           <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+           <property name="role" stdset="0"><string>iconChip</string></property>
+           <layout class="QHBoxLayout" name="bellChipLayout">
+            <property name="leftMargin"><number>0</number></property>
+            <property name="topMargin"><number>0</number></property>
+            <property name="rightMargin"><number>0</number></property>
+            <property name="bottomMargin"><number>0</number></property>
+            <item><widget class="QLabel" name="bellIcon"><property name="alignment"><set>Qt::AlignCenter</set></property></widget></item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="headerAvatar">
+           <property name="minimumSize"><size><width>40</width><height>40</height></size></property>
+           <property name="maximumSize"><size><width>40</width><height>40</height></size></property>
+           <property name="alignment"><set>Qt::AlignCenter</set></property>
+           <property name="text"><string>AK</string></property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+
+       <!-- KPI row (manager fills kpiRow's layout with 4 cards) -->
+       <item>
+        <widget class="QFrame" name="kpiRow">
+         <property name="minimumSize"><size><width>0</width><height>128</height></size></property>
+         <layout class="QHBoxLayout" name="kpiRowLayout">
+          <property name="spacing"><number>16</number></property>
+          <property name="leftMargin"><number>0</number></property>
+          <property name="topMargin"><number>0</number></property>
+          <property name="rightMargin"><number>0</number></property>
+          <property name="bottomMargin"><number>0</number></property>
+         </layout>
+        </widget>
+       </item>
+
+       <!-- mid row: sales bar chart | distribution donut -->
+       <item>
+        <layout class="QHBoxLayout" name="midRow">
+         <property name="spacing"><number>16</number></property>
+         <item>
+          <widget class="QFrame" name="salesPanel">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred"><horstretch>2</horstretch><verstretch>0</verstretch></sizepolicy>
+           </property>
+           <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+           <property name="role" stdset="0"><string>panel</string></property>
+           <layout class="QVBoxLayout" name="salesPanelLayout">
+            <property name="spacing"><number>12</number></property>
+            <property name="leftMargin"><number>20</number></property>
+            <property name="topMargin"><number>18</number></property>
+            <property name="rightMargin"><number>20</number></property>
+            <property name="bottomMargin"><number>18</number></property>
+            <item>
+             <layout class="QHBoxLayout" name="salesHead">
+              <item><widget class="QLabel" name="salesTitle"><property name="text"><string>Total sales</string></property><property name="role" stdset="0"><string>panelTitle</string></property></widget></item>
+              <item><spacer name="salesHeadSpacer"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+              <item>
+               <widget class="QWidget" name="salesLegend" native="true">
+                <layout class="QHBoxLayout" name="salesLegendLayout">
+                 <property name="spacing"><number>14</number></property>
+                 <property name="leftMargin"><number>0</number></property>
+                 <property name="topMargin"><number>0</number></property>
+                 <property name="rightMargin"><number>0</number></property>
+                 <property name="bottomMargin"><number>0</number></property>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QCustomBarChart" name="salesChart">
+              <property name="minimumSize"><size><width>0</width><height>300</height></size></property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="distPanel">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred"><horstretch>1</horstretch><verstretch>0</verstretch></sizepolicy>
+           </property>
+           <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+           <property name="role" stdset="0"><string>panel</string></property>
+           <layout class="QVBoxLayout" name="distPanelLayout">
+            <property name="spacing"><number>10</number></property>
+            <property name="leftMargin"><number>20</number></property>
+            <property name="topMargin"><number>18</number></property>
+            <property name="rightMargin"><number>20</number></property>
+            <property name="bottomMargin"><number>18</number></property>
+            <item><widget class="QLabel" name="distTitle"><property name="text"><string>Sales distribution</string></property><property name="role" stdset="0"><string>panelTitle</string></property></widget></item>
+            <item>
+             <widget class="QCustomDonut" name="distChart">
+              <property name="minimumSize"><size><width>0</width><height>200</height></size></property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="distLegend" native="true">
+              <layout class="QVBoxLayout" name="distLegendLayout">
+               <property name="spacing"><number>8</number></property>
+               <property name="leftMargin"><number>2</number></property>
+               <property name="topMargin"><number>4</number></property>
+               <property name="rightMargin"><number>2</number></property>
+               <property name="bottomMargin"><number>0</number></property>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </item>
+
+       <!-- bottom row: recent orders | customers area chart -->
+       <item>
+        <layout class="QHBoxLayout" name="bottomRow">
+         <property name="spacing"><number>16</number></property>
+         <item>
+          <widget class="QFrame" name="ordersPanel">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred"><horstretch>1</horstretch><verstretch>0</verstretch></sizepolicy>
+           </property>
+           <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+           <property name="role" stdset="0"><string>panel</string></property>
+           <layout class="QVBoxLayout" name="ordersPanelLayout">
+            <property name="spacing"><number>10</number></property>
+            <property name="leftMargin"><number>20</number></property>
+            <property name="topMargin"><number>18</number></property>
+            <property name="rightMargin"><number>20</number></property>
+            <property name="bottomMargin"><number>18</number></property>
+            <item><widget class="QLabel" name="ordersTitle"><property name="text"><string>Recent orders</string></property><property name="role" stdset="0"><string>panelTitle</string></property></widget></item>
+            <item>
+             <layout class="QHBoxLayout" name="ordersHead">
+              <item><widget class="QLabel" name="colProduct"><property name="text"><string>Product name</string></property><property name="role" stdset="0"><string>colHead</string></property></widget></item>
+              <item><widget class="QLabel" name="colDate"><property name="text"><string>Date</string></property><property name="role" stdset="0"><string>colHead</string></property></widget></item>
+              <item><widget class="QLabel" name="colPrice"><property name="text"><string>Price</string></property><property name="role" stdset="0"><string>colHead</string></property></widget></item>
+              <item><widget class="QLabel" name="colStatus"><property name="text"><string>Status</string></property><property name="role" stdset="0"><string>colHead</string></property><property name="alignment"><set>Qt::AlignRight|Qt::AlignVCenter</set></property></widget></item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QWidget" name="ordersBody" native="true">
+              <layout class="QVBoxLayout" name="ordersBodyLayout">
+               <property name="spacing"><number>0</number></property>
+               <property name="leftMargin"><number>0</number></property>
+               <property name="topMargin"><number>0</number></property>
+               <property name="rightMargin"><number>0</number></property>
+               <property name="bottomMargin"><number>0</number></property>
+              </layout>
+             </widget>
+            </item>
+            <item><spacer name="ordersSpacer"><property name="orientation"><enum>Qt::Vertical</enum></property><property name="sizeHint" stdset="0"><size><width>20</width><height>10</height></size></property></spacer></item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="customersPanel">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred"><horstretch>1</horstretch><verstretch>0</verstretch></sizepolicy>
+           </property>
+           <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+           <property name="role" stdset="0"><string>panel</string></property>
+           <layout class="QVBoxLayout" name="customersPanelLayout">
+            <property name="spacing"><number>10</number></property>
+            <property name="leftMargin"><number>20</number></property>
+            <property name="topMargin"><number>18</number></property>
+            <property name="rightMargin"><number>20</number></property>
+            <property name="bottomMargin"><number>18</number></property>
+            <item>
+             <layout class="QHBoxLayout" name="custHead">
+              <item><widget class="QLabel" name="custTitle"><property name="text"><string>Customers</string></property><property name="role" stdset="0"><string>panelTitle</string></property></widget></item>
+              <item><spacer name="custHeadSpacer"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+              <item>
+               <widget class="QWidget" name="custLegend" native="true">
+                <layout class="QHBoxLayout" name="custLegendLayout">
+                 <property name="spacing"><number>14</number></property>
+                 <property name="leftMargin"><number>0</number></property>
+                 <property name="topMargin"><number>0</number></property>
+                 <property name="rightMargin"><number>0</number></property>
+                 <property name="bottomMargin"><number>0</number></property>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QCustomAreaChart" name="customersChart">
+              <property name="minimumSize"><size><width>0</width><height>210</height></size></property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="monthRow" native="true">
+              <layout class="QHBoxLayout" name="monthRowLayout">
+               <property name="spacing"><number>0</number></property>
+               <property name="leftMargin"><number>6</number></property>
+               <property name="topMargin"><number>0</number></property>
+               <property name="rightMargin"><number>6</number></property>
+               <property name="bottomMargin"><number>0</number></property>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </item>
+
+       <item>
+        <spacer name="dashBottomSpacer">
+         <property name="orientation"><enum>Qt::Vertical</enum></property>
+         <property name="sizeHint" stdset="0"><size><width>20</width><height>20</height></size></property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomComponent</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomComponent</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomBarChart</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomCharts.QCustomBarChart</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomDonut</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomDonut</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomAreaChart</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomCharts.QCustomAreaChart</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

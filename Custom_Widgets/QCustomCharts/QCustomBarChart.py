@@ -5,6 +5,7 @@ from qtpy.QtGui import QColor, QPen, QPainter, QPalette, QBrush
 from qtpy.QtCharts import QChart, QBarSeries, QBarSet, QBarCategoryAxis, QValueAxis
 
 from .QCustomChartBase import QCustomChartBase
+from .QCustomBarChartBase import _RoundedBarOverlay
 from .QCustomChartProps import ChartCommonProps, AxisChartProps
 from Custom_Widgets.Utils import is_in_designer
 from Custom_Widgets.QCustomCharts.QCustomChartConstants import (
@@ -83,6 +84,10 @@ class QCustomBarChart(QCustomChartBase, AxisChartProps, ChartCommonProps):
         # Bar chart specific properties
         self._bar_series_dict = {}  # {series_name: QBarSeries}
         self._bar_sets_dict = {}    # {series_name: QBarSet}
+        self._bar_corner_radius = 0     # px; >0 draws top-rounded bars via overlay
+        self._bar_group_frac = 0.7      # last group width fraction (for the overlay)
+        self._rounded_overlay = None
+        self._orientation = "vertical"  # QCustomBarChart renders vertical bars
         
         # Chart configuration
         self._chart.setTitle("Bar Chart")
@@ -508,7 +513,11 @@ class QCustomBarChart(QCustomChartBase, AxisChartProps, ChartCommonProps):
         # Set grid visibility and color
         self._axis_y.setGridLineVisible(self._show_grid)
         self._axis_y.setGridLineColor(self._grid_color)
-        
+
+        # Rounded bars: hide native fills and let the overlay paint them
+        self._bar_group_frac = self._bar_width
+        self._applyRoundedBars(bar_sets)
+
         # Set animation
         if self._animation_enabled:
             self._chart.setAnimationOptions(QChart.SeriesAnimations)
@@ -522,6 +531,55 @@ class QCustomBarChart(QCustomChartBase, AxisChartProps, ChartCommonProps):
         # Update legend
         self._updateLegendSettings()
     
+    def _applyRoundedBars(self, bar_sets):
+        """Toggle rounded-bar rendering: hide native fills + drive the overlay."""
+        if self._bar_corner_radius > 0:
+            transparent = QColor(0, 0, 0, 0)
+            for bs in bar_sets:
+                bs.setColor(transparent)
+                bs.setBorderColor(transparent)
+            if self._rounded_overlay is None:
+                self._rounded_overlay = _RoundedBarOverlay(self)
+                try:
+                    self._chart.plotAreaChanged.connect(
+                        lambda *_: self._rounded_overlay and self._rounded_overlay.refresh())
+                except Exception:
+                    pass
+            self._rounded_overlay.setVisible(True)
+            self._rounded_overlay.refresh()
+        elif self._rounded_overlay is not None:
+            self._rounded_overlay.setVisible(False)
+
+    def setBarCornerRadius(self, radius: int):
+        """Round the top corners of bars (px). 0 restores native square bars.
+
+        QtCharts has no rounded-bar support, so this paints a rounded overlay
+        over the (hidden) native bars. Vertical bars only.
+        """
+        self._bar_corner_radius = max(0, int(radius))
+        self.updateChart()
+
+    def getBarCornerRadius(self) -> int:
+        return self._bar_corner_radius
+
+    def setGridLineColor(self, color, alpha: Optional[int] = None):
+        """Set the grid line colour (and optionally its alpha 0-255)."""
+        c = QColor(color)
+        if alpha is not None:
+            c.setAlpha(max(0, min(255, int(alpha))))
+        self._grid_color = c
+        try:
+            self._axis_y.setGridLineColor(c)
+            self._axis_x.setGridLineColor(c)
+        except Exception:
+            pass
+
+    def setGridLineAlpha(self, alpha: int):
+        """Set just the grid line opacity (0-255), keeping the current hue."""
+        c = QColor(self._grid_color)
+        c.setAlpha(max(0, min(255, int(alpha))))
+        self.setGridLineColor(c)
+
     def _updateLegendSettings(self):
         """Update legend settings"""
         legend = self._chart.legend()

@@ -1,0 +1,207 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QCustomQMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect><x>0</x><y>0</y><width>1560</width><height>920</height></rect>
+  </property>
+  <property name="minimumSize">
+   <size><width>1120</width><height>680</height></size>
+  </property>
+  <property name="windowTitle">
+   <string>Winning — Analytics (Correct Architecture)</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="rootLayout">
+    <property name="spacing"><number>0</number></property>
+    <property name="leftMargin"><number>0</number></property>
+    <property name="topMargin"><number>0</number></property>
+    <property name="rightMargin"><number>0</number></property>
+    <property name="bottomMargin"><number>0</number></property>
+    <item>
+     <widget class="QCustomSidebar" name="sidebar">
+      <property name="minimumSize"><size><width>230</width><height>0</height></size></property>
+      <property name="maximumSize"><size><width>230</width><height>16777215</height></size></property>
+      <property name="collapsedWidth" stdset="0"><number>72</number></property>
+      <property name="expandedWidth" stdset="0"><number>230</number></property>
+      <property name="defaultWidth" stdset="0"><number>230</number></property>
+      <property name="animationDuration" stdset="0"><number>320</number></property>
+      <layout class="QVBoxLayout" name="sidebarLayout">
+       <property name="spacing"><number>6</number></property>
+       <property name="leftMargin"><number>14</number></property>
+       <property name="topMargin"><number>16</number></property>
+       <property name="rightMargin"><number>14</number></property>
+       <property name="bottomMargin"><number>16</number></property>
+       <item>
+        <widget class="QCustomSidebarLabel" name="brandLabel">
+         <property name="text" stdset="0"><string>Winning</string></property>
+         <property name="iconSize" stdset="0"><size><width>24</width><height>24</height></size></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="sidebarToggle">
+         <property name="minimumSize"><size><width>0</width><height>32</height></size></property>
+         <property name="text"><string>  Collapse</string></property>
+         <property name="iconSize"><size><width>18</width><height>18</height></size></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomSidebarLabel" name="secGeneral">
+         <property name="text" stdset="0"><string>GENERAL</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomSidebarButton" name="navDashboard">
+         <property name="minimumSize"><size><width>0</width><height>42</height></size></property>
+         <property name="checkable"><bool>true</bool></property>
+         <property name="autoExclusive"><bool>true</bool></property>
+         <property name="checked"><bool>true</bool></property>
+         <property name="labelText" stdset="0"><string>Dashboard</string></property>
+         <property name="iconSize"><size><width>20</width><height>20</height></size></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomSidebarButton" name="navProducts">
+         <property name="minimumSize"><size><width>0</width><height>42</height></size></property>
+         <property name="checkable"><bool>true</bool></property>
+         <property name="autoExclusive"><bool>true</bool></property>
+         <property name="labelText" stdset="0"><string>Products</string></property>
+         <property name="iconSize"><size><width>20</width><height>20</height></size></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomSidebarButton" name="navOrders">
+         <property name="minimumSize"><size><width>0</width><height>42</height></size></property>
+         <property name="checkable"><bool>true</bool></property>
+         <property name="autoExclusive"><bool>true</bool></property>
+         <property name="labelText" stdset="0"><string>Orders</string></property>
+         <property name="iconSize"><size><width>20</width><height>20</height></size></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomSidebarButton" name="navCustomers">
+         <property name="minimumSize"><size><width>0</width><height>42</height></size></property>
+         <property name="checkable"><bool>true</bool></property>
+         <property name="autoExclusive"><bool>true</bool></property>
+         <property name="labelText" stdset="0"><string>Customers</string></property>
+         <property name="iconSize"><size><width>20</width><height>20</height></size></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomSidebarLabel" name="secOther">
+         <property name="text" stdset="0"><string>OTHER</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomSidebarButton" name="navMarketing">
+         <property name="minimumSize"><size><width>0</width><height>42</height></size></property>
+         <property name="checkable"><bool>true</bool></property>
+         <property name="autoExclusive"><bool>true</bool></property>
+         <property name="labelText" stdset="0"><string>Marketing</string></property>
+         <property name="iconSize"><size><width>20</width><height>20</height></size></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomSidebarButton" name="navAnalytics">
+         <property name="minimumSize"><size><width>0</width><height>42</height></size></property>
+         <property name="checkable"><bool>true</bool></property>
+         <property name="autoExclusive"><bool>true</bool></property>
+         <property name="labelText" stdset="0"><string>Analytics</string></property>
+         <property name="iconSize"><size><width>20</width><height>20</height></size></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomSidebarLabel" name="secSupport">
+         <property name="text" stdset="0"><string>SUPPORT</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomSidebarButton" name="navSettings">
+         <property name="minimumSize"><size><width>0</width><height>42</height></size></property>
+         <property name="checkable"><bool>true</bool></property>
+         <property name="autoExclusive"><bool>true</bool></property>
+         <property name="labelText" stdset="0"><string>Settings</string></property>
+         <property name="iconSize"><size><width>20</width><height>20</height></size></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomSidebarButton" name="navHelp">
+         <property name="minimumSize"><size><width>0</width><height>42</height></size></property>
+         <property name="checkable"><bool>true</bool></property>
+         <property name="autoExclusive"><bool>true</bool></property>
+         <property name="labelText" stdset="0"><string>Help</string></property>
+         <property name="iconSize"><size><width>20</width><height>20</height></size></property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="sidebarSpacer">
+         <property name="orientation"><enum>Qt::Vertical</enum></property>
+         <property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="themeToggle">
+         <property name="minimumSize"><size><width>0</width><height>38</height></size></property>
+         <property name="iconSize"><size><width>18</width><height>18</height></size></property>
+         <property name="text"><string>  Light theme</string></property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCustomQStackedWidget" name="pageStack">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>1</horstretch><verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="slideTransition" stdset="0"><bool>true</bool></property>
+      <property name="transitionTime" stdset="0"><number>360</number></property>
+      <widget class="QCustomComponentContainer" name="dashboardContainer">
+       <property name="filePath" stdset="0"><string>ui/DashboardComponent.ui</string></property>
+       <property name="previewComponent" stdset="0"><bool>false</bool></property>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomQMainWindow</class>
+   <extends>QMainWindow</extends>
+   <header>Custom_Widgets.QCustomQMainWindow</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomSidebar</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomSidebar</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomSidebarLabel</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomSidebarLabel</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomSidebarButton</class>
+   <extends>QPushButton</extends>
+   <header>Custom_Widgets.QCustomSidebarButton</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomQStackedWidget</class>
+   <extends>QStackedWidget</extends>
+   <header>Custom_Widgets.QCustomQStackedWidget</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomComponentContainer</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomComponentContainer</header>
+   <container>1</container>
+  </customwidget>
+ <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>
