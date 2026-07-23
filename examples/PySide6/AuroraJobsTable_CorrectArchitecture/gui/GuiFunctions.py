@@ -140,6 +140,7 @@ class JobsManager(QObject):
         self.table.setActionsColor(r["muted"])
         self.table.setHeaderGlyphColor(r["muted"])
         self.table.setHeaderAccentColor(r["accent"])
+        self.table.setRowSeparatorColor(r["outline"])   # uniform under ALL cells
         self.toolbar.setThemeColors(surface=r["surface"], on_surface=r["text"],
                                     muted=r["muted"], outline=r["outline"],
                                     accent=r["accent"])

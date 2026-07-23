@@ -77,10 +77,10 @@ QFrame[role="card"] { background-color: $COLOR_BACKGROUND_1; border-radius: 22px
     outline: 0;
     gridline-color: transparent;
 }
-#dataTableView::item {
-    border-bottom: 1px solid $COLOR_BACKGROUND_4;
-    padding-left: 4px;
-}
+// NB: the row separator is drawn by the delegate (setRowSeparatorColor) so it is
+// uniform across rich AND plain cells — a QSS ::item border only shows under the
+// plain (non-custom-painted) cells, leaving gaps. Keep only the padding here.
+#dataTableView::item { padding-left: 4px; }
 #dataTableView QHeaderView { background: transparent; }
 #dataTableView QHeaderView::section {
     background: transparent;

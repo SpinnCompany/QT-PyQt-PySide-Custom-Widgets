@@ -480,6 +480,39 @@ class TestCustomizationHooks:
                 bands.append([y])
         assert len(bands) >= 2
 
+    def test_row_separator_drawn_under_rich_cells(self, qapp):
+        # REGRESSION: rich cells (status/twoline/…) are custom-painted and never
+        # call the default delegate, so they missed the view's ::item border while
+        # plain cells kept it — some cells had a separator, others didn't.
+        # setRowSeparatorColor draws a uniform bottom border under EVERY cell.
+        from qtpy.QtGui import QColor
+        from Custom_Widgets.QCustomDataTable import QCustomDataTable, DataTableColumn
+        SEP = "#ff00ff"                              # a colour used nowhere else
+        t = QCustomDataTable()
+        t.customizeQCustomDataTable(
+            columns=[DataTableColumn("job", renderer="status"),   # rich (custom-painted)
+                     DataTableColumn("who")],                     # plain (default delegate)
+            showPagination=False, alternatingRowColors=False)
+        t.setData([{"job": "Tracking job", "who": "John"}])
+        t.setRowSeparatorColor(SEP)
+        t.view().verticalHeader().setDefaultSectionSize(48)
+        t.resize(360, 120)
+        t.show()
+        qapp.processEvents()
+        # viewport().grab() excludes the header, so row 0 bottom is at rowHeight-1
+        img = t.view().viewport().grab().toImage()
+        sep = QColor(SEP)
+        col0_right = t.view().columnWidth(0)         # the rich (status) column
+        found = False
+        for y in range(min(img.height() - 1, 44), min(img.height(), 49)):
+            for x in range(4, max(6, col0_right - 4)):
+                if _close(img.pixelColor(x, y), sep, tol=40):
+                    found = True
+                    break
+            if found:
+                break
+        assert found, "no separator under the custom-painted (rich) status cell"
+
     def test_twoline_subtitle_survives_pixel_size_font(self, qapp):
         # REGRESSION: on Linux/xcb the app font is often pixel-sized, so
         # font.pointSizeF() returns -1; adding the subtitle scale delta to that

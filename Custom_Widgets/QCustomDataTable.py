@@ -647,6 +647,7 @@ class QCustomDataTableDelegate(QStyledItemDelegate):
         self._subtitleScale = -1.0      # twoline subtitle font delta (0 = peer lines)
         self._subtitleBold = None       # None inherits; True/False forces weight
         self._statusDot = self._DOT     # status-dot diameter (customisable)
+        self._rowSeparator = None       # delegate-drawn per-cell bottom border
 
     def setAccentColor(self, color):
         """Colour for link text and (by default) status text. None -> palette."""
@@ -673,6 +674,16 @@ class QCustomDataTableDelegate(QStyledItemDelegate):
 
     def setStatusDotSize(self, px):
         self._statusDot = max(2, int(px))
+
+    def setRowSeparatorColor(self, color):
+        """Draw a 1px bottom separator under EVERY cell in this colour. Rich cells
+        (status/link/twoline/currency/badge) are fully custom-painted and never
+        call the default delegate, so they otherwise MISS the view's
+        ``::item`` bottom border while plain cells keep it — leaving some cells
+        with a separator and others without. Set this (and drop the QSS
+        ``::item`` border, so it isn't drawn twice) for a uniform grid.
+        None -> no delegate separator (the old behaviour)."""
+        self._rowSeparator = QColor(color) if color else None
 
     # ------------------------------------------------------------------ #
     ## colour helpers
@@ -703,12 +714,27 @@ class QCustomDataTableDelegate(QStyledItemDelegate):
     # ------------------------------------------------------------------ #
     ## paint
     # ------------------------------------------------------------------ #
+    def _paintSeparator(self, painter, option):
+        """Draw the uniform per-cell bottom border (see setRowSeparatorColor)."""
+        if self._rowSeparator is None:
+            return
+        painter.save()
+        painter.setRenderHint(QPainter.Antialiasing, False)
+        painter.setPen(QPen(self._rowSeparator))
+        y = option.rect.bottom()
+        painter.drawLine(option.rect.left(), y, option.rect.right(), y)
+        painter.restore()
+
     def paint(self, painter, option, index):
         renderer = index.data(RendererRole) or ""
         if renderer == ACTIONS_RENDERER:
-            return self._paintActions(painter, option, index)
+            self._paintActions(painter, option, index)
+            self._paintSeparator(painter, option)
+            return
         if renderer not in CELL_RENDERERS:
-            return super().paint(painter, option, index)
+            super().paint(painter, option, index)
+            self._paintSeparator(painter, option)
+            return
 
         self.initStyleOption(option, index)
         text = str(index.data(Qt.DisplayRole) or "")
@@ -738,6 +764,7 @@ class QCustomDataTableDelegate(QStyledItemDelegate):
                                 model_align)
         finally:
             painter.restore()
+        self._paintSeparator(painter, option)
 
     def _resolveAlign(self, model_align, default):
         if model_align is None:
@@ -1475,6 +1502,14 @@ class QCustomDataTable(QWidget):
 
     def setStatusDotSize(self, px):
         self._delegate.setStatusDotSize(px)
+        self._view.viewport().update()
+
+    def setRowSeparatorColor(self, color):
+        """Draw a uniform 1px bottom border under EVERY cell (rich cells are
+        custom-painted and otherwise miss the view's ``::item`` border, so some
+        cells showed a separator and others didn't). Pair with dropping the QSS
+        ``#dataTableView::item`` border so it isn't drawn twice. None -> off."""
+        self._delegate.setRowSeparatorColor(color)
         self._view.viewport().update()
 
     # -- header affordances (all opt-in) -------------------------------- #

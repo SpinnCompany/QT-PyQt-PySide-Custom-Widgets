@@ -68,3 +68,9 @@ Toggle the avatar (top-right) to switch Aurora Light / Dark.
 - **`Background-color` is the surface (card) colour**; the generator derives a
   slightly darker page shade (`BG_2`/`BG_3`) for the window — so cards read as white
   panels on a soft page without any hard-coded hex.
+- **Uniform row separators**: the DataTable's *rich* cells (status/twoline/currency)
+  are fully custom-painted and never call the default delegate, so a QSS
+  `#dataTableView::item { border-bottom }` shows only under the *plain* cells —
+  leaving some cells with a separator and some without. Use the delegate hook
+  `table.setRowSeparatorColor(roles["outline"])` (drawn under EVERY cell) and drop
+  the QSS `::item` border so it isn't drawn twice.
