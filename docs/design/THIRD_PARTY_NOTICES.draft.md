@@ -6,8 +6,11 @@
 > goes live. This draft has not been reviewed by counsel. When complete, promote
 > to `/THIRD_PARTY_NOTICES`.
 >
-> **Two items below require action before an LGPL relicense / commercial launch —
-> see "⚠ Action required" at the end.**
+> **Progress (2026-07-23): Product Sans removed and the `mock` runtime-dep concern
+> confirmed resolved; BlurWindow provenance investigated. Remaining before an LGPL
+> relicense / commercial launch: Font Awesome in-app attribution, the BlurWindow
+> clean-room rewrite decision, and the license-text bundle — see "⚠ Action
+> required" at the end.**
 
 Custom Widgets incorporates and/or depends on third-party software, icons, fonts,
 and other materials. This file lists them and their licenses. Where components are
@@ -48,7 +51,7 @@ Declared in package metadata. Licenses below are the well-known license for each
 | perlin_noise | MIT (verify) | Perlin loader |
 | colorthief | MIT/BSD (verify) | Palette extraction |
 | kids-cache (kids.cache) | BSD/other (verify) | Caching |
-| mock | BSD-3-Clause | (should be test-only — see action items) |
+| ~~mock~~ | — | **Not a runtime dep** (verified 2026-07-23): absent from `pyproject.toml`; only `unittest.mock` is used, in tests. |
 | setuptools | MIT | Packaging |
 | mcp | MIT | Optional extra `[mcp]` — MCP server |
 
@@ -64,7 +67,7 @@ license is compatible with the planned **LGPLv3** core.
 
 | File / module | Origin (from in-file attribution) | License |
 |---|---|---|
-| `Custom_Widgets/BlurWindow.py` | Adapted from GWSL-Source `blur.py`, zhiyiYo, and digsby `vista.py` | **(verify — mixed sources, possible GPL)** ⚠ |
+| `Custom_Widgets/BlurWindow.py` | Adapted from GWSL-Source `blur.py`, a zhiyiYo blog post, and digsby `vista.py` | **Sources verified 2026-07-23 (see action item 2): GWSL = "Modified MIT" (ambiguous, grants only *use*); digsby = "Digsby License v1" (PSF-derived, permissive); zhiyiYo = blog snippet, author normally GPLv3. No confirmed copyleft, but GWSL/zhiyiYo terms are a redistribution risk — clean-room rewrite recommended.** ⚠ |
 | `Custom_Widgets/AnalogGaugeWidget.py` | Stefan Holstein; inspired by PyQt4 analog-clock example | (verify — likely MIT) |
 | `Custom_Widgets/iconify/` | Vendored `iconify` icon-rendering engine | (verify — likely MIT) |
 | `Custom_Widgets/ProgressIndicator.py` | Classic QProgressIndicator pattern (commonly attributed to Morgan Leborgne) | (verify — likely MIT) |
@@ -82,8 +85,8 @@ license is compatible with the planned **LGPLv3** core.
 
 | Font | License | Status |
 |---|---|---|
-| Rosario (incl. variable) | SIL Open Font License 1.1 | ✅ OK to bundle with OFL text + attribution |
-| **Product Sans** (all weights) | **Proprietary — Google brand font** | 🚫 **NOT licensed for redistribution — must remove** |
+| Rosario (incl. variable) | SIL Open Font License 1.1 | ✅ OK to bundle with OFL text + attribution. This is the only bundled app font, loaded by `QCustomTheme.loadAppFont()`. |
+| ~~Product Sans (all weights)~~ | ~~Proprietary — Google brand font~~ | ✅ **REMOVED** (2026-07-23). The 12 `.ttf` files under `Qss/fonts/google-sans-cufonfonts/` were deleted; they were bundled but never loaded (the theme already loaded Rosario). |
 
 ## F. Bundled themes / syntax (`CodeEditorThemes/`, `CodeEditorSyntax/`)
 
@@ -97,31 +100,57 @@ has its own terms). Syntax files appear original.
 
 ## ⚠ Action required (surfaced by this audit)
 
-1. **Product Sans font — remove/replace (highest priority).** Product Sans is
-   Google's proprietary corporate typeface and is **not licensed for
-   redistribution**. Bundling it is very likely a license violation. **Replace**
-   with an OFL alternative (e.g. Google Sans is *also* proprietary — use an open
-   substitute such as a Grotesk/Neo-Grotesque OFL font) or remove it and reference
-   a system font. Do this **before** any commercial distribution.
+Status legend: ✅ done · 🔬 investigated (decision/action pending) · ⏳ open.
 
-2. **`BlurWindow.py` license provenance — verify (LGPL-compatibility risk).** It's
-   adapted from multiple upstreams, at least one of which (GWSL) may be
-   copyleft/GPL. If any source is GPL, bundling it in an **LGPLv3** core is a
-   conflict. Confirm each upstream's license; rewrite/replace the module if it's
-   GPL-derived.
+1. ✅ **Product Sans font — REMOVED (2026-07-23).** The 12 proprietary `.ttf`
+   files under `Custom_Widgets/Qss/fonts/google-sans-cufonfonts/` were deleted.
+   They were bundled but **unused**: `QCustomTheme` already loaded the OFL
+   **Rosario** font. The loader method was renamed `loadProductSansFont` →
+   `loadAppFont` and its docstring/log strings corrected. Rosario (SIL OFL 1.1)
+   remains the only bundled app font.
 
-3. **Font Awesome attribution — ensure present.** CC BY 4.0 requires visible
-   attribution to Font Awesome. Add it to the docs/about screen and this file's
-   published version, or switch those icons to a set with no attribution
-   requirement.
+2. 🔬 **`BlurWindow.py` provenance — investigated; clean-room rewrite
+   recommended.** Upstream licenses were checked (2026-07-23):
+   - **GWSL-Source `blur.py`** — a *"Modified MIT License"* (© 2021 Paul-E/Opticos
+     Studios) whose grant is narrowed to *"use copies"* and omits the standard
+     MIT verbs (modify / distribute / sublicense / sell). Ambiguous and arguably
+     does **not** clearly grant redistribution.
+   - **digsby `vista.py`** — *"Digsby License, Version 1"*, derived from the PSF
+     License v2.0 — permissive, LGPL-compatible.
+   - **zhiyiYo** (cnblogs blog post) — no explicit license; the author normally
+     ships under **GPLv3**, so a copyleft claim can't be ruled out.
+   No confirmed GPL derivation, but GWSL's narrowed grant and the unlicensed blog
+   snippet are real redistribution risks. The module's substance is thin `ctypes`
+   calls to documented OS APIs (Windows DWM `SetWindowCompositionAttribute`,
+   macOS `NSVisualEffectView`). **Recommendation:** rewrite `BlurWindow.py`
+   clean-room from the public OS API docs and drop the source-attribution header,
+   removing all provenance ambiguity. (Needs Windows/macOS to verify behaviour;
+   flagged for owner decision.)
 
-4. **`mock` as a runtime dependency — likely wrong.** `mock` is a testing library;
-   it should be a test/dev extra, not a runtime `Requires-Dist`. Verify and move
-   it to `extras_require`/dev deps.
+3. ⏳ **Font Awesome attribution — text added below; in-app placement pending.**
+   The required CC BY 4.0 attribution now appears in §D and in the "Required
+   attributions" block below (which ships once this file is promoted to
+   `/THIRD_PARTY_NOTICES`). Still to do: surface it somewhere user-visible
+   (About dialog / docs) or swap those icons for an attribution-free set.
 
-5. **Confirm all (verify) licenses** against installed `dist-info` and upstream,
+4. ✅ **`mock` runtime dependency — already resolved.** The current
+   `pyproject.toml` (v2.2.1) runtime deps are `qtpy, qtsass, termcolor, lxml,
+   rich, kids-cache` — `mock` is **not** among them, and no runtime module
+   imports it (only `unittest.mock` is used, in tests). Nothing to change; the
+   draft table's "should be test-only" note stands corrected.
+
+5. ⏳ **Confirm all (verify) licenses** against installed `dist-info` and upstream,
    and generate the license-text bundle (`licenses/` directory) that the LGPL and
    the bundled MIT/Apache/OFL/CC components require to ship with the distribution.
+
+## Required attributions (must ship in the published notices)
+
+- **Font Awesome Free** — icons under **CC BY 4.0**, fonts under **SIL OFL 1.1**,
+  code under **MIT**. Attribution: *"Icons by Font Awesome — https://fontawesome.com,
+  licensed under CC BY 4.0."* (Required by CC BY 4.0.)
+- **Material Design Icons** — Apache-2.0; include the Apache-2.0 license text + NOTICE.
+- **Feather** — MIT; include the MIT text + copyright.
+- **Rosario** — SIL OFL 1.1; include the OFL text + reserved font name.
 
 ## How this file is maintained
 
