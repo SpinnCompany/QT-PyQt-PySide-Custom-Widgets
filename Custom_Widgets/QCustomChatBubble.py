@@ -208,6 +208,11 @@ class QCustomChatBubble(QFrame):
         self._label.setVisible(False)
         self._body._lay.addWidget(widget)
 
+    def setBodyPadding(self, h, v):
+        """Tighten (or pad) the bubble body — e.g. 0 for an edge-to-edge inline
+        image/card that carries its own visual."""
+        self._body.setPadding(h, v)
+
     def setMetaWidget(self, widget):
         """Add a small widget after the meta line (e.g. QCustomMessageStatus
         delivery ticks next to an outgoing message's time)."""

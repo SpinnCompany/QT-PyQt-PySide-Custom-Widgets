@@ -122,12 +122,20 @@ class QCustomMediaGrid(QWidget):
         self._rebuild()
 
     def setImageAt(self, index, pm):
-        """Swap one tile's pixmap in place (e.g. a real photo arriving async)."""
+        """Swap one tile's pixmap in place (e.g. a real photo arriving async).
+        Also updates the stored pixmap so pixmaps() reflects the real image."""
+        pm = pm if isinstance(pm, QPixmap) else QPixmap(str(pm))
+        if 0 <= index < len(self._pixmaps):
+            self._pixmaps[index] = pm
         if 0 <= index < len(self._tiles):
-            self._tiles[index].setRoundedPixmap(pm if isinstance(pm, QPixmap) else QPixmap(str(pm)))
+            self._tiles[index].setRoundedPixmap(pm)
 
     def count(self):
         return len(self._pixmaps)
+
+    def pixmaps(self):
+        """The current tile pixmaps (for feeding a lightbox / viewer)."""
+        return list(self._pixmaps)
 
     _tiles = []
 
