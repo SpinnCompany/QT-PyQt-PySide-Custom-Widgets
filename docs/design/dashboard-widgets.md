@@ -420,6 +420,19 @@ so nothing truncates at any widget size (the calculate-text-to-fit rule).
 `heading` is a Property only (no same-named method — that gotcha bit here; use
 `setHeading()`). Mirror: `QCustomRadialGauge` (painted dial).
 
+## 2026-07-24 upgrade — QCustomDonut % callouts + hatch fills
+`QCustomDonut` (segments mode) gained two **opt-in** enhancements (default OFF, so
+the classic donut is unchanged) for the "Transfer history" reference:
+- **`showPercentLabels`** — a `%` callout **pill on each arc** at its mid-angle
+  (`percentLabelColor`, `percentPill` on/off, `percentPillColor`,
+  `minLabelPercent` to suppress tiny slices).
+- **`hatchCsv`** (+ **`hatchPattern`** = bdiag / fdiag / cross / horizontal /
+  vertical / dense) — the listed **segment indices** render with a hatch pattern
+  over a dimmed base (a "hatched" slice like the reference's *Other*). Code API:
+  `setShowPercentLabels(bool)`, `setHatchIndices([...])`, `setHatchPattern(name)`.
+
+Both painted; verified with `render_widget` + `tests/test_qcustom_donut_enhance.py`.
+
 ### QCustomCompassDial — premium beveled sibling
 `Custom_Widgets.QCustomCompassDial` — a **skeuomorphic-modern** instrument
 compass (the Haulix map dial), built as a **separate** widget so the flat

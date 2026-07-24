@@ -379,9 +379,15 @@ painted widgets — CompassDial / zoom control / popovers — as the map chrome)
 
 ## Enhancements to existing widgets (not new widgets)
 
-- **`QCustomDonut` / `QCustomPieChart`:** on-segment **% callout labels** and
-  **hatch/pattern fills** (img 3 "Transfer history" — the 30% / 23% / 18%
-  labels sit on the arcs, and some segments are hatched). Currently legend-only.
+- ✅ **`QCustomDonut` on-segment % callouts + hatch fills — SHIPPED 2026-07-24.**
+  Opt-in (segments mode, default OFF so the classic look is unchanged):
+  `showPercentLabels` draws a `%` pill on each arc (`percentLabelColor`,
+  `percentPill`, `percentPillColor`, `minLabelPercent` to hide tiny slices), and
+  `hatchCsv` (+ `hatchPattern` bdiag/fdiag/cross/…) renders chosen segment
+  indices with a hatch over a dim base (`setHatchIndices`/`setShowPercentLabels`).
+  Matches the "Transfer history" reference. 6 tests
+  (`tests/test_qcustom_donut_enhance.py`), lint 0-err. (`QCustomPieChart` still
+  legend-only — enhance separately if needed.)
 - **`QCustomSparkline`:** a **live/streaming** mode (ring buffer + `push()`) for
   the ECG use-case — may satisfy item 4's line half.
 
