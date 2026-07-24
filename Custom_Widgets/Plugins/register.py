@@ -862,6 +862,32 @@ except Exception as e:
     logException(e, message="Error registering QCustomModal")
 
 
+from Custom_Widgets.QCustomCompassDial import QCustomCompassDial
+
+# Registering QCustomCompassDial with error handling
+try:
+    logInfo("Registering QCustomCompassDial")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomCompassDial, module=QCustomCompassDial.WIDGET_MODULE,
+        tool_tip=QCustomCompassDial.WIDGET_TOOLTIP, xml=QCustomCompassDial.WIDGET_DOM_XML,
+        icon=QCustomCompassDial.WIDGET_ICON, group="Display Widgets")
+except Exception as e:
+    logException(e, message="Error registering QCustomCompassDial")
+
+
+from Custom_Widgets.QCustomCompass import QCustomCompass
+
+# Registering QCustomCompass with error handling
+try:
+    logInfo("Registering QCustomCompass")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomCompass, module=QCustomCompass.WIDGET_MODULE,
+        tool_tip=QCustomCompass.WIDGET_TOOLTIP, xml=QCustomCompass.WIDGET_DOM_XML,
+        icon=QCustomCompass.WIDGET_ICON, group="Display Widgets")
+except Exception as e:
+    logException(e, message="Error registering QCustomCompass")
+
+
 from Custom_Widgets.QCustomBubbleChart import QCustomBubbleChart
 
 # Registering QCustomBubbleChart with error handling

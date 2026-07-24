@@ -206,6 +206,19 @@ to reproduce an ARBITRARY design reference pixel-for-pixel. Widgets are NOT
 tight or one-look — the library's whole value is that a developer can bend a
 widget to any brand or mockup.
 
+- AIM PREMIUM & CREATIVE — NO CEILING. A new widget should be the BEST version you
+  can imagine, not the minimum that works. There is explicitly NO LIMIT on
+  creativity, usability, scalability, styling, or modernization — push every one
+  as far as it goes. Ship instrument-grade, skeuomorphic-MODERN finishes where
+  they delight (beveled metal rims, domed faces, brass ticks, metallic caps — see
+  QCustomCompassDial; neon glow, gradients, depth), rich interactivity
+  (hover/zoom/search/drag/animate), and enough orthogonal knobs to bend to any
+  brand. A plain flat version is a fine baseline, but a PREMIUM CREATIVE variant
+  is always welcome — add it as a NEW widget (a `Dial`/`Pro`/styled sibling),
+  never by downgrading a shipped one. There is no "too fancy" here — only
+  "not painted / not themed / not maintainable / doesn't scale", which the
+  conventions already prevent. Match the reference, then ask "what's the more
+  delightful version?" and build THAT.
 - When matching a reference image, diff it ELEMENT-BY-ELEMENT (alignment, font
   weight/size hierarchy, glyphs, colours, affordances like sort carets / gears /
   carets), not with a "looks close" glance and not on green tests alone. Own

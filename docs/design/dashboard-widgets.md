@@ -403,6 +403,37 @@ the sentiment layout). **Fully interactive** (the reference has zoom + search):
 worked example behind the "interactive + custom tooltips (not native)" guideline.
 Mirror: `QCustomDonut` (painted, category colours).
 
+## 2026-07-24 addition — QCustomCompass (heading rose)
+`Custom_Widgets.QCustomCompass` — backlog item #9, the map/heading compass. A
+painted rose: tick ring, N/E/S/W (+ intercardinals), a two-tone needle (coloured
+north / muted south) and a centre readout — a **16-point cardinal** (N…SSW…) +
+degrees, auto-**sized to fit the hub**. `heading` (0–360°, 0 = North = up) eases
+along the **shortest** angular path when `animated`. Two looks via **`rotateBezel`**:
+`False` (default) the needle rotates to the heading; `True` an aircraft/marine
+**rotating card** — needle stays up, the rose spins so the heading sits on top.
+**Drag around the centre to set the heading** (`interactive`); `headingChanged(float)`.
+Props: `heading`, `rotateBezel`, `showIntercardinals`, `showReadout`, `animated`,
+`interactive`, `northColor`, `southColor`, `ringColor`, `tickColor`,
+`cardinalColor`, `readoutColor`, `hubColor`. **Text is measured to fit** — the
+readout shrinks for 3-letter points and every label rect is sized to its string,
+so nothing truncates at any widget size (the calculate-text-to-fit rule).
+`heading` is a Property only (no same-named method — that gotcha bit here; use
+`setHeading()`). Mirror: `QCustomRadialGauge` (painted dial).
+
+### QCustomCompassDial — premium beveled sibling
+`Custom_Widgets.QCustomCompassDial` — a **skeuomorphic-modern** instrument
+compass (the Haulix map dial), built as a **separate** widget so the flat
+`QCustomCompass` is untouched. Same API (heading / `rotateBezel` / `animated`
+ease / drag-to-set / `headingChanged`) with a premium painted look: a **beveled
+metal rim** (top-lit → bottom-shadowed `QLinearGradient`), a **domed glass face**
+(`QRadialGradient`), a **fine watch-bezel tick ring** with **brass** (`accentColor`)
+majors at the cardinals, and a **metallic centre cap** carrying the fit-to-cap
+16-point readout + degrees. All depth is painted (gradients, no effect object —
+theme-safe, no `drop-shadow` waiver). Extra props over the flat one: `bezelColor`,
+`faceColor`, `accentColor`, `capColor` (+ `northColor`/`southColor`/`tickColor`/
+`cardinalColor`/`readoutColor`). Use the flat `QCustomCompass` for a minimal UI,
+this dial for a rich instrument panel.
+
 ## Check Box dashboard viz (2026-07-24)
 
 Three painted widgets + a Sparkline extension, built for the "Check Box"

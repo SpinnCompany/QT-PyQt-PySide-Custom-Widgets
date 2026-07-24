@@ -1,0 +1,36 @@
+# Auto-generated type stub — DO NOT EDIT.
+# Regenerate with:  python -m Custom_Widgets.mcp.stubgen --write
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QWidget
+from typing import Any, ClassVar
+
+
+class QCustomHeatmap(QWidget):
+    cellClicked: ClassVar[Signal]
+    mode: str
+    valuesCsv: str
+    rowLabelsCsv: str
+    colLabelsCsv: str
+    lowColor: str
+    highColor: str
+    emptyColor: str
+    cellSize: int
+    cellGap: int
+    cornerRadius: int
+    showLabels: bool
+    showLegend: bool
+    labelColor: str
+    autoNormalize: bool
+    minValue: float
+    maxValue: float
+    def __init__(self, parent = ..., values = ..., mode = ...) -> None: ...
+    def setValues(self, values) -> None: ...
+    def setRange(self, minimum, maximum) -> None: ...
+    def setColors(self, low, high, empty = ...) -> None: ...
+    def setLabels(self, row_labels = ..., col_labels = ...) -> None: ...
+    def setMode(self, mode) -> None: ...
+    def values(self): ...
+    def paintEvent(self, e): ...
+    def mouseMoveEvent(self, e): ...
+    def leaveEvent(self, e): ...
+    def mousePressEvent(self, e): ...
