@@ -1,0 +1,26 @@
+# Auto-generated type stub — DO NOT EDIT.
+# Regenerate with:  python -m Custom_Widgets.mcp.stubgen --write
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QFrame
+from typing import Any, ClassVar
+
+
+class QCustomChatBubble(QFrame):
+    text: str
+    side: str
+    sender: str
+    time: str
+    foot: str
+    bubbleColor: str
+    textColor: str
+    metaColor: str
+    radius: int
+    maxBubbleWidth: int
+    def __init__(self, parent = ..., text = ..., side = ...) -> None: ...
+    def setText(self, text) -> None: ...
+    def setBodyWidget(self, widget) -> None: ...
+    def setMetaWidget(self, widget) -> None: ...
+    def setReactionBar(self, widget) -> None: ...
+    def setSender(self, text) -> None: ...
+    def setTime(self, text) -> None: ...
+    def setFoot(self, text) -> None: ...
