@@ -50,6 +50,14 @@ THREAD = [
     ("in",    "Hi! How are you? 🥰", "11:00 AM", {"reactions": [("👍", 2)]}),  # noqa: glyph-icons
     ("out",   "Hey Ricky! I'm feeling amazing, how about you?", "12:42 PM", {"status": "read", "reactions": [("❤️", 1)]}),  # noqa: glyph-icons
     ("voice", "in", "01:30", "12:00 PM"),
+    # --- inline media (reuses the media widgets inside chat bubbles) ---
+    ("album", "in",  "12:03 PM", {"images": ["chatA", "chatB", "chatC", "chatD"]}),
+    ("link",  "in",  "12:04 PM", {"title": "Aurora Design System",
+                                   "url": "https://dribbble.com/aurora",
+                                   "desc": "Modern UI kit for chat apps"}),
+    ("file",  "out", "12:05 PM", {"name": "Design Specs.pdf", "size": "3.1 MB",
+                                   "date": "Today", "status": "read"}),
+    ("video", "in",  "12:06 PM", {"poster": "chatVid", "duration": "1:24"}),
     ("outcost", "That's a cool idea! 😄", "Sent for 0 credits", "12:42 PM", {"status": "delivered"}),  # noqa: glyph-icons
     ("in",    "Hey, so happy you are down! ✨", "12:42 PM", {"reactions": [("😂", 1), ("🔥", 3)]}),  # noqa: glyph-icons
 ]

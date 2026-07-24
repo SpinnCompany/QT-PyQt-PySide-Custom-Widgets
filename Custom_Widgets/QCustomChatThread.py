@@ -30,6 +30,10 @@ from Custom_Widgets.QCustomChatDivider import QCustomChatDivider
 from Custom_Widgets.QCustomTypingIndicator import QCustomTypingIndicator
 from Custom_Widgets.QCustomMessageStatus import QCustomMessageStatus
 from Custom_Widgets.QCustomReactionBar import QCustomReactionBar
+from Custom_Widgets.QCustomMediaGrid import QCustomMediaGrid
+from Custom_Widgets.QCustomLinkPreview import QCustomLinkPreview
+from Custom_Widgets.QCustomFileCard import QCustomFileCard
+from Custom_Widgets.QCustomVideoPlayer import QCustomVideoPlayer
 
 
 class QCustomChatThread(QFrame):
@@ -38,6 +42,13 @@ class QCustomChatThread(QFrame):
     reactionAddRequested = Signal(int, object)
     # (message index, emoji) — an existing reaction chip was clicked.
     reactionClicked = Signal(int, str)
+    # (inline media widget, message dict) — emitted for every inline media/video
+    # bubble so a manager can load its real images/poster (async, cached).
+    inlineMediaCreated = Signal(object, object)
+    # (media-grid widget, tile index) — an inline image was tapped; open a viewer.
+    mediaOpenRequested = Signal(object, int)
+    # (url) — an inline link preview was clicked.
+    linkClicked = Signal(str)
 
     WIDGET_ICON = "components/icons/chat_thread.png"
     WIDGET_TOOLTIP = "A data-driven chat message thread"
@@ -197,6 +208,8 @@ class QCustomChatThread(QFrame):
             b.setBodyWidget(v)
             self._attach_extras(b, m, out, mi)
             return b
+        if kind in ("image", "album", "video", "file", "link"):
+            return self._make_media(m, out, sender, mi, kind)
         # text (default)
         b = QCustomChatBubble(text=m.get("text", ""),
                               side=("outgoing" if out else "incoming"))
@@ -208,6 +221,53 @@ class QCustomChatThread(QFrame):
         if m.get("foot"):
             b.setFoot(m["foot"])
         b.maxBubbleWidth = self._max_w
+        self._attach_extras(b, m, out, mi)
+        return b
+
+    def _make_media(self, m, out, sender, mi, kind):
+        """A bubble whose body is an inline media widget (image album, video,
+        file card or link preview) — reuses the existing widgets, no new class.
+        The bubble is transparent + unpadded so the embedded widget carries the
+        whole look; sender/time meta + reactions still work."""
+        b = QCustomChatBubble(side=("outgoing" if out else "incoming"))
+        b.bubbleColor = QColor(0, 0, 0, 0)     # transparent; widget carries the look
+        b.setBodyPadding(0, 0)
+        b.metaColor = self._meta
+        b.setSender(sender)
+        b.setTime(m.get("time", ""))
+
+        if kind == "link":
+            w = QCustomLinkPreview()
+            w.setLink(m.get("title", ""), m.get("url", ""), m.get("desc"))
+            w.setMinimumWidth(260)
+            w.clicked.connect(self.linkClicked)
+            b.setBodyWidget(w)
+        elif kind == "file":
+            w = QCustomFileCard()
+            w.setFile(m.get("name", "File"), m.get("size", ""), date=m.get("date"))
+            w.setMinimumWidth(240)
+            b.setBodyWidget(w)
+        elif kind == "video":
+            w = QCustomVideoPlayer()
+            w.duration = m.get("duration", "0:30")
+            w.setMinimumSize(300, 176)
+            b.setBodyWidget(w)
+            self.inlineMediaCreated.emit(w, m)
+        else:   # image / album
+            imgs = m.get("images") or [None]
+            n = max(1, len(imgs))
+            grid = QCustomMediaGrid()
+            grid.columns = 1 if n == 1 else (2 if n <= 4 else 3)
+            grid.tileRadius = 14
+            grid.tileHeight = 168 if n == 1 else 96
+            grid.setMinimumWidth(300 if n == 1 else 264)
+            grid.setPlaceholders([("#2b3450", "#1b2138")] * n)
+            grid.tileClicked.connect(lambda i, g=grid: self.mediaOpenRequested.emit(g, i))
+            b.setBodyWidget(grid)
+            self.inlineMediaCreated.emit(grid, m)
+
+        if m.get("foot"):
+            b.setFoot(m["foot"])
         self._attach_extras(b, m, out, mi)
         return b
 

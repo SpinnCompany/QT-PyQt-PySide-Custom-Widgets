@@ -93,6 +93,13 @@ def _thread_messages(active_name):
         elif kind == "outcost":
             msg = {"kind": "text", "side": "out", "text": row[1],
                    "time": row[3], "foot": row[2] + "  |  " + row[3]}
+        elif kind in ("image", "album", "video", "file", "link"):
+            # (kind, side, time, {media fields}) — inline media in a bubble.
+            msg = {"kind": kind, "side": row[1], "time": row[2]}
+            for k in ("images", "title", "url", "desc", "name", "size",
+                      "date", "duration", "poster"):
+                if k in extras:
+                    msg[k] = extras[k]
         else:
             continue
         if extras.get("status"):
@@ -160,6 +167,14 @@ class ChatManager(QObject):
         chatList.setCurrentIndex(self._active_row, emit=False)
         chatThread = self.w("chatThread")
         chatThread.setSenderName(D.CONVERSATIONS[self._active_row][0])
+        # thread signals must be connected BEFORE setMessages — inline media
+        # widgets are emitted (inlineMediaCreated) during the build.
+        self._inline_viewer = None
+        chatThread.reactionClicked.connect(chatThread.addReaction)
+        chatThread.reactionAddRequested.connect(self._open_reaction_picker)
+        chatThread.inlineMediaCreated.connect(self._on_inline_media)
+        chatThread.mediaOpenRequested.connect(self._open_inline_lightbox)
+        chatThread.linkClicked.connect(self._on_link_clicked)
         chatThread.setMessages(self._messages)
 
         # signals
@@ -167,9 +182,6 @@ class ChatManager(QObject):
         self.w("chatInput").sendMessage.connect(self._on_send)
         self.w("chatInput").emojiClicked.connect(self._open_emoji_picker)
         self.w("customizeChevron").clicked.connect(self._toggle_media_section)
-        # reactions: clicking a chip adds one more; the "+" opens the emoji picker
-        chatThread.reactionClicked.connect(chatThread.addReaction)
-        chatThread.reactionAddRequested.connect(self._open_reaction_picker)
 
         # sync header + profile + thread to the active conversation deterministically
         self._on_conversation(self._active_row)
@@ -307,6 +319,33 @@ class ChatManager(QObject):
                 pass
         picker.emojiSelected.connect(_apply)
         picker.show()
+
+    # -- inline chat media (reuses the media widgets inside bubbles) -------- #
+    def _on_inline_media(self, widget, meta):
+        # Load the real image(s) / video poster into an inline media widget.
+        if not self.images:
+            return
+        if meta.get("kind") == "video":
+            seed = meta.get("poster", "video1")
+            self.images.load(net.media_url(seed, 360, 200),
+                             lambda pm, w=widget: w.setPoster(pm))
+        else:   # image / album
+            for i, seed in enumerate(meta.get("images") or []):
+                self.images.load(net.media_url(seed, 360, 240),
+                                 lambda pm, ix=i, w=widget: w.setImageAt(ix, pm))
+
+    def _open_inline_lightbox(self, grid, index):
+        pixmaps = [pm for pm in grid.pixmaps() if pm is not None and not pm.isNull()]
+        if not pixmaps:
+            return
+        if self._inline_viewer is None:
+            self._inline_viewer = QCustomImageViewer(parent=self.win)
+        self._inline_viewer.setImages(pixmaps)
+        self._inline_viewer.openAt(min(index, len(pixmaps) - 1), self.win)
+
+    def _on_link_clicked(self, url):
+        # A real app would open the URL / an in-app preview; keep the demo inert.
+        print("inline link clicked:", url)
 
     def _toggle_media_section(self):
         mc = self.w("mediaContainer")

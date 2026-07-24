@@ -8,6 +8,9 @@ from typing import Any, ClassVar
 class QCustomChatThread(QFrame):
     reactionAddRequested: ClassVar[Signal]
     reactionClicked: ClassVar[Signal]
+    inlineMediaCreated: ClassVar[Signal]
+    mediaOpenRequested: ClassVar[Signal]
+    linkClicked: ClassVar[Signal]
     incomingBubbleColor: str
     incomingTextColor: str
     outgoingBubbleColor: str
