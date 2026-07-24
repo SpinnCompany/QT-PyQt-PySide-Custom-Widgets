@@ -81,6 +81,23 @@ teardown crash fixed; `QCustomTheme` gained the `token()` SCSS integration.
 Each widget: tokenized QSS, `__catalog__`, Designer registration where droppable,
 a headless test file, and a runnable `examples/PySide6/...` demo.
 
+### 2026-07-24 — CashFlowDashboard additions (data-viz + interactive + fonts)
+From the green "Total Balance" banking-dashboard build (full report:
+`session-2026-07-24-cashflow-widgets.md`). All registered, `.pyi`-stubbed, tested,
+seed guarded demo data so they preview in Designer / `render_widget`.
+
+| Widget | Group | Notes |
+|---|---|---|
+| `QCustomDivergingBarChart` | Charts | diverging/bipolar up-down bars (income up / expense down) split across a zero axis with a configurable `zeroGap`; painted, optional €K axis + grid |
+| `QCustomCardStack` | Containers | interactive stacked payment cards, click/`next()` cycles with animation; per-card gradients (`setCardColorsList`); `currentChanged(int)` |
+| `QCustomMenu` | Menus | modern popup action menu (`popupAt`, icon rows, hover, danger, `triggered`) for `…`/more buttons |
+| `QCustomModal` | Menus | modern centered modal (dim scrim + rounded card, painted-X close, content slot, actions, `triggered`/`closed`) |
+
+Library capability: **remote font loading** — `Utils.download_font(url)` +
+`json-styles Fonts.LoadFonts[].url` + `QCustomTheme.loadRemoteFont` (TTF/OTF,
+cached, non-fatal). Example app `examples/PySide6/CashFlowDashboard` loads Inter
+remotely. New agent gotchas folded into `Custom_Widgets/mcp/guide.py`.
+
 ## Pro package (`custom-widgets-pro`)
 
 Separate private repo. LGPL-core-extending, native-compile-ready, dual-entitlement

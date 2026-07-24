@@ -145,3 +145,53 @@ All three new widgets are registered in `Custom_Widgets/Plugins/register.py`
 (`python -m Custom_Widgets.mcp.stubgen --write`). The MCP catalog is AST-scanned
 and `lru_cache`d per server process, so `widgets_catalog` / `render_widget` only
 list new widgets after a server restart.
+
+## 2026-07-24 additions (diverging chart + interactive widgets)
+Extracted from the `examples/PySide6/CashFlowDashboard` build. Full report:
+[session-2026-07-24-cashflow-widgets.md](session-2026-07-24-cashflow-widgets.md).
+
+### QCustomDivergingBarChart  `Custom_Widgets.QCustomDivergingBarChart`
+Painted **diverging (bipolar / up-down) bar chart**: one column per category with
+an UP segment (income) and DOWN segment (expense) in two colours, split across a
+zero axis. Key knob: **`zeroGap`** (px of clear space between the + and − bars).
+`setData(up, down, labels)`, `setColors(up, down)`, `axisPrefix/axisSuffix`
+(e.g. `€…K`), `gridColor`, `axisTextColor`; CSV props `upCsv/downCsv/labelsCsv`.
+The diverging sibling of `QCustomMiniBarChart` — use it, not two grouped QtCharts
+series, for a cash-flow chart.
+
+### QCustomCardStack  `Custom_Widgets.QCustomCardStack`
+Interactive stack of `QCustomPaymentCard` children (front full-size, backs peek up
++ inset). Click / `next()` / `previous()` cycles with an animated reshuffle.
+`setCards([{brand,amount,number,top,bottom,fullNumber}])`,
+`setCardColorsList([(top,bottom)…])` (per-card gradients, keeps index on a theme
+flip), `currentChanged(int)`; `cardsJson` Designer prop.
+
+### QCustomMenu  `Custom_Widgets.QCustomMenu`
+Modern popup action menu for `…`/more buttons — frameless rounded elevated panel,
+icon+label rows, hover, `addSeparator()`, `danger=` rows. `addAction(text, key,
+icon, danger=)`, `popupAt(button, "right")`, `triggered(str)`. It is a TOP-LEVEL
+popup: theme it from code with `applyColors(...)` (app QSS does not cascade in),
+and it is NOT captured by `win.grab()`/`app_screenshot` — verify via a headless
+`panel.grab()` test.
+
+### QCustomModal  `Custom_Widgets.QCustomModal`
+Modern centered modal: dims the parent window (scrim) + a centered rounded card
+with title/subtitle, a **painted-X** close (a `QPushButton` subclass — never a
+`×` glyph), a content slot and action buttons. `setTitle/setSubtitle`,
+`addContent(widget)`, `addAction(text, key, primary=/danger=)`,
+`clearContent()`/`clearActions()`, `showModal()`, `triggered(str)` + `closed()`.
+As a child of the window it IS captured by `app_screenshot`.
+
+### Remote fonts (library, not a widget)
+`Custom_Widgets.Utils.download_font(url)` + `json-styles Fonts.LoadFonts[].url`
+(alongside `path`) + `QCustomTheme.loadRemoteFont(url, set_as_default=)`. TTF/OTF
+only (no WOFF/WOFF2), cached under `generated-files/fonts/`, non-fatal on failure.
+`Fonts.DefaultFont` applies the family app-wide. Fixes the bundled-Rosario
+mono/system fallback (set a real sans like Inter).
+
+### Preview / gotchas
+All four widgets **seed guarded demo data in `__init__`** so they preview in
+Designer / `render_widget`; the app replaces it via `setData`/`setCards`. See
+`Custom_Widgets/mcp/guide.py` (HARD-WON GOTCHAS) and
+[design-rules.md](design-rules.md) for the layout-geometry, native-bg-box,
+scss-rgba-triples, popup-capture and painted-affordance lessons.

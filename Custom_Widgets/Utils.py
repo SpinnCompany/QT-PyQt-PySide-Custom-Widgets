@@ -227,3 +227,49 @@ class SharedData:
         """Check if a file URL exists in the list."""
         return file_url in self.file_urls
 
+
+def download_font(url, cache_dir=None, timeout=20, force=False):
+    """Download a remote font (TTF/OTF/TTC) to a local cache and return its path.
+
+    Lets a Custom_Widgets app use a brand / web font by URL instead of bundling
+    the binary. The file is cached by a hash of the URL under ``cache_dir``
+    (default ``<projectRoot>/generated-files/fonts``) so it is fetched at most
+    once. Network / HTTP failures are NON-FATAL: this logs and returns ``None``
+    so the caller falls back to the bundled font. Stdlib only (urllib) — no new
+    dependency. Note: QFontDatabase does not read WOFF/WOFF2, so point this at a
+    TTF/OTF (variable TTFs are fine on Qt6).
+    """
+    import hashlib
+    import urllib.request
+
+    try:
+        if cache_dir is None:
+            from Custom_Widgets.Project import projectRoot
+            cache_dir = os.path.join(projectRoot(), "generated-files", "fonts")
+        os.makedirs(cache_dir, exist_ok=True)
+
+        ext = os.path.splitext(url.split("?")[0])[1].lower()
+        if ext not in (".ttf", ".otf", ".ttc"):
+            ext = ".ttf"
+        dest = os.path.join(cache_dir, hashlib.sha1(url.encode("utf-8")).hexdigest()[:16] + ext)
+
+        if os.path.isfile(dest) and os.path.getsize(dest) > 0 and not force:
+            return dest
+
+        req = urllib.request.Request(url, headers={"User-Agent": "Custom_Widgets-font-loader"})
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            data = resp.read()
+        if not data:
+            logError(f"Remote font is empty: {url}")
+            return None
+
+        tmp = dest + ".part"
+        with open(tmp, "wb") as f:
+            f.write(data)
+        os.replace(tmp, dest)
+        logInfo(f" Downloaded remote font ({len(data)} bytes) -> {dest}")
+        return dest
+    except Exception as e:
+        logError(f"Failed to download remote font {url}: {e}")
+        return None
+

@@ -7,7 +7,7 @@ import warnings
 
 from qtpy.QtCore import QThreadPool, QSettings, Qt
 from qtpy.QtGui import QColor, QFontDatabase, QIcon, QFont
-from qtpy.QtWidgets import QGraphicsDropShadowEffect, QPushButton, QSizeGrip
+from qtpy.QtWidgets import QGraphicsDropShadowEffect, QPushButton, QSizeGrip, QApplication
 
 from Custom_Widgets.FileMonitor import QSsFileMonitor
 from Custom_Widgets.QCustomQPushButtonGroup import QCustomQPushButtonGroup
@@ -16,7 +16,7 @@ from Custom_Widgets.QPropertyAnimation import returnAnimationEasingCurve, return
 
 from Custom_Widgets.Project import projectRoot
 from Custom_Widgets.Log import *
-from Custom_Widgets.Utils import replace_url_prefix, SharedData, is_in_designer
+from Custom_Widgets.Utils import replace_url_prefix, SharedData, is_in_designer, download_font
 
 ## Read JSON stylesheet
 def loadJsonStyle(self, update = False, **jsonFiles):
@@ -190,31 +190,68 @@ def configure_settings(self, data, update: bool = False):
                 # Load fonts from "LoadFonts"
                 if "LoadFonts" in fonts_data:
                     for font in fonts_data["LoadFonts"]:
+                        # Each entry may load a LOCAL file ("path") or a REMOTE
+                        # font ("url", downloaded + cached). A local path wins if
+                        # it exists; otherwise the url is fetched. Both are
+                        # optional so existing path-only configs keep working.
                         font_name = font.get("name", "")
                         font_path = font.get("path", "")
-                        if font_name and font_path:
-                            font_path_abs = os.path.join(projectRoot(), font_path)  # Construct absolute path
-                            if os.path.isfile(font_path_abs):
-                                font_id = QFontDatabase.addApplicationFont(font_path_abs)
-                                if font_id == -1:
-                                    logError(f"Error loading font: {font_name} from {font_path}")
-                                else:
-                                    # Set the font name to the font loaded
-                                    self._fontName = QFontDatabase.applicationFontFamilies(font_id)[0]
-                                    logInfo(f" Loaded font: {self._fontName} from {font_path_abs}")
+                        font_url = font.get("url", "")
+                        font_file = None
+                        if font_path:
+                            candidate = os.path.join(projectRoot(), font_path)  # Construct absolute path
+                            if os.path.isfile(candidate):
+                                font_file = candidate
                             else:
                                 logError(f"Font file does not exist: {font_path}")
-                
-                # Set the default font
+                        if font_file is None and font_url:
+                            font_file = download_font(font_url)   # cached, non-fatal on failure
+                        if font_file:
+                            font_id = QFontDatabase.addApplicationFont(font_file)
+                            if font_id == -1:
+                                logError(f"Error loading font: {font_name or font_url or font_path}")
+                            else:
+                                fams = QFontDatabase.applicationFontFamilies(font_id)
+                                self._fontName = fams[0] if fams else font_name
+                                logInfo(f" Loaded font: {self._fontName} from {font_file}")
+
+                # Set the default font (applied app-wide so every widget, even
+                # ones created later, inherits it).
                 if "DefaultFont" in fonts_data:
                     default_font_name = fonts_data["DefaultFont"].get("name", "")
 
                     if default_font_name:
-                        # Check if the default font exists in the font database
-                        if default_font_name in QFontDatabase.families():  # Changed here
-                            self._fontName = QFont(default_font_name)
-                            logInfo(f" Set default font to: {self._fontName}")
-                            self.setFont(self._fontName)
+                        # Resolve the family tolerantly: exact, else case-insensitive
+                        # / prefix (a variable TTF may register as "Inter" or
+                        # "Inter Variable"), else fall back to the family just
+                        # loaded above via LoadFonts.
+                        fams = QFontDatabase.families()
+                        resolved = None
+                        if default_font_name in fams:
+                            resolved = default_font_name
+                        else:
+                            low = default_font_name.lower()
+                            for fam in fams:
+                                if fam.lower() == low or fam.lower().startswith(low):
+                                    resolved = fam
+                                    break
+                        if resolved is None and isinstance(getattr(self, "_fontName", None), str):
+                            resolved = self._fontName
+                        if resolved:
+                            appFont = QFont(resolved)
+                            _sz = fonts_data["DefaultFont"].get("size")
+                            if _sz:
+                                try:
+                                    appFont.setPointSize(int(_sz))
+                                except Exception:
+                                    pass
+                            self._fontName = appFont
+                            _app = QApplication.instance()
+                            if _app is not None:
+                                _app.setFont(appFont)
+                            else:
+                                self.setFont(appFont)
+                            logInfo(f" Set default app font to: {resolved}")
                         else:
                             logError(f"Default font not found: {default_font_name}")
                         

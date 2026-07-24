@@ -1,0 +1,97 @@
+// Cash Flow dashboard — chrome styles.
+// Tokens ONLY (no hard-coded hex): $COLOR_BACKGROUND_1..6, $COLOR_TEXT_1..4,
+// $COLOR_ACCENT_1..4. Base (window/sidebar) = BG_1; the main field steps one to
+// BG_2; cards sit on BG_1 with a BG_3 hairline. Every data-viz / painted hue
+// (the teal balance banner, delta arrows, icon tiles, status pills, the cash-flow
+// bars, the credit card) is painted in the manager from the token-driven
+// ChartPalette so it flips with the theme.
+
+// -- window shell ---------------------------------------------------------- //
+QCustomQMainWindow, #centralwidget { background-color: $COLOR_BACKGROUND_1; }
+QWidget#sidebar { background-color: $COLOR_BACKGROUND_1; border-right: 1px solid $COLOR_BACKGROUND_3; }
+
+QCustomQStackedWidget, #pageStack { background: transparent; }
+QScrollArea { background: transparent; border: 0; }
+#dashScrollContents { background-color: $COLOR_BACKGROUND_2; }
+#topBar, #pageBody { background: transparent; }
+
+// -- top bar --------------------------------------------------------------- //
+QLabel[role="crumbActive"] { background: transparent; color: $COLOR_TEXT_1; font-size: 20px; font-weight: 800; }
+QLabel[role="crumbHello"]  { background: transparent; color: $COLOR_TEXT_3; font-size: 13px; font-weight: 500; }
+QLabel[role="crumbSep"]    { color: $COLOR_BACKGROUND_4; }
+QLabel[role="clock"]       { background: transparent; color: $COLOR_TEXT_3; font-size: 13px; }
+
+// -- cards ----------------------------------------------------------------- //
+QFrame[role="card"] {
+    background-color: $COLOR_BACKGROUND_1;
+    border: 1px solid $COLOR_BACKGROUND_3;
+    border-radius: 18px;
+}
+// banner surface is painted (gradient) in the manager; keep it borderless here.
+QFrame[role="banner"] { border: 0; }
+
+// -- dividers -------------------------------------------------------------- //
+QFrame[role="vdivider"] { background: transparent; color: $COLOR_BACKGROUND_3; border: none; }
+QFrame[role="hdivider"] { background: transparent; color: $COLOR_BACKGROUND_3; border: none; }
+
+// -- typography roles ------------------------------------------------------ //
+QLabel[role="panelTitle"] { background: transparent; color: $COLOR_TEXT_1; font-size: 17px; font-weight: 800; }
+QLabel[role="statLabel"]  { background: transparent; color: $COLOR_TEXT_3; font-size: 12px; font-weight: 500; }
+QLabel[role="sideValue"]  { background: transparent; color: $COLOR_TEXT_1; font-size: 17px; font-weight: 800; }
+QLabel[role="kpiTitle"]   { background: transparent; color: $COLOR_TEXT_1; font-size: 14px; font-weight: 700; }
+QLabel[role="kpiPeriod"]  { background: transparent; color: $COLOR_TEXT_3; font-size: 12px; font-weight: 500; }
+QLabel[role="kpiValue"]   { background: transparent; color: $COLOR_TEXT_1; font-size: 24px; font-weight: 800; }
+QLabel[role="kpiSub"]     { background: transparent; color: $COLOR_TEXT_3; font-size: 12px; font-weight: 500; }
+QLabel[role="colHead"]    { background: transparent; color: $COLOR_TEXT_3; font-size: 11px; font-weight: 700; letter-spacing: 1px; }
+
+// -- recent-activity rows (code-built; coloured by role so they auto-flip) -- //
+QLabel[role="rowStrong"] { background: transparent; color: $COLOR_TEXT_1; font-size: 14px; font-weight: 700; }
+QLabel[role="rowMethod"] { background: transparent; color: $COLOR_TEXT_1; font-size: 13px; font-weight: 600; }
+QLabel[role="rowMuted"]  { background: transparent; color: $COLOR_TEXT_3; font-size: 12px; font-weight: 500; }
+// status pills — base tokens only (this SCSS engine has no _R/_G/_B triples),
+// so they compile and still flip with the theme.
+QLabel[role="pillSuccess"] {
+    background: $COLOR_ACCENT_1; color: $COLOR_BACKGROUND_1;
+    border-radius: 11px; padding: 3px 12px; font-size: 12px; font-weight: 700;
+}
+QLabel[role="pillPending"] {
+    background: $COLOR_BACKGROUND_3; color: $COLOR_TEXT_2;
+    border-radius: 11px; padding: 3px 12px; font-size: 12px; font-weight: 600;
+}
+
+// -- segmented (Weekly / Daily) -------------------------------------------- //
+QFrame[role="segment"] { background-color: $COLOR_BACKGROUND_2; border: 0; border-radius: 12px; }
+QPushButton[role="segBtn"] {
+    background: transparent; border: 0; border-radius: 9px;
+    color: $COLOR_TEXT_3; font-size: 13px; font-weight: 600; padding: 0 6px;
+}
+QPushButton[role="segBtn"]:checked { background-color: $COLOR_BACKGROUND_1; color: $COLOR_TEXT_1; }
+
+// -- outline buttons (Manage / Filter / Sort / See All / ⋯) ---------------- //
+QPushButton[role="outline"] {
+    background-color: $COLOR_BACKGROUND_1;
+    color: $COLOR_TEXT_1;
+    border: 1px solid $COLOR_BACKGROUND_3;
+    border-radius: 10px;
+    font-size: 13px; font-weight: 600;
+    padding: 0 14px;
+}
+QPushButton[role="outline"]:hover { border-color: $COLOR_ACCENT_1; color: $COLOR_ACCENT_1; }
+
+// -- sidebar --------------------------------------------------------------- //
+QCustomSidebarButton, #sidebarToggle {
+    background-color: transparent;
+    border: 0; border-radius: 13px;
+    text-align: left; padding-left: 14px;
+    color: $COLOR_TEXT_2; font-size: 14px; font-weight: 600;
+}
+QCustomSidebarButton:hover, #sidebarToggle:hover { background-color: $COLOR_BACKGROUND_2; }
+QCustomSidebarButton:checked { background-color: $COLOR_BACKGROUND_2; color: $COLOR_ACCENT_1; }
+#navDivider { background-color: $COLOR_BACKGROUND_3; border: 0; }
+QLabel[role="avatarName"] { background: transparent; color: $COLOR_TEXT_2; font-size: 13px; font-weight: 600; }
+
+// -- scrollbar ------------------------------------------------------------- //
+QScrollBar:vertical { background: transparent; width: 8px; margin: 0; }
+QScrollBar::handle:vertical { background: $COLOR_BACKGROUND_4; border-radius: 4px; min-height: 40px; }
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
+QScrollBar::add-page, QScrollBar::sub-page { background: transparent; }
