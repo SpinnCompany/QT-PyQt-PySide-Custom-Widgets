@@ -168,10 +168,26 @@ Reaction chips are now interactive:
   framework nit: QCustomThemeList doesn't re-sync its display when the theme is
   set programmatically via setTheme — cosmetic, left as-is.)
 
+## ✅ Inline chat media + URL previews DONE (2026-07-24, committed dec399d8)
+Media + link previews render INLINE in the thread by embedding the EXISTING
+widgets in a chat bubble (`setBodyWidget`) — **no new widget classes needed**
+(this is the answer to "do we need custom widgets?" — no, reuse):
+- `image`/`album` → `QCustomMediaGrid` (tap → `QCustomImageViewer` lightbox)
+- `video` → `QCustomVideoPlayer` (now used in a real form)
+- `file` → `QCustomFileCard`; `link` → `QCustomLinkPreview`
+Mechanics: `QCustomChatThread` gained the inline kinds + signals
+(`inlineMediaCreated`, `mediaOpenRequested`, `linkClicked`); the manager loads
+real images/posters async (cached) and opens the lightbox. `QCustomChatBubble.
+setBodyPadding(0,0)` + transparent bubble so the widget fills edge-to-edge;
+`QCustomMediaGrid.setImageAt` now updates stored pixmaps so `pixmaps()` feeds the
+lightbox. Demo messages (album/link/file/video) in `gui/data.py` THREAD. Verified
+live (dark) + headless. Two commits: 081d9ce5 (app + widgets), dec399d8 (inline).
+
 ## ▶️ Remaining polish (optional)
-- `QCustomVideoPlayer` still not placed in a form (video tile / attachment).
 - FileCard/LinkPreview titles clip — add eliding. `segmentButton` QSS for nicer
-  tab pills.
+  tab pills. Inline album lightbox click-target overlaps the profile grid's tile
+  objectNames (both `mediaTile<i>`) — fine at runtime, only ambiguous for
+  app_click testing.
 
 ## Run it
 Via the MCP: `project_convert_ui` → `designer_launch` (once) → `designer_run_app` → `app_screenshot`. Theme switch via the `QCustomThemeList` in the profile panel.
