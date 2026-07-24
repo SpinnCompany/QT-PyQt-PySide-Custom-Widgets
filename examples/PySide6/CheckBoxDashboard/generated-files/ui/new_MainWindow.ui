@@ -1,0 +1,102 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>1280</width><height>760</height></rect></property>
+  <property name="windowTitle"><string>Check Box — Dashboard</string></property>
+  <widget class="QWidget" name="shell">
+   <layout class="QVBoxLayout" name="shellLayout">
+    <property name="leftMargin"><number>22</number></property>
+    <property name="topMargin"><number>18</number></property>
+    <property name="rightMargin"><number>22</number></property>
+    <property name="bottomMargin"><number>18</number></property>
+    <property name="spacing"><number>16</number></property>
+    <item>
+     <widget class="QCustomComponentContainer" name="topNavContainer" native="true">
+      <property name="minimumSize"><size><width>0</width><height>54</height></size></property>
+      <property name="maximumSize"><size><width>16777215</width><height>60</height></size></property>
+      <property name="filePath" stdset="0"><string>ui/TopNav.ui</string></property>
+      <property name="previewComponent" stdset="0"><bool>false</bool></property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="bodyRow">
+      <property name="spacing"><number>16</number></property>
+      <item>
+       <widget class="QCustomComponentContainer" name="railContainer" native="true">
+        <property name="minimumSize"><size><width>64</width><height>0</height></size></property>
+        <property name="maximumSize"><size><width>64</width><height>16777215</height></size></property>
+        <property name="filePath" stdset="0"><string>ui/LeftRail.ui</string></property>
+        <property name="previewComponent" stdset="0"><bool>false</bool></property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="contentCol">
+        <property name="spacing"><number>16</number></property>
+        <item>
+         <widget class="QCustomComponentContainer" name="headerContainer" native="true">
+          <property name="minimumSize"><size><width>0</width><height>50</height></size></property>
+          <property name="maximumSize"><size><width>16777215</width><height>58</height></size></property>
+          <property name="filePath" stdset="0"><string>ui/Header.ui</string></property>
+          <property name="previewComponent" stdset="0"><bool>false</bool></property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="boardGrid" columnstretch="5,5,8" rowstretch="5,6">
+          <property name="horizontalSpacing"><number>16</number></property>
+          <property name="verticalSpacing"><number>16</number></property>
+          <item row="0" column="0">
+           <widget class="QCustomComponentContainer" name="customerContainer" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding"><horstretch>0</horstretch><verstretch>0</verstretch></sizepolicy>
+            </property>
+            <property name="filePath" stdset="0"><string>ui/CustomerCard.ui</string></property>
+            <property name="previewComponent" stdset="0"><bool>false</bool></property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QCustomComponentContainer" name="productContainer" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding"><horstretch>0</horstretch><verstretch>0</verstretch></sizepolicy>
+            </property>
+            <property name="filePath" stdset="0"><string>ui/ProductCard.ui</string></property>
+            <property name="previewComponent" stdset="0"><bool>false</bool></property>
+           </widget>
+          </item>
+          <item row="0" column="2" rowspan="2">
+           <widget class="QCustomComponentContainer" name="timelineContainer" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding"><horstretch>0</horstretch><verstretch>0</verstretch></sizepolicy>
+            </property>
+            <property name="filePath" stdset="0"><string>ui/TimelineCard.ui</string></property>
+            <property name="previewComponent" stdset="0"><bool>false</bool></property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="2">
+           <widget class="QCustomComponentContainer" name="beeswarmContainer" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding"><horstretch>0</horstretch><verstretch>0</verstretch></sizepolicy>
+            </property>
+            <property name="filePath" stdset="0"><string>ui/BeeswarmCard.ui</string></property>
+            <property name="previewComponent" stdset="0"><bool>false</bool></property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomComponentContainer</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomComponentContainer</header>
+   <container>1</container>
+  </customwidget>
+ <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>

@@ -1,0 +1,130 @@
+// Check Box dashboard — chrome styles.
+// Tokens ONLY (no hard-coded hex): $COLOR_BACKGROUND_1..6, $COLOR_TEXT_1..4,
+// $COLOR_ACCENT_1..4. Shell = BG_3 (darker step); cards + pills sit on BG_1
+// (the lightest step) so they lift off it — inverts cleanly for the light
+// theme. Rounded cards + fully-rounded pills (matches the reference); imagery
+// and data-viz keep their own natural round shapes.
+
+// -- window shell ---------------------------------------------------------- //
+QMainWindow, #shell { background-color: $COLOR_BACKGROUND_3; }
+QCustomComponentContainer { background: transparent; }
+
+// -- cards ----------------------------------------------------------------- //
+QFrame[role="card"] {
+    background-color: $COLOR_BACKGROUND_1;
+    border: 0;
+    border-radius: 20px;
+}
+
+// -- top-nav logo ---------------------------------------------------------- //
+#logo {
+    background-color: $COLOR_TEXT_1;
+    color: $COLOR_BACKGROUND_3;
+    border-radius: 23px;
+    font-size: 20px;
+    font-weight: 800;
+}
+
+// -- pill buttons (nav / filter) ------------------------------------------- //
+QPushButton[role="navPill"], QPushButton[role="filterPill"] {
+    background-color: $COLOR_BACKGROUND_1;
+    color: $COLOR_TEXT_1;
+    border: 0;
+    border-radius: 22px;
+    padding: 0 20px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+}
+QPushButton[role="navPill"]:hover, QPushButton[role="filterPill"]:hover {
+    background-color: $COLOR_BACKGROUND_2;
+}
+QPushButton[role="navPill"]:checked {
+    background-color: $COLOR_ACCENT_1;
+    color: $COLOR_BACKGROUND_3;
+    font-weight: 700;
+}
+
+// -- round icon buttons (search / settings) -------------------------------- //
+QPushButton[role="iconPill"] {
+    background-color: $COLOR_BACKGROUND_1;
+    border: 0;
+    border-radius: 22px;
+}
+QPushButton[role="iconPill"]:hover { background-color: $COLOR_BACKGROUND_2; }
+
+// -- left rail ------------------------------------------------------------- //
+QPushButton[role="railBtn"] {
+    background-color: $COLOR_BACKGROUND_1;
+    border: 0;
+    border-radius: 23px;
+}
+QPushButton[role="railBtn"]:hover { background-color: $COLOR_BACKGROUND_2; }
+QPushButton[role="railBtn"]:checked { background-color: $COLOR_BACKGROUND_2; }
+
+QPushButton[role="fab"] {
+    background-color: $COLOR_ACCENT_1;
+    border: 0;
+    border-radius: 25px;
+}
+QPushButton[role="fab"]:hover { background-color: $COLOR_ACCENT_2; }
+
+// -- card '…' menu buttons ------------------------------------------------- //
+QPushButton[role="menuBtn"] {
+    background: transparent;
+    border: 0;
+    border-radius: 8px;
+}
+QPushButton[role="menuBtn"]:hover { background-color: $COLOR_BACKGROUND_2; }
+
+// -- typography roles ------------------------------------------------------ //
+#pageTitle {
+    background: transparent;
+    color: $COLOR_TEXT_1;
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+QLabel[role="cardTitle"] {
+    background: transparent;
+    color: $COLOR_TEXT_3;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+QLabel[role="statValue"] {
+    background: transparent;
+    color: $COLOR_TEXT_1;
+    font-size: 30px;
+    font-weight: 800;
+}
+QLabel[role="statCap"] {
+    background: transparent;
+    color: $COLOR_TEXT_3;
+    font-size: 12px;
+    font-weight: 500;
+}
+QLabel[role="total"] {
+    background: transparent;
+    color: $COLOR_TEXT_3;
+    font-size: 13px;
+    font-weight: 600;
+}
+QLabel[role="legendText"] {
+    background: transparent;
+    color: $COLOR_TEXT_2;
+    font-size: 12px;
+    font-weight: 600;
+}
+#profileName {
+    background: transparent;
+    color: $COLOR_TEXT_1;
+    font-size: 13px;
+    font-weight: 700;
+}
+#profileHandle {
+    background: transparent;
+    color: $COLOR_TEXT_3;
+    font-size: 12px;
+    font-weight: 500;
+}

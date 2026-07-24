@@ -195,3 +195,137 @@ Designer / `render_widget`; the app replaces it via `setData`/`setCards`. See
 `Custom_Widgets/mcp/guide.py` (HARD-WON GOTCHAS) and
 [design-rules.md](design-rules.md) for the layout-geometry, native-bg-box,
 scss-rgba-triples, popup-capture and painted-affordance lessons.
+
+## 2026-07-24 addition — QCustomRadialGauge (gauge family)
+`Custom_Widgets.QCustomRadialGauge` — the first item off the
+[missing-widgets backlog](missing-widgets-from-references.md). ONE painted
+gauge, two looks via **`gaugeStyle`**:
+
+- **`gaugeStyle="needle"`** (default) — a thick coloured value arc over a muted
+  track + a drawn **needle**, big centre value, `0`/`100` scale labels at the arc
+  ends, and an optional coloured **status badge** below. Colour the arc by
+  **zones** (`setZones([(0,33,green),(33,66,amber),(66,100,red)])` or the
+  `zonesCsv` prop `"lo:hi:#hex, …"`) — the active band recolours the whole value
+  arc **and** the badge — or by a two-stop gradient. Covers the speedometer /
+  threshold / **Threat Level** semicircle references.
+- **`gaugeStyle="tick"`** — a sweep of tick marks: passed ticks use the
+  `gradientStart`→`gradientEnd` gradient, the rest a muted track. Covers the
+  radial-tick **"17 Sec"** timer.
+
+**Flexibility is the point** — one widget, not five gauge classes. Angles use the
+Qt convention (deg, 0 at 3 o'clock, +CCW), so `startAngle`/`spanAngle` set **any**
+start point and sweep: a downward semicircle is `180 / -180`, a 270° timer with a
+bottom gap is `225 / -270`, a **full-circle dial** is `90 / -360`. Other knobs:
+- **scale**, three independent layers — `showScaleLabels` (min/max end labels,
+  needle style), `showGuide` (dashed inner scale ring, **both** styles), and
+  `scaleLabelEvery=N` (numeric labels every N units around the arc; supersedes the
+  end labels).
+- **`roundedCaps`** — rounded vs flat arc/tick ends (arc "border radius").
+- **`animated` + `animationDuration`** — value changes ease to the new position
+  (arc, needle and centre number animate); `valueChanged(float)` still fires
+  immediately with the logical target.
+- **`emphasizeActiveTick`** + **`activeTickExtend`** (`inward`|`outward`|`both`)
+  — the leading (last passed) tick drawn longer + brighter, extended in the
+  chosen direction (tick style). Full-circle tick timers work too
+  (`startAngle=90, spanAngle=-360`) — ticks space over `[0,1)` so the ends don't
+  double up.
+- **`scaleLabelRadius`** — override the numeric-label ring radius (fraction of
+  the gauge radius; `0` = auto). On **needle** gauges the scale numbers render
+  **outside** the arc band (speedometer style) and the dial auto-shrinks to leave
+  room, so the needle — which sweeps the interior — can never cross a number. On
+  **tick** gauges (no needle) they sit inside.
+- **countdown** — `start(seconds=…)` / `stop()` (QTimer-backed) + `finished`.
+- **`glow` + `glowStrength` + `glowRadius`** — a soft **painted** neon halo behind
+  the value arc / lit ticks (opt-in, default off). It's a re-stroke bloom (the
+  shape drawn a few times at growing width + falling alpha, ≈ a Gaussian-blur
+  halo) coloured by the active zone/gradient — so it flips with the theme and
+  needs **no** `QGraphicsDropShadowEffect` / `# allow-shadow:` waiver. This is the
+  worked example behind the "shadows / glow / blur where necessary" guideline.
+
+The needle is a dark slate by default with a length gradient (bright base → dark
+tip + bright pivot) so it reads on dark cards. Full prop list: `value`,
+`minimum`, `maximum`, `gaugeStyle`, `startAngle`, `spanAngle`, `tickCount`,
+`arcWidth`, `roundedCaps`, `zonesCsv`, `gradientStart`, `gradientEnd`,
+`trackColor`, `needleColor`, `centerText`, `centerSuffix`, `statusText`,
+`statusColor`, `centerTextColor`, `scaleColor`, `showNeedle`, `showScaleLabels`,
+`showGuide`, `scaleLabelEvery`, `scaleLabelRadius`, `emphasizeActiveTick`,
+`activeTickExtend`, `animated`, `animationDuration`, `glow`, `glowStrength`,
+`glowRadius`. All colours are qproperties so they flip on a theme switch.
+
+> **Guideline followed here — exhaust the variation space.** This widget is the
+> worked example behind the "widgets are fully customizable" rule in the MCP
+> `AGENT_GUIDE` / [[widgets-fully-customizable-rule]]: enumerate every plausible
+> variation (shape, scale layers, rounded caps, animation, emphasis, centred
+> value/unit, every colour/width/angle) and ship each as an opt-in knob that
+> defaults to the current look — don't build the one look a single reference shows.
+Naming gotchas respected: the look prop is **`gaugeStyle`** (not `style` — that
+shadows `QWidget.style()`), and `value` is a Property only (no same-named
+method; use `setValue()`). Seeds a needle/zones demo (value 55, "Medium") in
+`__init__` so it previews in Designer / `render_widget`. Mirror:
+`QCustomDonut` (painted arc) + `QCustomProgressRing`.
+
+## 2026-07-24 addition — QCustomHeatmap (intensity grid)
+`Custom_Widgets.QCustomHeatmap` — backlog item #1
+([missing-widgets](missing-widgets-from-references.md)). A painted
+colour-intensity grid, two **`mode`**s:
+
+- **`mode="grid"`** (default) — a rows×cols matrix (e.g. hours×weekdays — the
+  Loud "Activity by time" heatmap): each cell's colour = its value on a
+  `lowColor`→`highColor` ramp, with row/col labels and a **Less→More** legend.
+- **`mode="calendar"`** — a GitHub-style contributions calendar: a flat list of
+  daily values wrapped into 7 rows (weekdays) × N columns (weeks).
+
+Data via `setValues(list[list])` / a flat list (calendar) / the `valuesCsv`
+Designer prop (rows `;`-separated, cells `,`-separated; empty cell = blank →
+`emptyColor`). Cells **auto-normalise** across the data (min→max) unless
+`setRange(lo,hi)` / `autoNormalize=False`. `cellClicked(row,col,value)` signal +
+a per-cell hover tooltip. **Flex cell sizing** — cells fit the box left after the
+labels + legend, so nothing clips as the widget grows/shrinks (the flex-sizing
+rule in the guide). Key props: `mode`, `valuesCsv`, `lowColor`, `highColor`,
+`emptyColor`, `rowLabelsCsv`, `colLabelsCsv`, `cellSize` (0 = auto), `cellGap`,
+`cornerRadius`, `showLabels`, `showLegend`, `labelColor`, `autoNormalize`,
+`minValue`, `maxValue`. Seeds a 6×7 activity grid in `__init__` for Designer /
+`render_widget` preview. Mirror: `QCustomMiniBarChart` + `QCustomDonut`.
+
+## Check Box dashboard viz (2026-07-24)
+
+Three painted widgets + a Sparkline extension, built for the "Check Box"
+(Nixtio) dashboard reproduction — `examples/PySide6/CheckBoxDashboard`. All
+follow the painted-widget convention (`WIDGET_*` + `__catalog__` + typed
+`@Property`s + `valuesCsv`-style CSV inputs), seed guarded demo data, and take
+their live colours from the app's token-driven `ChartPalette` so they flip on
+theme switch.
+
+## QCustomDotMatrix
+`Custom_Widgets/QCustomDotMatrix.py` — a density / category **dot grid**. Each
+cell carries a STATE: 0 = empty (`emptyColor`, faint), 1..N pick from
+`colorsCsv`. `setData([[0,1,2,...], ...])` (row-major 2-D int list) or the
+`dataCsv` prop (rows by `;`, cells by `,`). Props: `rows`, `cols`,
+`dotDiameter` (0 = auto-fit to the box), `gapRatio`, `emptyOpacity`, `square`.
+
+## QCustomBeeswarm
+`Custom_Widgets/QCustomBeeswarm.py` — a **column beeswarm / numbered
+bubble-stack**. Each column is a thin guide line carrying a vertical stack of
+rounded "pill" bubbles; every bubble shows its VALUE and is coloured by CATEGORY
+(`colorsCsv` fills + `textColorsCsv` number colours); pill height scales the
+value between `minSize`..`maxSize`. `setData(columns)` where `columns` is a list
+of columns, each a list of `(value, category)`; or `dataCsv` (columns by `;`,
+items `value:category` by `,`). Props: `lineColor`, `bubbleWidth`, `gap`,
+`showValues`, `jitter`. Draw the legend + total as sibling labels (reuse).
+
+## QCustomGanttChart
+`Custom_Widgets/QCustomGanttChart.py` — a **horizontal timeline / gantt** of
+rounded pill bars. Each row is one bar on a shared numeric x-axis by `start` +
+`length`, with a left date LABEL, a trailing VALUE, and an optional leading
+circular ICON (a QPixmap clipped to a circle) or coloured dot; a light x-grid
+with tick labels runs underneath. `setData([{label,start,length,category,value,
+icon}])` (icon = path or QPixmap) or `dataCsv` (`label,start,length,category,
+value` rows by `;`). Props: `xMax`, `gridStep`, `barHeight`, `colorsCsv`/
+`textColorsCsv`, `labelColor`, `axisTextColor`, `gridColor`, `showGrid`,
+`showMarkers`.
+
+## QCustomSparkline — multi-series
+`setSeries([[...], ...], colors=[...])` (or `setSeriesColors`) overlays N lines
+on ONE shared y-scale with fill suppressed — for a clean multi-line read. Designer
+props `seriesCsv` (series by `;`) / `seriesColorsCsv`. The single-`values` mode is
+untouched.

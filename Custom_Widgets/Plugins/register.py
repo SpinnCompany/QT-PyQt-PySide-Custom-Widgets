@@ -771,6 +771,45 @@ except Exception as e:
     logException(e, message="Error registering QCustomDivergingBarChart")
 
 
+from Custom_Widgets.QCustomDotMatrix import QCustomDotMatrix
+
+# Registering QCustomDotMatrix with error handling
+try:
+    logInfo("Registering QCustomDotMatrix")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomDotMatrix, module=QCustomDotMatrix.WIDGET_MODULE,
+        tool_tip=QCustomDotMatrix.WIDGET_TOOLTIP, xml=QCustomDotMatrix.WIDGET_DOM_XML,
+        icon=QCustomDotMatrix.WIDGET_ICON, group="Charts")
+except Exception as e:
+    logException(e, message="Error registering QCustomDotMatrix")
+
+
+from Custom_Widgets.QCustomBeeswarm import QCustomBeeswarm
+
+# Registering QCustomBeeswarm with error handling
+try:
+    logInfo("Registering QCustomBeeswarm")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomBeeswarm, module=QCustomBeeswarm.WIDGET_MODULE,
+        tool_tip=QCustomBeeswarm.WIDGET_TOOLTIP, xml=QCustomBeeswarm.WIDGET_DOM_XML,
+        icon=QCustomBeeswarm.WIDGET_ICON, group="Charts")
+except Exception as e:
+    logException(e, message="Error registering QCustomBeeswarm")
+
+
+from Custom_Widgets.QCustomGanttChart import QCustomGanttChart
+
+# Registering QCustomGanttChart with error handling
+try:
+    logInfo("Registering QCustomGanttChart")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomGanttChart, module=QCustomGanttChart.WIDGET_MODULE,
+        tool_tip=QCustomGanttChart.WIDGET_TOOLTIP, xml=QCustomGanttChart.WIDGET_DOM_XML,
+        icon=QCustomGanttChart.WIDGET_ICON, group="Charts")
+except Exception as e:
+    logException(e, message="Error registering QCustomGanttChart")
+
+
 from Custom_Widgets.QCustomCardStack import QCustomCardStack
 
 # Registering QCustomCardStack with error handling
@@ -808,6 +847,32 @@ try:
         icon=QCustomModal.WIDGET_ICON, group="Menus")
 except Exception as e:
     logException(e, message="Error registering QCustomModal")
+
+
+from Custom_Widgets.QCustomHeatmap import QCustomHeatmap
+
+# Registering QCustomHeatmap with error handling
+try:
+    logInfo("Registering QCustomHeatmap")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomHeatmap, module=QCustomHeatmap.WIDGET_MODULE,
+        tool_tip=QCustomHeatmap.WIDGET_TOOLTIP, xml=QCustomHeatmap.WIDGET_DOM_XML,
+        icon=QCustomHeatmap.WIDGET_ICON, group="Charts")
+except Exception as e:
+    logException(e, message="Error registering QCustomHeatmap")
+
+
+from Custom_Widgets.QCustomRadialGauge import QCustomRadialGauge
+
+# Registering QCustomRadialGauge with error handling
+try:
+    logInfo("Registering QCustomRadialGauge")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomRadialGauge, module=QCustomRadialGauge.WIDGET_MODULE,
+        tool_tip=QCustomRadialGauge.WIDGET_TOOLTIP, xml=QCustomRadialGauge.WIDGET_DOM_XML,
+        icon=QCustomRadialGauge.WIDGET_ICON, group="Progressbars")
+except Exception as e:
+    logException(e, message="Error registering QCustomRadialGauge")
 
 
 from Custom_Widgets.QCustomListRow import QCustomListRow
