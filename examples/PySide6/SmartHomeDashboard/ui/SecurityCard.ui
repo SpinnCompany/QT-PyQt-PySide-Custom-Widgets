@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SecurityCard</class>
+ <widget class="QWidget" name="SecurityCard">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>280</width><height>300</height></rect></property>
+  <layout class="QVBoxLayout" name="secRoot">
+   <property name="leftMargin"><number>0</number></property><property name="topMargin"><number>0</number></property>
+   <property name="rightMargin"><number>0</number></property><property name="bottomMargin"><number>0</number></property>
+   <property name="spacing"><number>0</number></property>
+   <item>
+    <widget class="QFrame" name="securityCard">
+     <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+     <property name="role" stdset="0"><string>card</string></property>
+     <layout class="QVBoxLayout" name="secLayout">
+      <property name="leftMargin"><number>28</number></property><property name="topMargin"><number>26</number></property>
+      <property name="rightMargin"><number>28</number></property><property name="bottomMargin"><number>26</number></property>
+      <property name="spacing"><number>12</number></property>
+      <item>
+       <layout class="QHBoxLayout" name="secHeader">
+        <item><widget class="QLabel" name="securityTitle"><property name="text"><string>Security</string></property><property name="role" stdset="0"><string>cardTitle</string></property></widget></item>
+        <item><spacer name="secHeaderSpacer"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+        <item><widget class="QPushButton" name="securityMenu"><property name="minimumSize"><size><width>30</width><height>26</height></size></property><property name="maximumSize"><size><width>30</width><height>26</height></size></property><property name="text"><string/></property><property name="role" stdset="0"><string>menuBtn</string></property></widget></item>
+       </layout>
+      </item>
+      <item alignment="Qt::AlignHCenter"><widget class="QLabel" name="shieldIcon"><property name="minimumSize"><size><width>96</width><height>96</height></size></property><property name="maximumSize"><size><width>96</width><height>96</height></size></property><property name="text"><string/></property></widget></item>
+      <item><spacer name="secMid"><property name="orientation"><enum>Qt::Vertical</enum></property><property name="sizeHint" stdset="0"><size><width>10</width><height>12</height></size></property></spacer></item>
+      <item>
+       <layout class="QHBoxLayout" name="switchRow">
+        <property name="spacing"><number>10</number></property>
+        <item><spacer name="swLeft"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>20</width><height>10</height></size></property></spacer></item>
+        <item><widget class="QLabel" name="lockLabel"><property name="text"><string>Locked</string></property><property name="role" stdset="0"><string>lockLabel</string></property></widget></item>
+        <item><widget class="QCustomSwitch" name="lockSwitch" native="true"/></item>
+        <item><spacer name="swRight"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>20</width><height>10</height></size></property></spacer></item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="doorRow">
+        <item><widget class="QPushButton" name="prevDoor"><property name="minimumSize"><size><width>34</width><height>34</height></size></property><property name="maximumSize"><size><width>34</width><height>34</height></size></property><property name="text"><string/></property><property name="role" stdset="0"><string>stepBtn</string></property></widget></item>
+        <item><widget class="QLabel" name="doorLabel"><property name="alignment"><set>Qt::AlignCenter</set></property><property name="text"><string>Front Door</string></property><property name="role" stdset="0"><string>stepLabel</string></property></widget></item>
+        <item><widget class="QPushButton" name="nextDoor"><property name="minimumSize"><size><width>34</width><height>34</height></size></property><property name="maximumSize"><size><width>34</width><height>34</height></size></property><property name="text"><string/></property><property name="role" stdset="0"><string>stepBtn</string></property></widget></item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget><class>QCustomSwitch</class><extends>QWidget</extends><header>Custom_Widgets.QCustomSwitch</header><container>0</container></customwidget>
+ </customwidgets>
+ <connections/>
+</ui>
