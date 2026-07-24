@@ -810,6 +810,19 @@ except Exception as e:
     logException(e, message="Error registering QCustomGanttChart")
 
 
+from Custom_Widgets.QCustomTileButton import QCustomTileButton
+
+# Registering QCustomTileButton with error handling
+try:
+    logInfo("Registering QCustomTileButton")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomTileButton, module=QCustomTileButton.WIDGET_MODULE,
+        tool_tip=QCustomTileButton.WIDGET_TOOLTIP, xml=QCustomTileButton.WIDGET_DOM_XML,
+        icon=QCustomTileButton.WIDGET_ICON, group="Buttons")
+except Exception as e:
+    logException(e, message="Error registering QCustomTileButton")
+
+
 from Custom_Widgets.QCustomCardStack import QCustomCardStack
 
 # Registering QCustomCardStack with error handling
@@ -847,6 +860,84 @@ try:
         icon=QCustomModal.WIDGET_ICON, group="Menus")
 except Exception as e:
     logException(e, message="Error registering QCustomModal")
+
+
+from Custom_Widgets.QCustomBubbleChart import QCustomBubbleChart
+
+# Registering QCustomBubbleChart with error handling
+try:
+    logInfo("Registering QCustomBubbleChart")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomBubbleChart, module=QCustomBubbleChart.WIDGET_MODULE,
+        tool_tip=QCustomBubbleChart.WIDGET_TOOLTIP, xml=QCustomBubbleChart.WIDGET_DOM_XML,
+        icon=QCustomBubbleChart.WIDGET_ICON, group="Charts")
+except Exception as e:
+    logException(e, message="Error registering QCustomBubbleChart")
+
+
+from Custom_Widgets.QCustomAgendaList import QCustomAgendaList
+
+# Registering QCustomAgendaList with error handling
+try:
+    logInfo("Registering QCustomAgendaList")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomAgendaList, module=QCustomAgendaList.WIDGET_MODULE,
+        tool_tip=QCustomAgendaList.WIDGET_TOOLTIP, xml=QCustomAgendaList.WIDGET_DOM_XML,
+        icon=QCustomAgendaList.WIDGET_ICON, group="Display Widgets")
+except Exception as e:
+    logException(e, message="Error registering QCustomAgendaList")
+
+
+from Custom_Widgets.QCustomWaveform import QCustomWaveform
+
+# Registering QCustomWaveform with error handling
+try:
+    logInfo("Registering QCustomWaveform")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomWaveform, module=QCustomWaveform.WIDGET_MODULE,
+        tool_tip=QCustomWaveform.WIDGET_TOOLTIP, xml=QCustomWaveform.WIDGET_DOM_XML,
+        icon=QCustomWaveform.WIDGET_ICON, group="Charts")
+except Exception as e:
+    logException(e, message="Error registering QCustomWaveform")
+
+
+from Custom_Widgets.QCustomDateRangePicker import QCustomDateRangePicker
+
+# Registering QCustomDateRangePicker with error handling
+try:
+    logInfo("Registering QCustomDateRangePicker")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomDateRangePicker, module=QCustomDateRangePicker.WIDGET_MODULE,
+        tool_tip=QCustomDateRangePicker.WIDGET_TOOLTIP, xml=QCustomDateRangePicker.WIDGET_DOM_XML,
+        icon=QCustomDateRangePicker.WIDGET_ICON, group="Input Widgets")
+except Exception as e:
+    logException(e, message="Error registering QCustomDateRangePicker")
+
+
+from Custom_Widgets.QCustomRulerPicker import QCustomRulerPicker
+
+# Registering QCustomRulerPicker with error handling
+try:
+    logInfo("Registering QCustomRulerPicker")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomRulerPicker, module=QCustomRulerPicker.WIDGET_MODULE,
+        tool_tip=QCustomRulerPicker.WIDGET_TOOLTIP, xml=QCustomRulerPicker.WIDGET_DOM_XML,
+        icon=QCustomRulerPicker.WIDGET_ICON, group="Input Widgets")
+except Exception as e:
+    logException(e, message="Error registering QCustomRulerPicker")
+
+
+from Custom_Widgets.QCustomLiquidGauge import QCustomLiquidGauge
+
+# Registering QCustomLiquidGauge with error handling
+try:
+    logInfo("Registering QCustomLiquidGauge")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomLiquidGauge, module=QCustomLiquidGauge.WIDGET_MODULE,
+        tool_tip=QCustomLiquidGauge.WIDGET_TOOLTIP, xml=QCustomLiquidGauge.WIDGET_DOM_XML,
+        icon=QCustomLiquidGauge.WIDGET_ICON, group="Progressbars")
+except Exception as e:
+    logException(e, message="Error registering QCustomLiquidGauge")
 
 
 from Custom_Widgets.QCustomHeatmap import QCustomHeatmap

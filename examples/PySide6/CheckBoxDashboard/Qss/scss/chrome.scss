@@ -7,7 +7,13 @@
 
 // -- window shell ---------------------------------------------------------- //
 QMainWindow, #shell { background-color: $COLOR_BACKGROUND_3; }
-QCustomComponentContainer { background: transparent; }
+// A rounded card sits inside a loader stack; every layer BEHIND it must be
+// transparent or it paints an opaque same-colour square that fills the rounded
+// corners and hides the radius. So the container, the loader and each
+// component-root QWidget are transparent → the darker shell shows through the
+// corners. (See docs/design/app-architecture-guidelines.md.)
+QCustomComponentContainer, QCustomComponentLoader { background: transparent; }
+#TopNav, #LeftRail, #Header, #CustomerCard, #ProductCard, #BeeswarmCard, #TimelineCard { background: transparent; }
 
 // -- cards ----------------------------------------------------------------- //
 QFrame[role="card"] {

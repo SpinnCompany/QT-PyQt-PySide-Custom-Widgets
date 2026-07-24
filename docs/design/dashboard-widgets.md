@@ -287,6 +287,122 @@ rule in the guide). Key props: `mode`, `valuesCsv`, `lowColor`, `highColor`,
 `minValue`, `maxValue`. Seeds a 6×7 activity grid in `__init__` for Designer /
 `render_widget` preview. Mirror: `QCustomMiniBarChart` + `QCustomDonut`.
 
+## 2026-07-24 addition — QCustomLiquidGauge (wavy fill level)
+`Custom_Widgets.QCustomLiquidGauge` — backlog item #2b. A circular **or**
+rounded-rect container with an **animated two-wave sine liquid fill** whose
+height tracks `value` — the fuel / battery / tank / storage / humidity disc. A
+`QTimer` drifts the waves (~30 fps, only while visible) and the fill level
+**eases** to a new value when `animated`. A back wave (offset + lifted) behind a
+gradient front wave gives the surface depth. Centre shows the value + suffix
+(e.g. `3.61 gal`, `72%`) and an optional status badge below.
+
+`setValue`/`setRange`, `setColors(fill1, fill2, background)`, `setBadge(text,
+color)`, `shape` (`circle`|`roundedRect`) + `cornerRadius`. Props: `value`,
+`minimum`, `maximum`, `shape`, `cornerRadius`, `fillColor`, `fillColor2`,
+`backgroundColor`, `ringColor`, `ringWidth`, `waveAmplitude`, `waveLength`,
+`waveSpeed`, `animated`, `centerText`, `centerSuffix`, `centerTextColor`,
+`badgeText`, `badgeColor`. **Flex sizing** — the disc + centre text fit the box,
+reserving room for the badge (per the flex rule). `value` is a Property only (no
+same-named method; use `setValue()`); seeds `value=68` for preview. Mirror:
+`QCustomProgressRing` + `QCustomRadialGauge`.
+
+## 2026-07-24 addition — QCustomRulerPicker (tick-ruler selector)
+`Custom_Widgets.QCustomRulerPicker` — backlog item #3. A measurement-style ruler
+(the weight/height "55 … 65 … 90" picker): a strip of minor ticks with taller
+**major ticks + numeric labels** (the current one bold) and an indicator at the
+value. Two looks via **`centered`**: `False` (default) is a **fixed** ruler
+(min→max across the width, indicator slides to the value — the reference weight
+card); `True` is a **scrolling** picker (value pinned under a fixed centre
+indicator, the scale scrolls). `orientation` = `horizontal` | `vertical`.
+**Drag / scroll-wheel / click** to change; `snap` to `step`. Optional big
+value + `unit` readout (`showValue`). `valueChanged(float)`; `setValue`/`setRange`.
+
+Props: `orientation`, `minimum`, `maximum`, `value`, `step`, `majorEvery`,
+`centered`, `tickSpacing` (px/step in centered mode), `snap`, `unit`,
+`showValue`, `tickColor`, `majorTickColor`, `indicatorColor`, `labelColor`,
+`valueColor`. **Flex** — the tick length is capped and the [labels+ticks] block
+is centred in the short axis, so a tall/short card keeps short ticks (a bug the
+live preview caught: uncapped `depth` stretched ticks to full card height).
+`value` is a Property only (use `setValue()`). Mirror: `QCustomRangeSlider`.
+
+## 2026-07-24 addition — QCustomDateRangePicker (inline range calendar)
+`Custom_Widgets.QCustomDateRangePicker` — backlog item #5, the inline dual-month
+travel-dates range picker (the piece the compact popup `QCustomDateRangeEdit`
+lacks). N month grids side by side (`monthsVisible`, responsive → stacks when
+narrow), a painted **in-range band** between the two chosen days (rounded at the
+range ends **and** each week wrap via a selective-corner path), green **endpoint
+circles**, a **today** marker, and painted-chevron month **nav arrows**. Click a
+day to set the start (clears the end); a later day sets the end (earlier moves the
+start). `setStartDate`/`setEndDate`/`setRange(QDate…)`, `setSelectableRange(min,
+max)`, `showMonth(y,m)`; **`rangeChanged(QDate start, QDate end)`**. Uses stdlib
+`calendar` (Sunday-first) for the month matrices. Props: `monthsVisible`,
+`accentColor`, `rangeBandColor`, `todayColor`, `textColor`, `mutedColor`,
+`headerColor`, `selectedTextColor`. Bind `startDate()`/`endDate()` to your own
+fields + a Save button (see `examples/PySide6/DateRangeDemo`). Mirror:
+`QCustomDateRangeEdit` (sibling — this is the inline panel form).
+
+## 2026-07-24 addition — QCustomWaveform (equalizer / streaming ECG)
+`Custom_Widgets.QCustomWaveform` — backlog item #6, a standalone (NOT chat-bound
+like `QCustomVoiceMessage`) waveform visualiser, two **`mode`**s:
+
+- **`mode="bars"`** (default) — an equalizer / audio-level bar viz (the "Water"
+  card): one rounded bar per value, gradient (`barColor`→`barColor2`), optional
+  centre **`mirror`** (voice-message symmetry) and **`glow`** (neon spectrum).
+- **`mode="line"`** — a streaming line viz (the "110 bpm" ECG card): a polyline
+  over an optional faint **grid**, optional gradient **`fillArea`** under it,
+  optional `glow`.
+
+Feed a fixed series with `setValues([...])` / `valuesCsv`, or **stream** live with
+**`push(value)`** — a `capacity` ring buffer scrolls (newest at right). Turn on
+**`animated`** for a self-running demo (deterministic audio levels in bars mode, a
+PQRST **heartbeat** in line mode) so it previews live without a data source.
+`valuePushed(float)` fires on each push. Props: `mode`, `valuesCsv`, `capacity`,
+`barColor`, `barColor2`, `barWidth` (0=auto), `barGap`, `cornerRadius`, `mirror`,
+`lineColor`, `lineWidth`, `showGrid`, `gridColor`, `fillArea`, `glow`,
+`glowStrength`, `animated`. Auto-normalises (bars → 0..max; line → ±max abs so a
+signed ECG centres). **Flex** — bars/line fit the box. Mirror:
+`QCustomSparkline` + `QCustomMiniBarChart`.
+
+## 2026-07-24 addition — QCustomAgendaList (schedule timeline)
+`Custom_Widgets.QCustomAgendaList` — backlog item #7, the day-plan / schedule card
+(Running / Cycling / Gym / Swimming). Each row has a left **connector rail** with a
+painted per-item **status marker** — `done` = a painted check in a filled disc,
+`active` = a filled dot **plus a highlighted rounded row background**, `pending` =
+a hollow ring (all painted, **no glyph fonts**) — and a **time range + bold title
++ muted subtitle**. `setItems([{time, endTime, title, subtitle, status, color}])`
+or the `itemsJson` Designer prop; `itemClicked(index)` + hover highlight. **Flex
+row height** fits the text, and `sizeHint`/`heightForWidth` report the full height
+so it drops into a `QScrollArea` (widgetResizable). Props: `itemsJson`,
+`rowHeight` (0=auto), `railColor`, `doneColor`, `activeColor`, `pendingColor`,
+`titleColor`, `subtitleColor`, `timeColor`, `activeBgColor`, `showRail`. Richer
+than `QCustomTimeline`; mirror: `QCustomTimeline` + `QCustomListRow`.
+
+## 2026-07-24 addition — QCustomBubbleChart (packed-circle chart)
+`Custom_Widgets.QCustomBubbleChart` — backlog item #8, the sentiment / share
+bubble cloud. Circle **area ∝ value**, packed into a tight cluster by a small
+**deterministic force relaxation** (push overlaps apart + gentle gravity to the
+centre — no RNG, so tests are stable), then scaled to fill the widget. Coloured
+per **category** (`setCategoryColors({cat: colour})` / `categoriesJson`), with
+in-bubble **elided labels** above `minLabelRadius` and a slight shade variation
+for depth, optional **`groupByCategory`** (per-category lobes on an anchor circle —
+the sentiment layout). **Fully interactive** (the reference has zoom + search):
+- **hover** → a **custom painted tooltip card** (category dot + label + value —
+  *never* the native `QToolTip`) + a grow animation + glow on the hovered bubble.
+- **zoom/pan** → wheel zooms toward the cursor, a painted **± control**, drag to
+  pan, double-click resets; `zoomIn()`/`zoomOut()`/`resetView()`, `zoomChanged`.
+- **search** → `setSearchQuery(text)` dims the non-matching bubbles; the painted
+  search button emits `searchRequested()` (wire it to your own field).
+- **click** → `bubbleClicked(label)` (fires on release, so a drag-pan doesn't
+  trigger it).
+
+`setItems([{label, value, category}])` / `itemsJson`. Props: `itemsJson`,
+`categoriesJson`, `padding`, `showLabels`, `minLabelRadius`, `labelColor`,
+`defaultColor`, `shadeVariation`, `hoverGlow`, `hoverScale`, `groupByCategory`,
+`zoomable`, `showControls`, `searchQuery`, `tooltips`, `tooltipBgColor`,
+`controlColor`. **Flex** — the whole cluster rescales to any size. This is the
+worked example behind the "interactive + custom tooltips (not native)" guideline.
+Mirror: `QCustomDonut` (painted, category colours).
+
 ## Check Box dashboard viz (2026-07-24)
 
 Three painted widgets + a Sparkline extension, built for the "Check Box"
@@ -329,3 +445,31 @@ value` rows by `;`). Props: `xMax`, `gridStep`, `barHeight`, `colorsCsv`/
 on ONE shared y-scale with fill suppressed — for a clean multi-line read. Designer
 props `seriesCsv` (series by `;`) / `seriesColorsCsv`. The single-`values` mode is
 untouched.
+
+## Smart-home dashboard widgets (2026-07-24)
+
+From the `examples/PySide6/SmartHomeDashboard` build ("My Home" reference).
+
+## QCustomTileButton
+`Custom_Widgets/QCustomTileButton.py` — a selectable device / action **tile**: a
+rounded-rectangle `QAbstractButton` with a line ICON above a CAPTION. It is
+CHECKABLE — the selected tile paints a two-stop diagonal GRADIENT
+(`gradientStart`→`gradientEnd`) with light icon+text (`activeColor`), the rest a
+flat `bgColor` with muted `iconColor`. `setIconPath(.svg)` + `caption`; props
+`gradientStart`/`gradientEnd`/`bgColor`/`iconColor`/`activeColor`/`cornerRadius`/
+`iconSize`. Emits `clicked()`/`toggled(bool)` — drop several in a `QButtonGroup`
+(exclusive) for a single-select device grid. The caption wraps for long names.
+
+## QCustomRadialGauge — ring-gauge extensions
+Added three opt-in hooks so the needle gauge also renders the modern
+ring-with-knob look (with `showNeedle=False`):
+- `showHandle` (+ `handleColor`) — a white end-cap knob at the value-arc tip.
+- `centerIcon` (+ `iconColor`) — a recoloured SVG icon centred above the value.
+- `innerColor` — a filled inner disc behind the value (e.g. a white disc with a
+  dark value, as on the Temperature / Power gauges).
+
+Recipe for a reference ring gauge: `showNeedle=False, showHandle=True,
+showGuide=False, showScaleLabels=False, roundedCaps=True, zonesCsv=""` (clear the
+default zones so the two-stop `gradientStart`→`gradientEnd` is used), a ~285°
+span (`startAngle≈232, spanAngle≈-284`), `innerColor` = white,
+`centerTextColor` = dark, `centerIcon` = a thermometer / lightning svg.

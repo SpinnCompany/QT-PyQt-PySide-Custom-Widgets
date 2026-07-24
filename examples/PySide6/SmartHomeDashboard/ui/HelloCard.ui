@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>HelloCard</class>
+ <widget class="QWidget" name="HelloCard">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>560</width><height>280</height></rect></property>
+  <layout class="QVBoxLayout" name="helloRoot">
+   <property name="leftMargin"><number>0</number></property><property name="topMargin"><number>0</number></property>
+   <property name="rightMargin"><number>0</number></property><property name="bottomMargin"><number>0</number></property>
+   <property name="spacing"><number>0</number></property>
+   <item>
+    <widget class="QFrame" name="helloCard">
+     <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+     <property name="role" stdset="0"><string>card</string></property>
+     <layout class="QVBoxLayout" name="helloLayout">
+      <property name="leftMargin"><number>32</number></property><property name="topMargin"><number>28</number></property>
+      <property name="rightMargin"><number>32</number></property><property name="bottomMargin"><number>28</number></property>
+      <property name="spacing"><number>10</number></property>
+      <item>
+       <layout class="QHBoxLayout" name="helloHeader">
+        <item><widget class="QLabel" name="helloTitle"><property name="text"><string>Hello, Ana!</string></property><property name="role" stdset="0"><string>helloTitle</string></property></widget></item>
+        <item><spacer name="helloHeaderSpacer"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+        <item><widget class="QPushButton" name="helloMenu"><property name="minimumSize"><size><width>30</width><height>26</height></size></property><property name="maximumSize"><size><width>30</width><height>26</height></size></property><property name="text"><string/></property><property name="role" stdset="0"><string>menuBtn</string></property></widget></item>
+       </layout>
+      </item>
+      <item><widget class="QLabel" name="welcome"><property name="wordWrap"><bool>true</bool></property><property name="text"><string>Welcome home, Ana.</string></property><property name="role" stdset="0"><string>welcome</string></property></widget></item>
+      <item><spacer name="helloMid"><property name="orientation"><enum>Qt::Vertical</enum></property><property name="sizeHint" stdset="0"><size><width>20</width><height>16</height></size></property></spacer></item>
+      <item>
+       <layout class="QHBoxLayout" name="weatherRow">
+        <property name="spacing"><number>10</number></property>
+        <item>
+         <layout class="QVBoxLayout" name="wTile0"><property name="spacing"><number>6</number></property>
+          <item><widget class="QLabel" name="wIcon0"><property name="minimumSize"><size><width>42</width><height>42</height></size></property><property name="maximumSize"><size><width>42</width><height>42</height></size></property><property name="text"><string/></property></widget></item>
+          <item><widget class="QLabel" name="wValue0"><property name="text"><string>15°</string></property><property name="role" stdset="0"><string>wValue</string></property></widget></item>
+          <item><widget class="QLabel" name="wLabel0"><property name="wordWrap"><bool>true</bool></property><property name="text"><string>Weather</string></property><property name="role" stdset="0"><string>wLabel</string></property></widget></item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="wTile1"><property name="spacing"><number>6</number></property>
+          <item><widget class="QLabel" name="wIcon1"><property name="minimumSize"><size><width>42</width><height>42</height></size></property><property name="maximumSize"><size><width>42</width><height>42</height></size></property><property name="text"><string/></property></widget></item>
+          <item><widget class="QLabel" name="wValue1"><property name="text"><string>45%</string></property><property name="role" stdset="0"><string>wValue</string></property></widget></item>
+          <item><widget class="QLabel" name="wLabel1"><property name="wordWrap"><bool>true</bool></property><property name="text"><string>Outdoor Humidity</string></property><property name="role" stdset="0"><string>wLabel</string></property></widget></item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="wTile2"><property name="spacing"><number>6</number></property>
+          <item><widget class="QLabel" name="wIcon2"><property name="minimumSize"><size><width>42</width><height>42</height></size></property><property name="maximumSize"><size><width>42</width><height>42</height></size></property><property name="text"><string/></property></widget></item>
+          <item><widget class="QLabel" name="wValue2"><property name="text"><string>22°</string></property><property name="role" stdset="0"><string>wValue</string></property></widget></item>
+          <item><widget class="QLabel" name="wLabel2"><property name="wordWrap"><bool>true</bool></property><property name="text"><string>Indoor Temperature</string></property><property name="role" stdset="0"><string>wLabel</string></property></widget></item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="wTile3"><property name="spacing"><number>6</number></property>
+          <item><widget class="QLabel" name="wIcon3"><property name="minimumSize"><size><width>42</width><height>42</height></size></property><property name="maximumSize"><size><width>42</width><height>42</height></size></property><property name="text"><string/></property></widget></item>
+          <item><widget class="QLabel" name="wValue3"><property name="text"><string/></property><property name="role" stdset="0"><string>wValue</string></property></widget></item>
+          <item><widget class="QLabel" name="wLabel3"><property name="wordWrap"><bool>true</bool></property><property name="text"><string>Add Data</string></property><property name="role" stdset="0"><string>wLabelMuted</string></property></widget></item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <connections/>
+</ui>

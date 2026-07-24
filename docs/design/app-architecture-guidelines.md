@@ -120,6 +120,40 @@ observable with live reload:
 
 ---
 
+### Design guidelines (learned, keep applying)
+
+**Rounded cards in the component-loader stack need transparent parents.**
+`border-radius` on a card `QFrame` DOES clip its own background — solid *and*
+gradient (verified in isolation). But the rounded corners reveal whatever paints
+**behind** the card, and in the loader stack
+(`QCustomComponentContainer → QCustomComponentLoader → component-root QWidget →
+inner QFrame[role="card"]`) each of those layers paints an **opaque, same-colour
+square** that fills the corner area — so the radius applies but is invisible
+(the card looks square). Fix in the app QSS: make every layer behind the card
+transparent so the darker shell shows through the corners —
+
+```scss
+QCustomComponentContainer, QCustomComponentLoader { background: transparent; }
+#Comp1, #Comp2, … { background: transparent; }   // each component-root objectName
+```
+
+Mnemonic: **`border-radius` only clips a widget's OWN fill; it never controls
+what is painted behind it.** (Same idea as the pill gotcha — Qt draws the
+rounded fill, but a parent can square it off.)
+
+**Larger images → `QPixmap`, not `QIcon`.** Render prominent/large images as a
+`QPixmap` (`QLabel.setPixmap`, or `QPainter.drawPixmap` inside a painted widget)
+at the real target size (2× for HiDPI). `QIcon`/`setIcon` caps and softens when a
+button scales it up — reserve it for small (≲22px) button glyphs.
+
+**Card contrast in a dark theme.** The theme engine derives `BG_2..6` *darker*
+than `BG_1` for a near-black base, so `BG_1` is the LIGHTEST step. Put the shell
+on `$COLOR_BACKGROUND_3` and cards on `$COLOR_BACKGROUND_1` (optionally a subtle
+`BG_1 → BG_2` gradient) so cards lift off the shell — this inverts cleanly in the
+light theme.
+
+---
+
 ### The forms pipeline in one line
 
 `ui/*.ui` → `Custom_Widgets --convert-ui` → `src/ui_*.py`; `json-styles/` themes;

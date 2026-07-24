@@ -1,0 +1,117 @@
+{
+    "ShowLogs": true,
+    "QtBinding": "PySide6",
+    "LiveCompileQss": true,
+    "CheckForMissingicons": true,
+    "QMainWindow": {
+        "title": "My Home — Smart Home Dashboard"
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "SmartHomeDashboard",
+            "OrganizationDomain": "spinncode.com"
+        },
+        "ThemeSettings": {
+            "QtDesignerIconsColor": "theme",
+            "CustomThemes": [
+                {
+                    "Theme-name": "SmartHome Dark",
+                    "Default-Theme": true,
+                    "Create-icons": true,
+                    "Background-color": "#2a2d55",
+                    "Text-color": "#eef0ff",
+                    "Accent-color": "#f45c9c",
+                    "Icons-color": "#c3c7ea"
+                },
+                {
+                    "Theme-name": "SmartHome Light",
+                    "Default-Theme": false,
+                    "Create-icons": true,
+                    "Background-color": "#ffffff",
+                    "Text-color": "#20233f",
+                    "Accent-color": "#d0429a",
+                    "Icons-color": "#7b7fae"
+                }
+            ],
+            "Fonts": {
+                "_comment": "Remote web font — downloaded + cached + registered by the theme engine.",
+                "LoadFonts": [
+                    { "name": "Inter", "url": "https://cdn.jsdelivr.net/gh/rsms/inter@master/docs/font-files/InterVariable.ttf" }
+                ],
+                "DefaultFont": { "name": "Inter", "size": 10 }
+            }
+        }
+    },
+    "_comment_ChartPalette": "Read in code by gui/theme.py — every painted / gradient hue lives WITH the theme so it flips on theme switch.",
+    "ChartPalette": {
+        "SmartHome Dark": {
+            "shell": "#1e2142",
+            "card": "#2a2d55",
+            "cardInner": "#333765",
+            "text": "#eef0ff",
+            "muted": "#9aa0c6",
+            "faint": "#3a3f70",
+
+            "gradStart": "#a05cf0",
+            "gradEnd": "#f45c9c",
+            "onGrad": "#ffffff",
+
+            "tempStart": "#49b6ff",
+            "tempEnd": "#8fe3ff",
+            "powerStart": "#a05cf0",
+            "powerEnd": "#f45c9c",
+
+            "gaugeTrack": "#3a3f70",
+            "gaugeInner": "#ffffff",
+            "gaugeText": "#2a2e55",
+            "gaugeIcon": "#3a3f70",
+
+            "tileBg": "#242850",
+            "tileIcon": "#9aa0c6",
+            "tileActiveText": "#ffffff",
+
+            "sliderTrack": "#3a3f70",
+
+            "headerIcon": "#ffffff",
+            "headerText": "#ffffff",
+            "headerSub": "#f0d6ea",
+
+            "switchTrack": "#3a3f70"
+        },
+        "SmartHome Light": {
+            "shell": "#eef0f7",
+            "card": "#ffffff",
+            "cardInner": "#f3f4fb",
+            "text": "#20233f",
+            "muted": "#7b7fae",
+            "faint": "#e4e6f2",
+
+            "gradStart": "#a05cf0",
+            "gradEnd": "#f45c9c",
+            "onGrad": "#ffffff",
+
+            "tempStart": "#49b6ff",
+            "tempEnd": "#8fe3ff",
+            "powerStart": "#a05cf0",
+            "powerEnd": "#f45c9c",
+
+            "gaugeTrack": "#e4e6f2",
+            "gaugeInner": "#ffffff",
+            "gaugeText": "#20233f",
+            "gaugeIcon": "#7b7fae",
+
+            "tileBg": "#f3f4fb",
+            "tileIcon": "#8a8fbd",
+            "tileActiveText": "#ffffff",
+
+            "sliderTrack": "#e4e6f2",
+
+            "headerIcon": "#ffffff",
+            "headerText": "#ffffff",
+            "headerSub": "#f6e2ef",
+
+            "switchTrack": "#e4e6f2"
+        }
+    }
+}

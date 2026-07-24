@@ -1643,7 +1643,10 @@ PlotWidget {
 QMainWindow, #shell {
   background-color: #111114; }
 
-QCustomComponentContainer {
+QCustomComponentContainer, QCustomComponentLoader {
+  background: transparent; }
+
+#TopNav, #LeftRail, #Header, #CustomerCard, #ProductCard, #BeeswarmCard, #TimelineCard {
   background: transparent; }
 
 QFrame[role="card"] {
