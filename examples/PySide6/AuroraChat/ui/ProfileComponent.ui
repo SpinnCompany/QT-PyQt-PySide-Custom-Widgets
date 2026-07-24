@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ProfileComponent</class>
+ <widget class="QCustomComponent" name="ProfileComponent">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>304</width><height>794</height></rect></property>
+  <property name="minimumSize"><size><width>304</width><height>0</height></size></property>
+  <property name="maximumSize"><size><width>304</width><height>16777215</height></size></property>
+  <layout class="QVBoxLayout" name="profileComponentOuter">
+   <property name="spacing"><number>0</number></property>
+   <property name="leftMargin"><number>0</number></property>
+   <property name="topMargin"><number>0</number></property>
+   <property name="rightMargin"><number>0</number></property>
+   <property name="bottomMargin"><number>0</number></property>
+   <item>
+    <widget class="QFrame" name="profilePanel">
+     <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+     <layout class="QVBoxLayout" name="profileLayout">
+      <property name="spacing"><number>14</number></property>
+      <property name="leftMargin"><number>22</number></property>
+      <property name="topMargin"><number>18</number></property>
+      <property name="rightMargin"><number>22</number></property>
+      <property name="bottomMargin"><number>18</number></property>
+      <item>
+       <layout class="QHBoxLayout" name="profileCloseRow">
+        <item>
+         <spacer name="profileCloseSpacer">
+          <property name="orientation"><enum>Qt::Horizontal</enum></property>
+          <property name="sizeHint" stdset="0"><size><width>10</width><height>10</height></size></property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="profileClose">
+          <property name="minimumSize"><size><width>34</width><height>34</height></size></property>
+          <property name="maximumSize"><size><width>34</width><height>34</height></size></property>
+          <property name="iconSize"><size><width>17</width><height>17</height></size></property>
+          <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
+          <property name="role" stdset="0"><string>iconChip</string></property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QCustomAvatar" name="profileAvatar">
+        <property name="minimumSize"><size><width>112</width><height>112</height></size></property>
+        <property name="maximumSize"><size><width>112</width><height>112</height></size></property>
+        <property name="text" stdset="0"><string>R</string></property>
+        <property name="showStatus" stdset="0"><bool>false</bool></property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="profileNameRow">
+        <property name="spacing"><number>6</number></property>
+        <item>
+         <spacer name="pnLeft">
+          <property name="orientation"><enum>Qt::Horizontal</enum></property>
+          <property name="sizeHint" stdset="0"><size><width>10</width><height>10</height></size></property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="profileName">
+          <property name="text"><string>Ricky Smith</string></property>
+          <property name="role" stdset="0"><string>profileName</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="profileVerified">
+          <property name="minimumSize"><size><width>20</width><height>20</height></size></property>
+          <property name="maximumSize"><size><width>20</width><height>20</height></size></property>
+          <property name="scaledContents"><bool>true</bool></property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="pnRight">
+          <property name="orientation"><enum>Qt::Horizontal</enum></property>
+          <property name="sizeHint" stdset="0"><size><width>10</width><height>10</height></size></property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="profileStatus">
+        <property name="text"><string>Online</string></property>
+        <property name="alignment"><set>Qt::AlignHCenter|Qt::AlignVCenter</set></property>
+        <property name="role" stdset="0"><string>profileStatus</string></property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="profileActionsRow">
+        <property name="spacing"><number>10</number></property>
+        <item>
+         <widget class="QCustomActionButton" name="actProfile">
+          <property name="caption" stdset="0"><string>Profile</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCustomActionButton" name="actMute">
+          <property name="caption" stdset="0"><string>Mute</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCustomActionButton" name="actSearch">
+          <property name="caption" stdset="0"><string>Search</string></property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QFrame" name="customizeHeader">
+        <property name="minimumSize"><size><width>0</width><height>44</height></size></property>
+        <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+        <property name="role" stdset="0"><string>accordionHeader</string></property>
+        <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
+        <layout class="QHBoxLayout" name="customizeRow">
+         <property name="leftMargin"><number>4</number></property>
+         <property name="rightMargin"><number>4</number></property>
+         <item>
+          <widget class="QLabel" name="customizeTitle">
+           <property name="text"><string>Customize Chat</string></property>
+           <property name="role" stdset="0"><string>accordionTitle</string></property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="customizeSpacer">
+           <property name="orientation"><enum>Qt::Horizontal</enum></property>
+           <property name="sizeHint" stdset="0"><size><width>10</width><height>10</height></size></property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="customizeChevron">
+           <property name="minimumSize"><size><width>26</width><height>26</height></size></property>
+           <property name="maximumSize"><size><width>26</width><height>26</height></size></property>
+           <property name="iconSize"><size><width>16</width><height>16</height></size></property>
+           <property name="role" stdset="0"><string>chevron</string></property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomThemeList" name="themeList">
+        <property name="minimumSize"><size><width>0</width><height>36</height></size></property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomComponentContainer" name="mediaContainer" native="true">
+        <property name="filePath" stdset="0"><string>ui/MediaPanelComponent.ui</string></property>
+        <property name="previewComponent" stdset="0"><bool>false</bool></property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="profileSpacer">
+        <property name="orientation"><enum>Qt::Vertical</enum></property>
+        <property name="sizeHint" stdset="0"><size><width>10</width><height>20</height></size></property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QFrame" name="privacyHeader">
+        <property name="minimumSize"><size><width>0</width><height>44</height></size></property>
+        <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+        <property name="role" stdset="0"><string>accordionHeader</string></property>
+        <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
+        <layout class="QHBoxLayout" name="privacyRow">
+         <property name="leftMargin"><number>4</number></property>
+         <property name="rightMargin"><number>4</number></property>
+         <item>
+          <widget class="QLabel" name="privacyTitle">
+           <property name="text"><string>Privacy and Support</string></property>
+           <property name="role" stdset="0"><string>accordionTitle</string></property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="privacySpacer">
+           <property name="orientation"><enum>Qt::Horizontal</enum></property>
+           <property name="sizeHint" stdset="0"><size><width>10</width><height>10</height></size></property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="privacyChevron">
+           <property name="minimumSize"><size><width>26</width><height>26</height></size></property>
+           <property name="maximumSize"><size><width>26</width><height>26</height></size></property>
+           <property name="iconSize"><size><width>16</width><height>16</height></size></property>
+           <property name="role" stdset="0"><string>chevron</string></property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomComponent</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomComponent</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomAvatar</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomAvatar</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomThemeList</class>
+   <extends>QComboBox</extends>
+   <header>Custom_Widgets.QCustomThemeList</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomActionButton</class>
+   <extends>QFrame</extends>
+   <header>Custom_Widgets.QCustomActionButton</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomComponentContainer</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomComponentContainer</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

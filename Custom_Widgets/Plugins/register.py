@@ -758,6 +758,58 @@ except Exception as e:
     logException(e, message="Error registering QCustomMiniBarChart")
 
 
+from Custom_Widgets.QCustomDivergingBarChart import QCustomDivergingBarChart
+
+# Registering QCustomDivergingBarChart with error handling
+try:
+    logInfo("Registering QCustomDivergingBarChart")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomDivergingBarChart, module=QCustomDivergingBarChart.WIDGET_MODULE,
+        tool_tip=QCustomDivergingBarChart.WIDGET_TOOLTIP, xml=QCustomDivergingBarChart.WIDGET_DOM_XML,
+        icon=QCustomDivergingBarChart.WIDGET_ICON, group="Charts")
+except Exception as e:
+    logException(e, message="Error registering QCustomDivergingBarChart")
+
+
+from Custom_Widgets.QCustomCardStack import QCustomCardStack
+
+# Registering QCustomCardStack with error handling
+try:
+    logInfo("Registering QCustomCardStack")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomCardStack, module=QCustomCardStack.WIDGET_MODULE,
+        tool_tip=QCustomCardStack.WIDGET_TOOLTIP, xml=QCustomCardStack.WIDGET_DOM_XML,
+        icon=QCustomCardStack.WIDGET_ICON, group="Containers", container=True)
+except Exception as e:
+    logException(e, message="Error registering QCustomCardStack")
+
+
+from Custom_Widgets.QCustomMenu import QCustomMenu
+
+# Registering QCustomMenu with error handling
+try:
+    logInfo("Registering QCustomMenu")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomMenu, module=QCustomMenu.WIDGET_MODULE,
+        tool_tip=QCustomMenu.WIDGET_TOOLTIP, xml=QCustomMenu.WIDGET_DOM_XML,
+        icon=QCustomMenu.WIDGET_ICON, group="Menus")
+except Exception as e:
+    logException(e, message="Error registering QCustomMenu")
+
+
+from Custom_Widgets.QCustomModal import QCustomModal
+
+# Registering QCustomModal with error handling
+try:
+    logInfo("Registering QCustomModal")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomModal, module=QCustomModal.WIDGET_MODULE,
+        tool_tip=QCustomModal.WIDGET_TOOLTIP, xml=QCustomModal.WIDGET_DOM_XML,
+        icon=QCustomModal.WIDGET_ICON, group="Menus")
+except Exception as e:
+    logException(e, message="Error registering QCustomModal")
+
+
 from Custom_Widgets.QCustomListRow import QCustomListRow
 
 # Registering QCustomListRow with error handling
@@ -808,6 +860,99 @@ try:
         icon=QCustomPageDots.WIDGET_ICON, group="Navigation")
 except Exception as e:
     logException(e, message="Error registering QCustomPageDots")
+
+
+from Custom_Widgets.QCustomChatListItem import QCustomChatListItem
+
+# Registering QCustomChatListItem with error handling
+try:
+    logInfo("Registering QCustomChatListItem")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomChatListItem, module=QCustomChatListItem.WIDGET_MODULE,
+        tool_tip=QCustomChatListItem.WIDGET_TOOLTIP, xml=QCustomChatListItem.WIDGET_DOM_XML,
+        icon=QCustomChatListItem.WIDGET_ICON, group="Display Widgets")
+except Exception as e:
+    logException(e, message="Error registering QCustomChatListItem")
+
+
+from Custom_Widgets.QCustomChatBubble import QCustomChatBubble
+
+# Registering QCustomChatBubble with error handling
+try:
+    logInfo("Registering QCustomChatBubble")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomChatBubble, module=QCustomChatBubble.WIDGET_MODULE,
+        tool_tip=QCustomChatBubble.WIDGET_TOOLTIP, xml=QCustomChatBubble.WIDGET_DOM_XML,
+        icon=QCustomChatBubble.WIDGET_ICON, group="Display Widgets")
+except Exception as e:
+    logException(e, message="Error registering QCustomChatBubble")
+
+
+from Custom_Widgets.QCustomVoiceMessage import QCustomVoiceMessage
+
+# Registering QCustomVoiceMessage with error handling
+try:
+    logInfo("Registering QCustomVoiceMessage")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomVoiceMessage, module=QCustomVoiceMessage.WIDGET_MODULE,
+        tool_tip=QCustomVoiceMessage.WIDGET_TOOLTIP, xml=QCustomVoiceMessage.WIDGET_DOM_XML,
+        icon=QCustomVoiceMessage.WIDGET_ICON, group="Display Widgets")
+except Exception as e:
+    logException(e, message="Error registering QCustomVoiceMessage")
+
+
+# ---- Chat / messaging component widgets (normalization batch) ------------- #
+def _register_widget(cls, group):
+    try:
+        logInfo("Registering %s" % cls.__name__)
+        QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+            cls, module=cls.WIDGET_MODULE, tool_tip=cls.WIDGET_TOOLTIP,
+            xml=cls.WIDGET_DOM_XML, icon=getattr(cls, "WIDGET_ICON", ""), group=group)
+    except Exception as e:
+        logException(e, message="Error registering %s" % cls.__name__)
+
+
+try:
+    from Custom_Widgets.QCustomActionButton import QCustomActionButton
+    from Custom_Widgets.QCustomChatDivider import QCustomChatDivider
+    from Custom_Widgets.QCustomTypingIndicator import QCustomTypingIndicator
+    from Custom_Widgets.QCustomMediaGrid import QCustomMediaGrid
+    from Custom_Widgets.QCustomChatList import QCustomChatList
+    from Custom_Widgets.QCustomChatThread import QCustomChatThread
+    from Custom_Widgets.QCustomChatInput import QCustomChatInput
+    _register_widget(QCustomActionButton, "Buttons")
+    _register_widget(QCustomChatDivider, "Chat")
+    _register_widget(QCustomTypingIndicator, "Chat")
+    _register_widget(QCustomMediaGrid, "Display Widgets")
+    _register_widget(QCustomChatList, "Chat")
+    _register_widget(QCustomChatThread, "Chat")
+    _register_widget(QCustomChatInput, "Chat")
+except Exception as e:
+    logException(e, message="Error registering chat component widgets")
+
+
+# ---- Media / attachment widgets (P2 batch) -------------------------------- #
+try:
+    from Custom_Widgets.QCustomImageViewer import QCustomImageViewer
+    from Custom_Widgets.QCustomVideoPlayer import QCustomVideoPlayer
+    from Custom_Widgets.QCustomFileCard import QCustomFileCard
+    from Custom_Widgets.QCustomLinkPreview import QCustomLinkPreview
+    _register_widget(QCustomImageViewer, "Display Widgets")
+    _register_widget(QCustomVideoPlayer, "Display Widgets")
+    _register_widget(QCustomFileCard, "Display Widgets")
+    _register_widget(QCustomLinkPreview, "Display Widgets")
+except Exception as e:
+    logException(e, message="Error registering media widgets")
+
+
+# ---- Messaging widgets (P3 batch) ----------------------------------------- #
+try:
+    from Custom_Widgets.QCustomReactionBar import QCustomReactionBar
+    from Custom_Widgets.QCustomMessageStatus import QCustomMessageStatus
+    _register_widget(QCustomReactionBar, "Chat")
+    _register_widget(QCustomMessageStatus, "Chat")
+except Exception as e:
+    logException(e, message="Error registering messaging widgets")
 
 
 ########################################################################

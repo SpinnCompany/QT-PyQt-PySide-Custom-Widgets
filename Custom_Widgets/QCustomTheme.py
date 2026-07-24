@@ -1008,6 +1008,30 @@ class QCustomTheme(QObject):
         except Exception as e:
             logError(f"Error loading font: {e}")
 
+    def loadRemoteFont(self, url, set_as_default=False, timeout=20):
+        """Download + register a remote font (TTF/OTF) at runtime and return its
+        loaded family name (or ``None`` on failure — non-fatal, keeps the current
+        font). The download is cached, so repeat calls are cheap. Declarative
+        config is preferred (json-styles ``Fonts.LoadFonts[].url`` +
+        ``Fonts.DefaultFont``); this is the imperative equivalent.
+        """
+        from Custom_Widgets.Utils import download_font
+        path = download_font(url, timeout=timeout)
+        if not path:
+            return None
+        font_id = QFontDatabase.addApplicationFont(path)
+        if font_id == -1:
+            logError(f"Failed to register remote font from {url}")
+            return None
+        fams = QFontDatabase.applicationFontFamilies(font_id)
+        family = fams[0] if fams else None
+        if family and set_as_default:
+            from qtpy.QtWidgets import QApplication
+            app = QApplication.instance()
+            if app is not None:
+                app.setFont(QFont(family))
+        return family
+
     def applyCompiledSass(self, generateIcons: bool = True, paintEntireApp: bool = True):
         if not self.themesRead:
             return
@@ -1061,7 +1085,15 @@ class QCustomTheme(QObject):
         # Create QApplication instance if it doesn't exist
         app = QApplication.instance() if QApplication.instance() else QApplication([])
         mainWindow = self.getMainWindow()
-        
+
+        # Refresh the COLOR_* attributes for the ACTIVE theme BEFORE building the
+        # palette from them — otherwise the palette is set from the previous /
+        # default theme's colours (e.g. a light window on a dark theme), and any
+        # widget that paints via the palette (QMainWindow, big container QFrames)
+        # stays the old colour while only widgets with an explicit QSS background
+        # pick up the new theme. See createVariables().
+        self.createVariables()
+
         # palette = QPalette()
         palette = app.palette()
 
@@ -1109,8 +1141,6 @@ class QCustomTheme(QObject):
             app.setPalette(palette)
         except Exception as e:
             logError(f"Failed to set palette on app: {e}")
-        
-        self.createVariables()
 
         background_color = QColor(self.COLOR_BACKGROUND_1)
 

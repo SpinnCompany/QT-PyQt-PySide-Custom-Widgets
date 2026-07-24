@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MediaPanelComponent</class>
+ <widget class="QCustomComponent" name="MediaPanelComponent">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>304</width><height>420</height></rect></property>
+  <layout class="QVBoxLayout" name="mediaPanelLayout">
+   <property name="spacing"><number>12</number></property>
+   <property name="leftMargin"><number>0</number></property>
+   <property name="topMargin"><number>0</number></property>
+   <property name="rightMargin"><number>0</number></property>
+   <property name="bottomMargin"><number>0</number></property>
+   <item>
+    <widget class="QLabel" name="mediaTitle">
+     <property name="text"><string>Media, Files And Links</string></property>
+     <property name="role" stdset="0"><string>accordionTitle</string></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCustomSegmentedControl" name="mediaTabs">
+     <property name="minimumSize"><size><width>0</width><height>36</height></size></property>
+     <property name="segments" stdset="0"><string>Media,Files,Links</string></property>
+     <property name="currentSegment" stdset="0"><number>0</number></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QStackedWidget" name="mediaStack">
+     <property name="currentIndex"><number>0</number></property>
+     <widget class="QWidget" name="mediaPage">
+      <layout class="QVBoxLayout" name="mediaPageLayout">
+       <property name="spacing"><number>0</number></property>
+       <property name="leftMargin"><number>0</number></property>
+       <property name="topMargin"><number>0</number></property>
+       <property name="rightMargin"><number>0</number></property>
+       <property name="bottomMargin"><number>0</number></property>
+       <item>
+        <widget class="QCustomMediaGrid" name="mediaGrid">
+         <property name="minimumSize"><size><width>0</width><height>200</height></size></property>
+         <property name="columns" stdset="0"><number>3</number></property>
+         <property name="tileHeight" stdset="0"><number>60</number></property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="mediaPageSpacer">
+         <property name="orientation"><enum>Qt::Vertical</enum></property>
+         <property name="sizeHint" stdset="0"><size><width>10</width><height>10</height></size></property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="filesPage">
+      <layout class="QVBoxLayout" name="filesList">
+       <property name="spacing"><number>8</number></property>
+       <property name="leftMargin"><number>0</number></property>
+       <property name="topMargin"><number>0</number></property>
+       <property name="rightMargin"><number>0</number></property>
+       <property name="bottomMargin"><number>0</number></property>
+       <item>
+        <widget class="QCustomFileCard" name="file1">
+         <property name="fileName" stdset="0"><string>Project Brief.pdf</string></property>
+         <property name="fileSize" stdset="0"><string>2.4 MB  ·  Jul 21</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomFileCard" name="file2">
+         <property name="fileName" stdset="0"><string>Budget Q3.xlsx</string></property>
+         <property name="fileSize" stdset="0"><string>845 KB  ·  Jul 19</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomFileCard" name="file3">
+         <property name="fileName" stdset="0"><string>Mockups.zip</string></property>
+         <property name="fileSize" stdset="0"><string>18.2 MB  ·  Jul 15</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomFileCard" name="file4">
+         <property name="fileName" stdset="0"><string>Meeting Notes.txt</string></property>
+         <property name="fileSize" stdset="0"><string>4 KB  ·  Jul 12</string></property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="filesSpacer">
+         <property name="orientation"><enum>Qt::Vertical</enum></property>
+         <property name="sizeHint" stdset="0"><size><width>10</width><height>10</height></size></property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="linksPage">
+      <layout class="QVBoxLayout" name="linksList">
+       <property name="spacing"><number>8</number></property>
+       <property name="leftMargin"><number>0</number></property>
+       <property name="topMargin"><number>0</number></property>
+       <property name="rightMargin"><number>0</number></property>
+       <property name="bottomMargin"><number>0</number></property>
+       <item>
+        <widget class="QCustomLinkPreview" name="link1">
+         <property name="title" stdset="0"><string>Aurora Design System</string></property>
+         <property name="url" stdset="0"><string>https://dribbble.com/aurora</string></property>
+         <property name="description" stdset="0"><string>Modern UI kit for chat apps</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomLinkPreview" name="link2">
+         <property name="title" stdset="0"><string>Feather Icons</string></property>
+         <property name="url" stdset="0"><string>https://feathericons.com</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomLinkPreview" name="link3">
+         <property name="title" stdset="0"><string>Picsum Photos</string></property>
+         <property name="url" stdset="0"><string>https://picsum.photos</string></property>
+         <property name="description" stdset="0"><string>Lorem Ipsum for photos</string></property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="linksSpacer">
+         <property name="orientation"><enum>Qt::Vertical</enum></property>
+         <property name="sizeHint" stdset="0"><size><width>10</width><height>10</height></size></property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomComponent</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomComponent</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomSegmentedControl</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomSegmentedControl</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomMediaGrid</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomMediaGrid</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomFileCard</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomFileCard</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomLinkPreview</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomLinkPreview</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

@@ -11,7 +11,7 @@
 ## ends via a `seg` position property (first / middle / last / only). Emits
 ## currentChanged.
 ########################################################################
-from qtpy.QtCore import Signal
+from qtpy.QtCore import Signal, Property
 from qtpy.QtWidgets import QWidget, QHBoxLayout, QPushButton, QButtonGroup
 
 
@@ -30,7 +30,8 @@ class QCustomSegmentedControl(QWidget):
     """
     __catalog__ = {
         "name": "QCustomSegmentedControl",
-        "props": {"currentIndex": {"type": "int", "default": 0}},
+        "props": {"currentIndex": {"type": "int", "default": 0},
+                  "segments": {"type": "string", "default": ""}},
         "signals": ["currentChanged"],
         "tokens_used": ["surface", "on-surface", "surface-muted", "outline",
                         "accent", "on-primary"],
@@ -118,3 +119,27 @@ class QCustomSegmentedControl(QWidget):
         self._buttons[index].setChecked(True)
         if changed:
             self.currentChanged.emit(index)
+
+    # -- Designer properties ------------------------------------------------ #
+    # Backwards-friendly alias so forms/managers can also use setItems().
+    setItems = setSegments
+
+    @Property(str)
+    def segments(self):
+        """Comma-separated segment labels — set the tabs from Designer."""
+        return ",".join(str(lbl) for lbl, _ in self._items)
+
+    @segments.setter
+    def segments(self, text):
+        labels = [t.strip() for t in str(text).replace(";", ",").split(",") if t.strip()]
+        self.setSegments(labels)
+
+    @Property(int)
+    def currentSegment(self):
+        """currentIndex as a settable Designer property (avoids clashing with
+        the currentIndex() accessor method used elsewhere)."""
+        return self._current
+
+    @currentSegment.setter
+    def currentSegment(self, i):
+        self.setCurrentIndex(int(i))
