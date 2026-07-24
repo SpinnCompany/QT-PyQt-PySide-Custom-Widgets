@@ -19,8 +19,10 @@
 ## collapses to a hairline in constrained panels). Give values/colours via
 ## setData(...) in code, or the valuesCsv / colorsCsv properties in Qt Designer.
 ########################################################################
-from qtpy.QtCore import Qt, Property, QRectF
-from qtpy.QtGui import QColor, QPainter, QPen
+import math
+
+from qtpy.QtCore import Qt, Property, QRectF, QPointF
+from qtpy.QtGui import QColor, QPainter, QPen, QBrush, QFont
 from qtpy.QtWidgets import QWidget, QSizePolicy
 
 
@@ -43,7 +45,16 @@ class QCustomDonut(QWidget):
                   "mode": {"type": "enum", "values": ["rings", "segments"], "default": "rings"},
                   "holeRatio": {"type": "float", "default": 0.42},
                   "maxSweep": {"type": "float", "default": 324.0},
-                  "gapDegrees": {"type": "float", "default": 4.0}},
+                  "gapDegrees": {"type": "float", "default": 4.0},
+                  "showPercentLabels": {"type": "bool", "default": False},
+                  "percentLabelColor": {"type": "color", "default": "#ffffff"},
+                  "percentPill": {"type": "bool", "default": True},
+                  "percentPillColor": {"type": "color", "default": "#12141c"},
+                  "minLabelPercent": {"type": "float", "default": 4.0},
+                  "hatchCsv": {"type": "string", "default": ""},
+                  "hatchPattern": {"type": "enum",
+                                   "values": ["bdiag", "fdiag", "cross", "horizontal", "vertical", "dense"],
+                                   "default": "bdiag"}},
         "signals": [],
         "tokens_used": ["accent"],
     }
@@ -62,6 +73,14 @@ class QCustomDonut(QWidget):
         self._start = 90.0         # 12 o'clock
         self._track = QColor(255, 255, 255, 22)   # faint ring behind each value
         self._gap_color = QColor("#1b1e26")        # segments mode: gap colour
+        # --- opt-in enhancements (segments mode; default OFF = unchanged look) ---
+        self._show_pct = False         # draw % callout labels ON each arc
+        self._pct_color = QColor("#ffffff")
+        self._pct_pill = True          # small rounded pill behind the % text
+        self._pct_pill_color = QColor("#12141c")
+        self._min_pct = 4.0            # hide labels for tiny segments (< this %)
+        self._hatch = set()           # segment indices rendered with a hatch fill
+        self._hatch_pattern = "bdiag"
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.setMinimumSize(80, 80)
 
@@ -88,6 +107,19 @@ class QCustomDonut(QWidget):
 
     def setMode(self, mode):
         self._mode = "segments" if str(mode) == "segments" else "rings"
+        self.update()
+
+    def setShowPercentLabels(self, on):
+        self._show_pct = bool(on)
+        self.update()
+
+    def setHatchIndices(self, indices):
+        """Segment indices (segments mode) rendered with a hatch/pattern fill."""
+        self._hatch = set(int(i) for i in (indices or []))
+        self.update()
+
+    def setHatchPattern(self, name):
+        self._hatch_pattern = str(name)
         self.update()
 
     def values(self):
@@ -146,16 +178,67 @@ class QCustomDonut(QWidget):
         margin = thickness / 2.0 + 6
         rect = QRectF((w - side) / 2.0 + margin, (h - side) / 2.0 + margin,
                       side - 2 * margin, side - 2 * margin)
+        cx, cy = rect.center().x(), rect.center().y()
+        radius = rect.width() / 2.0
         start = self._start
         gap = self._gap if len(vals) > 1 else 0.0
+        labels = []                    # (mid_deg, pct) — drawn on top after arcs
         for i, val in enumerate(vals):
             span = val / total * 360.0
             color = self._colors[i % len(self._colors)] if self._colors else QColor("#888888")
-            pen = QPen(color, thickness)
-            pen.setCapStyle(Qt.RoundCap)
-            p.setPen(pen)
-            p.drawArc(rect, int((start - gap / 2.0) * 16), int(-(span - gap) * 16))
+            a0 = (start - gap / 2.0)
+            sweep = -(span - gap)
+            if i in self._hatch:
+                # a dim base shows through the hatch lines -> a "hatched" segment
+                base = QColor(color); base.setAlpha(70)
+                p.setPen(self._arc_pen(base, thickness))
+                p.drawArc(rect, int(a0 * 16), int(sweep * 16))
+                p.setPen(self._arc_pen(QBrush(color, self._hatch_qt()), thickness))
+                p.drawArc(rect, int(a0 * 16), int(sweep * 16))
+            else:
+                p.setPen(self._arc_pen(color, thickness))
+                p.drawArc(rect, int(a0 * 16), int(sweep * 16))
+            labels.append((start - span / 2.0, val / total * 100.0))
             start -= span
+        if self._show_pct:
+            self._paint_pct_labels(p, cx, cy, radius, labels)
+
+    @staticmethod
+    def _arc_pen(color_or_brush, thickness):
+        pen = QPen(color_or_brush, thickness)
+        pen.setCapStyle(Qt.RoundCap)
+        return pen
+
+    def _hatch_qt(self):
+        return {"bdiag": Qt.BDiagPattern, "fdiag": Qt.FDiagPattern,
+                "cross": Qt.DiagCrossPattern, "horizontal": Qt.HorPattern,
+                "vertical": Qt.VerPattern, "dense": Qt.Dense5Pattern,
+                }.get(self._hatch_pattern, Qt.BDiagPattern)
+
+    def _paint_pct_labels(self, p, cx, cy, radius, labels):
+        f = QFont(self.font())
+        f.setBold(True)
+        f.setPointSizeF(max(7.0, radius * 0.13))
+        p.setFont(f)
+        fm = p.fontMetrics()
+        th = fm.height()
+        for mid_deg, pct in labels:
+            if pct < self._min_pct:
+                continue
+            a = math.radians(mid_deg)
+            lx = cx + radius * math.cos(a)
+            ly = cy - radius * math.sin(a)
+            text = "%d%%" % round(pct)
+            tw = fm.horizontalAdvance(text)
+            if self._pct_pill:
+                pad = th * 0.30
+                pill = QRectF(lx - tw / 2.0 - pad, ly - th / 2.0, tw + 2 * pad, th)
+                bg = QColor(self._pct_pill_color); bg.setAlpha(220)
+                p.setPen(Qt.NoPen); p.setBrush(QBrush(bg))
+                p.drawRoundedRect(pill, th / 2.0, th / 2.0)
+            p.setPen(QPen(self._pct_color)); p.setBrush(Qt.NoBrush)
+            p.drawText(QRectF(lx - tw / 2.0 - 6, ly - th / 2.0, tw + 12, th),
+                       Qt.AlignCenter, text)
 
     # ------------------------------------------------------------------ #
     ## Designer properties
@@ -237,4 +320,78 @@ class QCustomDonut(QWidget):
     @gapColor.setter
     def gapColor(self, c):
         self._gap_color = QColor(c)
+        self.update()
+
+    # ------------------------------------------------------------------ #
+    ## Enhancements: % callout labels + hatch fills (opt-in, segments mode)
+    # ------------------------------------------------------------------ #
+    @Property(bool)
+    def showPercentLabels(self):
+        return self._show_pct
+
+    @showPercentLabels.setter
+    def showPercentLabels(self, v):
+        self._show_pct = bool(v)
+        self.update()
+
+    @Property(QColor)
+    def percentLabelColor(self):
+        return self._pct_color
+
+    @percentLabelColor.setter
+    def percentLabelColor(self, c):
+        self._pct_color = QColor(c)
+        self.update()
+
+    @Property(bool)
+    def percentPill(self):
+        return self._pct_pill
+
+    @percentPill.setter
+    def percentPill(self, v):
+        self._pct_pill = bool(v)
+        self.update()
+
+    @Property(QColor)
+    def percentPillColor(self):
+        return self._pct_pill_color
+
+    @percentPillColor.setter
+    def percentPillColor(self, c):
+        self._pct_pill_color = QColor(c)
+        self.update()
+
+    @Property(float)
+    def minLabelPercent(self):
+        return self._min_pct
+
+    @minLabelPercent.setter
+    def minLabelPercent(self, v):
+        self._min_pct = max(0.0, float(v))
+        self.update()
+
+    @Property(str)
+    def hatchCsv(self):
+        return ",".join(str(i) for i in sorted(self._hatch))
+
+    @hatchCsv.setter
+    def hatchCsv(self, text):
+        out = set()
+        for tok in str(text).replace(";", ",").split(","):
+            tok = tok.strip()
+            if tok:
+                try:
+                    out.add(int(float(tok)))
+                except ValueError:
+                    pass
+        self._hatch = out
+        self.update()
+
+    @Property(str)
+    def hatchPattern(self):
+        return self._hatch_pattern
+
+    @hatchPattern.setter
+    def hatchPattern(self, v):
+        self._hatch_pattern = str(v)
         self.update()
