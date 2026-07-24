@@ -433,6 +433,14 @@ the classic donut is unchanged) for the "Transfer history" reference:
 
 Both painted; verified with `render_widget` + `tests/test_qcustom_donut_enhance.py`.
 
+**`QCustomPieChart` got the same enhancement** (QtCharts, so different mechanics):
+`setShowPercentLabels()` sets the slices to show `%` inside (the pie already has
+label machinery — `showPercentages`/`labelsPosition`), and `setHatchIndices()` /
+`hatchCsv` (+ `hatchPattern`) fill the chosen slices with a **texture brush** (a
+tiling pixmap = dim base + diagonal lines) so a slice reads as hatched; it's
+re-applied on hover-exit so `QPieSlice.setColor()` doesn't clobber it. Opt-in,
+default unchanged. Tests `tests/test_qcustom_piechart_enhance.py`.
+
 ### QCustomCompassDial — premium beveled sibling
 `Custom_Widgets.QCustomCompassDial` — a **skeuomorphic-modern** instrument
 compass (the Haulix map dial), built as a **separate** widget so the flat

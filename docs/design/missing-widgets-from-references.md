@@ -386,8 +386,12 @@ painted widgets — CompassDial / zoom control / popovers — as the map chrome)
   `hatchCsv` (+ `hatchPattern` bdiag/fdiag/cross/…) renders chosen segment
   indices with a hatch over a dim base (`setHatchIndices`/`setShowPercentLabels`).
   Matches the "Transfer history" reference. 6 tests
-  (`tests/test_qcustom_donut_enhance.py`), lint 0-err. (`QCustomPieChart` still
-  legend-only — enhance separately if needed.)
+  (`tests/test_qcustom_donut_enhance.py`), lint 0-err.
+- ✅ **`QCustomPieChart` % callouts + hatch — SHIPPED 2026-07-24 too.** The
+  QtCharts pie already renders labels; added `setShowPercentLabels()` (convenience
+  % inside) + `hatchCsv`/`hatchPattern`/`setHatchIndices()` — hatched slices use a
+  **texture brush** (dim base + diagonal lines) that survives the hover
+  highlight/restore. 5 tests (`tests/test_qcustom_piechart_enhance.py`).
 - **`QCustomSparkline`:** a **live/streaming** mode (ring buffer + `push()`) for
   the ECG use-case — may satisfy item 4's line half.
 
