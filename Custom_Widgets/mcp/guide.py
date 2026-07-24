@@ -328,6 +328,51 @@ APP WIRING
   setProperty(key,value) then style().unpolish()/polish() (camelCase signals:
   past-tense success, Failed/Changed suffixes).
 
+== HARD-WON GOTCHAS (read before debugging layout / theme / previews) ==
+- DIAGNOSE LAYOUT FROM REAL GEOMETRY, NOT SCREENSHOTS. A downscaled app_screenshot
+  lies about spacing. When "icon almost touches the value" / rows look wrong, read
+  the actual rects with app_object_tree and compute the gap
+  (valueTop - (iconTop+iconH)). ROOT CAUSE pattern: a card in a scroll area whose
+  total content exceeds the viewport gets PINNED to its `minimumSize` (the layout
+  distributes minimums, not sizeHints), so a card min-height SMALLER than its
+  content squeezes the rows until they OVERLAP. Raising the inner VBox `spacing`
+  makes it WORSE (the card can't grow). FIX: raise the CARD's minimumSize height to
+  fit margins+rows+spacings.
+- native="true" QWidget CONTAINERS PAINT THE PALETTE BACKGROUND (a white box in a
+  light theme / dark box in dark). Invisible on a matching card, but a visible box
+  on a COLOURED surface (e.g. a % delta on a teal banner). FIX: make the holder
+  transparent (`w.setStyleSheet("background:transparent")` +
+  `w.setAttribute(Qt.WA_TranslucentBackground, True)`), or don't mark it native.
+- THE SCSS ENGINE HAS NO `_R/_G/_B` rgba TRIPLES unless the active theme declares
+  `Other-variables`. A stray `rgba($COLOR_ACCENT_1_R, …)` raises "Undefined
+  variable" and silently FAILS THE WHOLE scss compile -> the app renders UNSTYLED
+  (looks like the wrong/dark theme). For tints use base tokens
+  ($COLOR_ACCENT_1 / $COLOR_BACKGROUND_3), or add Other-variables to the theme.
+- TOP-LEVEL POPUPS (Qt.Popup, e.g. a QCustomMenu) are NOT captured by
+  win.grab()/app_screenshot (grab only sees the main window tree). They ARE on the
+  user's screen. Verify them with a headless `panel.grab()` pytest, not
+  app_screenshot. A child-overlay modal (parented to the window) IS captured.
+- SEED GUARDED DEMO DATA in a painted / data-driven widget's __init__ so it PREVIEWS
+  in Designer + render_widget (an empty QCustomDivergingBarChart/CardStack/Menu
+  paints nothing). The app replaces the seed the moment it calls setData()/setCards()
+  — gate the manager's "build vs recolour" on a `_built` flag, and give the widget a
+  clear()/clearContent() so seeds don't accumulate.
+- A NEW QCustom*.py needs a DESIGNER restart (designer_quit -> designer_launch) to
+  appear in the palette; render_widget/widgets_catalog usually pick it up without a
+  full MCP restart — confirm with render_widget (no unknown_widget = available).
+- MCP COLD-COMPILE TIMEOUT: on a cold .pyc cache the server can miss its connect
+  handshake window and never mount. Pre-warm with `python -m compileall Custom_Widgets`
+  then reconnect. Do NOT silently fall back to ad-hoc python/shell for build/run —
+  that breaks RULE #1; if the MCP is unreachable, say so and get it mounted.
+- PAINT AN AFFORDANCE, DON'T TYPE A GLYPH. A modal close "x" as button TEXT is a
+  glyph-icons lint ERROR (blocks the edit). Paint the X in a tiny QPushButton
+  subclass (recolours with the theme), or use a themed SVG icon.
+- REMOTE FONTS: `json-styles Fonts.LoadFonts[]` accepts `{"name","url"}` (downloaded
+  + cached by Utils.download_font; TTF/OTF only, NOT woff2) as well as `{"name","path"}`;
+  `Fonts.DefaultFont` applies the family APP-WIDE. Use it to ship a brand/web font
+  (e.g. Inter) — the bundled Rosario often fails to load and Qt falls back to a
+  mono/system font, so the whole UI looks off until you set a real sans.
+
 FILE LAYOUT: ui/<Name>.ui (class <Name>) -> compiled src/ui/ui_<Name>.py
 (class Ui_<Name>); generated-files/ holds intermediates; theme in
 json-styles/style.json + Qss/.
