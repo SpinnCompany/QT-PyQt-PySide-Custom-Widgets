@@ -17,6 +17,7 @@ downstream apps built with the library.
 | `glyph-icons` | **error** (fails CI / blocks the edit hook) | A unicode glyph used as an icon in UI text |
 | `hardcoded-hex` | warning | A raw `#rrggbb` colour buried in chrome |
 | `drop-shadow` | warning | `QGraphicsDropShadowEffect` with no justification |
+| `large-icon` | warning | A large image pushed through `setIconSize(QSize(N,N))` (N≥40) instead of a `QPixmap` |
 
 ### `glyph-icons` — real icons only, never unicode-glyph "icons"
 
@@ -58,6 +59,26 @@ unless the line carries a justification comment:
 
 ```python
 card.setGraphicsEffect(QGraphicsDropShadowEffect(self))  # allow-shadow: hero KPI card
+```
+
+### `large-icon` — large images belong on a `QPixmap`, not a `QIcon`
+
+`QIcon`/`setIcon` is for **small button glyphs**; it caps and softens when a
+button scales it up (and can pick up disabled/greyscale modes). A **prominent or
+large** image should be a **`QPixmap`** — `QLabel.setPixmap` (with
+`setScaledContents`), or `QPainter.drawPixmap` inside a painted widget — rendered
+at the real target size (2× for HiDPI) so it stays crisp.
+
+The rule is deliberately **conservative**: it only fires on
+`setIconSize(QSize(<int>, <int>))` where a **literal** dimension is `≥ 40`px.
+Small button icons and any computed / variable size never trip it, so false
+positives are minimal.
+
+```python
+btn.setIconSize(QSize(48, 48))   # warning: 48px QIcon → use a QLabel pixmap
+lbl.setPixmap(pm)                # OK: a QLabel pixmap at the real size
+btn.setIconSize(QSize(20, 20))   # OK: a small button glyph
+btn.setIconSize(QSize(64, 64))   # allow-large-icon: deliberate, e.g. a themed action tile
 ```
 
 ## Running the linter
