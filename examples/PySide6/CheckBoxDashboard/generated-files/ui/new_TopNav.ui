@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>TopNav</class>
+ <widget class="QWidget" name="TopNav">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>1180</width><height>60</height></rect></property>
+  <layout class="QHBoxLayout" name="topNavLayout">
+   <property name="leftMargin"><number>0</number></property>
+   <property name="topMargin"><number>0</number></property>
+   <property name="rightMargin"><number>0</number></property>
+   <property name="bottomMargin"><number>0</number></property>
+   <property name="spacing"><number>12</number></property>
+   <item>
+    <widget class="QLabel" name="logo">
+     <property name="minimumSize"><size><width>46</width><height>46</height></size></property>
+     <property name="maximumSize"><size><width>46</width><height>46</height></size></property>
+     <property name="alignment"><set>Qt::AlignCenter</set></property>
+     <property name="text"><string>N</string></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="navBtn0">
+     <property name="minimumSize"><size><width>0</width><height>46</height></size></property>
+     <property name="checkable"><bool>true</bool></property>
+     <property name="checked"><bool>true</bool></property>
+     <property name="text"><string>Check Box</string></property>
+     <property name="role" stdset="0"><string>navPill</string></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="navBtn1">
+     <property name="minimumSize"><size><width>0</width><height>46</height></size></property>
+     <property name="checkable"><bool>true</bool></property>
+     <property name="text"><string>Monitoring</string></property>
+     <property name="role" stdset="0"><string>navPill</string></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="navBtn2">
+     <property name="minimumSize"><size><width>0</width><height>46</height></size></property>
+     <property name="checkable"><bool>true</bool></property>
+     <property name="text"><string>Support</string></property>
+     <property name="role" stdset="0"><string>navPill</string></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="searchBtn">
+     <property name="minimumSize"><size><width>46</width><height>46</height></size></property>
+     <property name="maximumSize"><size><width>46</width><height>46</height></size></property>
+     <property name="text"><string /></property>
+     <property name="role" stdset="0"><string>iconPill</string></property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="topSpacer">
+     <property name="orientation"><enum>Qt::Horizontal</enum></property>
+     <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+    </spacer>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="profileTextLayout">
+     <property name="spacing"><number>0</number></property>
+     <item>
+      <widget class="QLabel" name="profileName">
+       <property name="alignment"><set>Qt::AlignRight|Qt::AlignVCenter</set></property>
+       <property name="text"><string>Bogdan Nikitin</string></property>
+       <property name="role" stdset="0"><string>profileName</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="profileHandle">
+       <property name="alignment"><set>Qt::AlignRight|Qt::AlignVCenter</set></property>
+       <property name="text"><string>@Nixtio</string></property>
+       <property name="role" stdset="0"><string>profileHandle</string></property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="avatar">
+     <property name="minimumSize"><size><width>46</width><height>46</height></size></property>
+     <property name="maximumSize"><size><width>46</width><height>46</height></size></property>
+     <property name="alignment"><set>Qt::AlignCenter</set></property>
+     <property name="text"><string /></property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <connections />
+<customwidgets><customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets></ui>

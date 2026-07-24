@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>TimelineCard</class>
+ <widget class="QWidget" name="TimelineCard">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>520</width><height>560</height></rect></property>
+  <layout class="QVBoxLayout" name="tlRoot">
+   <property name="leftMargin"><number>0</number></property>
+   <property name="topMargin"><number>0</number></property>
+   <property name="rightMargin"><number>0</number></property>
+   <property name="bottomMargin"><number>0</number></property>
+   <property name="spacing"><number>0</number></property>
+   <item>
+    <widget class="QFrame" name="timelineCard">
+     <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+     <property name="role" stdset="0"><string>card</string></property>
+     <layout class="QVBoxLayout" name="tlLayout">
+      <property name="leftMargin"><number>20</number></property>
+      <property name="topMargin"><number>18</number></property>
+      <property name="rightMargin"><number>20</number></property>
+      <property name="bottomMargin"><number>18</number></property>
+      <property name="spacing"><number>10</number></property>
+      <item>
+       <layout class="QHBoxLayout" name="tlHeader">
+        <item>
+         <widget class="QLabel" name="tlTitle">
+          <property name="text"><string>PROJECTS TIMELINE</string></property>
+          <property name="role" stdset="0"><string>cardTitle</string></property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="tlHeaderSpacer">
+          <property name="orientation"><enum>Qt::Horizontal</enum></property>
+          <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="timelineMenu">
+          <property name="minimumSize"><size><width>30</width><height>26</height></size></property>
+          <property name="maximumSize"><size><width>30</width><height>26</height></size></property>
+          <property name="text"><string /></property>
+          <property name="role" stdset="0"><string>menuBtn</string></property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QCustomGanttChart" name="timeline" native="true">
+        <property name="minimumSize"><size><width>0</width><height>300</height></size></property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding"><horstretch>0</horstretch><verstretch>1</verstretch></sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="tlFooter">
+        <property name="spacing"><number>18</number></property>
+        <item>
+         <widget class="QWidget" name="timelineLegend" native="true">
+          <layout class="QHBoxLayout" name="tlLegendLayout">
+           <property name="leftMargin"><number>0</number></property>
+           <property name="topMargin"><number>0</number></property>
+           <property name="rightMargin"><number>0</number></property>
+           <property name="bottomMargin"><number>0</number></property>
+           <property name="spacing"><number>18</number></property>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <spacer name="tlFooterSpacer">
+          <property name="orientation"><enum>Qt::Horizontal</enum></property>
+          <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="timelineTotal">
+          <property name="text"><string>Total: 284</string></property>
+          <property name="role" stdset="0"><string>total</string></property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomGanttChart</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomGanttChart</header>
+   <container>0</container>
+  </customwidget>
+ <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>

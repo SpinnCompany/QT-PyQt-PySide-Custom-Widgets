@@ -33,6 +33,8 @@ class QCustomSparkline(QWidget):
     __catalog__ = {
         "name": "QCustomSparkline",
         "props": {"valuesCsv": {"type": "string", "default": ""},
+                  "seriesCsv": {"type": "string", "default": ""},
+                  "seriesColorsCsv": {"type": "string", "default": ""},
                   "lineWidth": {"type": "float", "default": 2.2},
                   "smooth": {"type": "bool", "default": True},
                   "fillEnabled": {"type": "bool", "default": True},
@@ -52,6 +54,8 @@ class QCustomSparkline(QWidget):
         self._fill_opacity = 0.35
         self._line_width = 2.2
         self._smooth = True
+        self._series = []          # optional multi-series: list of [floats]
+        self._series_colors = []   # QColor per series (falls back to a palette)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         self.setMinimumSize(48, 24)
 
@@ -67,23 +71,48 @@ class QCustomSparkline(QWidget):
 
     def clear(self):
         self._values = []
+        self._series = []
         self.update()
+
+    def setSeries(self, series, colors=None):
+        """Draw MULTIPLE overlaid lines sharing one y-scale. `series` is a list
+        of value-lists; `colors` (optional) a matching list of colours. Overrides
+        the single `values` series until cleared. Fill is suppressed for a clean
+        multi-line read (as on the reference dashboards)."""
+        self._series = [[float(v) for v in s] for s in (series or [])]
+        if colors is not None:
+            self._series_colors = [QColor(c) for c in colors]
+        self.update()
+
+    def setSeriesColors(self, colors):
+        self._series_colors = [QColor(c) for c in (colors or [])]
+        self.update()
+
+    def series(self):
+        return [list(s) for s in self._series]
 
     # ------------------------------------------------------------------ #
     ## Painting
     # ------------------------------------------------------------------ #
-    def _points(self):
-        vals = self._values
+    def _points(self, vals=None, lo=None, hi=None):
+        vals = self._values if vals is None else vals
         if len(vals) < 2:
             return []
         w, h = self.width(), self.height()
         pad = max(2.0, self._line_width)
-        lo, hi = min(vals), max(vals)
+        if lo is None or hi is None:
+            lo, hi = min(vals), max(vals)
         rng = (hi - lo) or 1.0
         step = (w - 2 * pad) / (len(vals) - 1)
         return [QPointF(pad + i * step,
                         h - pad - (v - lo) / rng * (h - 2 * pad))
                 for i, v in enumerate(vals)]
+
+    def _series_color(self, i):
+        if i < len(self._series_colors):
+            return self._series_colors[i]
+        palette = ["#f6912b", "#8fe36b", "#7c6cf6", "#ff5d8f", "#38bdf8"]
+        return QColor(palette[i % len(palette)])
 
     def _path(self, pts):
         path = QPainterPath(pts[0])
@@ -98,6 +127,27 @@ class QCustomSparkline(QWidget):
         return path
 
     def paintEvent(self, e):
+        # multi-series mode: overlay each line on a shared y-scale, no fill
+        if self._series:
+            allv = [v for s in self._series for v in s]
+            if not allv:
+                return
+            lo, hi = min(allv), max(allv)
+            p = QPainter(self)
+            p.setRenderHint(QPainter.Antialiasing, True)
+            for i, s in enumerate(self._series):
+                pts = self._points(s, lo, hi)
+                if not pts:
+                    continue
+                pen = QPen(self._series_color(i), self._line_width)
+                pen.setJoinStyle(Qt.RoundJoin)
+                pen.setCapStyle(Qt.RoundCap)
+                p.setPen(pen)
+                p.setBrush(Qt.NoBrush)
+                p.drawPath(self._path(pts))
+            p.end()
+            return
+
         pts = self._points()
         if not pts:
             return
@@ -204,3 +254,36 @@ class QCustomSparkline(QWidget):
     def smooth(self, v):
         self._smooth = bool(v)
         self.update()
+
+    @Property(str)
+    def seriesCsv(self):
+        return ";".join(",".join("%g" % v for v in s) for s in self._series)
+
+    @seriesCsv.setter
+    def seriesCsv(self, text):
+        series = []
+        for chunk in str(text).replace("|", ";").split(";"):
+            chunk = chunk.strip()
+            if not chunk:
+                continue
+            row = []
+            for tok in chunk.split(","):
+                tok = tok.strip()
+                if not tok:
+                    continue
+                try:
+                    row.append(float(tok))
+                except ValueError:
+                    pass
+            if row:
+                series.append(row)
+        self.setSeries(series)
+
+    @Property(str)
+    def seriesColorsCsv(self):
+        return ",".join(c.name() for c in self._series_colors)
+
+    @seriesColorsCsv.setter
+    def seriesColorsCsv(self, text):
+        cols = [t.strip() for t in str(text).replace(";", ",").split(",") if t.strip()]
+        self.setSeriesColors(cols)
