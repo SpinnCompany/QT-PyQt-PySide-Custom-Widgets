@@ -1,7 +1,7 @@
 # file name: QCustomPieChart.py
 from typing import List, Tuple, Optional, Dict, Any
 from qtpy.QtCore import Qt, QPointF, Signal, Property, QRect, QTimer
-from qtpy.QtGui import QColor, QPen, QPainter, QPalette, QBrush, QLinearGradient, QRadialGradient
+from qtpy.QtGui import QColor, QPen, QPainter, QPalette, QBrush, QLinearGradient, QRadialGradient, QPixmap
 from qtpy.QtCharts import QChart, QPieSeries, QPieSlice, QChartView
 from qtpy.QtWidgets import QGraphicsLayout
 
@@ -105,6 +105,9 @@ class QCustomPieChart(QCustomChartBase, ChartCommonProps):
         self._labels_position = self.LABELS_POSITION_OUTSIDE  # Use constant
         self._show_percentages = True
         self._show_values = True
+        # Enhancement: per-slice hatch/pattern fills (indices within the series)
+        self._hatch_indices = set()
+        self._hatch_pattern = "bdiag"   # bdiag|fdiag|cross|horizontal|vertical|dense
         self._exploded_slices = []  # List of exploded slice names
         self._explosion_distance = 0.1  # Distance for exploded slices (0.0 to 1.0)
         self._hole_size = 0.0  # Size of hole in donut chart (0.0 to 0.9)
@@ -455,10 +458,11 @@ class QCustomPieChart(QCustomChartBase, ChartCommonProps):
                     # Store it for future reference
                     self._slice_colors[color_key] = color
                 
-                # Apply gradient or solid fill
-                if self._gradient_fill:
-                    gradient = self._createGradient(color)
-                    slice_obj.setBrush(gradient)
+                # Apply hatch / gradient / solid fill
+                if idx in self._hatch_indices:
+                    slice_obj.setBrush(self._hatch_brush(color))
+                elif self._gradient_fill:
+                    slice_obj.setBrush(self._createGradient(color))
                 else:
                     slice_obj.setBrush(QBrush(color))
                 
@@ -545,6 +549,56 @@ class QCustomPieChart(QCustomChartBase, ChartCommonProps):
             gradient.setColorAt(1.0, dark_color)
         
         return QBrush(gradient)
+
+    # ------------------------------------------------------------------ #
+    ## Enhancement: % callout labels + hatch fills
+    # ------------------------------------------------------------------ #
+    def setShowPercentLabels(self, on):
+        """Convenience: show a % label inside each slice (like QCustomDonut)."""
+        on = bool(on)
+        self._show_labels = on
+        self._show_percentages = on
+        if on:
+            self._show_values = False
+            self._labels_position = self.LABELS_POSITION_INSIDE
+        self.updateChart()
+
+    def setHatchIndices(self, indices):
+        """Slice indices (within the series) rendered with a hatch/pattern fill."""
+        self._hatch_indices = set(int(i) for i in (indices or []))
+        self.updateChart()
+
+    def setHatchPattern(self, name):
+        self._hatch_pattern = str(name)
+        self.updateChart()
+
+    def _hatch_brush(self, color):
+        """A tiling texture brush = a dim base of `color` + diagonal hatch lines,
+        so a QtCharts slice reads as a 'hatched' slice (matches QCustomDonut)."""
+        color = QColor(color)
+        tile = 10
+        pm = QPixmap(tile, tile)
+        pm.fill(Qt.transparent)
+        p = QPainter(pm)
+        p.setRenderHint(QPainter.Antialiasing, True)
+        base = QColor(color)
+        base.setAlpha(90)
+        p.fillRect(0, 0, tile, tile, base)
+        p.setPen(QPen(color, 2))
+        patt = self._hatch_pattern
+        if patt in ("bdiag", "cross", "dense"):
+            p.drawLine(0, tile, tile, 0)
+        if patt in ("fdiag", "cross"):
+            p.drawLine(0, 0, tile, tile)
+        if patt == "horizontal":
+            p.drawLine(0, tile // 2, tile, tile // 2)
+        if patt == "vertical":
+            p.drawLine(tile // 2, 0, tile // 2, tile)
+        if patt == "dense":                     # a second offset diagonal
+            p.drawLine(-tile // 2, tile // 2, tile // 2, -tile // 2)
+            p.drawLine(tile // 2, tile + tile // 2, tile + tile // 2, tile // 2)
+        p.end()
+        return QBrush(pm)
 
     def _getSliceColor(self, index: int) -> QColor:
         """Get a color for a slice based on index"""
@@ -662,7 +716,10 @@ class QCustomPieChart(QCustomChartBase, ChartCommonProps):
                 if color_key and color_key in self._hover_original_color:
                     original_color = self._hover_original_color[color_key]
                     slice_obj.setColor(original_color)
-                
+                    # setColor() replaces the brush -> re-apply the hatch texture
+                    if self._getSliceIndex(slice_name) in self._hatch_indices:
+                        slice_obj.setBrush(self._hatch_brush(original_color))
+
                 # Unexplode on hover exit if we exploded it
                 if self._hover_exploded and slice_name not in self._exploded_slices:
                     slice_obj.setExploded(False)
@@ -1442,6 +1499,43 @@ class QCustomPieChart(QCustomChartBase, ChartCommonProps):
     def showValues(self, value: bool):
         """Set show values state"""
         self._show_values = value
+        self.updateChart()
+
+    # --- enhancement props: % callout labels + hatch fills ---------------- #
+    @Property(bool)
+    def showPercentLabels(self):
+        """True when slices show a % label inside (convenience toggle)."""
+        return bool(self._show_labels and self._show_percentages
+                    and self._labels_position == self.LABELS_POSITION_INSIDE)
+
+    @showPercentLabels.setter
+    def showPercentLabels(self, value: bool):
+        self.setShowPercentLabels(value)
+
+    @Property(str)
+    def hatchCsv(self):
+        return ",".join(str(i) for i in sorted(self._hatch_indices))
+
+    @hatchCsv.setter
+    def hatchCsv(self, text):
+        out = set()
+        for tok in str(text).replace(";", ",").split(","):
+            tok = tok.strip()
+            if tok:
+                try:
+                    out.add(int(float(tok)))
+                except ValueError:
+                    pass
+        self._hatch_indices = out
+        self.updateChart()
+
+    @Property(str)
+    def hatchPattern(self):
+        return self._hatch_pattern
+
+    @hatchPattern.setter
+    def hatchPattern(self, value):
+        self._hatch_pattern = str(value)
         self.updateChart()
     
     @Property(float)
