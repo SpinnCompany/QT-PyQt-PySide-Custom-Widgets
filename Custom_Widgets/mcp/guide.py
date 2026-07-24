@@ -164,7 +164,14 @@ you consider a screen done. Rules (full text: docs/design/design-rules.md):
                             flips with the theme.
   * drop-shadow   [warning] no QGraphicsDropShadowEffect unless justified with a
                             trailing `# allow-shadow: <reason>`; prefer a
-                            borderless fill + big radius for depth.
+                            borderless fill + big radius, or a PAINTED glow/bloom
+                            or shadow shape (theme-aware, no waiver), for depth.
+  * large-icon    [warning] large images belong on a QPixmap, not a QIcon —
+                            setIconSize(QSize(N,N)) with a LITERAL N>=40 is
+                            flagged (QIcon caps + softens when scaled up). Use
+                            QLabel.setPixmap / QPainter.drawPixmap at 2x; keep
+                            setIcon for small (<=~22px) button glyphs. Suppress a
+                            deliberate case with `# allow-large-icon: <reason>`.
 
 A NEW glyph-icons error will block the edit hook — fix it or, for a genuine false
 positive, add `# noqa: <rule-id>`. Add/adjust rules in Custom_Widgets/lint/rules.py.
@@ -209,6 +216,51 @@ widget to any brand or mockup.
   looks) and, for colours, that can track the active theme. Prefer many small
   orthogonal knobs over a single "style" enum. Then EXTEND THIS MCP / the widget,
   and note the new knob in the catalog.
+- EXHAUST THE VARIATION SPACE UP FRONT — don't build the one look a single
+  reference shows and stop. As you design a widget, enumerate EVERY plausible way
+  a designer might want it and expose each as an opt-in knob (defaulting to the
+  look you already ship). For a painted primitive ask: can the SHAPE change
+  (arc <-> full circle <-> semicircle via startAngle/spanAngle)? can the SCALE be
+  shown as ticks AND/OR a dotted guide ring AND/OR numeric labels, independently?
+  can the CENTRE hold a value + unit, centred, and be overridden? can the ACTIVE
+  element be emphasised (the leading tick longer/brighter, the reached point
+  marked)? can the ends be ROUNDED or flat (arc "border radius")? do value changes
+  ANIMATE? can every COLOUR, WIDTH, GAP, RADIUS, COUNT and ANGLE (start / span /
+  offset) be set? Ship the knobs even when the immediate demo uses one combination
+  — flexibility is the product, and the next reference will want a different
+  combination. WORKED EXAMPLE: QCustomRadialGauge is ONE widget that flexes to
+  needle-speedometer, semicircle threat gauge, radial-tick timer, full-circle dial
+  and countdown via gaugeStyle + startAngle/spanAngle (any start point / full
+  circle) + zones/gradient + roundedCaps + animated/animationDuration + showGuide
+  (dashed inner scale, both styles) + scaleLabelEvery (numeric scale labels) +
+  emphasizeActiveTick + centerText/centerSuffix — not five separate gauge classes.
+- DEPTH: SHADOWS, GLOW & BLUR ARE PART OF THE LOOK. Modern references use
+  elevation and neon glow, not flat outlines — add them where they add depth (a
+  glowing active arc/bar, a soft drop shadow under a raised card, a blurred
+  frosted panel). PREFER PAINTED depth so it recolours with the theme and stays
+  crisp at any DPI: a GLOW = re-stroke the value shape a few times at growing
+  width + falling alpha (a cheap bloom that reads like a Gaussian blur); a SHADOW
+  = an offset dark shape or a radial-gradient falloff; a FROSTED panel = a
+  pre-blurred backdrop pixmap. Expose them as opt-in knobs (glow / glowStrength /
+  glowRadius, shadowColor / shadowBlur / shadowOffset) defaulting OFF so existing
+  looks are untouched. QGraphicsDropShadowEffect / QGraphicsBlurEffect are fine
+  for genuine elevation but (a) trip the `drop-shadow` lint rule unless justified
+  with a trailing `# allow-shadow: <reason>`, and (b) do NOT theme-flip on their
+  own — recolour them on theme change. WORKED EXAMPLE: QCustomRadialGauge `glow`
+  paints a theme-aware neon halo behind the value arc / lit ticks via the
+  re-stroke bloom — no effect object, no lint waiver, flips colour with the zone.
+- MAKE IT INTERACTIVE, AND USE CUSTOM (NOT NATIVE) TOOLTIPS. A static painted
+  chart is a first draft; the product is the interactive one. Where a reference
+  shows affordances — zoom (± control / wheel / drag-pan / double-click reset),
+  SEARCH (dim non-matches, highlight matches), HOVER feedback (grow / glow / a
+  detail popup), click/select — BUILD them in, don't ship a picture. And NEVER
+  use the OS tooltip (`QWidget.setToolTip()` / `QToolTip`) for rich hover info in
+  a modern UI: it renders an unthemed native box that clashes with the design.
+  We have modern widgets — PAINT a custom tooltip card (rounded, category dot +
+  label + value) or reuse `QCustomPopover` / `QCustomToast`, styled like the app,
+  so the hover detail looks like it belongs. WORKED EXAMPLE: QCustomBubbleChart
+  ships a painted tooltip card + hover grow/glow + wheel/± zoom + drag-pan +
+  `setSearchQuery` dimming + a painted zoom/search control — not `setToolTip`.
 - PROMOTE, DON'T HAND-PAINT. When a design needs a data surface NO existing
   widget covers, BUILD a real widget (painted; WIDGET_* metadata + a __catalog__
   entry + typed @Property inputs, e.g. a `valuesCsv`-style string), register it,
@@ -221,7 +273,28 @@ widget to any brand or mockup.
   text clips at the bottom edge. (c) A new `QCustom*.py` only appears in
   widgets_catalog / render_widget after a SERVER RESTART (the catalog is
   lru-cached per process) — until you restart, validate the new widget with
-  `stubgen` (it imports each module) + the live app.
+  `stubgen` (it imports each module) + the live app. (d) FLEX-SIZE the paint, do
+  NOT hardcode fractions of the widget. A painted widget that stacks content
+  (e.g. an arc + a big value + a status badge, or a chart + axis labels) must
+  SOLVE for the primary dimension so the WHOLE stack fits the box at any size —
+  `r = min(width_limit, (height - pad) / (top_extent + reserved_below))` — and
+  scale fonts/sub-elements off that solved size. Fixed fractions like
+  `cy = 0.6*h; fontsize = 0.3*r` look fine at the size you tested and then CLIP
+  (badge cut off) or overlap (value under the hub) when the widget is larger,
+  shorter or wider. Reserve explicit room for every stacked element (including
+  outside labels above and the value/badge below) and verify at BIG, SHORT and
+  WIDE sizes, not one. Overlap check: keep a min-clearance between a moving part
+  (needle hub) and text (`center_y >= hub + gap + fontHeight/2`). (e) CALCULATE
+  TEXT SIZE TO FIT — painted text must never overflow its container OR get
+  truncated. MEASURE the string with `QFontMetrics.horizontalAdvance()` against
+  the available width and scale the FONT down to fit
+  (`font.setPointSizeF(pt * maxW / adv)` when `adv > maxW`); don't pick a fixed
+  point size and hope, and don't just paint into a too-small rect (it clips). A
+  centre readout of variable-length strings (a compass "N" vs "SSW", a value "9"
+  vs "1234") must shrink for the long ones — QCustomCompass fits its 16-point
+  readout to the hub this way. Elide (`fm.elidedText`) ONLY when truncation is the
+  intended design (a bubble label, a list cell), never as a substitute for
+  sizing the box or the font.
 - Reference: QCustomDataTable exposes per-column `align`, twoline subtitle
   scale/weight, kebab colour + status-dot size, and opt-in header affordances
   (persistent per-column sort carets, select caret, actions gear) — enough to

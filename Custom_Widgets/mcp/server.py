@@ -795,6 +795,9 @@ def design_lint(paths: list[str] = [], select: str = "", ignore: str = "",
                               roles / a named palette constant so it flips theme
       drop-shadow   [warning] no QGraphicsDropShadowEffect without a justifying
                               `# allow-shadow:` comment
+      large-icon    [warning] large images belong on a QPixmap, not a QIcon —
+                              setIconSize(QSize(N,N)) with literal N>=40 flagged
+                              (`# allow-large-icon:` to justify)
 
     paths        files/dirs (default: the project's configured lint paths).
     select/ignore comma-separated rule ids to run-only / skip.

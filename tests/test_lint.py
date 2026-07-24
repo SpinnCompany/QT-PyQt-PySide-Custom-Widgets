@@ -146,6 +146,41 @@ def test_unused_shadow_import_not_flagged(tmp_path):
 
 
 # --------------------------------------------------------------------------- #
+# large-icon
+# --------------------------------------------------------------------------- #
+def test_large_icon_flagged(tmp_path):
+    src = 'b.setIconSize(QSize(48, 48))\n'
+    findings = lint_file(_write(tmp_path, "a.py", src), _cfg(tmp_path))
+    hits = [f for f in findings if f.rule == "large-icon"]
+    assert len(hits) == 1 and hits[0].severity == WARNING
+
+
+def test_large_icon_one_dimension(tmp_path):
+    src = 'b.setIconSize(QSize(80, 30))\n'
+    findings = lint_file(_write(tmp_path, "a.py", src), _cfg(tmp_path))
+    assert [f for f in findings if f.rule == "large-icon"]
+
+
+def test_small_icon_not_flagged(tmp_path):
+    src = 'b.setIconSize(QSize(21, 21))\n'
+    findings = lint_file(_write(tmp_path, "a.py", src), _cfg(tmp_path))
+    assert not [f for f in findings if f.rule == "large-icon"]
+
+
+def test_computed_icon_size_not_flagged(tmp_path):
+    # a non-literal QSize can't be judged -> never flagged (no false positives)
+    src = 'b.setIconSize(_qsize(64))\n'
+    findings = lint_file(_write(tmp_path, "a.py", src), _cfg(tmp_path))
+    assert not [f for f in findings if f.rule == "large-icon"]
+
+
+def test_large_icon_allow_comment(tmp_path):
+    src = 'b.setIconSize(QSize(96, 96))  # allow-large-icon: hero tile\n'
+    findings = lint_file(_write(tmp_path, "a.py", src), _cfg(tmp_path))
+    assert not [f for f in findings if f.rule == "large-icon"]
+
+
+# --------------------------------------------------------------------------- #
 # selection / config / clean pass
 # --------------------------------------------------------------------------- #
 def test_select_runs_only_chosen_rule(tmp_path):

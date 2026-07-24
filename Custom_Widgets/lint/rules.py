@@ -149,6 +149,61 @@ def _check_drop_shadow(ctx: FileCtx):
 
 
 # ------------------------------------------------------------------------- #
+# large-icon — a LARGE image pushed through QIcon/setIcon instead of a QPixmap
+# ------------------------------------------------------------------------- #
+# QIcon caps + softens when a button scales it up; prominent/large images should
+# be a QPixmap (QLabel.setPixmap / QPainter.drawPixmap at 2x). Conservative: we
+# only fire on `setIconSize(QSize(<int>, <int>))` where a LITERAL dimension is
+# >= the threshold. Small button glyphs and any computed/variable size never
+# trip it, so false positives are minimal.
+_LARGE_ICON_PX = 40
+
+
+def _int_const(node):
+    if isinstance(node, ast.Constant) and isinstance(node.value, int) and not isinstance(node.value, bool):
+        return node.value
+    return None
+
+
+def _qsize_max(arg):
+    """max(w, h) for a literal QSize(w, h) call, else None."""
+    if not (isinstance(arg, ast.Call) and len(arg.args) >= 2):
+        return None
+    fn = arg.func
+    name = fn.id if isinstance(fn, ast.Name) else (fn.attr if isinstance(fn, ast.Attribute) else "")
+    if name != "QSize":
+        return None
+    w, h = _int_const(arg.args[0]), _int_const(arg.args[1])
+    if w is None or h is None:
+        return None
+    return max(w, h)
+
+
+def _check_large_icon(ctx: FileCtx):
+    if ctx.tree is None:
+        return
+    for node in ast.walk(ctx.tree):
+        if not (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+                and node.func.attr == "setIconSize" and node.args):
+            continue
+        size = _qsize_max(node.args[0])
+        if size is None or size < _LARGE_ICON_PX:
+            continue
+        line, col = node.lineno, node.col_offset + 1
+        src = ctx.lines[line - 1] if 0 < line <= len(ctx.lines) else ""
+        if "allow-large-icon" in src:
+            continue
+        yield Finding(
+            "large-icon", ctx.rel, line, col,
+            "setIconSize(%dpx) puts a LARGE image on a QIcon — QIcon caps + softens "
+            "when scaled up. Render large/prominent images as a QPixmap "
+            "(QLabel.setPixmap or QPainter.drawPixmap at 2x); reserve setIcon for "
+            "small (<=~22px) button glyphs. Justify a deliberate case with a "
+            "trailing `# allow-large-icon: <reason>`." % size,
+            WARNING, symbol="")
+
+
+# ------------------------------------------------------------------------- #
 # registry
 # ------------------------------------------------------------------------- #
 _ALL = [
@@ -170,6 +225,14 @@ _ALL = [
          WARNING, _check_drop_shadow,
          help="Depth should come from a borderless fill a step off the canvas + "
               "big radius, not shadows or hairline borders."),
+    Rule("large-icon",
+         "Large images belong on a QPixmap, not a scaled QIcon/setIcon.",
+         WARNING, _check_large_icon,
+         help="setIconSize(QSize(N,N)) with N>=40 flags a LARGE QIcon; QIcon caps "
+              "+ softens when scaled up. Use QLabel.setPixmap / QPainter."
+              "drawPixmap at 2x for prominent images; keep setIcon for small "
+              "button glyphs. Only literal QSize sizes are checked (no false "
+              "positives from computed sizes); suppress with `# allow-large-icon`."),
 ]
 
 RULES = {r.id: r for r in _ALL}
