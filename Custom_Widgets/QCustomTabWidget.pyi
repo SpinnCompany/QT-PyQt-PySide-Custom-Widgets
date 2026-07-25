@@ -6,6 +6,9 @@ from typing import Any, ClassVar
 
 
 class QCustomTabWidget(QTabWidget):
+    addTabRequested: ClassVar[Signal]
+    closableTabs: bool
+    showAddButton: bool
     tabStyle: str
     sizeVariant: str
     def __init__(self, parent = ...) -> None: ...

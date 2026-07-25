@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TimelineComponent</class>
+ <widget class="QCustomComponent" name="TimelineComponent">
+  <property name="geometry">
+   <rect><x>0</x><y>0</y><width>380</width><height>190</height></rect>
+  </property>
+  <layout class="QVBoxLayout" name="timelineOuter">
+   <property name="spacing"><number>0</number></property>
+   <property name="leftMargin"><number>0</number></property>
+   <property name="topMargin"><number>0</number></property>
+   <property name="rightMargin"><number>0</number></property>
+   <property name="bottomMargin"><number>0</number></property>
+   <item>
+    <widget class="QFrame" name="timelineFrame">
+     <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+     <layout class="QVBoxLayout" name="timelineLayout">
+      <property name="spacing"><number>0</number></property>
+      <property name="leftMargin"><number>10</number></property>
+      <property name="topMargin"><number>10</number></property>
+      <property name="rightMargin"><number>10</number></property>
+      <property name="bottomMargin"><number>10</number></property>
+      <item>
+       <widget class="QCustomMediaTimeline" name="mediaTimeline" native="true"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomComponent</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomComponent</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomMediaTimeline</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomMediaTimeline</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,0 +1,81 @@
+{
+    "ShowLogs": true,
+    "QtBinding": "PySide6",
+    "LiveCompileQss": true,
+    "CheckForMissingicons": true,
+    "QMainWindow": {
+        "title": "Node Studio"
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "NodeStudio",
+            "OrganizationDomain": "spinncode.com"
+        },
+        "ThemeSettings": {
+            "QtDesignerIconsColor": "theme",
+            "CustomThemes": [
+                {
+                    "Theme-name": "Studio Dark",
+                    "Default-Theme": true,
+                    "Create-icons": true,
+                    "Background-color": "#0e0f16",
+                    "Text-color": "#e7e9f3",
+                    "Accent-color": "#6c7bff",
+                    "Icons-color": "#c9cde0"
+                },
+                {
+                    "Theme-name": "Studio Light",
+                    "Default-Theme": false,
+                    "Create-icons": true,
+                    "Background-color": "#f3f4fa",
+                    "Text-color": "#171a24",
+                    "Accent-color": "#5865f2",
+                    "Icons-color": "#3a3f52"
+                }
+            ]
+        }
+    },
+    "NodePalette": {
+        "Studio Dark": {
+            "canvasBg": "#0e0f16",
+            "gridColor": "#22ffffff",
+            "nodeColor": "#171a24",
+            "nodeHeaderColor": "#20232f",
+            "nodeBorderColor": "#2effffff",
+            "text": "#e7e9f3",
+            "muted": "#8b90a6",
+            "ideas": "#f2a63b",
+            "refs": "#4ade80",
+            "settings": "#6c7bff",
+            "models": "#38bdf8",
+            "voice": "#c17ce0",
+            "music": "#38bdf8",
+            "cableWarm": "#c98a3a",
+            "cableViolet": "#a05cf0",
+            "cableIndigo": "#6c7bff",
+            "clip": "#c17ce0",
+            "wave": "#8b90a6"
+        },
+        "Studio Light": {
+            "canvasBg": "#eceef6",
+            "gridColor": "#22000000",
+            "nodeColor": "#ffffff",
+            "nodeHeaderColor": "#f2f3f9",
+            "nodeBorderColor": "#1e000000",
+            "text": "#171a24",
+            "muted": "#6b7183",
+            "ideas": "#e08a1e",
+            "refs": "#22a55b",
+            "settings": "#5865f2",
+            "models": "#0ea5d8",
+            "voice": "#a855c7",
+            "music": "#0ea5d8",
+            "cableWarm": "#d08a2c",
+            "cableViolet": "#8b46d6",
+            "cableIndigo": "#5865f2",
+            "clip": "#b06fd0",
+            "wave": "#8b90a6"
+        }
+    }
+}

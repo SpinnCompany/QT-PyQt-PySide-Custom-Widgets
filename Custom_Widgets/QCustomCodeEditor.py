@@ -25,8 +25,8 @@ class QCustomCodeEditor(QWidget):
             "c++"    : "C++"
         }
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
 
         self.layout = QHBoxLayout()
         self.layout.setContentsMargins(0, 0, 0, 0)
@@ -181,7 +181,7 @@ class QCustomSyntaxHighlighter(QSyntaxHighlighter):
             _color.setRgb(*hexc)
 
         else:
-            _color.setNamedColor(color)
+            _color = QColor(color)
 
         if returnColor: return _color
 
@@ -232,14 +232,14 @@ class QCustomSyntaxHighlighter(QSyntaxHighlighter):
             self.operators = operators = (
                     "=",
                     "==", "!=", "<", "<=", ">", ">=",
-                    "\+", "-", "\*", "/", "//", "\%", "\*\*",
-                    "\+=", "-=", "\*=", "/=", "\%=",
-                    "\^", "\|", "\&", "\~", ">>", "<<",
-                    "\+\+", "--", "\&\&", "\|\|"
+                    r"\+", "-", r"\*", "/", "//", r"\%", r"\*\*",
+                    r"\+=", "-=", r"\*=", "/=", r"\%=",
+                    r"\^", r"\|", r"\&", r"\~", ">>", "<<",
+                    r"\+\+", "--", r"\&\&", r"\|\|"
                 )
 
             self.braces = (
-                    "\{", "\}", "\(", "\)", "\[", "\]",
+                    r"\{", r"\}", r"\(", r"\)", r"\[", r"\]",
                 )
 
         else:

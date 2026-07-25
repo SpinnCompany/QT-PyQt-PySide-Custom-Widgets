@@ -1137,6 +1137,84 @@ except Exception as e:
     logException(e, message="Error registering messaging widgets")
 
 
+from Custom_Widgets.QCustomCoverCard import QCustomCoverCard
+
+# Registering QCustomCoverCard with error handling
+try:
+    logInfo("Registering QCustomCoverCard")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomCoverCard, module=QCustomCoverCard.WIDGET_MODULE,
+        tool_tip=QCustomCoverCard.WIDGET_TOOLTIP, xml=QCustomCoverCard.WIDGET_DOM_XML,
+        icon=QCustomCoverCard.WIDGET_ICON, group="Media")
+except Exception as e:
+    logException(e, message="Error registering QCustomCoverCard")
+
+
+from Custom_Widgets.QCustomCoverFlow import QCustomCoverFlow
+
+# Registering QCustomCoverFlow with error handling
+try:
+    logInfo("Registering QCustomCoverFlow")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomCoverFlow, module=QCustomCoverFlow.WIDGET_MODULE,
+        tool_tip=QCustomCoverFlow.WIDGET_TOOLTIP, xml=QCustomCoverFlow.WIDGET_DOM_XML,
+        icon=QCustomCoverFlow.WIDGET_ICON, group="Media")
+except Exception as e:
+    logException(e, message="Error registering QCustomCoverFlow")
+
+
+from Custom_Widgets.QCustomPlayerBar import QCustomPlayerBar
+
+# Registering QCustomPlayerBar with error handling
+try:
+    logInfo("Registering QCustomPlayerBar")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomPlayerBar, module=QCustomPlayerBar.WIDGET_MODULE,
+        tool_tip=QCustomPlayerBar.WIDGET_TOOLTIP, xml=QCustomPlayerBar.WIDGET_DOM_XML,
+        icon=QCustomPlayerBar.WIDGET_ICON, group="Media")
+except Exception as e:
+    logException(e, message="Error registering QCustomPlayerBar")
+
+
+from Custom_Widgets.QCustomNodeGraph import QCustomNodeGraph
+
+# Registering QCustomNodeGraph with error handling
+try:
+    logInfo("Registering QCustomNodeGraph")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomNodeGraph, module=QCustomNodeGraph.WIDGET_MODULE,
+        tool_tip=QCustomNodeGraph.WIDGET_TOOLTIP, xml=QCustomNodeGraph.WIDGET_DOM_XML,
+        icon=QCustomNodeGraph.WIDGET_ICON, group="Containers")
+except Exception as e:
+    logException(e, message="Error registering QCustomNodeGraph")
+
+
+from Custom_Widgets.QCustomMediaTimeline import QCustomMediaTimeline
+
+# Registering QCustomMediaTimeline with error handling
+try:
+    logInfo("Registering QCustomMediaTimeline")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomMediaTimeline, module=QCustomMediaTimeline.WIDGET_MODULE,
+        tool_tip=QCustomMediaTimeline.WIDGET_TOOLTIP, xml=QCustomMediaTimeline.WIDGET_DOM_XML,
+        icon=QCustomMediaTimeline.WIDGET_ICON, group="Media")
+except Exception as e:
+    logException(e, message="Error registering QCustomMediaTimeline")
+
+
+from Custom_Widgets.QCustomQLabel import QCustomQLabel
+
+# Registering QCustomQLabel with error handling
+try:
+    logInfo("Registering QCustomQLabel")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomQLabel, module=QCustomQLabel.WIDGET_MODULE,
+        tool_tip=QCustomQLabel.WIDGET_TOOLTIP, xml=QCustomQLabel.WIDGET_DOM_XML,
+        icon=QCustomQLabel.WIDGET_ICON, group="Display Widgets")
+except Exception as e:
+    logException(e, message="Error registering QCustomQLabel")
+
+
 ########################################################################
 ## DESIGNER BRIDGE - lets a running app push theme changes into Designer
 ## (refresh icons / restyle open forms). See Custom_Widgets/DesignerBridge.py

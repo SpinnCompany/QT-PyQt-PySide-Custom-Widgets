@@ -15,10 +15,37 @@
 ## standalone. The leading chip takes either a QPixmap/QIcon (setIcon) or a
 ## letter/emoji (iconText). Set content in code or via the Designer properties.
 ########################################################################
-from qtpy.QtCore import Qt, Property, QSize
-from qtpy.QtGui import QColor, QPixmap, QIcon
+from qtpy.QtCore import Qt, Property, QSize, QPointF
+from qtpy.QtGui import QColor, QPixmap, QIcon, QPainter
 from qtpy.QtWidgets import (QFrame, QLabel, QVBoxLayout, QHBoxLayout,
                             QWidget, QSizePolicy)
+
+
+class _DragHandle(QWidget):
+    """A painted 2x3 dot grip — the opt-in reorder affordance for a list row."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._color = QColor(150, 155, 170)
+        self.setFixedWidth(18)
+        self.setCursor(Qt.OpenHandCursor)
+
+    def setColor(self, c):
+        self._color = QColor(c)
+        self.update()
+
+    def paintEvent(self, e):
+        p = QPainter(self)
+        p.setRenderHint(QPainter.Antialiasing, True)
+        p.setPen(Qt.NoPen)
+        p.setBrush(self._color)
+        cx = self.width() / 2.0
+        cy = self.height() / 2.0
+        r = 1.6
+        for gx in (cx - 3, cx + 3):
+            for gy in (cy - 6, cy, cy + 6):
+                p.drawEllipse(QPointF(gx, gy), r, r)
+        p.end()
 
 
 class QCustomListRow(QFrame):
@@ -45,7 +72,9 @@ class QCustomListRow(QFrame):
                   "valueColor": {"type": "color", "default": ""},
                   "subtitleColor": {"type": "color", "default": "#3355e8"},
                   "chipSize": {"type": "int", "default": 44},
-                  "chipRadius": {"type": "int", "default": 13}},
+                  "chipRadius": {"type": "int", "default": 13},
+                  "showDragHandle": {"type": "bool", "default": False},
+                  "dragHandleColor": {"type": "color", "default": "#969baa"}},
         "signals": [],
         "tokens_used": ["accent"],
     }
@@ -97,6 +126,12 @@ class QCustomListRow(QFrame):
         rightw = QWidget()
         rightw.setLayout(right)
         lay.addWidget(rightw, 0)
+
+        # opt-in trailing reorder grip (hidden by default -> existing rows are
+        # unchanged)
+        self._grip = _DragHandle()
+        self._grip.hide()
+        lay.addWidget(self._grip, 0)
 
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         if icon is not None:
@@ -257,3 +292,19 @@ class QCustomListRow(QFrame):
     def chipRadius(self, v):
         self._chip_radius = max(0, int(v))
         self._applyStyles()
+
+    @Property(bool)
+    def showDragHandle(self):
+        return self._grip.isVisible()
+
+    @showDragHandle.setter
+    def showDragHandle(self, v):
+        self._grip.setVisible(bool(v))
+
+    @Property(QColor)
+    def dragHandleColor(self):
+        return self._grip._color
+
+    @dragHandleColor.setter
+    def dragHandleColor(self, c):
+        self._grip.setColor(c)

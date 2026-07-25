@@ -427,3 +427,104 @@ Rationale: the gauge family and heatmap have **zero** current coverage, are core
 dashboard surfaces, and are already on the roadmap note. `QCustomLiquidGauge`
 rides alongside the gauge work. Bubble chart, compass, and the donut enhancement
 are polish; the map is its own project.
+
+---
+
+## 🆕 New reference — 2026-07-26 (node-based AI creative-tool UI)
+
+**Reference:** a dark "New Character" AI generation studio (Dribbble-style).
+A node/graph **canvas** on the left (IDEAS → SETTINGS → REFERENCES → AI MODELS
+nodes wired by curved cables on a dotted-grid backdrop), a reasoning **code
+panel** ("Thoughts for 15s") below it, a **3D character preview** on the right,
+and a **media timeline** (ruler `0:01…0:09`, playhead, a purple clip block, and
+a waveform lane) along the bottom. Document tabs on top, icon rails on both
+sides, an Export primary button, and a floating `+` FAB.
+
+Unlike the data-viz backlog above (now fully shipped), this reference is an
+**app-shell / creative-tool** class of UI. Most of it is already covered by the
+82-widget catalog; only **two** widgets are genuinely missing, plus a couple of
+small enhancements to existing ones.
+
+### ✅ Already covered by the catalog (build the UI from these)
+
+| Reference region | Existing widget(s) |
+| --- | --- |
+| Top document tabs (`New Character` · `Framer Templates` · `Untitled` · `+`) | `QCustomTabWidget` (pills variant) — see enhancement note below |
+| Left / right vertical icon rails | `QCustomSidebar` + `QCustomSidebarButton` (collapsed rail), or a column of `QCustomActionButton` |
+| Top-right actions (code / play / share) + **Export** | `QCustomQPushButton` (icon buttons + `primary` variant) |
+| `10s` duration pill, back/forward | `QCustomBadge` / small `QCustomQPushButton` |
+| IDEAS / SETTINGS / REFERENCES / AI MODELS node **bodies** | `QCustomCard` surface (the *node framing / wiring* is the missing part — see below) |
+| SETTINGS rows (colour icon + label + inline select) | `QCustomListRow` + `QCustomComboBox` per row (drag handle is the only gap — see below) |
+| Fun / Auto / Fast / Happy / Piano selects | `QCustomComboBox` |
+| AI-model chips (Gemini tile, `Seedance2` pill) | `QCustomChipGroup` / `QCustomChip` / `QCustomTileButton` |
+| "Thoughts for 15s" code panel (line numbers + syntax) | `QCustomCodeEditor` (wrap in `QCustomAccordion` for the collapsible header) |
+| 3D character preview (large hero image) | `QLabel.setPixmap` per the *larger-images-use-pixmap* rule (not `setIcon`); `QCustomImageViewer` only if a lightbox is wanted |
+| Bottom audio waveform lane | `QCustomWaveform` / `QCustomVoiceMessage` |
+| Reference thumbnail w/ status dot + close | `QCustomFileCard` or `QCustomCard` + `QCustomBadge` status dot |
+| Floating `+` FAB (indigo) | `QCustomActionButton` (round icon button) |
+
+### ✅ Missing → SHIPPED 2026-07-26
+
+Both new widgets were built, registered, `.pyi`-stubbed, unit-tested
+(`tests/test_qcustom_nodegraph_timeline.py`, 10 tests), lint-clean, and are
+used in a real forms-pipeline example — **`examples/PySide6/NodeStudio`**
+(the full reference screen, both themes, verified live via MCP). Also fixed
+`QCustomCodeEditor` to accept `parent=None` so it can be promoted in a `.ui`.
+
+1. **`QCustomNodeGraph`** — ✅ SHIPPED. A node-based visual editor canvas.
+   *The* headline gap; nothing in the catalog did node wiring. Scope:
+   - Infinite **pan/zoom** canvas with a **dotted-grid** background (qproperty
+     grid colour/spacing so it tokenises on theme switch).
+   - Hosts draggable **node cards**: titled header, optional header `+`/status
+     dot, a body that can host arbitrary child widgets (so a SETTINGS node is
+     just `QCustomListRow`s + `QCustomComboBox`es inside a node).
+   - Typed **input/output ports** (the coloured socket dots) with
+     **drag-to-connect** producing curved **bezier cables** (per-cable colour;
+     the reference uses a warm orange and a violet). Rubber-band multi-select,
+     delete, reposition; emit `connectionMade(src, dst)` / `nodeMoved` /
+     `nodeSelected`.
+   - Designer-droppable shell + a data-driven `setGraph(nodes, edges)` API so a
+     graph can be defined declaratively.
+   - Suggested split: `QCustomNodeGraph` (canvas + edges) owns everything;
+     nodes and ports are internal item classes, not separate droppables, to
+     keep the Designer surface small. Mirror the painted-widget convention
+     (`WIDGET_ICON/TOOLTIP/MODULE/DOM_XML` + `__catalog__` + typed `@Property`s
+     + qproperty colours) even though it's interactive, not a static paint.
+
+2. **`QCustomMediaTimeline`** — ✅ SHIPPED. A horizontal
+   multi-track clip/scrubber timeline. Existing near-misses did **not** cover it:
+   `QCustomVideoPlayer` is a single 0..1 seek bar (no ruler/clips/tracks),
+   `QCustomGanttChart` is static pill bars (no playhead/scrub/trim), and
+   `QCustomWaveform` is only the waveform. Scope:
+   - A **time ruler** with labelled ticks (`0:01…0:09`, configurable
+     `duration` + tick interval) and a draggable **playhead** emitting
+     `positionChanged(seconds)`.
+   - One or more **track lanes** holding **clip regions** (rounded blocks —
+     the purple clip) that can be moved and **trimmed** from either edge;
+     emit `clipMoved` / `clipTrimmed`. One lane can render a `QCustomWaveform`
+     as its content (the audio track in the reference).
+   - qproperty colours (ruler, playhead, clip fill/handle) for theming.
+
+### 🔧 Small enhancements to existing widgets (not new widgets)
+
+- **`QCustomTabWidget`** — the document tabs are **closable** (per-tab `×`) and
+  have a trailing **`+` add-tab** affordance. Add `tabsClosable` + an optional
+  `showAddButton` with `tabCloseRequested` / `addTabRequested` signals if not
+  already present.
+- **`QCustomListRow`** — optional trailing **drag-handle** slot (the `⣿` grip on
+  each SETTINGS row) for reorderable rows. Alternatively a thin dedicated
+  `QCustomPropertyRow` (icon + label + inline editor + grip), but composing
+  `QCustomListRow` + `QCustomComboBox` is enough for v1.
+
+### Suggested build order (this reference)
+
+1. `QCustomNodeGraph` — highest value, zero coverage, unlocks the whole
+   left-canvas class of UIs (flow builders, pipelines, shader/AI graphs).
+2. `QCustomMediaTimeline` — reusable across any video/audio/animation tool.
+3. Tab + list-row enhancements — cheap, do alongside whichever app first needs
+   them.
+
+Then the "later we can build same UI" app becomes: node graph on the left,
+`QCustomCodeEditor` reasoning panel, pixmap hero preview, media timeline at the
+bottom — all assembled via the forms pipeline (granular component `.ui` files),
+no new painting beyond the two widgets above.

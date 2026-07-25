@@ -1,0 +1,151 @@
+/* ===================================================================
+   Node Studio — component chrome (design-token driven).
+   Tokens only: $COLOR_BACKGROUND_1..6, $COLOR_TEXT_1..4, $COLOR_ACCENT_1..4.
+   Icons via themed SVG urls ($PATH_RESOURCES) so they recolour on theme flip.
+   Dark theme: BG_1 is DARKEST; higher numbers lighter. Never styled in a .ui.
+   =================================================================== */
+
+/* --- Window + big surfaces ------------------------------------------------ */
+#centralwidget { background-color: $COLOR_BACKGROUND_1; }
+
+#topBar {
+    background-color: $COLOR_BACKGROUND_1;
+    border: none;
+    border-bottom: 1px solid $COLOR_BACKGROUND_3;
+}
+#leftRail, #rightRail {
+    background-color: $COLOR_BACKGROUND_1;
+    border: none;
+    border-right: 1px solid $COLOR_BACKGROUND_3;
+}
+#rightRail { border-right: none; border-left: 1px solid $COLOR_BACKGROUND_3; }
+
+#canvasFrame  { background-color: $COLOR_BACKGROUND_1; border: none; }
+#thoughtsFrame {
+    background-color: $COLOR_BACKGROUND_2;
+    border: none;
+    border-top: 1px solid $COLOR_BACKGROUND_3;
+}
+#previewFrame {
+    background-color: $COLOR_BACKGROUND_2;
+    border: none;
+    border-left: 1px solid $COLOR_BACKGROUND_3;
+}
+#timelineFrame {
+    background-color: $COLOR_BACKGROUND_1;
+    border: none;
+    border-top: 1px solid $COLOR_BACKGROUND_3;
+    border-left: 1px solid $COLOR_BACKGROUND_3;
+}
+QSplitter::handle { background-color: $COLOR_BACKGROUND_1; }
+QSplitter::handle:hover { background-color: $COLOR_ACCENT_1; }
+
+/* --- App mark + section dots --------------------------------------------- */
+#appMark {
+    background-color: $COLOR_ACCENT_1;
+    border-radius: 8px;
+}
+#thoughtsDot {
+    background-color: $COLOR_ACCENT_1;
+    border-radius: 5px;
+}
+#thoughtsTitle {
+    background: transparent;
+    color: $COLOR_TEXT_2;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* --- Tab buttons --------------------------------------------------------- */
+QCustomQPushButton#tabNew, QCustomQPushButton#tabFramer, QCustomQPushButton#tabUntitled {
+    background-color: transparent;
+    color: $COLOR_TEXT_3;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: left;
+}
+QCustomQPushButton#tabNew:hover, QCustomQPushButton#tabFramer:hover, QCustomQPushButton#tabUntitled:hover {
+    background-color: $COLOR_BACKGROUND_2;
+    color: $COLOR_TEXT_1;
+}
+QCustomQPushButton#tabNew:checked, QCustomQPushButton#tabFramer:checked, QCustomQPushButton#tabUntitled:checked {
+    background-color: $COLOR_BACKGROUND_3;
+    color: $COLOR_TEXT_1;
+    border: 1px solid $COLOR_BACKGROUND_4;
+}
+
+/* --- Generic icon buttons (top bar + rails) ------------------------------ */
+QCustomQPushButton#tabAdd, QCustomQPushButton#navPrev, QCustomQPushButton#navNext,
+QCustomQPushButton#codeBtn, QCustomQPushButton#playBtn, QCustomQPushButton#shareBtn,
+QCustomQPushButton#rlText, QCustomQPushButton#rlLayers, QCustomQPushButton#rlPen,
+QCustomQPushButton#rlBrush, QCustomQPushButton#rlGrid, QCustomQPushButton#rlAttach,
+QCustomQPushButton#themeToggle, QCustomQPushButton#fabAdd,
+QCustomQPushButton#rrCursor, QCustomQPushButton#rrStar, QCustomQPushButton#rrDrop,
+QCustomQPushButton#rrLock, QCustomQPushButton#rrBulb {
+    background-color: transparent;
+    color: $COLOR_TEXT_2;
+    border: none;
+    border-radius: 9px;
+}
+QCustomQPushButton#tabAdd:hover, QCustomQPushButton#navPrev:hover, QCustomQPushButton#navNext:hover,
+QCustomQPushButton#codeBtn:hover, QCustomQPushButton#playBtn:hover, QCustomQPushButton#shareBtn:hover,
+QCustomQPushButton#rlText:hover, QCustomQPushButton#rlLayers:hover, QCustomQPushButton#rlPen:hover,
+QCustomQPushButton#rlBrush:hover, QCustomQPushButton#rlGrid:hover, QCustomQPushButton#rlAttach:hover,
+QCustomQPushButton#themeToggle:hover, QCustomQPushButton#fabAdd:hover,
+QCustomQPushButton#rrCursor:hover, QCustomQPushButton#rrStar:hover, QCustomQPushButton#rrDrop:hover,
+QCustomQPushButton#rrLock:hover, QCustomQPushButton#rrBulb:hover {
+    background-color: $COLOR_BACKGROUND_3;
+    color: $COLOR_TEXT_1;
+}
+/* the selected tool in either rail gets an accent identity */
+QCustomQPushButton#rlText:checked, QCustomQPushButton#rlLayers:checked,
+QCustomQPushButton#rlPen:checked, QCustomQPushButton#rlBrush:checked,
+QCustomQPushButton#rlGrid:checked, QCustomQPushButton#rlAttach:checked,
+QCustomQPushButton#rrCursor:checked, QCustomQPushButton#rrStar:checked,
+QCustomQPushButton#rrDrop:checked, QCustomQPushButton#rrLock:checked,
+QCustomQPushButton#rrBulb:checked {
+    background-color: $COLOR_BACKGROUND_3;
+    color: $COLOR_ACCENT_1;
+}
+/* pressed feedback for the momentary action buttons */
+QCustomQPushButton#navPrev:pressed, QCustomQPushButton#navNext:pressed,
+QCustomQPushButton#codeBtn:pressed, QCustomQPushButton#playBtn:pressed,
+QCustomQPushButton#shareBtn:pressed, QCustomQPushButton#tabAdd:pressed {
+    background-color: $COLOR_ACCENT_1;
+    color: #ffffff;
+}
+QCustomQPushButton#fabAdd {
+    background-color: $COLOR_ACCENT_1;
+    color: #ffffff;
+}
+QCustomQPushButton#fabAdd:hover { background-color: $COLOR_ACCENT_2; }
+QCustomQPushButton#fabAdd:pressed { background-color: $COLOR_ACCENT_3; }
+
+/* --- Duration pill + export ---------------------------------------------- */
+QCustomQPushButton#durationBtn {
+    background-color: $COLOR_BACKGROUND_3;
+    color: $COLOR_TEXT_1;
+    border: 1px solid $COLOR_BACKGROUND_4;
+    border-radius: 9px;
+    padding: 0 10px;
+    font-size: 12px;
+    font-weight: 600;
+}
+QCustomQPushButton#exportBtn {
+    background-color: $COLOR_ACCENT_1;
+    color: #ffffff;
+    border: none;
+    border-radius: 9px;
+    font-size: 12px;
+    font-weight: 700;
+}
+QCustomQPushButton#exportBtn:hover { background-color: $COLOR_ACCENT_2; }
+/* Button icons themselves are set + recoloured in GuiFunctions (themed_icon)
+   so they re-tint on every theme flip; the scss above owns only the chrome. */
+
+/* --- Code editor + preview ----------------------------------------------- */
+QCustomCodeEditor { background: transparent; }
+#previewImage { background: transparent; border: none; }

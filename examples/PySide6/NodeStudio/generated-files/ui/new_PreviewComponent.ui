@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>PreviewComponent</class>
+ <widget class="QCustomComponent" name="PreviewComponent">
+  <property name="geometry">
+   <rect><x>0</x><y>0</y><width>380</width><height>520</height></rect>
+  </property>
+  <layout class="QVBoxLayout" name="previewOuter">
+   <property name="spacing"><number>0</number></property>
+   <property name="leftMargin"><number>0</number></property>
+   <property name="topMargin"><number>0</number></property>
+   <property name="rightMargin"><number>0</number></property>
+   <property name="bottomMargin"><number>0</number></property>
+   <item>
+    <widget class="QFrame" name="previewFrame">
+     <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+     <layout class="QVBoxLayout" name="previewLayout">
+      <property name="spacing"><number>0</number></property>
+      <property name="leftMargin"><number>0</number></property>
+      <property name="topMargin"><number>0</number></property>
+      <property name="rightMargin"><number>0</number></property>
+      <property name="bottomMargin"><number>0</number></property>
+      <item>
+       <widget class="QLabel" name="previewImage">
+        <property name="alignment"><set>Qt::AlignCenter</set></property>
+        <property name="text"><string /></property>
+        <property name="scaledContents"><bool>false</bool></property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomComponent</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomComponent</header>
+   <container>1</container>
+  </customwidget>
+ <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>
