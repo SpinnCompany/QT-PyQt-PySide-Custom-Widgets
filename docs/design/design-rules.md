@@ -39,6 +39,23 @@ The linter scans **string literals** in `.py` and text in `.ui` (module/class/
 function docstrings and code comments are ignored), so prose that merely *names*
 a glyph is fine — only glyphs that would render in the UI are flagged.
 
+> **Convention — custom-button icons recolour from QSS, not Python.**
+> `QCustomQPushButton` and `QCustomSidebarButton` recolour their own SVG from two
+> QSS properties: `qproperty-iconName` (a bundled feather/material name or a `.svg`
+> path) + `qproperty-iconColor` (a token). Prefer this to `qproperty-icon:
+> url(theme-icons:…)` on a custom button — `iconColor` follows **state selectors**
+> and the **theme**, so the icon recolours per-state and per-theme with **no
+> `setIcon` in code**, and it **previews in Qt Designer** (the setter renders the
+> SVG immediately; Designer does not rewrite `theme-icons:` urls). Set `iconSize`
+> in the `.ui`.
+> ```scss
+> #navHome         { qproperty-iconName: "home"; qproperty-iconColor: $muted; }
+> #navHome:checked { qproperty-iconColor: $accent; }   /* active icon → accent */
+> ```
+> `theme-icons:` urls remain fine for `QLabel` pixmaps / plain widgets, but must be
+> **unquoted** — `url(theme-icons:icons/…)`, never a quoted `url("…")` produced by an
+> SCSS `$PATH_RESOURCES+'…'` concat (the engine's rewriter only matches unquoted).
+
 ### `hardcoded-hex` — colours come from token roles
 
 Chrome colour should come from `tokens.role("surface"|"on-surface"|"primary"|…)`

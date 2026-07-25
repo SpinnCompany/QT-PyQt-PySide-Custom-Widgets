@@ -46,6 +46,42 @@ class TestTabWidgetEnhance:
         assert tw.cornerWidget() is None
 
 
+class TestCustomButtonIconRecolor:
+    """The custom buttons recolour their icon FROM QSS (iconName + iconColor),
+    so a :checked state selector recolours the icon with no setIcon in code."""
+
+    def test_qpushbutton_icon_from_qss_props(self, qapp):
+        from Custom_Widgets.QCustomQPushButton import QCustomQPushButton
+        b = QCustomQPushButton()
+        assert b.icon().isNull()
+        b.iconName = "layers"
+        b.iconColor = QColor("#6c7bff")
+        assert not b.icon().isNull()
+        assert b.iconName == "layers"
+        assert QColor(b.iconColor).name() == "#6c7bff"
+
+    def test_sidebarbutton_icon_from_qss_props(self, qapp):
+        from Custom_Widgets.QCustomSidebarButton import QCustomSidebarButton
+        b = QCustomSidebarButton()
+        assert b.icon().isNull()
+        b.iconName = "home"
+        b.iconColor = QColor("#22a55b")
+        assert not b.icon().isNull()
+        assert b.iconName == "home"
+        assert QColor(b.iconColor).name() == "#22a55b"
+
+    def test_iconcolor_change_rebuilds(self, qapp):
+        # simulate a :checked selector swapping iconColor -> a different tint
+        from Custom_Widgets.QCustomSidebarButton import QCustomSidebarButton
+        b = QCustomSidebarButton()
+        b.iconName = "home"
+        b.iconColor = QColor("#888888")
+        first = b.icon().pixmap(20, 20).toImage()
+        b.iconColor = QColor("#ff2200")
+        second = b.icon().pixmap(20, 20).toImage()
+        assert first != second, "icon did not recolour when iconColor changed"
+
+
 class TestListRowDragHandle:
     def _row(self):
         from Custom_Widgets.QCustomListRow import QCustomListRow

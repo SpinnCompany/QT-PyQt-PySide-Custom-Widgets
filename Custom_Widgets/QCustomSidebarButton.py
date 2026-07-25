@@ -4,8 +4,8 @@ from qtpy.QtGui import QPainter, QIcon, QPaintEvent, QEnterEvent, QMouseEvent, Q
 import os
 
 # Import your custom sidebar and utility functions
-from Custom_Widgets.QCustomSidebar import QCustomSidebar 
-from Custom_Widgets.Utils import replace_url_prefix, is_in_designer, get_icon_path
+from Custom_Widgets.QCustomSidebar import QCustomSidebar
+from Custom_Widgets.Utils import replace_url_prefix, is_in_designer, get_icon_path, recolor_icon
 from Custom_Widgets.Log import *
 
 class QCustomSidebarButton(QPushButton):
@@ -30,6 +30,8 @@ class QCustomSidebarButton(QPushButton):
         {"name": "textPrefixSpaces", "kind": "int", "group": "Label"},
         {"name": "hideOnCollapse", "kind": "bool", "group": "Sidebar"},
         {"name": "showOnCollapse", "kind": "bool", "group": "Sidebar"},
+        {"name": "iconName", "kind": "str", "group": "Icon"},
+        {"name": "iconColor", "kind": "color", "group": "Icon"},
     ]
 
     def __init__(self, parent=None, *args):
@@ -60,6 +62,45 @@ class QCustomSidebarButton(QPushButton):
         self._fadeOutTimer = QTimer(self)
         self._fadeOutTimer.setSingleShot(True)
         self._fadeOutTimer.timeout.connect(self._doFadeOut)
+
+        # SVG icon recoloured FROM QSS: `iconName` (a bundled feather/material
+        # name or a .svg path) tinted to `iconColor`. Both are QSS properties so
+        # the icon recolours per-STATE and per-THEME with no setIcon() in code:
+        #   #navHome          { qproperty-iconName: "home"; qproperty-iconColor: $muted; }
+        #   #navHome:checked  { qproperty-iconColor: $accent; }
+        # Renders in Qt Designer too (the setter draws the SVG immediately).
+        self._icon_name = ""
+        self._icon_color = QColor("#c7ccdb")
+
+    def _rebuildIcon(self):
+        if not self._icon_name:
+            return
+        sz = self.iconSize().width() or 20
+        icon = QIcon(recolor_icon(self._icon_name, self._icon_color, sz))
+        super().setIcon(icon)
+        self.originalIcon = icon      # keep collapse/expand save-restore in sync
+
+    def setIconSize(self, size):
+        super().setIconSize(size)
+        self._rebuildIcon()
+
+    @Property(str)
+    def iconName(self):
+        return self._icon_name
+
+    @iconName.setter
+    def iconName(self, value):
+        self._icon_name = str(value)
+        self._rebuildIcon()
+
+    @Property(QColor)
+    def iconColor(self):
+        return self._icon_color
+
+    @iconColor.setter
+    def iconColor(self, value):
+        self._icon_color = QColor(value)
+        self._rebuildIcon()
 
     @Property(bool)
     def hideOnCollapse(self):
