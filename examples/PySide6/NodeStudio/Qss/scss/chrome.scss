@@ -144,36 +144,54 @@ QCustomQPushButton#exportBtn {
 }
 QCustomQPushButton#exportBtn:hover { background-color: $COLOR_ACCENT_2; }
 
-/* --- Icons: set here as UNQUOTED theme-icons urls so the theme engine
-       recolours + refreshes them on every theme flip (never setIcon in code).
-       iconSize is set per-button in the .ui. -------------------------------- */
-QCustomQPushButton#tabNew      { qproperty-icon: url(theme-icons:icons/material_design/auto_awesome.svg); }
-QCustomQPushButton#tabFramer   { qproperty-icon: url(theme-icons:icons/material_design/dashboard.svg); }
-QCustomQPushButton#tabUntitled { qproperty-icon: url(theme-icons:icons/feather/hexagon.svg); }
-QCustomQPushButton#tabAdd      { qproperty-icon: url(theme-icons:icons/material_design/add.svg); }
-QCustomQPushButton#navPrev     { qproperty-icon: url(theme-icons:icons/material_design/arrow_back_ios_new.svg); }
-QCustomQPushButton#navNext     { qproperty-icon: url(theme-icons:icons/material_design/arrow_forward_ios.svg); }
-QCustomQPushButton#durationBtn { qproperty-icon: url(theme-icons:icons/material_design/timer.svg); }
-QCustomQPushButton#codeBtn     { qproperty-icon: url(theme-icons:icons/feather/code.svg); }
-QCustomQPushButton#playBtn     { qproperty-icon: url(theme-icons:icons/material_design/play_arrow.svg); }
-QCustomQPushButton#playBtn:checked { qproperty-icon: url(theme-icons:icons/material_design/pause.svg); }
-QCustomQPushButton#shareBtn    { qproperty-icon: url(theme-icons:icons/material_design/ios_share.svg); }
-QCustomQPushButton#exportBtn   { qproperty-icon: url(theme-icons:icons/material_design/bolt.svg); }
+/* --- Icons: the CUSTOM BUTTON recolours its own SVG from QSS via
+       `qproperty-iconName` (bundled feather/material name) + `qproperty-iconColor`
+       (a token). Because iconColor is a QSS property it follows STATE selectors
+       (:checked) and the THEME, so the icon recolours with no setIcon in code and
+       previews in Qt Designer. iconSize is set per button in the .ui. ---------- */
+QCustomQPushButton#tabNew      { qproperty-iconName: "auto_awesome"; }
+QCustomQPushButton#tabFramer   { qproperty-iconName: "dashboard"; }
+QCustomQPushButton#tabUntitled { qproperty-iconName: "hexagon"; }
+QCustomQPushButton#tabAdd      { qproperty-iconName: "add"; }
+QCustomQPushButton#navPrev     { qproperty-iconName: "arrow_back_ios_new"; }
+QCustomQPushButton#navNext     { qproperty-iconName: "arrow_forward_ios"; }
+QCustomQPushButton#durationBtn { qproperty-iconName: "timer"; }
+QCustomQPushButton#codeBtn     { qproperty-iconName: "code"; }
+QCustomQPushButton#playBtn     { qproperty-iconName: "play_arrow"; }
+QCustomQPushButton#playBtn:checked { qproperty-iconName: "pause"; }
+QCustomQPushButton#shareBtn    { qproperty-iconName: "ios_share"; }
+QCustomQPushButton#exportBtn   { qproperty-iconName: "bolt"; }
+QCustomQPushButton#rlText      { qproperty-iconName: "text_fields"; }
+QCustomQPushButton#rlLayers    { qproperty-iconName: "layers"; }
+QCustomQPushButton#rlPen       { qproperty-iconName: "edit_note"; }
+QCustomQPushButton#rlBrush     { qproperty-iconName: "brush"; }
+QCustomQPushButton#rlGrid      { qproperty-iconName: "grid_view"; }
+QCustomQPushButton#rlAttach    { qproperty-iconName: "attach_file"; }
+QCustomQPushButton#themeToggle { qproperty-iconName: "dark_mode"; }
+QCustomQPushButton#fabAdd      { qproperty-iconName: "add"; }
+QCustomQPushButton#rrCursor    { qproperty-iconName: "near_me"; }
+QCustomQPushButton#rrStar      { qproperty-iconName: "star_border"; }
+QCustomQPushButton#rrDrop      { qproperty-iconName: "opacity"; }
+QCustomQPushButton#rrLock      { qproperty-iconName: "lock"; }
+QCustomQPushButton#rrBulb      { qproperty-iconName: "lightbulb"; }
 
-QCustomQPushButton#rlText      { qproperty-icon: url(theme-icons:icons/material_design/text_fields.svg); }
-QCustomQPushButton#rlLayers    { qproperty-icon: url(theme-icons:icons/feather/layers.svg); }
-QCustomQPushButton#rlPen       { qproperty-icon: url(theme-icons:icons/material_design/edit_note.svg); }
-QCustomQPushButton#rlBrush     { qproperty-icon: url(theme-icons:icons/material_design/brush.svg); }
-QCustomQPushButton#rlGrid      { qproperty-icon: url(theme-icons:icons/material_design/grid_view.svg); }
-QCustomQPushButton#rlAttach    { qproperty-icon: url(theme-icons:icons/material_design/attach_file.svg); }
-QCustomQPushButton#themeToggle { qproperty-icon: url(theme-icons:icons/material_design/dark_mode.svg); }
-QCustomQPushButton#fabAdd      { qproperty-icon: url(theme-icons:icons/material_design/add.svg); }
-
-QCustomQPushButton#rrCursor    { qproperty-icon: url(theme-icons:icons/material_design/near_me.svg); }
-QCustomQPushButton#rrStar      { qproperty-icon: url(theme-icons:icons/material_design/star_border.svg); }
-QCustomQPushButton#rrDrop      { qproperty-icon: url(theme-icons:icons/material_design/opacity.svg); }
-QCustomQPushButton#rrLock      { qproperty-icon: url(theme-icons:icons/feather/lock.svg); }
-QCustomQPushButton#rrBulb      { qproperty-icon: url(theme-icons:icons/material_design/lightbulb.svg); }
+/* icon COLOURS — neutral by default, ACCENT for the selected tab/tool, so the
+   active button's icon recolours (driven purely by :checked + tokens). */
+#tabNew, #tabFramer, #tabUntitled, #tabAdd, #navPrev, #navNext, #durationBtn,
+#codeBtn, #playBtn, #shareBtn, #rlText, #rlLayers, #rlPen, #rlBrush, #rlGrid,
+#rlAttach, #themeToggle, #rrCursor, #rrStar, #rrDrop, #rrLock, #rrBulb {
+    qproperty-iconColor: $COLOR_TEXT_2;
+}
+#tabNew:checked, #tabFramer:checked, #tabUntitled:checked {
+    qproperty-iconColor: $COLOR_TEXT_1;
+}
+#rlText:checked, #rlLayers:checked, #rlPen:checked, #rlBrush:checked,
+#rlGrid:checked, #rlAttach:checked, #rrCursor:checked, #rrStar:checked,
+#rrDrop:checked, #rrLock:checked, #rrBulb:checked {
+    qproperty-iconColor: $COLOR_ACCENT_1;
+}
+/* icons that sit on an accent fill stay light */
+#exportBtn, #fabAdd { qproperty-iconColor: #ffffff; }
 
 /* --- Code editor + preview ----------------------------------------------- */
 QCustomCodeEditor { background: transparent; }

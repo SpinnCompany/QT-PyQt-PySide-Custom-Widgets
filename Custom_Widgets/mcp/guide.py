@@ -114,6 +114,21 @@ painted QCustomDonut; wire the sidebar toggle once (or via toggleButtonName).
    assets qrc). The form-construction tools inject the icons qrc automatically
    when a form uses <iconset>; if you author .ui another way, include it.
 
+9. ICONS ON CUSTOM BUTTONS RECOLOUR FROM QSS (never setIcon in Python).
+   QCustomQPushButton and QCustomSidebarButton recolour their OWN icon from two
+   QSS properties: `qproperty-iconName` (a bundled feather/material name or a
+   .svg path) + `qproperty-iconColor` (a token). PREFER this over
+   `qproperty-icon: url(theme-icons:...)` on a custom button — because iconColor
+   is a QSS property it follows STATE selectors and the THEME, so the icon
+   recolours per-state AND per-theme with NO Python setIcon, and it PREVIEWS in
+   Qt Designer (the setter renders the SVG immediately; Designer does not rewrite
+   theme-icons: urls, so a url icon shows nothing at design time). Pattern:
+       #navHome         { qproperty-iconName: "home"; qproperty-iconColor: $muted; }
+       #navHome:checked { qproperty-iconColor: $accent; }
+   Set iconSize in the .ui. (theme-icons: url stays fine for QLabel pixmaps /
+   plain widgets that have no iconName/iconColor — but it MUST be unquoted:
+   url(theme-icons:icons/...), never url("...") from an SCSS string concat.)
+
 == MULTI-PROJECT / MULTI-AGENT ==
 
 Every tool takes an optional `project` (a folder — absolute, used verbatim; or
@@ -372,6 +387,29 @@ CUSTOM WIDGETS & PROPERTIES
   the .ui.
 
 THEMING
+- ABSOLUTE RULE (user-stated): ALL styling comes from QSS/SCSS files. In Python
+  you may ONLY setProperty (incl. custom-widget Qt properties like
+  card.scrimColor, btn.iconColor), style().polish()/unpolish(), and CONTENT
+  (setText). NEVER setStyleSheet(...) anywhere — not the window, a region
+  container, a code-built row, or a child. Standard-widget chrome (bg/border/
+  radius/font, :hover/:checked/[prop]) go in chrome.scss by objectName; painted
+  custom widgets get colours from their Qt properties; dynamic-created widgets
+  get setObjectName + a dynamic prop (setProperty("muted",True)) styled by the
+  GLOBAL app QSS (which cascades to them — a per-region container setStyleSheet
+  is banned). The MAIN GOAL of Custom_Widgets is to ELIMINATE/REDUCE user GUI
+  code: the framework does the work, the manager just feeds DATA + wires signals.
+- ICONS/PIXMAPS/SIZES ARE SET IN THE .ui (Designer); dynamic aspects (colour) via
+  a widget property or QSS. Prefer the QSS-recolour icon widgets:
+  QCustomQPushButton and QCustomQLabel take `iconName` (feather/material name or
+  .svg path, set in the .ui) + `iconSize` (.ui) and recolour the SVG to a QSS
+  `iconColor` property — which, unlike the single-colour `theme-icons:` path,
+  follows ANY token AND state selectors: `#navHome{qproperty-iconColor:$muted}` /
+  `#navHome:checked{qproperty-iconColor:$accent}`. Zero Python icon code.
+- KNOWN GAP: `qproperty-*` colours (painted-widget colours, icon colours) do NOT
+  reliably re-apply on a LIVE theme switch (the app can hold a stale compiled
+  stylesheet). Until the theme engine fully re-applies + unpolish/polishes the
+  tree on switch, either reapply those colours via setProperty on
+  onThemeChangeComplete (allowed) or force a full repolish there.
 - Keep colors/fonts/flow-order in json-styles/style.json (CustomThemes each
   with Background/Text/Accent/Icons colors + Other-variables incl. _R/_G/_B
   triples for rgba). The startup theme is the form's appTheme property.

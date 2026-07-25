@@ -83,9 +83,12 @@ The whole screen responds to clicks (visual, not a real backend):
   (uic instantiates promoted widgets as `Widget(parent)`).
 - Theme is persisted by QSettings between runs; `Default-Theme:true` only sets
   the first-run theme.
-- **Icons are set in `chrome.scss`**, never in Python: `qproperty-icon:
-  url(theme-icons:icons/<pack>/<name>.svg)` (UNQUOTED — a quoted url, e.g. from
-  `url($PATH_RESOURCES+'…')`, is not rewritten by the theme engine and shows
-  nothing). `iconSize` is set per button in the `.ui`. The engine recolours all
-  icons on every theme flip automatically — no `setIcon` in code. Play/pause is
-  a `:checked` icon swap, not a Python icon set.
+- **Icons are recoloured from QSS on the custom buttons**, never in Python:
+  `QCustomQPushButton` recolours its own SVG via `qproperty-iconName: "layers";`
+  + `qproperty-iconColor: $token;`. Because `iconColor` is a QSS property it
+  follows state + theme, so the **selected tool's icon recolours to accent** via
+  `#rlLayers:checked { qproperty-iconColor: $COLOR_ACCENT_1; }` — and it previews
+  in Qt Designer. `iconSize` is set per button in the `.ui`. Play/pause is a
+  `:checked` `qproperty-iconName` swap. (Avoid `qproperty-icon:
+  url(theme-icons:…)` on a custom button: single colour, no per-state accent,
+  blank in Designer; and if used elsewhere it must be UNQUOTED.)
