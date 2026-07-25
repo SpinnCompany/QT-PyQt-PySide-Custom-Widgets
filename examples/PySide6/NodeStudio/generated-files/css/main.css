@@ -1645,9 +1645,15 @@ PlotWidget {
    Node Studio — component chrome (design-token driven).
    RULE: styles are NESTED per UI component, scoped by the component's
    objectName — each region/component owns one self-contained block.
-   Tokens only ($COLOR_BACKGROUND_1..6, $COLOR_TEXT_1..4, $COLOR_ACCENT_1..4);
-   icons via $PATH_RESOURCES (theme-icons) so the engine recolours them on
-   theme flip. Dark theme: BG_1 is DARKEST. Never styled in a .ui.
+
+   Icons: each button's base icon is ALSO set in Designer (.ui iconset,
+   theme-icons path) for design-time preview. At runtime the CUSTOM BUTTON
+   recolours its own SVG from QSS tokens — `qproperty-iconName` (bundled name)
+   + `qproperty-iconColor` (resting) + `qproperty-iconColorActive` (while
+   CHECKED). This is what lets the ACTIVE/selected button's icon turn accent
+   (the theme-icons url path recolours every icon to ONE Icons-color and cannot
+   do a per-state accent). Recolours on theme (tokens reapply) with no Python.
+   Tokens only. Dark theme: BG_1 is DARKEST. Never styled in a .ui.
    =================================================================== */
 #centralwidget {
   background-color: #0e0f16; }
@@ -1663,9 +1669,8 @@ QSplitter::handle:hover {
   background-color: #0e0f16;
   border: none;
   border-bottom: 1px solid #08090d;
-  /* document tabs */
-  /* generic momentary icon buttons */
-  /* icons (runtime, themed via $PATH_RESOURCES) */ }
+  /* document tabs — active tab icon brightens */
+  /* generic momentary icon buttons */ }
   #topBar #appMark {
     background-color: #6c7bff;
     border-radius: 8px; }
@@ -1677,7 +1682,9 @@ QSplitter::handle:hover {
     padding: 4px 12px;
     font-size: 12px;
     font-weight: 600;
-    text-align: left; }
+    text-align: left;
+    qproperty-iconColor: #8A8B91;
+    qproperty-iconColorActive: #e7e9f3; }
     #topBar #tabNew:hover, #topBar #tabFramer:hover, #topBar #tabUntitled:hover {
       background-color: #0b0b11;
       color: #e7e9f3; }
@@ -1685,17 +1692,37 @@ QSplitter::handle:hover {
       background-color: #08090d;
       color: #e7e9f3;
       border: 1px solid #06070a; }
+  #topBar #tabNew {
+    qproperty-iconName: "auto_awesome"; }
+  #topBar #tabFramer {
+    qproperty-iconName: "dashboard"; }
+  #topBar #tabUntitled {
+    qproperty-iconName: "hexagon"; }
   #topBar #tabAdd, #topBar #navPrev, #topBar #navNext, #topBar #codeBtn, #topBar #playBtn, #topBar #shareBtn {
     background-color: transparent;
     color: #B8BAC2;
     border: none;
-    border-radius: 9px; }
+    border-radius: 9px;
+    qproperty-iconColor: #B8BAC2; }
     #topBar #tabAdd:hover, #topBar #navPrev:hover, #topBar #navNext:hover, #topBar #codeBtn:hover, #topBar #playBtn:hover, #topBar #shareBtn:hover {
       background-color: #08090d;
       color: #e7e9f3; }
     #topBar #tabAdd:pressed, #topBar #navPrev:pressed, #topBar #navNext:pressed, #topBar #codeBtn:pressed, #topBar #playBtn:pressed, #topBar #shareBtn:pressed {
       background-color: #6c7bff;
       color: #ffffff; }
+  #topBar #tabAdd {
+    qproperty-iconName: "add"; }
+  #topBar #navPrev {
+    qproperty-iconName: "arrow_back_ios_new"; }
+  #topBar #navNext {
+    qproperty-iconName: "arrow_forward_ios"; }
+  #topBar #codeBtn {
+    qproperty-iconName: "code"; }
+  #topBar #shareBtn {
+    qproperty-iconName: "ios_share"; }
+  #topBar #playBtn {
+    qproperty-iconName: "play_arrow";
+    qproperty-iconNameActive: "pause"; }
   #topBar #durationBtn {
     background-color: #08090d;
     color: #e7e9f3;
@@ -1703,80 +1730,64 @@ QSplitter::handle:hover {
     border-radius: 9px;
     padding: 0 10px;
     font-size: 12px;
-    font-weight: 600; }
+    font-weight: 600;
+    qproperty-iconName: "timer";
+    qproperty-iconColor: #e7e9f3; }
   #topBar #exportBtn {
     background-color: #6c7bff;
     color: #ffffff;
     border: none;
     border-radius: 9px;
     font-size: 12px;
-    font-weight: 700; }
+    font-weight: 700;
+    qproperty-iconName: "bolt";
+    qproperty-iconColor: #ffffff; }
     #topBar #exportBtn:hover {
       background-color: #5662CC; }
-  #topBar #tabNew {
-    qproperty-icon: url("theme-icons:icons/material_design/auto_awesome.svg"); }
-  #topBar #tabFramer {
-    qproperty-icon: url("theme-icons:icons/material_design/dashboard.svg"); }
-  #topBar #tabUntitled {
-    qproperty-icon: url("theme-icons:icons/feather/hexagon.svg"); }
-  #topBar #tabAdd {
-    qproperty-icon: url("theme-icons:icons/material_design/add.svg"); }
-  #topBar #navPrev {
-    qproperty-icon: url("theme-icons:icons/material_design/arrow_back_ios_new.svg"); }
-  #topBar #navNext {
-    qproperty-icon: url("theme-icons:icons/material_design/arrow_forward_ios.svg"); }
-  #topBar #durationBtn {
-    qproperty-icon: url("theme-icons:icons/material_design/timer.svg"); }
-  #topBar #codeBtn {
-    qproperty-icon: url("theme-icons:icons/feather/code.svg"); }
-  #topBar #playBtn {
-    qproperty-icon: url("theme-icons:icons/material_design/play_arrow.svg"); }
-  #topBar #shareBtn {
-    qproperty-icon: url("theme-icons:icons/material_design/ios_share.svg"); }
-  #topBar #exportBtn {
-    qproperty-icon: url("theme-icons:icons/material_design/bolt.svg"); }
 
 /* ============================ LEFT RAIL =========================== */
 #leftRail {
   background-color: #0e0f16;
   border: none;
-  border-right: 1px solid #08090d; }
+  border-right: 1px solid #08090d;
+  /* tools — the SELECTED tool's icon turns accent (iconColorActive) */ }
   #leftRail #rlText, #leftRail #rlLayers, #leftRail #rlPen, #leftRail #rlBrush, #leftRail #rlGrid, #leftRail #rlAttach, #leftRail #themeToggle {
     background-color: transparent;
     color: #B8BAC2;
     border: none;
-    border-radius: 9px; }
+    border-radius: 9px;
+    qproperty-iconColor: #B8BAC2;
+    qproperty-iconColorActive: #6c7bff; }
     #leftRail #rlText:hover, #leftRail #rlLayers:hover, #leftRail #rlPen:hover, #leftRail #rlBrush:hover, #leftRail #rlGrid:hover, #leftRail #rlAttach:hover, #leftRail #themeToggle:hover {
       background-color: #08090d;
       color: #e7e9f3; }
     #leftRail #rlText:checked, #leftRail #rlLayers:checked, #leftRail #rlPen:checked, #leftRail #rlBrush:checked, #leftRail #rlGrid:checked, #leftRail #rlAttach:checked, #leftRail #themeToggle:checked {
-      background-color: #08090d;
-      color: #6c7bff; }
+      background-color: #08090d; }
+  #leftRail #rlText {
+    qproperty-iconName: "text_fields"; }
+  #leftRail #rlLayers {
+    qproperty-iconName: "layers"; }
+  #leftRail #rlPen {
+    qproperty-iconName: "edit_note"; }
+  #leftRail #rlBrush {
+    qproperty-iconName: "brush"; }
+  #leftRail #rlGrid {
+    qproperty-iconName: "grid_view"; }
+  #leftRail #rlAttach {
+    qproperty-iconName: "attach_file"; }
+  #leftRail #themeToggle {
+    qproperty-iconName: "dark_mode"; }
   #leftRail #fabAdd {
     background-color: #6c7bff;
     color: #ffffff;
     border: none;
-    border-radius: 9px; }
+    border-radius: 9px;
+    qproperty-iconName: "add";
+    qproperty-iconColor: #ffffff; }
     #leftRail #fabAdd:hover {
       background-color: #5662CC; }
     #leftRail #fabAdd:pressed {
       background-color: #404999; }
-  #leftRail #rlText {
-    qproperty-icon: url("theme-icons:icons/material_design/text_fields.svg"); }
-  #leftRail #rlLayers {
-    qproperty-icon: url("theme-icons:icons/feather/layers.svg"); }
-  #leftRail #rlPen {
-    qproperty-icon: url("theme-icons:icons/material_design/edit_note.svg"); }
-  #leftRail #rlBrush {
-    qproperty-icon: url("theme-icons:icons/material_design/brush.svg"); }
-  #leftRail #rlGrid {
-    qproperty-icon: url("theme-icons:icons/material_design/grid_view.svg"); }
-  #leftRail #rlAttach {
-    qproperty-icon: url("theme-icons:icons/material_design/attach_file.svg"); }
-  #leftRail #themeToggle {
-    qproperty-icon: url("theme-icons:icons/material_design/dark_mode.svg"); }
-  #leftRail #fabAdd {
-    qproperty-icon: url("theme-icons:icons/material_design/add.svg"); }
 
 /* ============================ RIGHT RAIL ========================== */
 #rightRail {
@@ -1787,23 +1798,24 @@ QSplitter::handle:hover {
     background-color: transparent;
     color: #B8BAC2;
     border: none;
-    border-radius: 9px; }
+    border-radius: 9px;
+    qproperty-iconColor: #B8BAC2;
+    qproperty-iconColorActive: #6c7bff; }
     #rightRail #rrCursor:hover, #rightRail #rrStar:hover, #rightRail #rrDrop:hover, #rightRail #rrLock:hover, #rightRail #rrBulb:hover {
       background-color: #08090d;
       color: #e7e9f3; }
     #rightRail #rrCursor:checked, #rightRail #rrStar:checked, #rightRail #rrDrop:checked, #rightRail #rrLock:checked, #rightRail #rrBulb:checked {
-      background-color: #08090d;
-      color: #6c7bff; }
+      background-color: #08090d; }
   #rightRail #rrCursor {
-    qproperty-icon: url("theme-icons:icons/material_design/near_me.svg"); }
+    qproperty-iconName: "near_me"; }
   #rightRail #rrStar {
-    qproperty-icon: url("theme-icons:icons/material_design/star_border.svg"); }
+    qproperty-iconName: "star_border"; }
   #rightRail #rrDrop {
-    qproperty-icon: url("theme-icons:icons/material_design/opacity.svg"); }
+    qproperty-iconName: "opacity"; }
   #rightRail #rrLock {
-    qproperty-icon: url("theme-icons:icons/feather/lock.svg"); }
+    qproperty-iconName: "lock"; }
   #rightRail #rrBulb {
-    qproperty-icon: url("theme-icons:icons/material_design/lightbulb.svg"); }
+    qproperty-iconName: "lightbulb"; }
 
 /* ======================= CANVAS COMPONENT ======================== */
 #CanvasComponent #canvasFrame {
