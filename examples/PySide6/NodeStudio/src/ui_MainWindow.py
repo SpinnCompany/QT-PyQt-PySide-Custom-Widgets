@@ -52,18 +52,21 @@ class Ui_MainWindow(object):
         self.tabNew = QCustomQPushButton(self.topBar)
         self.tabNew.setObjectName(u"tabNew")
         self.tabNew.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.tabNew.setIconSize(QSize(14, 14))
 
         self.topBarLayout.addWidget(self.tabNew)
 
         self.tabFramer = QCustomQPushButton(self.topBar)
         self.tabFramer.setObjectName(u"tabFramer")
         self.tabFramer.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.tabFramer.setIconSize(QSize(14, 14))
 
         self.topBarLayout.addWidget(self.tabFramer)
 
         self.tabUntitled = QCustomQPushButton(self.topBar)
         self.tabUntitled.setObjectName(u"tabUntitled")
         self.tabUntitled.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.tabUntitled.setIconSize(QSize(14, 14))
 
         self.topBarLayout.addWidget(self.tabUntitled)
 
@@ -72,6 +75,7 @@ class Ui_MainWindow(object):
         self.tabAdd.setMinimumSize(QSize(30, 30))
         self.tabAdd.setMaximumSize(QSize(30, 30))
         self.tabAdd.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.tabAdd.setIconSize(QSize(18, 18))
 
         self.topBarLayout.addWidget(self.tabAdd)
 
@@ -83,6 +87,7 @@ class Ui_MainWindow(object):
         self.navPrev.setObjectName(u"navPrev")
         self.navPrev.setMinimumSize(QSize(32, 32))
         self.navPrev.setMaximumSize(QSize(32, 32))
+        self.navPrev.setIconSize(QSize(16, 16))
 
         self.topBarLayout.addWidget(self.navPrev)
 
@@ -90,12 +95,14 @@ class Ui_MainWindow(object):
         self.navNext.setObjectName(u"navNext")
         self.navNext.setMinimumSize(QSize(32, 32))
         self.navNext.setMaximumSize(QSize(32, 32))
+        self.navNext.setIconSize(QSize(16, 16))
 
         self.topBarLayout.addWidget(self.navNext)
 
         self.durationBtn = QCustomQPushButton(self.topBar)
         self.durationBtn.setObjectName(u"durationBtn")
         self.durationBtn.setMinimumSize(QSize(66, 32))
+        self.durationBtn.setIconSize(QSize(15, 15))
 
         self.topBarLayout.addWidget(self.durationBtn)
 
@@ -103,6 +110,7 @@ class Ui_MainWindow(object):
         self.codeBtn.setObjectName(u"codeBtn")
         self.codeBtn.setMinimumSize(QSize(36, 32))
         self.codeBtn.setMaximumSize(QSize(36, 32))
+        self.codeBtn.setIconSize(QSize(18, 18))
 
         self.topBarLayout.addWidget(self.codeBtn)
 
@@ -110,6 +118,7 @@ class Ui_MainWindow(object):
         self.playBtn.setObjectName(u"playBtn")
         self.playBtn.setMinimumSize(QSize(36, 32))
         self.playBtn.setMaximumSize(QSize(36, 32))
+        self.playBtn.setIconSize(QSize(18, 18))
 
         self.topBarLayout.addWidget(self.playBtn)
 
@@ -117,6 +126,7 @@ class Ui_MainWindow(object):
         self.shareBtn.setObjectName(u"shareBtn")
         self.shareBtn.setMinimumSize(QSize(36, 32))
         self.shareBtn.setMaximumSize(QSize(36, 32))
+        self.shareBtn.setIconSize(QSize(18, 18))
 
         self.topBarLayout.addWidget(self.shareBtn)
 
@@ -124,6 +134,7 @@ class Ui_MainWindow(object):
         self.exportBtn.setObjectName(u"exportBtn")
         self.exportBtn.setMinimumSize(QSize(88, 32))
         self.exportBtn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.exportBtn.setIconSize(QSize(16, 16))
 
         self.topBarLayout.addWidget(self.exportBtn)
 
@@ -147,6 +158,7 @@ class Ui_MainWindow(object):
         self.rlText.setObjectName(u"rlText")
         self.rlText.setMinimumSize(QSize(34, 34))
         self.rlText.setMaximumSize(QSize(34, 34))
+        self.rlText.setIconSize(QSize(20, 20))
 
         self.leftRailLayout.addWidget(self.rlText)
 
@@ -154,6 +166,7 @@ class Ui_MainWindow(object):
         self.rlLayers.setObjectName(u"rlLayers")
         self.rlLayers.setMinimumSize(QSize(34, 34))
         self.rlLayers.setMaximumSize(QSize(34, 34))
+        self.rlLayers.setIconSize(QSize(20, 20))
 
         self.leftRailLayout.addWidget(self.rlLayers)
 
@@ -161,6 +174,7 @@ class Ui_MainWindow(object):
         self.rlPen.setObjectName(u"rlPen")
         self.rlPen.setMinimumSize(QSize(34, 34))
         self.rlPen.setMaximumSize(QSize(34, 34))
+        self.rlPen.setIconSize(QSize(20, 20))
 
         self.leftRailLayout.addWidget(self.rlPen)
 
@@ -168,6 +182,7 @@ class Ui_MainWindow(object):
         self.rlBrush.setObjectName(u"rlBrush")
         self.rlBrush.setMinimumSize(QSize(34, 34))
         self.rlBrush.setMaximumSize(QSize(34, 34))
+        self.rlBrush.setIconSize(QSize(20, 20))
 
         self.leftRailLayout.addWidget(self.rlBrush)
 
@@ -175,6 +190,7 @@ class Ui_MainWindow(object):
         self.rlGrid.setObjectName(u"rlGrid")
         self.rlGrid.setMinimumSize(QSize(34, 34))
         self.rlGrid.setMaximumSize(QSize(34, 34))
+        self.rlGrid.setIconSize(QSize(20, 20))
 
         self.leftRailLayout.addWidget(self.rlGrid)
 
@@ -182,6 +198,7 @@ class Ui_MainWindow(object):
         self.rlAttach.setObjectName(u"rlAttach")
         self.rlAttach.setMinimumSize(QSize(34, 34))
         self.rlAttach.setMaximumSize(QSize(34, 34))
+        self.rlAttach.setIconSize(QSize(20, 20))
 
         self.leftRailLayout.addWidget(self.rlAttach)
 
@@ -194,6 +211,7 @@ class Ui_MainWindow(object):
         self.themeToggle.setMinimumSize(QSize(34, 34))
         self.themeToggle.setMaximumSize(QSize(34, 34))
         self.themeToggle.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.themeToggle.setIconSize(QSize(20, 20))
 
         self.leftRailLayout.addWidget(self.themeToggle)
 
@@ -201,6 +219,7 @@ class Ui_MainWindow(object):
         self.fabAdd.setObjectName(u"fabAdd")
         self.fabAdd.setMinimumSize(QSize(34, 34))
         self.fabAdd.setMaximumSize(QSize(34, 34))
+        self.fabAdd.setIconSize(QSize(20, 20))
 
         self.leftRailLayout.addWidget(self.fabAdd)
 
@@ -260,6 +279,7 @@ class Ui_MainWindow(object):
         self.rrCursor.setObjectName(u"rrCursor")
         self.rrCursor.setMinimumSize(QSize(32, 32))
         self.rrCursor.setMaximumSize(QSize(32, 32))
+        self.rrCursor.setIconSize(QSize(18, 18))
 
         self.rightRailLayout.addWidget(self.rrCursor)
 
@@ -267,6 +287,7 @@ class Ui_MainWindow(object):
         self.rrStar.setObjectName(u"rrStar")
         self.rrStar.setMinimumSize(QSize(32, 32))
         self.rrStar.setMaximumSize(QSize(32, 32))
+        self.rrStar.setIconSize(QSize(18, 18))
 
         self.rightRailLayout.addWidget(self.rrStar)
 
@@ -274,6 +295,7 @@ class Ui_MainWindow(object):
         self.rrDrop.setObjectName(u"rrDrop")
         self.rrDrop.setMinimumSize(QSize(32, 32))
         self.rrDrop.setMaximumSize(QSize(32, 32))
+        self.rrDrop.setIconSize(QSize(18, 18))
 
         self.rightRailLayout.addWidget(self.rrDrop)
 
@@ -281,6 +303,7 @@ class Ui_MainWindow(object):
         self.rrLock.setObjectName(u"rrLock")
         self.rrLock.setMinimumSize(QSize(32, 32))
         self.rrLock.setMaximumSize(QSize(32, 32))
+        self.rrLock.setIconSize(QSize(18, 18))
 
         self.rightRailLayout.addWidget(self.rrLock)
 
@@ -288,6 +311,7 @@ class Ui_MainWindow(object):
         self.rrBulb.setObjectName(u"rrBulb")
         self.rrBulb.setMinimumSize(QSize(32, 32))
         self.rrBulb.setMaximumSize(QSize(32, 32))
+        self.rrBulb.setIconSize(QSize(18, 18))
 
         self.rightRailLayout.addWidget(self.rrBulb)
 

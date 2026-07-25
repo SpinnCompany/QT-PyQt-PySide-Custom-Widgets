@@ -25,16 +25,3 @@ def node_palette(theme_name):
 
 def is_light(theme_name):
     return "light" in str(theme_name or "").lower()
-
-
-# Icon stroke + accent per theme (mirror each theme's Icons-color / Accent-color).
-ICON_COLOR = {THEME_DARK: "#c9cde0", THEME_LIGHT: "#3a3f52"}
-ACCENT = {THEME_DARK: "#6c7bff", THEME_LIGHT: "#5865f2"}
-
-
-def icon_color(theme_name):
-    return ICON_COLOR.get(theme_name, ICON_COLOR[THEME_DARK])
-
-
-def accent(theme_name):
-    return ACCENT.get(theme_name, ACCENT[THEME_DARK])

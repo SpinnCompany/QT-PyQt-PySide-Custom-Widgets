@@ -1797,8 +1797,84 @@ QCustomQPushButton#exportBtn {
 QCustomQPushButton#exportBtn:hover {
   background-color: #7983F4; }
 
-/* Button icons themselves are set + recoloured in GuiFunctions (themed_icon)
-   so they re-tint on every theme flip; the scss above owns only the chrome. */
+/* --- Icons: set here as UNQUOTED theme-icons urls so the theme engine
+       recolours + refreshes them on every theme flip (never setIcon in code).
+       iconSize is set per-button in the .ui. -------------------------------- */
+QCustomQPushButton#tabNew {
+  qproperty-icon: url(theme-icons:icons/material_design/auto_awesome.svg); }
+
+QCustomQPushButton#tabFramer {
+  qproperty-icon: url(theme-icons:icons/material_design/dashboard.svg); }
+
+QCustomQPushButton#tabUntitled {
+  qproperty-icon: url(theme-icons:icons/feather/hexagon.svg); }
+
+QCustomQPushButton#tabAdd {
+  qproperty-icon: url(theme-icons:icons/material_design/add.svg); }
+
+QCustomQPushButton#navPrev {
+  qproperty-icon: url(theme-icons:icons/material_design/arrow_back_ios_new.svg); }
+
+QCustomQPushButton#navNext {
+  qproperty-icon: url(theme-icons:icons/material_design/arrow_forward_ios.svg); }
+
+QCustomQPushButton#durationBtn {
+  qproperty-icon: url(theme-icons:icons/material_design/timer.svg); }
+
+QCustomQPushButton#codeBtn {
+  qproperty-icon: url(theme-icons:icons/feather/code.svg); }
+
+QCustomQPushButton#playBtn {
+  qproperty-icon: url(theme-icons:icons/material_design/play_arrow.svg); }
+
+QCustomQPushButton#playBtn:checked {
+  qproperty-icon: url(theme-icons:icons/material_design/pause.svg); }
+
+QCustomQPushButton#shareBtn {
+  qproperty-icon: url(theme-icons:icons/material_design/ios_share.svg); }
+
+QCustomQPushButton#exportBtn {
+  qproperty-icon: url(theme-icons:icons/material_design/bolt.svg); }
+
+QCustomQPushButton#rlText {
+  qproperty-icon: url(theme-icons:icons/material_design/text_fields.svg); }
+
+QCustomQPushButton#rlLayers {
+  qproperty-icon: url(theme-icons:icons/feather/layers.svg); }
+
+QCustomQPushButton#rlPen {
+  qproperty-icon: url(theme-icons:icons/material_design/edit_note.svg); }
+
+QCustomQPushButton#rlBrush {
+  qproperty-icon: url(theme-icons:icons/material_design/brush.svg); }
+
+QCustomQPushButton#rlGrid {
+  qproperty-icon: url(theme-icons:icons/material_design/grid_view.svg); }
+
+QCustomQPushButton#rlAttach {
+  qproperty-icon: url(theme-icons:icons/material_design/attach_file.svg); }
+
+QCustomQPushButton#themeToggle {
+  qproperty-icon: url(theme-icons:icons/material_design/dark_mode.svg); }
+
+QCustomQPushButton#fabAdd {
+  qproperty-icon: url(theme-icons:icons/material_design/add.svg); }
+
+QCustomQPushButton#rrCursor {
+  qproperty-icon: url(theme-icons:icons/material_design/near_me.svg); }
+
+QCustomQPushButton#rrStar {
+  qproperty-icon: url(theme-icons:icons/material_design/star_border.svg); }
+
+QCustomQPushButton#rrDrop {
+  qproperty-icon: url(theme-icons:icons/material_design/opacity.svg); }
+
+QCustomQPushButton#rrLock {
+  qproperty-icon: url(theme-icons:icons/feather/lock.svg); }
+
+QCustomQPushButton#rrBulb {
+  qproperty-icon: url(theme-icons:icons/material_design/lightbulb.svg); }
+
 /* --- Code editor + preview ----------------------------------------------- */
 QCustomCodeEditor {
   background: transparent; }
