@@ -157,8 +157,7 @@ QCustomQPushButton#navPrev     { qproperty-iconName: "arrow_back_ios_new"; }
 QCustomQPushButton#navNext     { qproperty-iconName: "arrow_forward_ios"; }
 QCustomQPushButton#durationBtn { qproperty-iconName: "timer"; }
 QCustomQPushButton#codeBtn     { qproperty-iconName: "code"; }
-QCustomQPushButton#playBtn     { qproperty-iconName: "play_arrow"; }
-QCustomQPushButton#playBtn:checked { qproperty-iconName: "pause"; }
+QCustomQPushButton#playBtn     { qproperty-iconName: "play_arrow"; qproperty-iconNameActive: "pause"; }
 QCustomQPushButton#shareBtn    { qproperty-iconName: "ios_share"; }
 QCustomQPushButton#exportBtn   { qproperty-iconName: "bolt"; }
 QCustomQPushButton#rlText      { qproperty-iconName: "text_fields"; }
@@ -175,21 +174,22 @@ QCustomQPushButton#rrDrop      { qproperty-iconName: "opacity"; }
 QCustomQPushButton#rrLock      { qproperty-iconName: "lock"; }
 QCustomQPushButton#rrBulb      { qproperty-iconName: "lightbulb"; }
 
-/* icon COLOURS — neutral by default, ACCENT for the selected tab/tool, so the
-   active button's icon recolours (driven purely by :checked + tokens). */
+/* icon COLOURS — neutral at rest, ACCENT when the tab/tool is selected. The
+   active colour is `iconColorActive` (a BASE-rule property the button swaps to
+   on toggle) — NOT `:checked { qproperty-iconColor }`, because Qt does not
+   re-apply qproperty-* from a pseudo-state selector on state change. */
 #tabNew, #tabFramer, #tabUntitled, #tabAdd, #navPrev, #navNext, #durationBtn,
-#codeBtn, #playBtn, #shareBtn, #rlText, #rlLayers, #rlPen, #rlBrush, #rlGrid,
-#rlAttach, #themeToggle, #rrCursor, #rrStar, #rrDrop, #rrLock, #rrBulb {
+#codeBtn, #playBtn, #shareBtn {
     qproperty-iconColor: $COLOR_TEXT_2;
 }
-#tabNew:checked, #tabFramer:checked, #tabUntitled:checked {
-    qproperty-iconColor: $COLOR_TEXT_1;
+#tabNew, #tabFramer, #tabUntitled { qproperty-iconColorActive: $COLOR_TEXT_1; }
+
+#rlText, #rlLayers, #rlPen, #rlBrush, #rlGrid, #rlAttach,
+#rrCursor, #rrStar, #rrDrop, #rrLock, #rrBulb {
+    qproperty-iconColor: $COLOR_TEXT_2;
+    qproperty-iconColorActive: $COLOR_ACCENT_1;   /* selected tool icon → accent */
 }
-#rlText:checked, #rlLayers:checked, #rlPen:checked, #rlBrush:checked,
-#rlGrid:checked, #rlAttach:checked, #rrCursor:checked, #rrStar:checked,
-#rrDrop:checked, #rrLock:checked, #rrBulb:checked {
-    qproperty-iconColor: $COLOR_ACCENT_1;
-}
+#themeToggle { qproperty-iconColor: $COLOR_TEXT_2; }
 /* icons that sit on an accent fill stay light */
 #exportBtn, #fabAdd { qproperty-iconColor: #ffffff; }
 

@@ -14,8 +14,10 @@ from Custom_Widgets import iconify as ico
 ## MODULE UPDATED TO USE QT.PY
 ########################################################################
 from qtpy.QtCore import QVariantAnimation, QAbstractAnimation, QSize, Property
-from qtpy.QtGui import QColor
+from qtpy.QtGui import QColor, QIcon
 from qtpy.QtWidgets import QPushButton, QGraphicsDropShadowEffect
+
+from Custom_Widgets.Utils import recolor_icon
 
 class QCustomQPushButton(QPushButton):
     """Modern push button with design-token variants and sizes.
@@ -103,6 +105,37 @@ class QCustomQPushButton(QPushButton):
         self._variant = "primary"
         self._sizeVariant = "md"
 
+        # SVG icon recoloured FROM QSS. `iconName`/`iconColor` are the resting
+        # look; `iconNameActive`/`iconColorActive` (when set) are used while the
+        # button is CHECKED. Qt does NOT re-apply `qproperty-*` from a `:checked`
+        # selector on state change, so the active look is a SEPARATE base-rule
+        # property that the button swaps to in code on toggle:
+        #   #navHome { qproperty-iconName: "home";
+        #              qproperty-iconColor: $muted;
+        #              qproperty-iconColorActive: $accent; }
+        # -> checked icon turns $accent, no setIcon() in Python. iconNameActive
+        # likewise swaps the glyph (e.g. play_arrow -> pause) on toggle.
+        self._icon_name = ""
+        self._icon_name_active = ""
+        self._icon_color = QColor("#c7ccdb")
+        self._icon_color_active = QColor()          # invalid -> fall back
+        self.toggled.connect(self._rebuildIcon)     # re-tint on checked change
+
+    def _rebuildIcon(self, *args):
+        active = self.isChecked()
+        name = (self._icon_name_active if active and self._icon_name_active
+                else self._icon_name)
+        if not name:
+            return
+        color = (self._icon_color_active if active and self._icon_color_active.isValid()
+                 else self._icon_color)
+        sz = self.iconSize().width() or 20
+        super().setIcon(QIcon(recolor_icon(name, color, sz)))
+
+    def setIconSize(self, size):
+        super().setIconSize(size)
+        self._rebuildIcon()
+
     # -- Machine-readable catalog (MCP / agent introspection) --
     __catalog__ = {
         "name": "QCustomQPushButton",
@@ -113,6 +146,10 @@ class QCustomQPushButton(QPushButton):
                         "default": "primary"},
             "sizeVariant": {"type": "enum", "values": ["sm", "md", "lg"],
                             "default": "md"},
+            "iconName": {"type": "string", "default": ""},
+            "iconColor": {"type": "color", "default": "#c7ccdb"},
+            "iconNameActive": {"type": "string", "default": ""},
+            "iconColorActive": {"type": "color", "default": ""},
         },
         "signals": ["clicked"],
         "tokens_used": ["primary", "on-primary", "primary-hover", "secondary",
@@ -145,6 +182,42 @@ class QCustomQPushButton(QPushButton):
     def sizeVariant(self, value):
         self._sizeVariant = str(value)
         self._repolish()
+
+    @Property(str)
+    def iconName(self):
+        return self._icon_name
+
+    @iconName.setter
+    def iconName(self, value):
+        self._icon_name = str(value)
+        self._rebuildIcon()
+
+    @Property(QColor)
+    def iconColor(self):
+        return self._icon_color
+
+    @iconColor.setter
+    def iconColor(self, value):
+        self._icon_color = QColor(value)
+        self._rebuildIcon()
+
+    @Property(str)
+    def iconNameActive(self):
+        return self._icon_name_active
+
+    @iconNameActive.setter
+    def iconNameActive(self, value):
+        self._icon_name_active = str(value)
+        self._rebuildIcon()
+
+    @Property(QColor)
+    def iconColorActive(self):
+        return self._icon_color_active
+
+    @iconColorActive.setter
+    def iconColorActive(self, value):
+        self._icon_color_active = QColor(value)
+        self._rebuildIcon()
 
     ########################################################################
     ## BUTTON THEMES

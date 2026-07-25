@@ -115,16 +115,21 @@ painted QCustomDonut; wire the sidebar toggle once (or via toggleButtonName).
    when a form uses <iconset>; if you author .ui another way, include it.
 
 9. ICONS ON CUSTOM BUTTONS RECOLOUR FROM QSS (never setIcon in Python).
-   QCustomQPushButton and QCustomSidebarButton recolour their OWN icon from two
-   QSS properties: `qproperty-iconName` (a bundled feather/material name or a
-   .svg path) + `qproperty-iconColor` (a token). PREFER this over
-   `qproperty-icon: url(theme-icons:...)` on a custom button — because iconColor
-   is a QSS property it follows STATE selectors and the THEME, so the icon
-   recolours per-state AND per-theme with NO Python setIcon, and it PREVIEWS in
-   Qt Designer (the setter renders the SVG immediately; Designer does not rewrite
-   theme-icons: urls, so a url icon shows nothing at design time). Pattern:
-       #navHome         { qproperty-iconName: "home"; qproperty-iconColor: $muted; }
-       #navHome:checked { qproperty-iconColor: $accent; }
+   QCustomQPushButton and QCustomSidebarButton recolour their OWN icon from QSS:
+   `qproperty-iconName` (a bundled feather/material name or a .svg path) +
+   `qproperty-iconColor` (a token). PREFER this over `qproperty-icon:
+   url(theme-icons:...)` on a custom button — it recolours on theme change and
+   PREVIEWS in Qt Designer (the setter renders the SVG immediately; Designer does
+   not rewrite theme-icons: urls, so a url icon is blank at design time).
+   NOTE: The CHECKED/active look must use the SEPARATE base-rule properties
+   `qproperty-iconNameActive` / `qproperty-iconColorActive`, NOT a
+   `:checked { qproperty-iconColor }` rule — Qt does NOT re-apply qproperty-*
+   from a pseudo-state selector on state change (proven: the :checked value never
+   takes effect). The button swaps to the *Active values in code on toggle:
+       #navHome { qproperty-iconName: "home";
+                  qproperty-iconColor: $muted;
+                  qproperty-iconColorActive: $accent; }   /* checked icon -> accent */
+       #playBtn { qproperty-iconName: "play_arrow"; qproperty-iconNameActive: "pause"; }
    Set iconSize in the .ui. (theme-icons: url stays fine for QLabel pixmaps /
    plain widgets that have no iconName/iconColor — but it MUST be unquoted:
    url(theme-icons:icons/...), never url("...") from an SCSS string concat.)
