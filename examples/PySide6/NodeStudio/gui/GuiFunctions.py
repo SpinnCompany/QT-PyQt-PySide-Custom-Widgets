@@ -15,31 +15,16 @@ from qtpy.QtCore import Qt, QTimer, QRectF, QPointF, QObject, QEvent
 from qtpy.QtGui import (QPixmap, QPainter, QColor, QBrush, QPen, QLinearGradient,
                         QRadialGradient, QPainterPath, QFont)
 
-from Custom_Widgets.Utils import themed_icon
-
 from . import theme as T
 
-# objectName -> (bare icon name, pixel size). Icons are recoloured per theme.
-ICONS = {
-    "tabNew": ("auto_awesome", 15), "tabFramer": ("dashboard", 15),
-    "tabUntitled": ("hexagon", 15), "tabAdd": ("add", 18),
-    "navPrev": ("arrow_back_ios_new", 15), "navNext": ("arrow_forward_ios", 15),
-    "durationBtn": ("timer", 15), "codeBtn": ("code", 18),
-    "playBtn": ("play_arrow", 20), "shareBtn": ("ios_share", 18),
-    "rlText": ("text_fields", 20), "rlLayers": ("layers", 20),
-    "rlPen": ("edit_note", 20), "rlBrush": ("brush", 20),
-    "rlGrid": ("grid_view", 20), "rlAttach": ("attach_file", 20),
-    "themeToggle": ("dark_mode", 20), "fabAdd": ("add", 20),
-    "rrCursor": ("near_me", 18), "rrStar": ("star_border", 18),
-    "rrDrop": ("opacity", 18), "rrLock": ("lock", 18), "rrBulb": ("lightbulb", 18),
-}
+# Button ICONS are NOT set here — they live in Qss/scss/chrome.scss as
+# `qproperty-icon: url(theme-icons:...)` so the theme engine recolours + refreshes
+# them on every theme flip (the icons-via-QSS rule). This module is logic only.
+
 # exclusive selectable control groups (name list, default-checked)
 TABS = ["tabNew", "tabFramer", "tabUntitled"]
 LEFT_TOOLS = ["rlText", "rlLayers", "rlPen", "rlBrush", "rlGrid", "rlAttach"]
 RIGHT_TOOLS = ["rrCursor", "rrStar", "rrDrop", "rrLock", "rrBulb"]
-TOOL_NAMES = set(LEFT_TOOLS + RIGHT_TOOLS)
-# buttons that sit on an accent fill -> white icon
-WHITE_ICONS = {"fabAdd", "exportBtn"}
 DURATIONS = [10, 15, 30, 5]
 
 # clicking a SETTINGS row cycles through these; Voice/Mode actually drive the
@@ -98,7 +83,6 @@ class GuiFunctions:
         self._shirt_color = None     # set by the Voice setting
         self._glow_color = None      # set by the Mode setting
         self._setup_controls()      # tabs + rails live in the shell (self.ui.*)
-        self._paint_icons()
         self._resolve_and_build()   # canvas/thoughts/preview/timeline are components
         if self.themeEngine is not None:
             try:
@@ -143,42 +127,6 @@ class GuiFunctions:
 
     def _pal(self):
         return T.node_palette(self._theme_name())
-
-    # ------------------------------------------------------------------ #
-    ## Icons (recoloured per theme)
-    # ------------------------------------------------------------------ #
-    def _paint_icons(self):
-        from qtpy.QtCore import QSize
-        theme = self._theme_name()
-        neutral = T.icon_color(theme)
-        accent = T.accent(theme)
-        for name, (icon, size) in ICONS.items():
-            btn = getattr(self.ui, name, None)
-            if btn is None:
-                continue
-            if name in WHITE_ICONS:
-                col = "#ffffff"
-            elif name in TOOL_NAMES and btn.isChecked():
-                col = accent            # the selected tool's icon glows accent
-            else:
-                col = neutral
-            btn.setIcon(themed_icon(icon, col, size))
-            btn.setIconSize(QSize(size, size))
-        # export button sits on an accent fill
-        if hasattr(self.ui, "exportBtn"):
-            self.ui.exportBtn.setIcon(themed_icon("bolt", "#ffffff", 16))
-            self.ui.exportBtn.setIconSize(QSize(16, 16))
-
-    def _retint(self, name):
-        """Re-tint a single tool button's icon to match its checked state."""
-        from qtpy.QtCore import QSize
-        btn = getattr(self.ui, name, None)
-        if btn is None or name not in ICONS:
-            return
-        icon, size = ICONS[name]
-        col = T.accent(self._theme_name()) if btn.isChecked() else T.icon_color(self._theme_name())
-        btn.setIcon(themed_icon(icon, col, size))
-        btn.setIconSize(QSize(size, size))
 
     # ------------------------------------------------------------------ #
     ## Node graph
@@ -402,8 +350,7 @@ class GuiFunctions:
     # ------------------------------------------------------------------ #
     def _setup_controls(self):
         """Make the tabs + both tool rails behave as exclusive selectable
-        controls, so a click gives an immediate active-state (and the selected
-        tool's icon glows accent)."""
+        controls, so a click gives an immediate active-state (:checked QSS)."""
         from qtpy.QtWidgets import QButtonGroup
         self._groups = []
         for names, default in ((TABS, "tabNew"),
@@ -419,11 +366,11 @@ class GuiFunctions:
                 grp.addButton(btn)
                 if n == default:
                     btn.setChecked(True)
-                btn.toggled.connect(lambda _c, nm=n: self._retint(nm))
             self._groups.append(grp)
 
     def _wire(self):
         from qtpy.QtWidgets import QSizePolicy
+        self.ui.playBtn.setCheckable(True)   # :checked swaps play->pause icon (QSS)
         self.ui.themeToggle.clicked.connect(self._toggle_theme)
         self.ui.playBtn.clicked.connect(self._toggle_play)
         self.ui.durationBtn.clicked.connect(self._cycle_duration)
@@ -453,15 +400,13 @@ class GuiFunctions:
             pass
 
     def _toggle_play(self):
-        from qtpy.QtCore import QSize
-        self._playing = not self._play_timer.isActive()
+        # playBtn is checkable, so the click already toggled :checked (which the
+        # QSS uses to swap the play/pause icon) — just follow that state.
+        self._playing = self.ui.playBtn.isChecked()
         if self._playing:
             self._play_timer.start()
         else:
             self._play_timer.stop()
-        icon = "pause" if self._playing else "play_arrow"
-        self.ui.playBtn.setIcon(themed_icon(icon, T.icon_color(self._theme_name()), 20))
-        self.ui.playBtn.setIconSize(QSize(20, 20))
 
     def _cycle_duration(self):
         self._dur_idx = (self._dur_idx + 1) % len(DURATIONS)
@@ -523,8 +468,9 @@ class GuiFunctions:
         self.themeEngine.setTheme(target)
 
     def _on_theme_ready(self):
-        # re-tint the painted widgets + icons from the new theme's palette
-        self._paint_icons()
+        # icons recolour automatically (QSS theme-icons); only the PAINTED
+        # widgets (node graph / timeline / preview) need re-tinting from the
+        # new theme's NodePalette.
         self._build_graph()
         self._build_timeline()
         self._build_thoughts()

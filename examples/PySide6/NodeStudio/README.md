@@ -83,3 +83,9 @@ The whole screen responds to clicks (visual, not a real backend):
   (uic instantiates promoted widgets as `Widget(parent)`).
 - Theme is persisted by QSettings between runs; `Default-Theme:true` only sets
   the first-run theme.
+- **Icons are set in `chrome.scss`**, never in Python: `qproperty-icon:
+  url(theme-icons:icons/<pack>/<name>.svg)` (UNQUOTED — a quoted url, e.g. from
+  `url($PATH_RESOURCES+'…')`, is not rewritten by the theme engine and shows
+  nothing). `iconSize` is set per button in the `.ui`. The engine recolours all
+  icons on every theme flip automatically — no `setIcon` in code. Play/pause is
+  a `:checked` icon swap, not a Python icon set.
