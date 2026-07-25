@@ -64,6 +64,11 @@ The whole screen responds to clicks (visual, not a real backend):
   arrows** nudge the playhead a second.
 - **Export / Share / source** buttons raise a toast; the **`+` FAB** drops a new
   wireable node onto the canvas.
+- **Click a SETTINGS row** on the canvas to cycle its value — and it's *wired to
+  the render*: **Voice** repaints the character's shirt colour, **Mode** retints
+  the stage glow (functional, not cosmetic).
+- The **Thoughts** panel is real JavaScript with syntax highlighting
+  (`QCustomCodeEditor` gained a `javascript`/`ts` grammar).
 - On the canvas: **drag** nodes, **wheel** to zoom, drag empty space to pan,
   drag from one port to another to wire a new cable.
 - On the timeline: drag the ruler/playhead to scrub, drag a clip to move it,
