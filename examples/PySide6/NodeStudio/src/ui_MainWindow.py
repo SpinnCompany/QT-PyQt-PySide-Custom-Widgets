@@ -52,6 +52,9 @@ class Ui_MainWindow(object):
         self.tabNew = QCustomQPushButton(self.topBar)
         self.tabNew.setObjectName(u"tabNew")
         self.tabNew.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        icon = QIcon()
+        icon.addFile(u"theme-icons:icons/material_design/auto_awesome.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.tabNew.setIcon(icon)
         self.tabNew.setIconSize(QSize(14, 14))
 
         self.topBarLayout.addWidget(self.tabNew)
@@ -59,6 +62,9 @@ class Ui_MainWindow(object):
         self.tabFramer = QCustomQPushButton(self.topBar)
         self.tabFramer.setObjectName(u"tabFramer")
         self.tabFramer.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        icon1 = QIcon()
+        icon1.addFile(u"theme-icons:icons/material_design/dashboard.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.tabFramer.setIcon(icon1)
         self.tabFramer.setIconSize(QSize(14, 14))
 
         self.topBarLayout.addWidget(self.tabFramer)
@@ -66,6 +72,9 @@ class Ui_MainWindow(object):
         self.tabUntitled = QCustomQPushButton(self.topBar)
         self.tabUntitled.setObjectName(u"tabUntitled")
         self.tabUntitled.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        icon2 = QIcon()
+        icon2.addFile(u"theme-icons:icons/feather/hexagon.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.tabUntitled.setIcon(icon2)
         self.tabUntitled.setIconSize(QSize(14, 14))
 
         self.topBarLayout.addWidget(self.tabUntitled)
@@ -75,6 +84,9 @@ class Ui_MainWindow(object):
         self.tabAdd.setMinimumSize(QSize(30, 30))
         self.tabAdd.setMaximumSize(QSize(30, 30))
         self.tabAdd.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        icon3 = QIcon()
+        icon3.addFile(u"theme-icons:icons/material_design/add.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.tabAdd.setIcon(icon3)
         self.tabAdd.setIconSize(QSize(18, 18))
 
         self.topBarLayout.addWidget(self.tabAdd)
@@ -87,6 +99,9 @@ class Ui_MainWindow(object):
         self.navPrev.setObjectName(u"navPrev")
         self.navPrev.setMinimumSize(QSize(32, 32))
         self.navPrev.setMaximumSize(QSize(32, 32))
+        icon4 = QIcon()
+        icon4.addFile(u"theme-icons:icons/material_design/arrow_back_ios_new.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.navPrev.setIcon(icon4)
         self.navPrev.setIconSize(QSize(16, 16))
 
         self.topBarLayout.addWidget(self.navPrev)
@@ -95,6 +110,9 @@ class Ui_MainWindow(object):
         self.navNext.setObjectName(u"navNext")
         self.navNext.setMinimumSize(QSize(32, 32))
         self.navNext.setMaximumSize(QSize(32, 32))
+        icon5 = QIcon()
+        icon5.addFile(u"theme-icons:icons/material_design/arrow_forward_ios.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.navNext.setIcon(icon5)
         self.navNext.setIconSize(QSize(16, 16))
 
         self.topBarLayout.addWidget(self.navNext)
@@ -102,6 +120,9 @@ class Ui_MainWindow(object):
         self.durationBtn = QCustomQPushButton(self.topBar)
         self.durationBtn.setObjectName(u"durationBtn")
         self.durationBtn.setMinimumSize(QSize(66, 32))
+        icon6 = QIcon()
+        icon6.addFile(u"theme-icons:icons/material_design/timer.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.durationBtn.setIcon(icon6)
         self.durationBtn.setIconSize(QSize(15, 15))
 
         self.topBarLayout.addWidget(self.durationBtn)
@@ -110,6 +131,9 @@ class Ui_MainWindow(object):
         self.codeBtn.setObjectName(u"codeBtn")
         self.codeBtn.setMinimumSize(QSize(36, 32))
         self.codeBtn.setMaximumSize(QSize(36, 32))
+        icon7 = QIcon()
+        icon7.addFile(u"theme-icons:icons/feather/code.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.codeBtn.setIcon(icon7)
         self.codeBtn.setIconSize(QSize(18, 18))
 
         self.topBarLayout.addWidget(self.codeBtn)
@@ -118,6 +142,9 @@ class Ui_MainWindow(object):
         self.playBtn.setObjectName(u"playBtn")
         self.playBtn.setMinimumSize(QSize(36, 32))
         self.playBtn.setMaximumSize(QSize(36, 32))
+        icon8 = QIcon()
+        icon8.addFile(u"theme-icons:icons/material_design/play_arrow.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.playBtn.setIcon(icon8)
         self.playBtn.setIconSize(QSize(18, 18))
 
         self.topBarLayout.addWidget(self.playBtn)
@@ -126,6 +153,9 @@ class Ui_MainWindow(object):
         self.shareBtn.setObjectName(u"shareBtn")
         self.shareBtn.setMinimumSize(QSize(36, 32))
         self.shareBtn.setMaximumSize(QSize(36, 32))
+        icon9 = QIcon()
+        icon9.addFile(u"theme-icons:icons/material_design/ios_share.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.shareBtn.setIcon(icon9)
         self.shareBtn.setIconSize(QSize(18, 18))
 
         self.topBarLayout.addWidget(self.shareBtn)
@@ -134,6 +164,9 @@ class Ui_MainWindow(object):
         self.exportBtn.setObjectName(u"exportBtn")
         self.exportBtn.setMinimumSize(QSize(88, 32))
         self.exportBtn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        icon10 = QIcon()
+        icon10.addFile(u"theme-icons:icons/material_design/bolt.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.exportBtn.setIcon(icon10)
         self.exportBtn.setIconSize(QSize(16, 16))
 
         self.topBarLayout.addWidget(self.exportBtn)
@@ -158,6 +191,9 @@ class Ui_MainWindow(object):
         self.rlText.setObjectName(u"rlText")
         self.rlText.setMinimumSize(QSize(34, 34))
         self.rlText.setMaximumSize(QSize(34, 34))
+        icon11 = QIcon()
+        icon11.addFile(u"theme-icons:icons/material_design/text_fields.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.rlText.setIcon(icon11)
         self.rlText.setIconSize(QSize(20, 20))
 
         self.leftRailLayout.addWidget(self.rlText)
@@ -166,6 +202,9 @@ class Ui_MainWindow(object):
         self.rlLayers.setObjectName(u"rlLayers")
         self.rlLayers.setMinimumSize(QSize(34, 34))
         self.rlLayers.setMaximumSize(QSize(34, 34))
+        icon12 = QIcon()
+        icon12.addFile(u"theme-icons:icons/feather/layers.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.rlLayers.setIcon(icon12)
         self.rlLayers.setIconSize(QSize(20, 20))
 
         self.leftRailLayout.addWidget(self.rlLayers)
@@ -174,6 +213,9 @@ class Ui_MainWindow(object):
         self.rlPen.setObjectName(u"rlPen")
         self.rlPen.setMinimumSize(QSize(34, 34))
         self.rlPen.setMaximumSize(QSize(34, 34))
+        icon13 = QIcon()
+        icon13.addFile(u"theme-icons:icons/material_design/edit_note.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.rlPen.setIcon(icon13)
         self.rlPen.setIconSize(QSize(20, 20))
 
         self.leftRailLayout.addWidget(self.rlPen)
@@ -182,6 +224,9 @@ class Ui_MainWindow(object):
         self.rlBrush.setObjectName(u"rlBrush")
         self.rlBrush.setMinimumSize(QSize(34, 34))
         self.rlBrush.setMaximumSize(QSize(34, 34))
+        icon14 = QIcon()
+        icon14.addFile(u"theme-icons:icons/material_design/brush.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.rlBrush.setIcon(icon14)
         self.rlBrush.setIconSize(QSize(20, 20))
 
         self.leftRailLayout.addWidget(self.rlBrush)
@@ -190,6 +235,9 @@ class Ui_MainWindow(object):
         self.rlGrid.setObjectName(u"rlGrid")
         self.rlGrid.setMinimumSize(QSize(34, 34))
         self.rlGrid.setMaximumSize(QSize(34, 34))
+        icon15 = QIcon()
+        icon15.addFile(u"theme-icons:icons/material_design/grid_view.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.rlGrid.setIcon(icon15)
         self.rlGrid.setIconSize(QSize(20, 20))
 
         self.leftRailLayout.addWidget(self.rlGrid)
@@ -198,6 +246,9 @@ class Ui_MainWindow(object):
         self.rlAttach.setObjectName(u"rlAttach")
         self.rlAttach.setMinimumSize(QSize(34, 34))
         self.rlAttach.setMaximumSize(QSize(34, 34))
+        icon16 = QIcon()
+        icon16.addFile(u"theme-icons:icons/material_design/attach_file.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.rlAttach.setIcon(icon16)
         self.rlAttach.setIconSize(QSize(20, 20))
 
         self.leftRailLayout.addWidget(self.rlAttach)
@@ -211,6 +262,9 @@ class Ui_MainWindow(object):
         self.themeToggle.setMinimumSize(QSize(34, 34))
         self.themeToggle.setMaximumSize(QSize(34, 34))
         self.themeToggle.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        icon17 = QIcon()
+        icon17.addFile(u"theme-icons:icons/material_design/dark_mode.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.themeToggle.setIcon(icon17)
         self.themeToggle.setIconSize(QSize(20, 20))
 
         self.leftRailLayout.addWidget(self.themeToggle)
@@ -219,6 +273,7 @@ class Ui_MainWindow(object):
         self.fabAdd.setObjectName(u"fabAdd")
         self.fabAdd.setMinimumSize(QSize(34, 34))
         self.fabAdd.setMaximumSize(QSize(34, 34))
+        self.fabAdd.setIcon(icon3)
         self.fabAdd.setIconSize(QSize(20, 20))
 
         self.leftRailLayout.addWidget(self.fabAdd)
@@ -279,6 +334,9 @@ class Ui_MainWindow(object):
         self.rrCursor.setObjectName(u"rrCursor")
         self.rrCursor.setMinimumSize(QSize(32, 32))
         self.rrCursor.setMaximumSize(QSize(32, 32))
+        icon18 = QIcon()
+        icon18.addFile(u"theme-icons:icons/material_design/near_me.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.rrCursor.setIcon(icon18)
         self.rrCursor.setIconSize(QSize(18, 18))
 
         self.rightRailLayout.addWidget(self.rrCursor)
@@ -287,6 +345,9 @@ class Ui_MainWindow(object):
         self.rrStar.setObjectName(u"rrStar")
         self.rrStar.setMinimumSize(QSize(32, 32))
         self.rrStar.setMaximumSize(QSize(32, 32))
+        icon19 = QIcon()
+        icon19.addFile(u"theme-icons:icons/material_design/star_border.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.rrStar.setIcon(icon19)
         self.rrStar.setIconSize(QSize(18, 18))
 
         self.rightRailLayout.addWidget(self.rrStar)
@@ -295,6 +356,9 @@ class Ui_MainWindow(object):
         self.rrDrop.setObjectName(u"rrDrop")
         self.rrDrop.setMinimumSize(QSize(32, 32))
         self.rrDrop.setMaximumSize(QSize(32, 32))
+        icon20 = QIcon()
+        icon20.addFile(u"theme-icons:icons/material_design/opacity.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.rrDrop.setIcon(icon20)
         self.rrDrop.setIconSize(QSize(18, 18))
 
         self.rightRailLayout.addWidget(self.rrDrop)
@@ -303,6 +367,9 @@ class Ui_MainWindow(object):
         self.rrLock.setObjectName(u"rrLock")
         self.rrLock.setMinimumSize(QSize(32, 32))
         self.rrLock.setMaximumSize(QSize(32, 32))
+        icon21 = QIcon()
+        icon21.addFile(u"theme-icons:icons/feather/lock.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.rrLock.setIcon(icon21)
         self.rrLock.setIconSize(QSize(18, 18))
 
         self.rightRailLayout.addWidget(self.rrLock)
@@ -311,6 +378,9 @@ class Ui_MainWindow(object):
         self.rrBulb.setObjectName(u"rrBulb")
         self.rrBulb.setMinimumSize(QSize(32, 32))
         self.rrBulb.setMaximumSize(QSize(32, 32))
+        icon22 = QIcon()
+        icon22.addFile(u"theme-icons:icons/material_design/lightbulb.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.rrBulb.setIcon(icon22)
         self.rrBulb.setIconSize(QSize(18, 18))
 
         self.rightRailLayout.addWidget(self.rrBulb)

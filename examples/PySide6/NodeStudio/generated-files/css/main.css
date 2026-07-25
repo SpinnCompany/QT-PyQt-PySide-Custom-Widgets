@@ -1643,47 +1643,14 @@ PlotWidget {
 
 /* ===================================================================
    Node Studio — component chrome (design-token driven).
-   Tokens only: $COLOR_BACKGROUND_1..6, $COLOR_TEXT_1..4, $COLOR_ACCENT_1..4.
-   Icons via themed SVG urls ($PATH_RESOURCES) so they recolour on theme flip.
-   Dark theme: BG_1 is DARKEST; higher numbers lighter. Never styled in a .ui.
+   RULE: styles are NESTED per UI component, scoped by the component's
+   objectName — each region/component owns one self-contained block.
+   Tokens only ($COLOR_BACKGROUND_1..6, $COLOR_TEXT_1..4, $COLOR_ACCENT_1..4);
+   icons via $PATH_RESOURCES (theme-icons) so the engine recolours them on
+   theme flip. Dark theme: BG_1 is DARKEST. Never styled in a .ui.
    =================================================================== */
-/* --- Window + big surfaces ------------------------------------------------ */
 #centralwidget {
   background-color: #0e0f16; }
-
-#topBar {
-  background-color: #0e0f16;
-  border: none;
-  border-bottom: 1px solid #08090d; }
-
-#leftRail, #rightRail {
-  background-color: #0e0f16;
-  border: none;
-  border-right: 1px solid #08090d; }
-
-#rightRail {
-  border-right: none;
-  border-left: 1px solid #08090d; }
-
-#canvasFrame {
-  background-color: #0e0f16;
-  border: none; }
-
-#thoughtsFrame {
-  background-color: #0b0b11;
-  border: none;
-  border-top: 1px solid #08090d; }
-
-#previewFrame {
-  background-color: #0b0b11;
-  border: none;
-  border-left: 1px solid #08090d; }
-
-#timelineFrame {
-  background-color: #0e0f16;
-  border: none;
-  border-top: 1px solid #08090d;
-  border-left: 1px solid #08090d; }
 
 QSplitter::handle {
   background-color: #0e0f16; }
@@ -1691,218 +1658,190 @@ QSplitter::handle {
 QSplitter::handle:hover {
   background-color: #6c7bff; }
 
-/* --- App mark + section dots --------------------------------------------- */
-#appMark {
-  background-color: #6c7bff;
-  border-radius: 8px; }
+/* ============================ TOP BAR ============================= */
+#topBar {
+  background-color: #0e0f16;
+  border: none;
+  border-bottom: 1px solid #08090d;
+  /* document tabs */
+  /* generic momentary icon buttons */
+  /* icons (runtime, themed via $PATH_RESOURCES) */ }
+  #topBar #appMark {
+    background-color: #6c7bff;
+    border-radius: 8px; }
+  #topBar #tabNew, #topBar #tabFramer, #topBar #tabUntitled {
+    background-color: transparent;
+    color: #8A8B91;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: left; }
+    #topBar #tabNew:hover, #topBar #tabFramer:hover, #topBar #tabUntitled:hover {
+      background-color: #0b0b11;
+      color: #e7e9f3; }
+    #topBar #tabNew:checked, #topBar #tabFramer:checked, #topBar #tabUntitled:checked {
+      background-color: #08090d;
+      color: #e7e9f3;
+      border: 1px solid #06070a; }
+  #topBar #tabAdd, #topBar #navPrev, #topBar #navNext, #topBar #codeBtn, #topBar #playBtn, #topBar #shareBtn {
+    background-color: transparent;
+    color: #B8BAC2;
+    border: none;
+    border-radius: 9px; }
+    #topBar #tabAdd:hover, #topBar #navPrev:hover, #topBar #navNext:hover, #topBar #codeBtn:hover, #topBar #playBtn:hover, #topBar #shareBtn:hover {
+      background-color: #08090d;
+      color: #e7e9f3; }
+    #topBar #tabAdd:pressed, #topBar #navPrev:pressed, #topBar #navNext:pressed, #topBar #codeBtn:pressed, #topBar #playBtn:pressed, #topBar #shareBtn:pressed {
+      background-color: #6c7bff;
+      color: #ffffff; }
+  #topBar #durationBtn {
+    background-color: #08090d;
+    color: #e7e9f3;
+    border: 1px solid #06070a;
+    border-radius: 9px;
+    padding: 0 10px;
+    font-size: 12px;
+    font-weight: 600; }
+  #topBar #exportBtn {
+    background-color: #6c7bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 9px;
+    font-size: 12px;
+    font-weight: 700; }
+    #topBar #exportBtn:hover {
+      background-color: #5662CC; }
+  #topBar #tabNew {
+    qproperty-icon: url("theme-icons:icons/material_design/auto_awesome.svg"); }
+  #topBar #tabFramer {
+    qproperty-icon: url("theme-icons:icons/material_design/dashboard.svg"); }
+  #topBar #tabUntitled {
+    qproperty-icon: url("theme-icons:icons/feather/hexagon.svg"); }
+  #topBar #tabAdd {
+    qproperty-icon: url("theme-icons:icons/material_design/add.svg"); }
+  #topBar #navPrev {
+    qproperty-icon: url("theme-icons:icons/material_design/arrow_back_ios_new.svg"); }
+  #topBar #navNext {
+    qproperty-icon: url("theme-icons:icons/material_design/arrow_forward_ios.svg"); }
+  #topBar #durationBtn {
+    qproperty-icon: url("theme-icons:icons/material_design/timer.svg"); }
+  #topBar #codeBtn {
+    qproperty-icon: url("theme-icons:icons/feather/code.svg"); }
+  #topBar #playBtn {
+    qproperty-icon: url("theme-icons:icons/material_design/play_arrow.svg"); }
+  #topBar #shareBtn {
+    qproperty-icon: url("theme-icons:icons/material_design/ios_share.svg"); }
+  #topBar #exportBtn {
+    qproperty-icon: url("theme-icons:icons/material_design/bolt.svg"); }
 
-#thoughtsDot {
+/* ============================ LEFT RAIL =========================== */
+#leftRail {
+  background-color: #0e0f16;
+  border: none;
+  border-right: 1px solid #08090d; }
+  #leftRail #rlText, #leftRail #rlLayers, #leftRail #rlPen, #leftRail #rlBrush, #leftRail #rlGrid, #leftRail #rlAttach, #leftRail #themeToggle {
+    background-color: transparent;
+    color: #B8BAC2;
+    border: none;
+    border-radius: 9px; }
+    #leftRail #rlText:hover, #leftRail #rlLayers:hover, #leftRail #rlPen:hover, #leftRail #rlBrush:hover, #leftRail #rlGrid:hover, #leftRail #rlAttach:hover, #leftRail #themeToggle:hover {
+      background-color: #08090d;
+      color: #e7e9f3; }
+    #leftRail #rlText:checked, #leftRail #rlLayers:checked, #leftRail #rlPen:checked, #leftRail #rlBrush:checked, #leftRail #rlGrid:checked, #leftRail #rlAttach:checked, #leftRail #themeToggle:checked {
+      background-color: #08090d;
+      color: #6c7bff; }
+  #leftRail #fabAdd {
+    background-color: #6c7bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 9px; }
+    #leftRail #fabAdd:hover {
+      background-color: #5662CC; }
+    #leftRail #fabAdd:pressed {
+      background-color: #404999; }
+  #leftRail #rlText {
+    qproperty-icon: url("theme-icons:icons/material_design/text_fields.svg"); }
+  #leftRail #rlLayers {
+    qproperty-icon: url("theme-icons:icons/feather/layers.svg"); }
+  #leftRail #rlPen {
+    qproperty-icon: url("theme-icons:icons/material_design/edit_note.svg"); }
+  #leftRail #rlBrush {
+    qproperty-icon: url("theme-icons:icons/material_design/brush.svg"); }
+  #leftRail #rlGrid {
+    qproperty-icon: url("theme-icons:icons/material_design/grid_view.svg"); }
+  #leftRail #rlAttach {
+    qproperty-icon: url("theme-icons:icons/material_design/attach_file.svg"); }
+  #leftRail #themeToggle {
+    qproperty-icon: url("theme-icons:icons/material_design/dark_mode.svg"); }
+  #leftRail #fabAdd {
+    qproperty-icon: url("theme-icons:icons/material_design/add.svg"); }
+
+/* ============================ RIGHT RAIL ========================== */
+#rightRail {
+  background-color: #0e0f16;
+  border: none;
+  border-left: 1px solid #08090d; }
+  #rightRail #rrCursor, #rightRail #rrStar, #rightRail #rrDrop, #rightRail #rrLock, #rightRail #rrBulb {
+    background-color: transparent;
+    color: #B8BAC2;
+    border: none;
+    border-radius: 9px; }
+    #rightRail #rrCursor:hover, #rightRail #rrStar:hover, #rightRail #rrDrop:hover, #rightRail #rrLock:hover, #rightRail #rrBulb:hover {
+      background-color: #08090d;
+      color: #e7e9f3; }
+    #rightRail #rrCursor:checked, #rightRail #rrStar:checked, #rightRail #rrDrop:checked, #rightRail #rrLock:checked, #rightRail #rrBulb:checked {
+      background-color: #08090d;
+      color: #6c7bff; }
+  #rightRail #rrCursor {
+    qproperty-icon: url("theme-icons:icons/material_design/near_me.svg"); }
+  #rightRail #rrStar {
+    qproperty-icon: url("theme-icons:icons/material_design/star_border.svg"); }
+  #rightRail #rrDrop {
+    qproperty-icon: url("theme-icons:icons/material_design/opacity.svg"); }
+  #rightRail #rrLock {
+    qproperty-icon: url("theme-icons:icons/feather/lock.svg"); }
+  #rightRail #rrBulb {
+    qproperty-icon: url("theme-icons:icons/material_design/lightbulb.svg"); }
+
+/* ======================= CANVAS COMPONENT ======================== */
+#CanvasComponent #canvasFrame {
+  background-color: #0e0f16;
+  border: none; }
+
+/* ======================= THOUGHTS COMPONENT ====================== */
+#ThoughtsComponent #thoughtsFrame {
+  background-color: #0b0b11;
+  border: none;
+  border-top: 1px solid #08090d; }
+
+#ThoughtsComponent #thoughtsDot {
   background-color: #6c7bff;
   border-radius: 5px; }
 
-#thoughtsTitle {
+#ThoughtsComponent #thoughtsTitle {
   background: transparent;
   color: #B8BAC2;
   font-size: 12px;
   font-weight: 700; }
 
-/* --- Tab buttons --------------------------------------------------------- */
-QCustomQPushButton#tabNew, QCustomQPushButton#tabFramer, QCustomQPushButton#tabUntitled {
-  background-color: transparent;
-  color: #8A8B91;
-  border: 1px solid transparent;
-  border-radius: 9px;
-  padding: 4px 12px;
-  font-size: 12px;
-  font-weight: 600;
-  text-align: left; }
-
-QCustomQPushButton#tabNew:hover, QCustomQPushButton#tabFramer:hover, QCustomQPushButton#tabUntitled:hover {
-  background-color: #0b0b11;
-  color: #e7e9f3; }
-
-QCustomQPushButton#tabNew:checked, QCustomQPushButton#tabFramer:checked, QCustomQPushButton#tabUntitled:checked {
-  background-color: #08090d;
-  color: #e7e9f3;
-  border: 1px solid #06070a; }
-
-/* --- Generic icon buttons (top bar + rails) ------------------------------ */
-QCustomQPushButton#tabAdd, QCustomQPushButton#navPrev, QCustomQPushButton#navNext,
-QCustomQPushButton#codeBtn, QCustomQPushButton#playBtn, QCustomQPushButton#shareBtn,
-QCustomQPushButton#rlText, QCustomQPushButton#rlLayers, QCustomQPushButton#rlPen,
-QCustomQPushButton#rlBrush, QCustomQPushButton#rlGrid, QCustomQPushButton#rlAttach,
-QCustomQPushButton#themeToggle, QCustomQPushButton#fabAdd,
-QCustomQPushButton#rrCursor, QCustomQPushButton#rrStar, QCustomQPushButton#rrDrop,
-QCustomQPushButton#rrLock, QCustomQPushButton#rrBulb {
-  background-color: transparent;
-  color: #B8BAC2;
-  border: none;
-  border-radius: 9px; }
-
-QCustomQPushButton#tabAdd:hover, QCustomQPushButton#navPrev:hover, QCustomQPushButton#navNext:hover,
-QCustomQPushButton#codeBtn:hover, QCustomQPushButton#playBtn:hover, QCustomQPushButton#shareBtn:hover,
-QCustomQPushButton#rlText:hover, QCustomQPushButton#rlLayers:hover, QCustomQPushButton#rlPen:hover,
-QCustomQPushButton#rlBrush:hover, QCustomQPushButton#rlGrid:hover, QCustomQPushButton#rlAttach:hover,
-QCustomQPushButton#themeToggle:hover, QCustomQPushButton#fabAdd:hover,
-QCustomQPushButton#rrCursor:hover, QCustomQPushButton#rrStar:hover, QCustomQPushButton#rrDrop:hover,
-QCustomQPushButton#rrLock:hover, QCustomQPushButton#rrBulb:hover {
-  background-color: #08090d;
-  color: #e7e9f3; }
-
-/* the selected tool in either rail gets an accent identity */
-QCustomQPushButton#rlText:checked, QCustomQPushButton#rlLayers:checked,
-QCustomQPushButton#rlPen:checked, QCustomQPushButton#rlBrush:checked,
-QCustomQPushButton#rlGrid:checked, QCustomQPushButton#rlAttach:checked,
-QCustomQPushButton#rrCursor:checked, QCustomQPushButton#rrStar:checked,
-QCustomQPushButton#rrDrop:checked, QCustomQPushButton#rrLock:checked,
-QCustomQPushButton#rrBulb:checked {
-  background-color: #08090d;
-  color: #6c7bff; }
-
-/* pressed feedback for the momentary action buttons */
-QCustomQPushButton#navPrev:pressed, QCustomQPushButton#navNext:pressed,
-QCustomQPushButton#codeBtn:pressed, QCustomQPushButton#playBtn:pressed,
-QCustomQPushButton#shareBtn:pressed, QCustomQPushButton#tabAdd:pressed {
-  background-color: #6c7bff;
-  color: #ffffff; }
-
-QCustomQPushButton#fabAdd {
-  background-color: #6c7bff;
-  color: #ffffff; }
-
-QCustomQPushButton#fabAdd:hover {
-  background-color: #5662CC; }
-
-QCustomQPushButton#fabAdd:pressed {
-  background-color: #404999; }
-
-/* --- Duration pill + export ---------------------------------------------- */
-QCustomQPushButton#durationBtn {
-  background-color: #08090d;
-  color: #e7e9f3;
-  border: 1px solid #06070a;
-  border-radius: 9px;
-  padding: 0 10px;
-  font-size: 12px;
-  font-weight: 600; }
-
-QCustomQPushButton#exportBtn {
-  background-color: #6c7bff;
-  color: #ffffff;
-  border: none;
-  border-radius: 9px;
-  font-size: 12px;
-  font-weight: 700; }
-
-QCustomQPushButton#exportBtn:hover {
-  background-color: #5662CC; }
-
-/* --- Icons: the CUSTOM BUTTON recolours its own SVG from QSS via
-       `qproperty-iconName` (bundled feather/material name) + `qproperty-iconColor`
-       (a token). Because iconColor is a QSS property it follows STATE selectors
-       (:checked) and the THEME, so the icon recolours with no setIcon in code and
-       previews in Qt Designer. iconSize is set per button in the .ui. ---------- */
-QCustomQPushButton#tabNew {
-  qproperty-iconName: "auto_awesome"; }
-
-QCustomQPushButton#tabFramer {
-  qproperty-iconName: "dashboard"; }
-
-QCustomQPushButton#tabUntitled {
-  qproperty-iconName: "hexagon"; }
-
-QCustomQPushButton#tabAdd {
-  qproperty-iconName: "add"; }
-
-QCustomQPushButton#navPrev {
-  qproperty-iconName: "arrow_back_ios_new"; }
-
-QCustomQPushButton#navNext {
-  qproperty-iconName: "arrow_forward_ios"; }
-
-QCustomQPushButton#durationBtn {
-  qproperty-iconName: "timer"; }
-
-QCustomQPushButton#codeBtn {
-  qproperty-iconName: "code"; }
-
-QCustomQPushButton#playBtn {
-  qproperty-iconName: "play_arrow";
-  qproperty-iconNameActive: "pause"; }
-
-QCustomQPushButton#shareBtn {
-  qproperty-iconName: "ios_share"; }
-
-QCustomQPushButton#exportBtn {
-  qproperty-iconName: "bolt"; }
-
-QCustomQPushButton#rlText {
-  qproperty-iconName: "text_fields"; }
-
-QCustomQPushButton#rlLayers {
-  qproperty-iconName: "layers"; }
-
-QCustomQPushButton#rlPen {
-  qproperty-iconName: "edit_note"; }
-
-QCustomQPushButton#rlBrush {
-  qproperty-iconName: "brush"; }
-
-QCustomQPushButton#rlGrid {
-  qproperty-iconName: "grid_view"; }
-
-QCustomQPushButton#rlAttach {
-  qproperty-iconName: "attach_file"; }
-
-QCustomQPushButton#themeToggle {
-  qproperty-iconName: "dark_mode"; }
-
-QCustomQPushButton#fabAdd {
-  qproperty-iconName: "add"; }
-
-QCustomQPushButton#rrCursor {
-  qproperty-iconName: "near_me"; }
-
-QCustomQPushButton#rrStar {
-  qproperty-iconName: "star_border"; }
-
-QCustomQPushButton#rrDrop {
-  qproperty-iconName: "opacity"; }
-
-QCustomQPushButton#rrLock {
-  qproperty-iconName: "lock"; }
-
-QCustomQPushButton#rrBulb {
-  qproperty-iconName: "lightbulb"; }
-
-/* icon COLOURS — neutral at rest, ACCENT when the tab/tool is selected. The
-   active colour is `iconColorActive` (a BASE-rule property the button swaps to
-   on toggle) — NOT `:checked { qproperty-iconColor }`, because Qt does not
-   re-apply qproperty-* from a pseudo-state selector on state change. */
-#tabNew, #tabFramer, #tabUntitled, #tabAdd, #navPrev, #navNext, #durationBtn,
-#codeBtn, #playBtn, #shareBtn {
-  qproperty-iconColor: #B8BAC2; }
-
-#tabNew, #tabFramer, #tabUntitled {
-  qproperty-iconColorActive: #e7e9f3; }
-
-#rlText, #rlLayers, #rlPen, #rlBrush, #rlGrid, #rlAttach,
-#rrCursor, #rrStar, #rrDrop, #rrLock, #rrBulb {
-  qproperty-iconColor: #B8BAC2;
-  qproperty-iconColorActive: #6c7bff;
-  /* selected tool icon → accent */ }
-
-#themeToggle {
-  qproperty-iconColor: #B8BAC2; }
-
-/* icons that sit on an accent fill stay light */
-#exportBtn, #fabAdd {
-  qproperty-iconColor: #ffffff; }
-
-/* --- Code editor + preview ----------------------------------------------- */
-QCustomCodeEditor {
+#ThoughtsComponent QCustomCodeEditor {
   background: transparent; }
 
-#previewImage {
+/* ======================= PREVIEW COMPONENT ======================= */
+#PreviewComponent #previewFrame {
+  background-color: #0b0b11;
+  border: none;
+  border-left: 1px solid #08090d; }
+
+#PreviewComponent #previewImage {
   background: transparent;
   border: none; }
+
+/* ======================= TIMELINE COMPONENT ====================== */
+#TimelineComponent #timelineFrame {
+  background-color: #0e0f16;
+  border: none;
+  border-top: 1px solid #08090d;
+  border-left: 1px solid #08090d; }

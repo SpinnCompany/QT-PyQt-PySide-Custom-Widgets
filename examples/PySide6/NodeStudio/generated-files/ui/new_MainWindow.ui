@@ -43,19 +43,19 @@
         <widget class="QCustomQPushButton" name="tabNew">
          <property name="text"><string>New Character</string></property>
          <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
-        <property name="iconSize"><size><width>14</width><height>14</height></size></property></widget>
+        <property name="icon"><iconset><normaloff>theme-icons:icons/material_design/auto_awesome.svg</normaloff>theme-icons:icons/material_design/auto_awesome.svg</iconset></property><property name="iconSize"><size><width>14</width><height>14</height></size></property></widget>
        </item>
        <item>
         <widget class="QCustomQPushButton" name="tabFramer">
          <property name="text"><string>Framer Templates</string></property>
          <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
-        <property name="iconSize"><size><width>14</width><height>14</height></size></property></widget>
+        <property name="icon"><iconset><normaloff>theme-icons:icons/material_design/dashboard.svg</normaloff>theme-icons:icons/material_design/dashboard.svg</iconset></property><property name="iconSize"><size><width>14</width><height>14</height></size></property></widget>
        </item>
        <item>
         <widget class="QCustomQPushButton" name="tabUntitled">
          <property name="text"><string>Untitled</string></property>
          <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
-        <property name="iconSize"><size><width>14</width><height>14</height></size></property></widget>
+        <property name="icon"><iconset><normaloff>theme-icons:icons/feather/hexagon.svg</normaloff>theme-icons:icons/feather/hexagon.svg</iconset></property><property name="iconSize"><size><width>14</width><height>14</height></size></property></widget>
        </item>
        <item>
         <widget class="QCustomQPushButton" name="tabAdd">
@@ -63,7 +63,7 @@
          <property name="maximumSize"><size><width>30</width><height>30</height></size></property>
          <property name="text"><string /></property>
          <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
-        <property name="iconSize"><size><width>18</width><height>18</height></size></property></widget>
+        <property name="icon"><iconset><normaloff>theme-icons:icons/material_design/add.svg</normaloff>theme-icons:icons/material_design/add.svg</iconset></property><property name="iconSize"><size><width>18</width><height>18</height></size></property></widget>
        </item>
        <item>
         <spacer name="topSpacer">
@@ -76,48 +76,48 @@
          <property name="minimumSize"><size><width>32</width><height>32</height></size></property>
          <property name="maximumSize"><size><width>32</width><height>32</height></size></property>
          <property name="text"><string /></property>
-        <property name="iconSize"><size><width>16</width><height>16</height></size></property></widget>
+        <property name="icon"><iconset><normaloff>theme-icons:icons/material_design/arrow_back_ios_new.svg</normaloff>theme-icons:icons/material_design/arrow_back_ios_new.svg</iconset></property><property name="iconSize"><size><width>16</width><height>16</height></size></property></widget>
        </item>
        <item>
         <widget class="QCustomQPushButton" name="navNext">
          <property name="minimumSize"><size><width>32</width><height>32</height></size></property>
          <property name="maximumSize"><size><width>32</width><height>32</height></size></property>
          <property name="text"><string /></property>
-        <property name="iconSize"><size><width>16</width><height>16</height></size></property></widget>
+        <property name="icon"><iconset><normaloff>theme-icons:icons/material_design/arrow_forward_ios.svg</normaloff>theme-icons:icons/material_design/arrow_forward_ios.svg</iconset></property><property name="iconSize"><size><width>16</width><height>16</height></size></property></widget>
        </item>
        <item>
         <widget class="QCustomQPushButton" name="durationBtn">
          <property name="minimumSize"><size><width>66</width><height>32</height></size></property>
          <property name="text"><string>10s</string></property>
-        <property name="iconSize"><size><width>15</width><height>15</height></size></property></widget>
+        <property name="icon"><iconset><normaloff>theme-icons:icons/material_design/timer.svg</normaloff>theme-icons:icons/material_design/timer.svg</iconset></property><property name="iconSize"><size><width>15</width><height>15</height></size></property></widget>
        </item>
        <item>
         <widget class="QCustomQPushButton" name="codeBtn">
          <property name="minimumSize"><size><width>36</width><height>32</height></size></property>
          <property name="maximumSize"><size><width>36</width><height>32</height></size></property>
          <property name="text"><string /></property>
-        <property name="iconSize"><size><width>18</width><height>18</height></size></property></widget>
+        <property name="icon"><iconset><normaloff>theme-icons:icons/feather/code.svg</normaloff>theme-icons:icons/feather/code.svg</iconset></property><property name="iconSize"><size><width>18</width><height>18</height></size></property></widget>
        </item>
        <item>
         <widget class="QCustomQPushButton" name="playBtn">
          <property name="minimumSize"><size><width>36</width><height>32</height></size></property>
          <property name="maximumSize"><size><width>36</width><height>32</height></size></property>
          <property name="text"><string /></property>
-        <property name="iconSize"><size><width>18</width><height>18</height></size></property></widget>
+        <property name="icon"><iconset><normaloff>theme-icons:icons/material_design/play_arrow.svg</normaloff>theme-icons:icons/material_design/play_arrow.svg</iconset></property><property name="iconSize"><size><width>18</width><height>18</height></size></property></widget>
        </item>
        <item>
         <widget class="QCustomQPushButton" name="shareBtn">
          <property name="minimumSize"><size><width>36</width><height>32</height></size></property>
          <property name="maximumSize"><size><width>36</width><height>32</height></size></property>
          <property name="text"><string /></property>
-        <property name="iconSize"><size><width>18</width><height>18</height></size></property></widget>
+        <property name="icon"><iconset><normaloff>theme-icons:icons/material_design/ios_share.svg</normaloff>theme-icons:icons/material_design/ios_share.svg</iconset></property><property name="iconSize"><size><width>18</width><height>18</height></size></property></widget>
        </item>
        <item>
         <widget class="QCustomQPushButton" name="exportBtn">
          <property name="minimumSize"><size><width>88</width><height>32</height></size></property>
          <property name="text"><string>Export</string></property>
          <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
-        <property name="iconSize"><size><width>16</width><height>16</height></size></property></widget>
+        <property name="icon"><iconset><normaloff>theme-icons:icons/material_design/bolt.svg</normaloff>theme-icons:icons/material_design/bolt.svg</iconset></property><property name="iconSize"><size><width>16</width><height>16</height></size></property></widget>
        </item>
       </layout>
      </widget>
@@ -142,20 +142,20 @@
          <property name="topMargin"><number>12</number></property>
          <property name="rightMargin"><number>10</number></property>
          <property name="bottomMargin"><number>12</number></property>
-         <item><widget class="QCustomQPushButton" name="rlText"><property name="minimumSize"><size><width>34</width><height>34</height></size></property><property name="maximumSize"><size><width>34</width><height>34</height></size></property><property name="text"><string /></property><property name="iconSize"><size><width>20</width><height>20</height></size></property></widget></item>
-         <item><widget class="QCustomQPushButton" name="rlLayers"><property name="minimumSize"><size><width>34</width><height>34</height></size></property><property name="maximumSize"><size><width>34</width><height>34</height></size></property><property name="text"><string /></property><property name="iconSize"><size><width>20</width><height>20</height></size></property></widget></item>
-         <item><widget class="QCustomQPushButton" name="rlPen"><property name="minimumSize"><size><width>34</width><height>34</height></size></property><property name="maximumSize"><size><width>34</width><height>34</height></size></property><property name="text"><string /></property><property name="iconSize"><size><width>20</width><height>20</height></size></property></widget></item>
-         <item><widget class="QCustomQPushButton" name="rlBrush"><property name="minimumSize"><size><width>34</width><height>34</height></size></property><property name="maximumSize"><size><width>34</width><height>34</height></size></property><property name="text"><string /></property><property name="iconSize"><size><width>20</width><height>20</height></size></property></widget></item>
-         <item><widget class="QCustomQPushButton" name="rlGrid"><property name="minimumSize"><size><width>34</width><height>34</height></size></property><property name="maximumSize"><size><width>34</width><height>34</height></size></property><property name="text"><string /></property><property name="iconSize"><size><width>20</width><height>20</height></size></property></widget></item>
-         <item><widget class="QCustomQPushButton" name="rlAttach"><property name="minimumSize"><size><width>34</width><height>34</height></size></property><property name="maximumSize"><size><width>34</width><height>34</height></size></property><property name="text"><string /></property><property name="iconSize"><size><width>20</width><height>20</height></size></property></widget></item>
+         <item><widget class="QCustomQPushButton" name="rlText"><property name="minimumSize"><size><width>34</width><height>34</height></size></property><property name="maximumSize"><size><width>34</width><height>34</height></size></property><property name="text"><string /></property><property name="icon"><iconset><normaloff>theme-icons:icons/material_design/text_fields.svg</normaloff>theme-icons:icons/material_design/text_fields.svg</iconset></property><property name="iconSize"><size><width>20</width><height>20</height></size></property></widget></item>
+         <item><widget class="QCustomQPushButton" name="rlLayers"><property name="minimumSize"><size><width>34</width><height>34</height></size></property><property name="maximumSize"><size><width>34</width><height>34</height></size></property><property name="text"><string /></property><property name="icon"><iconset><normaloff>theme-icons:icons/feather/layers.svg</normaloff>theme-icons:icons/feather/layers.svg</iconset></property><property name="iconSize"><size><width>20</width><height>20</height></size></property></widget></item>
+         <item><widget class="QCustomQPushButton" name="rlPen"><property name="minimumSize"><size><width>34</width><height>34</height></size></property><property name="maximumSize"><size><width>34</width><height>34</height></size></property><property name="text"><string /></property><property name="icon"><iconset><normaloff>theme-icons:icons/material_design/edit_note.svg</normaloff>theme-icons:icons/material_design/edit_note.svg</iconset></property><property name="iconSize"><size><width>20</width><height>20</height></size></property></widget></item>
+         <item><widget class="QCustomQPushButton" name="rlBrush"><property name="minimumSize"><size><width>34</width><height>34</height></size></property><property name="maximumSize"><size><width>34</width><height>34</height></size></property><property name="text"><string /></property><property name="icon"><iconset><normaloff>theme-icons:icons/material_design/brush.svg</normaloff>theme-icons:icons/material_design/brush.svg</iconset></property><property name="iconSize"><size><width>20</width><height>20</height></size></property></widget></item>
+         <item><widget class="QCustomQPushButton" name="rlGrid"><property name="minimumSize"><size><width>34</width><height>34</height></size></property><property name="maximumSize"><size><width>34</width><height>34</height></size></property><property name="text"><string /></property><property name="icon"><iconset><normaloff>theme-icons:icons/material_design/grid_view.svg</normaloff>theme-icons:icons/material_design/grid_view.svg</iconset></property><property name="iconSize"><size><width>20</width><height>20</height></size></property></widget></item>
+         <item><widget class="QCustomQPushButton" name="rlAttach"><property name="minimumSize"><size><width>34</width><height>34</height></size></property><property name="maximumSize"><size><width>34</width><height>34</height></size></property><property name="text"><string /></property><property name="icon"><iconset><normaloff>theme-icons:icons/material_design/attach_file.svg</normaloff>theme-icons:icons/material_design/attach_file.svg</iconset></property><property name="iconSize"><size><width>20</width><height>20</height></size></property></widget></item>
          <item>
           <spacer name="railSpacer">
            <property name="orientation"><enum>Qt::Vertical</enum></property>
            <property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property>
           </spacer>
          </item>
-         <item><widget class="QCustomQPushButton" name="themeToggle"><property name="minimumSize"><size><width>34</width><height>34</height></size></property><property name="maximumSize"><size><width>34</width><height>34</height></size></property><property name="text"><string /></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="iconSize"><size><width>20</width><height>20</height></size></property></widget></item>
-         <item><widget class="QCustomQPushButton" name="fabAdd"><property name="minimumSize"><size><width>34</width><height>34</height></size></property><property name="maximumSize"><size><width>34</width><height>34</height></size></property><property name="text"><string /></property><property name="iconSize"><size><width>20</width><height>20</height></size></property></widget></item>
+         <item><widget class="QCustomQPushButton" name="themeToggle"><property name="minimumSize"><size><width>34</width><height>34</height></size></property><property name="maximumSize"><size><width>34</width><height>34</height></size></property><property name="text"><string /></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="icon"><iconset><normaloff>theme-icons:icons/material_design/dark_mode.svg</normaloff>theme-icons:icons/material_design/dark_mode.svg</iconset></property><property name="iconSize"><size><width>20</width><height>20</height></size></property></widget></item>
+         <item><widget class="QCustomQPushButton" name="fabAdd"><property name="minimumSize"><size><width>34</width><height>34</height></size></property><property name="maximumSize"><size><width>34</width><height>34</height></size></property><property name="text"><string /></property><property name="icon"><iconset><normaloff>theme-icons:icons/material_design/add.svg</normaloff>theme-icons:icons/material_design/add.svg</iconset></property><property name="iconSize"><size><width>20</width><height>20</height></size></property></widget></item>
         </layout>
        </widget>
       </item>
@@ -211,11 +211,11 @@
          <property name="topMargin"><number>12</number></property>
          <property name="rightMargin"><number>9</number></property>
          <property name="bottomMargin"><number>12</number></property>
-         <item><widget class="QCustomQPushButton" name="rrCursor"><property name="minimumSize"><size><width>32</width><height>32</height></size></property><property name="maximumSize"><size><width>32</width><height>32</height></size></property><property name="text"><string /></property><property name="iconSize"><size><width>18</width><height>18</height></size></property></widget></item>
-         <item><widget class="QCustomQPushButton" name="rrStar"><property name="minimumSize"><size><width>32</width><height>32</height></size></property><property name="maximumSize"><size><width>32</width><height>32</height></size></property><property name="text"><string /></property><property name="iconSize"><size><width>18</width><height>18</height></size></property></widget></item>
-         <item><widget class="QCustomQPushButton" name="rrDrop"><property name="minimumSize"><size><width>32</width><height>32</height></size></property><property name="maximumSize"><size><width>32</width><height>32</height></size></property><property name="text"><string /></property><property name="iconSize"><size><width>18</width><height>18</height></size></property></widget></item>
-         <item><widget class="QCustomQPushButton" name="rrLock"><property name="minimumSize"><size><width>32</width><height>32</height></size></property><property name="maximumSize"><size><width>32</width><height>32</height></size></property><property name="text"><string /></property><property name="iconSize"><size><width>18</width><height>18</height></size></property></widget></item>
-         <item><widget class="QCustomQPushButton" name="rrBulb"><property name="minimumSize"><size><width>32</width><height>32</height></size></property><property name="maximumSize"><size><width>32</width><height>32</height></size></property><property name="text"><string /></property><property name="iconSize"><size><width>18</width><height>18</height></size></property></widget></item>
+         <item><widget class="QCustomQPushButton" name="rrCursor"><property name="minimumSize"><size><width>32</width><height>32</height></size></property><property name="maximumSize"><size><width>32</width><height>32</height></size></property><property name="text"><string /></property><property name="icon"><iconset><normaloff>theme-icons:icons/material_design/near_me.svg</normaloff>theme-icons:icons/material_design/near_me.svg</iconset></property><property name="iconSize"><size><width>18</width><height>18</height></size></property></widget></item>
+         <item><widget class="QCustomQPushButton" name="rrStar"><property name="minimumSize"><size><width>32</width><height>32</height></size></property><property name="maximumSize"><size><width>32</width><height>32</height></size></property><property name="text"><string /></property><property name="icon"><iconset><normaloff>theme-icons:icons/material_design/star_border.svg</normaloff>theme-icons:icons/material_design/star_border.svg</iconset></property><property name="iconSize"><size><width>18</width><height>18</height></size></property></widget></item>
+         <item><widget class="QCustomQPushButton" name="rrDrop"><property name="minimumSize"><size><width>32</width><height>32</height></size></property><property name="maximumSize"><size><width>32</width><height>32</height></size></property><property name="text"><string /></property><property name="icon"><iconset><normaloff>theme-icons:icons/material_design/opacity.svg</normaloff>theme-icons:icons/material_design/opacity.svg</iconset></property><property name="iconSize"><size><width>18</width><height>18</height></size></property></widget></item>
+         <item><widget class="QCustomQPushButton" name="rrLock"><property name="minimumSize"><size><width>32</width><height>32</height></size></property><property name="maximumSize"><size><width>32</width><height>32</height></size></property><property name="text"><string /></property><property name="icon"><iconset><normaloff>theme-icons:icons/feather/lock.svg</normaloff>theme-icons:icons/feather/lock.svg</iconset></property><property name="iconSize"><size><width>18</width><height>18</height></size></property></widget></item>
+         <item><widget class="QCustomQPushButton" name="rrBulb"><property name="minimumSize"><size><width>32</width><height>32</height></size></property><property name="maximumSize"><size><width>32</width><height>32</height></size></property><property name="text"><string /></property><property name="icon"><iconset><normaloff>theme-icons:icons/material_design/lightbulb.svg</normaloff>theme-icons:icons/material_design/lightbulb.svg</iconset></property><property name="iconSize"><size><width>18</width><height>18</height></size></property></widget></item>
          <item>
           <spacer name="rightRailSpacer">
            <property name="orientation"><enum>Qt::Vertical</enum></property>

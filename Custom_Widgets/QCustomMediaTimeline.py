@@ -74,6 +74,19 @@ class QCustomMediaTimeline(QWidget):
         "signals": ["positionChanged", "clipMoved", "clipTrimmed", "clipClicked"],
         "tokens_used": ["accent", "background"],
     }
+    # Every configurable property is exposed to Qt Designer.
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "duration", "kind": "double", "group": "Timeline"},
+        {"name": "position", "kind": "double", "group": "Timeline"},
+        {"name": "cornerRadius", "kind": "int", "group": "Timeline"},
+        {"name": "bgColor", "kind": "color", "group": "Colours"},
+        {"name": "rulerColor", "kind": "color", "group": "Colours"},
+        {"name": "playheadColor", "kind": "color", "group": "Colours"},
+        {"name": "trackBgColor", "kind": "color", "group": "Colours"},
+        {"name": "clipColor", "kind": "color", "group": "Colours"},
+        {"name": "waveColor", "kind": "color", "group": "Colours"},
+        {"name": "textColor", "kind": "color", "group": "Colours"},
+    ]
 
     positionChanged = Signal(float)
     clipMoved = Signal(int, int)
