@@ -101,6 +101,23 @@ class QCustomNodeGraph(QWidget):
                     "connectionMade", "canvasClicked", "rowClicked"],
         "tokens_used": ["accent", "background"],
     }
+    # Every configurable property is exposed to Qt Designer (the @Property below
+    # auto-appears in the property editor; these give the Custom-Properties dock
+    # its typed editors, grouped).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "bgColor", "kind": "color", "group": "Canvas"},
+        {"name": "gridColor", "kind": "color", "group": "Canvas"},
+        {"name": "gridSpacing", "kind": "int", "group": "Canvas"},
+        {"name": "nodeColor", "kind": "color", "group": "Node"},
+        {"name": "nodeHeaderColor", "kind": "color", "group": "Node"},
+        {"name": "nodeBorderColor", "kind": "color", "group": "Node"},
+        {"name": "textColor", "kind": "color", "group": "Node"},
+        {"name": "mutedColor", "kind": "color", "group": "Node"},
+        {"name": "cornerRadius", "kind": "int", "group": "Node"},
+        {"name": "portColor", "kind": "color", "group": "Wiring"},
+        {"name": "edgeColor", "kind": "color", "group": "Wiring"},
+        {"name": "selectedColor", "kind": "color", "group": "Wiring"},
+    ]
 
     nodeMoved = Signal(str)
     nodeSelected = Signal(str)

@@ -39,28 +39,24 @@ The linter scans **string literals** in `.py` and text in `.ui` (module/class/
 function docstrings and code comments are ignored), so prose that merely *names*
 a glyph is fine — only glyphs that would render in the UI are flagged.
 
-> **Convention — custom-button icons recolour from QSS, not Python.**
-> `QCustomQPushButton` and `QCustomSidebarButton` recolour their own SVG from two
-> QSS properties: `qproperty-iconName` (a bundled feather/material name or a `.svg`
-> path) + `qproperty-iconColor` (a token). Prefer this to `qproperty-icon:
-> url(theme-icons:…)` on a custom button — it recolours on **theme** change and
-> **previews in Qt Designer** (the setter renders the SVG immediately; Designer
-> does not rewrite `theme-icons:` urls). Set `iconSize` in the `.ui`.
->
-> The **checked/active** look uses the *separate* base-rule properties
-> `qproperty-iconNameActive` / `qproperty-iconColorActive` — **not** a
-> `:checked { qproperty-iconColor }` rule. Qt does **not** re-apply `qproperty-*`
-> from a pseudo-state selector on state change, so a `:checked` qproperty never
-> takes effect; the button swaps to the `*Active` values in code on toggle.
+> **Convention — icons: set in Designer, driven from QSS url, never Python.**
+> Give each icon button its icon in the `.ui` (Designer `icon`/iconset) via a
+> `theme-icons:icons/<pack>/<name>.svg` path for design-time preview, and set
+> `iconSize` in the `.ui`. Drive/recolour it at runtime from QSS with the path
+> variable — this is applied after the theme engine registers the `theme-icons`
+> search path and recolours the SVGs, so it resolves and follows the theme:
 > ```scss
-> #navHome { qproperty-iconName: "home";
->            qproperty-iconColor: $muted;
->            qproperty-iconColorActive: $accent; }   /* checked icon -> accent */
-> #playBtn { qproperty-iconName: "play_arrow"; qproperty-iconNameActive: "pause"; }
+> #saveBtn { qproperty-icon: url($PATH_RESOURCES+'material_design/save.svg'); }
 > ```
-> `theme-icons:` urls remain fine for `QLabel` pixmaps / plain widgets, but must be
-> **unquoted** — `url(theme-icons:icons/…)`, never a quoted `url("…")` produced by an
-> SCSS `$PATH_RESOURCES+'…'` concat (the engine's rewriter only matches unquoted).
+> A `.ui` iconset **alone** can render blank at runtime (setupUi builds the QIcon
+> before the search path exists), so the QSS url is what makes it reliably render
+> and recolour. The engine recolours every icon to **one** Icons-color per theme,
+> so carry an active/selected state with the button **background** (`:checked`),
+> not a per-state icon colour. (When you genuinely need a per-state icon *colour*,
+> `QCustomQPushButton`/`QCustomSidebarButton` also expose
+> `iconName`/`iconColor`/`iconColorActive` that recolour an SVG in code on toggle
+> — a `:checked { qproperty-… }` rule can't, since Qt does not re-apply
+> `qproperty-*` from a pseudo-state selector.)
 
 ### `hardcoded-hex` — colours come from token roles
 

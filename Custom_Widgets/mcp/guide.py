@@ -114,25 +114,43 @@ painted QCustomDonut; wire the sidebar toggle once (or via toggleButtonName).
    assets qrc). The form-construction tools inject the icons qrc automatically
    when a form uses <iconset>; if you author .ui another way, include it.
 
-9. ICONS ON CUSTOM BUTTONS RECOLOUR FROM QSS (never setIcon in Python).
-   QCustomQPushButton and QCustomSidebarButton recolour their OWN icon from QSS:
-   `qproperty-iconName` (a bundled feather/material name or a .svg path) +
-   `qproperty-iconColor` (a token). PREFER this over `qproperty-icon:
-   url(theme-icons:...)` on a custom button — it recolours on theme change and
-   PREVIEWS in Qt Designer (the setter renders the SVG immediately; Designer does
-   not rewrite theme-icons: urls, so a url icon is blank at design time).
-   NOTE: The CHECKED/active look must use the SEPARATE base-rule properties
-   `qproperty-iconNameActive` / `qproperty-iconColorActive`, NOT a
-   `:checked { qproperty-iconColor }` rule — Qt does NOT re-apply qproperty-*
-   from a pseudo-state selector on state change (proven: the :checked value never
-   takes effect). The button swaps to the *Active values in code on toggle:
-       #navHome { qproperty-iconName: "home";
-                  qproperty-iconColor: $muted;
-                  qproperty-iconColorActive: $accent; }   /* checked icon -> accent */
-       #playBtn { qproperty-iconName: "play_arrow"; qproperty-iconNameActive: "pause"; }
-   Set iconSize in the .ui. (theme-icons: url stays fine for QLabel pixmaps /
-   plain widgets that have no iconName/iconColor — but it MUST be unquoted:
-   url(theme-icons:icons/...), never url("...") from an SCSS string concat.)
+9. ICONS: set from Designer, driven from QSS url (never setIcon in Python).
+   Give each icon button its ICON in the .ui (Designer `icon` property / iconset)
+   using a `theme-icons:icons/<pack>/<name>.svg` path (for design-time preview),
+   and set iconSize in the .ui. Then DRIVE/recolour it at RUNTIME from QSS with
+   the path variable:
+       #saveBtn { qproperty-icon: url($PATH_RESOURCES+'material_design/save.svg'); }
+   ($PATH_RESOURCES = `theme-icons:icons/`.) The QSS is applied AFTER the theme
+   engine registers the `theme-icons` search path + recolours the SVGs, so it
+   resolves and follows the theme's Icons-color automatically. Why BOTH: a .ui
+   iconset ALONE can render blank at runtime, because setupUi() builds the QIcon
+   before the search path is registered — so the QSS url is what makes the icon
+   reliably render AND recolour on theme change. The engine recolours every
+   theme-icon to ONE Icons-color per theme, so carry an ACTIVE/selected state
+   with the button BACKGROUND (`:checked`/objectName), NOT a per-state icon
+   colour. (When you truly need a per-state icon COLOUR, QCustomQPushButton /
+   QCustomSidebarButton also expose iconName/iconColor/iconColorActive that
+   recolour an SVG in code on toggle — Qt does not re-apply qproperty-* from a
+   `:checked` selector, so that state look cannot come from a pseudo-state rule.)
+
+10. NEST QSS PER COMPONENT, keyed by the component's objectName. Don't scatter
+    flat global `#childObjectName` rules — wrap each component's chrome in a block
+    selected by the component root's objectName and NEST the child rules inside,
+    one self-contained block per .ui component:
+        #CanvasComponent   { #canvasFrame { background-color: $COLOR_BACKGROUND_1; } }
+        #ThoughtsComponent { #thoughtsTitle { color: $COLOR_TEXT_2; } QCustomCodeEditor { … } }
+        #topBar            { #exportBtn { …; &:hover { … } } }
+    `&` for state/pseudo. The component root objectName is the .ui <class>/root
+    name (e.g. CanvasComponent) and matches the loaded root widget at runtime.
+
+11. EVERY CUSTOM WIDGET YOU CREATE EXPOSES ITS CONFIG TO DESIGNER. Every
+    configurable thing (colours, sizes, counts, text, enums, toggles) is a typed
+    `@Property` AND is listed in `DESIGNER_CUSTOM_PROPS = [{name,kind,group}]`
+    (and `__catalog__` for the MCP). `@Property(QColor/int/str/bool)` auto-appears
+    in Designer's property editor; DESIGNER_CUSTOM_PROPS gives the Custom-Properties
+    dock its typed editors. No widget ships with config reachable only from Python
+    — if it's tweakable, it's a Designer property. (Inherently dynamic data — a
+    node graph's nodes/edges, a table's rows — is set via a method, not a property.)
 
 == MULTI-PROJECT / MULTI-AGENT ==
 
