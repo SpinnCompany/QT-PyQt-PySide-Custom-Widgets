@@ -98,7 +98,7 @@ class QCustomNodeGraph(QWidget):
                   "selectedColor": {"type": "color", "default": "#6c7bff"},
                   "cornerRadius": {"type": "int", "default": 14}},
         "signals": ["nodeMoved", "nodeSelected", "nodeClicked",
-                    "connectionMade", "canvasClicked"],
+                    "connectionMade", "canvasClicked", "rowClicked"],
         "tokens_used": ["accent", "background"],
     }
 
@@ -107,6 +107,7 @@ class QCustomNodeGraph(QWidget):
     nodeClicked = Signal(str)
     connectionMade = Signal(str, int, str, int)
     canvasClicked = Signal()
+    rowClicked = Signal(str, int)     # (node_id, row_index) — a settings row tap
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -149,6 +150,9 @@ class QCustomNodeGraph(QWidget):
         self._pan_off0 = QPointF()
         self._connect_from = None  # (node_id, port_index) while wiring
         self._cursor = QPointF()
+        self._press_node = None    # node id pressed (for click-vs-drag)
+        self._press_row = None     # row index under the press, if any
+        self._did_move = False     # became a drag?
 
     # ------------------------------------------------------------------ #
     ## Public data API
@@ -195,6 +199,16 @@ class QCustomNodeGraph(QWidget):
         n = self.nodeById(nid)
         if n:
             n.x, n.y = float(x), float(y)
+            self.update()
+
+    def nodeRows(self, nid):
+        n = self.nodeById(nid)
+        return list(n.rows) if n else []
+
+    def setRowValue(self, nid, idx, value):
+        n = self.nodeById(nid)
+        if n and 0 <= idx < len(n.rows):
+            n.rows[idx]["value"] = str(value)
             self.update()
 
     def fitToView(self, margin=40):
@@ -254,6 +268,22 @@ class QCustomNodeGraph(QWidget):
         for n in reversed(self._nodes):
             if self._node_rect_screen(n).contains(screen_pt):
                 return n
+        return None
+
+    def _row_at(self, node, screen_pt):
+        """Index of the label/value row under the point, or None (rows nodes)."""
+        if not node.rows:
+            return None
+        rect = self._node_rect_screen(node)
+        sc = self._scale
+        by = rect.y() + 34.0 * sc + 8 * sc
+        rh = 30.0 * sc
+        if screen_pt.x() < rect.left() or screen_pt.x() > rect.right():
+            return None
+        for i in range(len(node.rows)):
+            ry = by + i * rh
+            if ry <= screen_pt.y() <= ry + rh:
+                return i
         return None
 
     # ------------------------------------------------------------------ #
@@ -520,6 +550,9 @@ class QCustomNodeGraph(QWidget):
                 wp = self._s2w(pt)
                 self._drag_dx = wp.x() - n.x
                 self._drag_dy = wp.y() - n.y
+                self._press_node = n.id
+                self._press_row = self._row_at(n, pt)
+                self._did_move = False
                 self.nodeSelected.emit(n.id)
                 self.nodeClicked.emit(n.id)
                 self.update()
@@ -539,8 +572,12 @@ class QCustomNodeGraph(QWidget):
         self._cursor = pt
         if self._drag_node is not None:
             wp = self._s2w(pt)
-            self._drag_node.x = wp.x() - self._drag_dx
-            self._drag_node.y = wp.y() - self._drag_dy
+            nx = wp.x() - self._drag_dx
+            ny = wp.y() - self._drag_dy
+            if abs(nx - self._drag_node.x) > 2 or abs(ny - self._drag_node.y) > 2:
+                self._did_move = True
+            self._drag_node.x = nx
+            self._drag_node.y = ny
             self.update()
             return
         if self._panning:
@@ -563,8 +600,12 @@ class QCustomNodeGraph(QWidget):
     def mouseReleaseEvent(self, e):
         pt = QPointF(e.position()) if hasattr(e, "position") else QPointF(e.pos())
         if self._drag_node is not None:
-            self.nodeMoved.emit(self._drag_node.id)
+            if self._did_move:
+                self.nodeMoved.emit(self._drag_node.id)
+            elif self._press_row is not None:
+                self.rowClicked.emit(self._press_node, self._press_row)
             self._drag_node = None
+            self._press_row = None
         if self._panning:
             self._panning = False
             self.setCursor(Qt.ArrowCursor)

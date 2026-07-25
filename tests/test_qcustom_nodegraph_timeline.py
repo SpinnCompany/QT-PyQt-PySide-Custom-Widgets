@@ -64,6 +64,30 @@ class TestNodeGraph:
         g.setNodePosition("a", 111, 222)
         assert g.nodeById("a").x == 111 and g.nodeById("a").y == 222
 
+    def _rows_graph(self, qapp):
+        from Custom_Widgets.QCustomNodeGraph import QCustomNodeGraph
+        from qtpy.QtCore import QPointF
+        g = QCustomNodeGraph()
+        g.resize(700, 460)
+        g.addNode(nid="s", title="Settings", x=320, y=70, w=250, h=230,
+                  rows=[{"label": "Mode", "value": "Fun"},
+                        {"label": "Voice", "value": "Happy"}])
+        return g, QPointF
+
+    def test_row_api(self, qapp):
+        g, _ = self._rows_graph(qapp)
+        assert [r["label"] for r in g.nodeRows("s")] == ["Mode", "Voice"]
+        g.setRowValue("s", 1, "Calm")
+        assert g.nodeRows("s")[1]["value"] == "Calm"
+
+    def test_row_hit_test(self, qapp):
+        g, QPointF = self._rows_graph(qapp)
+        node = g.nodeById("s")
+        # scale=1, offset=0 -> rows start at y = 70 + 34 + 8 = 112, 30px tall
+        assert g._row_at(node, QPointF(400, 120)) == 0
+        assert g._row_at(node, QPointF(400, 150)) == 1
+        assert g._row_at(node, QPointF(400, 400)) is None
+
 
 class TestMediaTimeline:
     def _tl(self):

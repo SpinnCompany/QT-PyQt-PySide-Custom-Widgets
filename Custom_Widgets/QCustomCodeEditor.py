@@ -18,11 +18,17 @@ from qtpy.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QPain
 class QCustomCodeEditor(QWidget):
 
     LANG_DISPLAY = {
-            "plain"  : "Plain text",
-            "python" : "Python",
-            "py"     : "Python",
-            "cpp"    : "C++",
-            "c++"    : "C++"
+            "plain"      : "Plain text",
+            "python"     : "Python",
+            "py"         : "Python",
+            "cpp"        : "C++",
+            "c++"        : "C++",
+            "js"         : "JavaScript",
+            "jsx"        : "JavaScript",
+            "javascript" : "JavaScript",
+            "ts"         : "TypeScript",
+            "tsx"        : "TypeScript",
+            "typescript" : "TypeScript"
         }
 
     def __init__(self, parent=None):
@@ -156,11 +162,17 @@ class QCustomCodeEditor(QWidget):
 class QCustomSyntaxHighlighter(QSyntaxHighlighter):
 
     AVAILABLE_LANGS = {
-            "plain"  : "plain",
-            "py"     : "python",
-            "python" : "python",
-            "cpp"    : "cpp",
-            "c++"    : "cpp"
+            "plain"      : "plain",
+            "py"         : "python",
+            "python"     : "python",
+            "cpp"        : "cpp",
+            "c++"        : "cpp",
+            "js"         : "javascript",
+            "jsx"        : "javascript",
+            "javascript" : "javascript",
+            "ts"         : "javascript",
+            "tsx"        : "javascript",
+            "typescript" : "javascript"
         }
 
     def __init__(self, document, lang="python", theme="default"):

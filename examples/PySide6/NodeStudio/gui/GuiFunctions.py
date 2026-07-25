@@ -42,6 +42,20 @@ TOOL_NAMES = set(LEFT_TOOLS + RIGHT_TOOLS)
 WHITE_ICONS = {"fabAdd", "exportBtn"}
 DURATIONS = [10, 15, 30, 5]
 
+# clicking a SETTINGS row cycles through these; Voice/Mode actually drive the
+# 3D preview, so the graph is wired to the render (functional, not cosmetic).
+SETTINGS_OPTIONS = {
+    "Mode": ["Fun", "Serious", "Playful", "Cinematic"],
+    "Trim": ["Auto", "Manual"],
+    "Think": ["Fast", "Balanced", "Deep"],
+    "Voice": ["Happy", "Calm", "Bright", "Warm"],
+    "Music": ["Piano", "Lofi", "Synth", "None"],
+}
+VOICE_SHIRT = {"Happy": "#4ade80", "Calm": "#38bdf8",
+               "Bright": "#f2a63b", "Warm": "#f472b6"}
+MODE_GLOW = {"Fun": "#6c7bff", "Serious": "#64748b",
+             "Playful": "#f472b6", "Cinematic": "#a855f7"}
+
 
 class _ResizeRelay(QObject):
     """Repaints the preview whenever its host label is resized."""
@@ -81,6 +95,8 @@ class GuiFunctions:
         self._dur_idx = 0
         self._playing = False
         self._built = False
+        self._shirt_color = None     # set by the Voice setting
+        self._glow_color = None      # set by the Mode setting
         self._setup_controls()      # tabs + rails live in the shell (self.ui.*)
         self._paint_icons()
         self._resolve_and_build()   # canvas/thoughts/preview/timeline are components
@@ -258,7 +274,7 @@ class GuiFunctions:
         ed = self._codeEditor
         try:
             ed.setTheme("one-dark" if not T.is_light(self._theme_name()) else "one-light")
-            ed.setLang("plain")
+            ed.setLang("javascript")
             ed.editor.setPlainText(THOUGHTS_CODE)
             f = QFont("monospace")
             f.setPointSize(10)
@@ -272,14 +288,15 @@ class GuiFunctions:
     def _build_preview(self):
         self._paint_preview()
 
-    def _paint_preview(self):
+    def _paint_preview(self, force=False):
         lbl = self._previewImage
         # The pixmap must NOT drive the label's sizeHint, or setPixmap ->
         # layout grows -> resize -> setPixmap loops forever. Ignored policy +
-        # a size guard keep it stable.
+        # a size guard keep it stable. `force` repaints on a state change
+        # (setting tweak / theme flip) even when the size is unchanged.
         w = max(300, lbl.width())
         h = max(360, lbl.height())
-        if getattr(self, "_prev_size", None) == (w, h):
+        if not force and getattr(self, "_prev_size", None) == (w, h):
             return
         self._prev_size = (w, h)
         lbl.setPixmap(self._make_character_pixmap(w, h))
@@ -300,7 +317,8 @@ class GuiFunctions:
         bg.setColorAt(1.0, QColor("#14121e" if not light else "#f6f4fb"))
         pt.fillRect(QRectF(0, 0, w, h), QBrush(bg))
         glow = QRadialGradient(w / 2, h * 0.42, w * 0.55)
-        glow.setColorAt(0.0, QColor(p["settings"]).lighter(140))
+        glow_base = self._glow_color or QColor(p["settings"])   # driven by Mode
+        glow.setColorAt(0.0, QColor(glow_base).lighter(140))
         glow.setColorAt(0.35, QColor(0, 0, 0, 0))
         pt.setOpacity(0.30)
         pt.fillRect(QRectF(0, 0, w, h), QBrush(glow))
@@ -313,7 +331,7 @@ class GuiFunctions:
         top = (h - u) / 2.0
         skin = QColor("#f0c39c")
         hair = QColor("#3a2a22")
-        shirt = QColor(p["refs"]).lighter(105)
+        shirt = QColor(self._shirt_color or p["refs"]).lighter(105)   # driven by Voice
         line_w = max(2.0, u * 0.012)
 
         hr = u * 0.15                        # head radius
@@ -416,6 +434,8 @@ class GuiFunctions:
         self.ui.codeBtn.clicked.connect(lambda: self._toast("info", "View source"))
         self.ui.navPrev.clicked.connect(lambda: self._nudge_playhead(-1))
         self.ui.navNext.clicked.connect(lambda: self._nudge_playhead(1))
+        # tapping a SETTINGS row cycles its value and drives the render
+        self._nodeGraph.rowClicked.connect(self._on_row_clicked)
         # the preview label must never push the layout (its pixmap is drawn to
         # fit the label, not the other way round)
         lbl = self._previewImage
@@ -452,6 +472,28 @@ class GuiFunctions:
     def _nudge_playhead(self, direction):
         tl = self._timeline
         tl.setPosition(tl.positionSeconds() + direction)
+
+    def _on_row_clicked(self, node_id, idx):
+        """Cycle a SETTINGS row to its next option and apply it to the render."""
+        if node_id != "settings":
+            return
+        rows = self._nodeGraph.nodeRows(node_id)
+        if idx >= len(rows):
+            return
+        label = rows[idx].get("label", "")
+        opts = SETTINGS_OPTIONS.get(label)
+        if not opts:
+            return
+        cur = rows[idx].get("value", opts[0])
+        nxt = opts[(opts.index(cur) + 1) % len(opts)] if cur in opts else opts[0]
+        self._nodeGraph.setRowValue(node_id, idx, nxt)
+        if label == "Voice":
+            self._shirt_color = QColor(VOICE_SHIRT.get(nxt, "#4ade80"))
+            self._paint_preview(force=True)
+        elif label == "Mode":
+            self._glow_color = QColor(MODE_GLOW.get(nxt, "#6c7bff"))
+            self._paint_preview(force=True)
+        self._toast("info", "%s: %s" % (label, nxt))
 
     def _add_node(self):
         p = self._pal()
