@@ -43,14 +43,20 @@ a glyph is fine — only glyphs that would render in the UI are flagged.
 > `QCustomQPushButton` and `QCustomSidebarButton` recolour their own SVG from two
 > QSS properties: `qproperty-iconName` (a bundled feather/material name or a `.svg`
 > path) + `qproperty-iconColor` (a token). Prefer this to `qproperty-icon:
-> url(theme-icons:…)` on a custom button — `iconColor` follows **state selectors**
-> and the **theme**, so the icon recolours per-state and per-theme with **no
-> `setIcon` in code**, and it **previews in Qt Designer** (the setter renders the
-> SVG immediately; Designer does not rewrite `theme-icons:` urls). Set `iconSize`
-> in the `.ui`.
+> url(theme-icons:…)` on a custom button — it recolours on **theme** change and
+> **previews in Qt Designer** (the setter renders the SVG immediately; Designer
+> does not rewrite `theme-icons:` urls). Set `iconSize` in the `.ui`.
+>
+> The **checked/active** look uses the *separate* base-rule properties
+> `qproperty-iconNameActive` / `qproperty-iconColorActive` — **not** a
+> `:checked { qproperty-iconColor }` rule. Qt does **not** re-apply `qproperty-*`
+> from a pseudo-state selector on state change, so a `:checked` qproperty never
+> takes effect; the button swaps to the `*Active` values in code on toggle.
 > ```scss
-> #navHome         { qproperty-iconName: "home"; qproperty-iconColor: $muted; }
-> #navHome:checked { qproperty-iconColor: $accent; }   /* active icon → accent */
+> #navHome { qproperty-iconName: "home";
+>            qproperty-iconColor: $muted;
+>            qproperty-iconColorActive: $accent; }   /* checked icon -> accent */
+> #playBtn { qproperty-iconName: "play_arrow"; qproperty-iconNameActive: "pause"; }
 > ```
 > `theme-icons:` urls remain fine for `QLabel` pixmaps / plain widgets, but must be
 > **unquoted** — `url(theme-icons:icons/…)`, never a quoted `url("…")` produced by an

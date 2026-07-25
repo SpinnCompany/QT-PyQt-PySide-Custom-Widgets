@@ -1827,10 +1827,8 @@ QCustomQPushButton#codeBtn {
   qproperty-iconName: "code"; }
 
 QCustomQPushButton#playBtn {
-  qproperty-iconName: "play_arrow"; }
-
-QCustomQPushButton#playBtn:checked {
-  qproperty-iconName: "pause"; }
+  qproperty-iconName: "play_arrow";
+  qproperty-iconNameActive: "pause"; }
 
 QCustomQPushButton#shareBtn {
   qproperty-iconName: "ios_share"; }
@@ -1877,20 +1875,25 @@ QCustomQPushButton#rrLock {
 QCustomQPushButton#rrBulb {
   qproperty-iconName: "lightbulb"; }
 
-/* icon COLOURS — neutral by default, ACCENT for the selected tab/tool, so the
-   active button's icon recolours (driven purely by :checked + tokens). */
+/* icon COLOURS — neutral at rest, ACCENT when the tab/tool is selected. The
+   active colour is `iconColorActive` (a BASE-rule property the button swaps to
+   on toggle) — NOT `:checked { qproperty-iconColor }`, because Qt does not
+   re-apply qproperty-* from a pseudo-state selector on state change. */
 #tabNew, #tabFramer, #tabUntitled, #tabAdd, #navPrev, #navNext, #durationBtn,
-#codeBtn, #playBtn, #shareBtn, #rlText, #rlLayers, #rlPen, #rlBrush, #rlGrid,
-#rlAttach, #themeToggle, #rrCursor, #rrStar, #rrDrop, #rrLock, #rrBulb {
+#codeBtn, #playBtn, #shareBtn {
   qproperty-iconColor: #B8BAC2; }
 
-#tabNew:checked, #tabFramer:checked, #tabUntitled:checked {
-  qproperty-iconColor: #e7e9f3; }
+#tabNew, #tabFramer, #tabUntitled {
+  qproperty-iconColorActive: #e7e9f3; }
 
-#rlText:checked, #rlLayers:checked, #rlPen:checked, #rlBrush:checked,
-#rlGrid:checked, #rlAttach:checked, #rrCursor:checked, #rrStar:checked,
-#rrDrop:checked, #rrLock:checked, #rrBulb:checked {
-  qproperty-iconColor: #6c7bff; }
+#rlText, #rlLayers, #rlPen, #rlBrush, #rlGrid, #rlAttach,
+#rrCursor, #rrStar, #rrDrop, #rrLock, #rrBulb {
+  qproperty-iconColor: #B8BAC2;
+  qproperty-iconColorActive: #6c7bff;
+  /* selected tool icon → accent */ }
+
+#themeToggle {
+  qproperty-iconColor: #B8BAC2; }
 
 /* icons that sit on an accent fill stay light */
 #exportBtn, #fabAdd {

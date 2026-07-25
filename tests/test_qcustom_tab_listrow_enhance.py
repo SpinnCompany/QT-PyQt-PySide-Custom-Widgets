@@ -71,7 +71,6 @@ class TestCustomButtonIconRecolor:
         assert QColor(b.iconColor).name() == "#22a55b"
 
     def test_iconcolor_change_rebuilds(self, qapp):
-        # simulate a :checked selector swapping iconColor -> a different tint
         from Custom_Widgets.QCustomSidebarButton import QCustomSidebarButton
         b = QCustomSidebarButton()
         b.iconName = "home"
@@ -80,6 +79,26 @@ class TestCustomButtonIconRecolor:
         b.iconColor = QColor("#ff2200")
         second = b.icon().pixmap(20, 20).toImage()
         assert first != second, "icon did not recolour when iconColor changed"
+
+    def test_active_state_swaps_colour_and_name_on_toggle(self, qapp):
+        # Qt does NOT re-apply :checked qproperty, so the active look is a base
+        # property the button swaps to on toggle. Both custom buttons must do it.
+        from Custom_Widgets.QCustomQPushButton import QCustomQPushButton
+        from Custom_Widgets.QCustomSidebarButton import QCustomSidebarButton
+        for cls in (QCustomQPushButton, QCustomSidebarButton):
+            b = cls()
+            b.setCheckable(True)
+            b.iconName = "play_arrow"
+            b.iconColor = QColor("#8b90a6")
+            b.iconNameActive = "pause"
+            b.iconColorActive = QColor("#6c7bff")
+            rest = b.icon().pixmap(20, 20).toImage()
+            b.setChecked(True)                     # toggled -> rebuild w/ active
+            active = b.icon().pixmap(20, 20).toImage()
+            assert rest != active, "%s icon did not swap on checked" % cls.__name__
+            b.setChecked(False)
+            assert b.icon().pixmap(20, 20).toImage() == rest, \
+                "%s icon did not revert on uncheck" % cls.__name__
 
 
 class TestListRowDragHandle:

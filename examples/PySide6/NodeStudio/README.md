@@ -85,10 +85,10 @@ The whole screen responds to clicks (visual, not a real backend):
   the first-run theme.
 - **Icons are recoloured from QSS on the custom buttons**, never in Python:
   `QCustomQPushButton` recolours its own SVG via `qproperty-iconName: "layers";`
-  + `qproperty-iconColor: $token;`. Because `iconColor` is a QSS property it
-  follows state + theme, so the **selected tool's icon recolours to accent** via
-  `#rlLayers:checked { qproperty-iconColor: $COLOR_ACCENT_1; }` — and it previews
-  in Qt Designer. `iconSize` is set per button in the `.ui`. Play/pause is a
-  `:checked` `qproperty-iconName` swap. (Avoid `qproperty-icon:
-  url(theme-icons:…)` on a custom button: single colour, no per-state accent,
-  blank in Designer; and if used elsewhere it must be UNQUOTED.)
+  + `qproperty-iconColor: $token;` (recolours on theme change, previews in Qt
+  Designer). The **selected tool's icon turns accent** via
+  `qproperty-iconColorActive: $COLOR_ACCENT_1;` and play/pause swaps via
+  `qproperty-iconNameActive: "pause";` — these are *base-rule* properties the
+  button swaps to on toggle, **not** `:checked { qproperty-… }` (Qt does not
+  re-apply `qproperty-*` from a pseudo-state selector). `iconSize` is per button
+  in the `.ui`.
