@@ -33,7 +33,7 @@
 ########################################################################
 import random
 
-from qtpy.QtCore import Qt, Property, QPoint, QRect, QRectF, QSize, QTimer
+from qtpy.QtCore import Qt, Property, QEvent, QPoint, QRect, QRectF, QSize, QTimer
 from qtpy.QtGui import QBrush, QColor, QImage, QLinearGradient, QPainter, QPainterPath, QPen, QPixmap
 from qtpy.QtWidgets import (QFrame, QGraphicsBlurEffect, QGraphicsPixmapItem,
                             QGraphicsScene, QSizePolicy, QWidget)
@@ -113,8 +113,11 @@ class QCustomGlassFrame(QFrame):
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # The glass paints ONLY inside its rounded path — never let the frame's
         # own palette/stylesheet background fill the square corners behind it.
-        self.setAutoFillBackground(False)
-        self.setAttribute(Qt.WA_StyledBackground, False)
+        # NB: QStyleSheetStyle::polish RE-ENABLES WA_StyledBackground whenever
+        # an app stylesheet gives this widget a background (a base theme's
+        # broad `QWidget { background-color: … }` is enough) — so the attribute
+        # is re-cleared on every style change, not just here (see changeEvent).
+        self._clear_bg_attrs()
 
         self._backdrop_source = ""
         self._backdrop_widget = None
@@ -138,6 +141,20 @@ class QCustomGlassFrame(QFrame):
         self._live_timer = QTimer(self)
         self._live_timer.setInterval(120)
         self._live_timer.timeout.connect(self.refreshBackdrop)
+
+    def _clear_bg_attrs(self):
+        # Only touch attributes that are actually set — setAttribute itself
+        # emits a StyleChange, so an unconditional clear inside changeEvent
+        # recurses forever.
+        if self.autoFillBackground():
+            self.setAutoFillBackground(False)
+        if self.testAttribute(Qt.WA_StyledBackground):
+            self.setAttribute(Qt.WA_StyledBackground, False)
+
+    def changeEvent(self, e):
+        super().changeEvent(e)
+        if e.type() in (QEvent.StyleChange, QEvent.PaletteChange):
+            self._clear_bg_attrs()
 
     # ------------------------------------------------------------------ #
     ## API

@@ -8,9 +8,12 @@
 #shell { background-color: $COLOR_BACKGROUND_1; }
 #overlay { background: transparent; }
 
-/* component containers + component roots must never paint the palette
-   over the glass they sit on */
-QCustomComponentContainer { background: transparent; }
+/* component containers, loaders, component roots AND the glass frames
+   themselves must never inherit the base `QWidget { background-color }`
+   erase — it fills their square rect with the window colour underneath the
+   rounded glass painting (the "black corners") */
+QCustomComponentContainer, QCustomComponentLoader,
+QCustomGlassFrame { background: transparent; }
 #ThermostatPanel, #ModeRow, #PlayerCard, #NavRail, #DeviceHero, #PowerChart,
 #StatCard, #DeviceTile, #RoomTabs { background: transparent; }
 
