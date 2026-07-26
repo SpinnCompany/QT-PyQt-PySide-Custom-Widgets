@@ -162,9 +162,13 @@ painted QCustomDonut; wire the sidebar toggle once (or via toggleButtonName).
     continuous or streaming content). That is the library norm — 26+ widgets
     animate (Switch, Toast, Drawer, LiquidGauge, RadialGauge, Waveform, Skeleton,
     Carousel, CoverFlow…). A new widget that only paints a static frame should be a
-    deliberate choice, not an oversight. (Also: expose config to Designer per #11,
-    recolour icons from QSS per #9, paint + tokenise colours per the widget
-    conventions.)
+    deliberate choice, not an oversight.
+    ANIMATIONS MUST BE USER-CONTROLLABLE: every animated widget exposes an
+    enable/disable toggle — a Designer `animated` bool property (default True) that
+    stops/starts the animation timer — AND start/stop methods where it's a
+    transport (e.g. play()/pause()/togglePlay() on a timeline). The user can always
+    turn an animation off. (Also: expose config to Designer per #11, recolour icons
+    from QSS per #9, paint + tokenise colours per the widget conventions.)
 
 == MULTI-PROJECT / MULTI-AGENT ==
 

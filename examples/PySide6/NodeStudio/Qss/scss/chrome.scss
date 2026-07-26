@@ -142,6 +142,43 @@ QSplitter::handle:hover { background-color: $COLOR_ACCENT_1; }
     #rrBulb   { qproperty-icon: url($PATH_RESOURCES+'material_design/lightbulb.svg'); }
 }
 
+/* ================= NODE PROPERTIES PANEL (floating) ============== */
+#nodePanel {
+    background-color: $COLOR_BACKGROUND_2;
+    border: 1px solid $COLOR_BACKGROUND_4;
+    border-radius: 14px;
+
+    #nodePanelHeader     { background: transparent; color: $COLOR_TEXT_3;
+                           font-size: 10px; font-weight: 800; letter-spacing: 1px; }
+    #nodePanelFieldLabel { background: transparent; color: $COLOR_TEXT_3; font-size: 11px; }
+    #nodePanelClose {
+        background-color: transparent; border: none; border-radius: 6px;
+        qproperty-icon: url($PATH_RESOURCES+'material_design/close.svg');
+        &:hover { background-color: $COLOR_BACKGROUND_3; }
+    }
+    QLineEdit#nodePanelTitle, QPlainTextEdit#nodePanelText {
+        background-color: $COLOR_BACKGROUND_1;
+        color: $COLOR_TEXT_1;
+        border: 1px solid $COLOR_BACKGROUND_4;
+        border-radius: 8px;
+        padding: 6px 8px;
+        selection-background-color: $COLOR_ACCENT_1;
+        &:focus { border: 1px solid $COLOR_ACCENT_1; }
+    }
+    #nodePanelDisconnect {
+        background-color: $COLOR_BACKGROUND_3; color: $COLOR_TEXT_1;
+        border: 1px solid $COLOR_BACKGROUND_4; border-radius: 8px; padding: 6px 8px;
+        font-size: 12px; font-weight: 600;
+        &:hover { background-color: $COLOR_BACKGROUND_4; }
+    }
+    #nodePanelDelete {
+        background-color: #e5484d; color: #ffffff;
+        border: none; border-radius: 8px; padding: 6px 8px;
+        font-size: 12px; font-weight: 700;
+        &:hover { background-color: #f2555a; }
+    }
+}
+
 /* ======================= CANVAS COMPONENT ======================== */
 #CanvasComponent {
     #canvasFrame { background-color: $COLOR_BACKGROUND_1; border: none; }

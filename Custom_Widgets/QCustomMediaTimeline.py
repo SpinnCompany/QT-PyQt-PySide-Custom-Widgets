@@ -72,7 +72,8 @@ class QCustomMediaTimeline(QWidget):
                   "textColor": {"type": "color", "default": "#e7e9f3"},
                   "cornerRadius": {"type": "int", "default": 10},
                   "playing": {"type": "bool", "default": False},
-                  "loop": {"type": "bool", "default": True}},
+                  "loop": {"type": "bool", "default": True},
+                  "animated": {"type": "bool", "default": True}},
         "signals": ["positionChanged", "clipMoved", "clipTrimmed", "clipClicked"],
         "tokens_used": ["accent", "background"],
     }
@@ -83,6 +84,7 @@ class QCustomMediaTimeline(QWidget):
         {"name": "cornerRadius", "kind": "int", "group": "Timeline"},
         {"name": "playing", "kind": "bool", "group": "Timeline"},
         {"name": "loop", "kind": "bool", "group": "Timeline"},
+        {"name": "animated", "kind": "bool", "group": "Timeline"},
         {"name": "bgColor", "kind": "color", "group": "Colours"},
         {"name": "rulerColor", "kind": "color", "group": "Colours"},
         {"name": "playheadColor", "kind": "color", "group": "Colours"},
@@ -128,9 +130,11 @@ class QCustomMediaTimeline(QWidget):
         self._hover_clip = None    # (track, clip) under the cursor
 
         # animation: a self-driven playhead so the widget animates on its own
-        # (play()/pause()); clips also glow on hover.
+        # (play()/pause() = start/stop; `animated` = enable/disable). Clips also
+        # glow on hover.
         self._playing = False
         self._loop = True
+        self._animated = True
         self._play_timer = QTimer(self)
         self._play_timer.setInterval(33)
         self._play_timer.timeout.connect(self._advance)
@@ -139,7 +143,7 @@ class QCustomMediaTimeline(QWidget):
     ## Playback (self-animating playhead)
     # ------------------------------------------------------------------ #
     def setPlaying(self, on):
-        on = bool(on)
+        on = bool(on) and self._animated   # disabled animation can't start
         if on == self._playing:
             return
         self._playing = on
@@ -148,6 +152,12 @@ class QCustomMediaTimeline(QWidget):
         else:
             self._play_timer.stop()
         self.playToggled.emit(on)
+
+    def setAnimated(self, on):
+        """Enable/disable animation entirely (stops playback when disabled)."""
+        self._animated = bool(on)
+        if not self._animated:
+            self.setPlaying(False)
 
     def play(self):
         self.setPlaying(True)
@@ -515,6 +525,14 @@ class QCustomMediaTimeline(QWidget):
     @loop.setter
     def loop(self, v):
         self._loop = bool(v)
+
+    @Property(bool)
+    def animated(self):
+        return self._animated
+
+    @animated.setter
+    def animated(self, v):
+        self.setAnimated(v)
 
     @Property(QColor)
     def bgColor(self):

@@ -64,6 +64,30 @@ class TestNodeGraph:
         g.setNodePosition("a", 111, 222)
         assert g.nodeById("a").x == 111 and g.nodeById("a").y == 222
 
+    def test_remove_node_takes_its_edges(self, qapp):
+        g = self._graph()
+        removed = []
+        g.nodeRemoved.connect(removed.append)
+        g.removeNode("b")
+        assert g.nodeById("b") is None and len(g._edges) == 0
+        assert removed == ["b"]
+
+    def test_remove_edge_and_disconnect(self, qapp):
+        g = self._graph()
+        conn = []
+        g.connectionRemoved.connect(lambda *a: conn.append(a))
+        g.removeEdge("a", 0, "b", 0)
+        assert len(g._edges) == 0 and conn == [("a", 0, "b", 0)]
+        g.addEdge("a", 0, "b", 0)
+        g.disconnectNode("a")
+        assert len(g._edges) == 0
+
+    def test_edit_title_text_apis(self, qapp):
+        g = self._graph()
+        g.setNodeTitle("a", "Renamed")
+        g.setNodeText("a", "new body")
+        assert g.nodeTitle("a") == "Renamed" and g.nodeText("a") == "new body"
+
     def _rows_graph(self, qapp):
         from Custom_Widgets.QCustomNodeGraph import QCustomNodeGraph
         from qtpy.QtCore import QPointF
