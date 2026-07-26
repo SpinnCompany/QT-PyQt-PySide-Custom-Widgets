@@ -1,12 +1,16 @@
 # GlassHome — session handoff (2026-07-26)
 
-**READ THIS FIRST in the new session, then build.** The user approved building
-the visionOS-style glass smart-home dashboard ("build", reference image below).
-The library groundwork is DONE and committed; the app itself is NOT started —
-it must be built through the custom-widgets MCP loop (Designer visible, QSS
-editor, designer_run_app), which failed to connect in the 2026-07-26 session
-(cold-.pyc handshake timeout; caches are pre-warmed now, a fresh session
-mounts instantly — verified: stdio handshake 1.9 s).
+**STATUS: BUILT + VERIFIED (2026-07-26, second session).** The app exists at
+`examples/PySide6/GlassHome` (see its README), built end-to-end through the
+custom-widgets MCP (Designer-visible forms, QSS editor, designer_run_app),
+verified element-by-element in BOTH themes (Glass Dusk default + Glass Day,
+live round-trip via the nav-avatar toggle). Widget hooks shipped for the
+reference: QCustomMiniBarChart calloutText/yLabelsCsv, QCustomPlayerBar
+compactMode. Full test suite 633 pass incl. new probes. NB: the harness's
+stdio MCP mount timed out AGAIN on cold caches — the workaround that saved the
+session was the MCP's own shared HTTP daemon (`--transport http --port 8765`)
+driven over JSON-RPC; pre-warm with `python -m compileall Custom_Widgets`
+before relying on a stdio mount. The plan below is retained for reference.
 
 ## State
 

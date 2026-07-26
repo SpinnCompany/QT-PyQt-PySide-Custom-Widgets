@@ -569,3 +569,24 @@ rule. (c) Window-LEVEL blur (behind the app, compositor-side) remains
 Tests: `tests/test_qcustom_glass_frame.py` (10, incl. a blur-evidence probe —
 a red|blue backdrop boundary blends under the glass at blurRadius=40 and stays
 sharp at 0).
+
+## GlassHome hooks (2026-07-26)
+
+From the `examples/PySide6/GlassHome` build (visionOS glass smart-home
+reference):
+
+## QCustomMiniBarChart — callout + y-scale (opt-in, defaults untouched)
+- `calloutText` (+ `calloutBg`, `calloutTextColor`) — a rounded bubble with a
+  pointer painted ABOVE the `highlightIndex` bar (the "169 kWh" tag). Headroom
+  is reserved from real font metrics, only when set.
+- `yLabelsCsv` (+ `yLabelColor`) — numeric left-edge scale labels ("0,50,90,
+  130,170"); each label sits at its VALUE's height and the chart max extends to
+  the label max, with a measured gutter. Empty (default) keeps the axis-less
+  look. Tests: `tests/test_qcustom_mini_bar_chart_hooks.py`.
+
+## QCustomPlayerBar — compactMode (opt-in, wide bar unchanged)
+`compactMode=true` re-lays the bar as a narrow now-playing CARD: cover +
+title/artist row, elapsed—track—total seek row, then a centred transport row
+(repeat · prev · play · next · volume). favorite/shuffle are dropped (parked
+off-canvas, no hit zones) and sizeHint/size policy switch to a 300×150-ish
+expanding card. Tests: `tests/test_qcustom_player_bar_compact.py`.

@@ -43,7 +43,12 @@ class QCustomMiniBarChart(QWidget):
                   "highlightIndex": {"type": "int", "default": -1},
                   "barWidth": {"type": "int", "default": 9},
                   "cornerRadius": {"type": "int", "default": 4},
-                  "showLabels": {"type": "bool", "default": True}},
+                  "showLabels": {"type": "bool", "default": True},
+                  "calloutText": {"type": "string", "default": ""},
+                  "calloutBg": {"type": "color", "default": "#ffffff"},
+                  "calloutTextColor": {"type": "color", "default": "#1a1e2c"},
+                  "yLabelsCsv": {"type": "string", "default": ""},
+                  "yLabelColor": {"type": "color", "default": "#8b909e"}},
         "signals": [],
         "tokens_used": ["accent"],
     }
@@ -66,6 +71,12 @@ class QCustomMiniBarChart(QWidget):
         self._label_color = QColor("#8b909e")
         self._label_size = 11
         self._baseline_gap = 10                 # gap between bars and labels
+        # Opt-in reference-style extras (all default OFF / empty):
+        self._callout_text = ""                 # bubble above the highlighted bar
+        self._callout_bg = QColor("#ffffff")
+        self._callout_text_color = QColor("#1a1e2c")
+        self._y_labels = []                     # [(value, text)] left-edge scale
+        self._y_label_color = QColor("#8b909e")
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.setMinimumSize(60, 60)
 
@@ -151,18 +162,40 @@ class QCustomMiniBarChart(QWidget):
         lbl_font.setPointSize(self._label_size)
         lbl_h = QFontMetrics(lbl_font).height() if show_labels else 0
         label_room = (lbl_h + self._baseline_gap) if show_labels else 0
+
+        fm = QFontMetrics(lbl_font)
+        # Left gutter for the optional y-scale (measured, not guessed).
+        show_scale = bool(self._y_labels)
+        gutter = (max(fm.horizontalAdvance(t) for _, t in self._y_labels) + 10) if show_scale else 0
+        # Headroom for the optional callout bubble above the highlighted bar.
+        callout = self._callout_text if (self._callout_text and 0 <= self._highlight_index < len(self._values)) else ""
+        callout_room = (fm.height() + 12 + 6 + 4) if callout else 0  # pad + pointer + gap
+
+        chart_top = float(callout_room)
         chart_h = max(1.0, h - label_room)
         maxv = max(self._values) or 1.0
+        if show_scale:
+            maxv = max([maxv] + [v for v, _ in self._y_labels]) or 1.0
         n = len(self._values)
 
-        # even columns across the full width; bar centered in each column
-        col_w = w / n
+        def bar_geo(i, val):
+            col_w = (w - gutter) / n
+            cx = gutter + col_w * (i + 0.5)
+            bh = max(3.0, (val / maxv) * (chart_h - 4 - chart_top))
+            return cx, chart_h - bh, bh, col_w
+
+        if show_scale:
+            p.setFont(lbl_font)
+            p.setPen(self._y_label_color)
+            for v, t in self._y_labels:
+                yy = chart_h - (v / maxv) * (chart_h - 4 - chart_top)
+                rect = QRectF(0, yy - fm.height() / 2.0, gutter - 8, fm.height())
+                p.drawText(rect, Qt.AlignRight | Qt.AlignVCenter, t)
+
         p.setPen(Qt.NoPen)
         for i, val in enumerate(self._values):
-            bh = max(3.0, (val / maxv) * (chart_h - 4))
-            cx = col_w * (i + 0.5)
+            cx, y, bh, _ = bar_geo(i, val)
             x = cx - self._bar_width / 2.0
-            y = chart_h - bh
             p.setBrush(QBrush(self._bar_color_for(i, val)))
             p.drawPath(self._top_rounded_path(x, y, float(self._bar_width), bh, float(self._corner_radius)))
 
@@ -173,9 +206,29 @@ class QCustomMiniBarChart(QWidget):
             for i in range(n):
                 if i >= len(self._labels):
                     break
-                cx = col_w * (i + 0.5)
+                cx, _, _, col_w = bar_geo(i, self._values[i])
                 rect = QRectF(cx - col_w / 2.0, ly, col_w, lbl_h)
                 p.drawText(rect, Qt.AlignHCenter | Qt.AlignVCenter, str(self._labels[i]))
+
+        if callout:
+            cx, bar_y, _, _ = bar_geo(self._highlight_index, self._values[self._highlight_index])
+            bw = fm.horizontalAdvance(callout) + 20
+            bh_c = fm.height() + 10
+            bx = min(max(cx - bw / 2.0, 2.0), w - bw - 2.0)
+            by = max(2.0, bar_y - bh_c - 8)
+            bubble = QPainterPath()
+            bubble.addRoundedRect(QRectF(bx, by, bw, bh_c), bh_c / 2.0, bh_c / 2.0)
+            # small pointer under the bubble, centred on the bar
+            bubble.moveTo(cx - 5, by + bh_c - 1)
+            bubble.lineTo(cx, by + bh_c + 5)
+            bubble.lineTo(cx + 5, by + bh_c - 1)
+            bubble.closeSubpath()
+            p.setPen(Qt.NoPen)
+            p.setBrush(QBrush(self._callout_bg))
+            p.drawPath(bubble)
+            p.setPen(self._callout_text_color)
+            p.setFont(lbl_font)
+            p.drawText(QRectF(bx, by, bw, bh_c), Qt.AlignCenter, callout)
         p.end()
 
     # ------------------------------------------------------------------ #
@@ -284,4 +337,57 @@ class QCustomMiniBarChart(QWidget):
     @labelColor.setter
     def labelColor(self, c):
         self._label_color = QColor(c)
+        self.update()
+
+    @Property(str)
+    def calloutText(self):
+        return self._callout_text
+
+    @calloutText.setter
+    def calloutText(self, text):
+        self._callout_text = str(text)
+        self.update()
+
+    @Property(QColor)
+    def calloutBg(self):
+        return self._callout_bg
+
+    @calloutBg.setter
+    def calloutBg(self, c):
+        self._callout_bg = QColor(c)
+        self.update()
+
+    @Property(QColor)
+    def calloutTextColor(self):
+        return self._callout_text_color
+
+    @calloutTextColor.setter
+    def calloutTextColor(self, c):
+        self._callout_text_color = QColor(c)
+        self.update()
+
+    @Property(str)
+    def yLabelsCsv(self):
+        return ",".join(t for _, t in self._y_labels)
+
+    @yLabelsCsv.setter
+    def yLabelsCsv(self, text):
+        out = []
+        for tok in str(text).replace(";", ",").split(","):
+            tok = tok.strip()
+            if tok:
+                try:
+                    out.append((float(tok), tok))
+                except ValueError:
+                    pass
+        self._y_labels = out
+        self.update()
+
+    @Property(QColor)
+    def yLabelColor(self):
+        return self._y_label_color
+
+    @yLabelColor.setter
+    def yLabelColor(self, c):
+        self._y_label_color = QColor(c)
         self.update()

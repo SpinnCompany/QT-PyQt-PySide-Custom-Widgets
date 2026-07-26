@@ -17,6 +17,11 @@ class QCustomMiniBarChart(QWidget):
     cornerRadius: int
     showLabels: bool
     labelColor: Any
+    calloutText: str
+    calloutBg: str
+    calloutTextColor: str
+    yLabelsCsv: str
+    yLabelColor: str
     def __init__(self, parent = ..., values = ..., colors = ..., labels = ...) -> None: ...
     def setData(self, values, colors = ..., labels = ...) -> None: ...
     def setValues(self, values) -> None: ...
