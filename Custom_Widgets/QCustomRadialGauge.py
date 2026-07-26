@@ -165,6 +165,26 @@ class QCustomRadialGauge(QWidget):
             self._disp_value = v
             self.update()
 
+    def stepBy(self, delta):
+        """Nudge the value by ``delta`` (clamped to the range). With centerText
+        unset the centre readout tracks the value automatically — a ± button
+        pair is just clicked.connect(lambda: gauge.stepBy(±singleStep))."""
+        self.setValue(self._value + float(delta))
+
+    def stepUp(self):
+        self.stepBy(getattr(self, "_single_step", 1.0))
+
+    def stepDown(self):
+        self.stepBy(-getattr(self, "_single_step", 1.0))
+
+    @Property(float)
+    def singleStep(self):
+        return getattr(self, "_single_step", 1.0)
+
+    @singleStep.setter
+    def singleStep(self, v):
+        self._single_step = float(v)
+
     def _animate_to(self, target):
         if self._anim is None:
             self._anim = QVariantAnimation(self)

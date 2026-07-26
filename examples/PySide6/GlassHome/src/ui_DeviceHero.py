@@ -40,11 +40,11 @@ class Ui_DeviceHero(object):
         self.heroLayout.setSpacing(18)
         self.heroLayout.setObjectName(u"heroLayout")
         self.heroLayout.setContentsMargins(20, 18, 20, 18)
-        self.lampImage = QLabel(self.heroGlass)
+        self.lampImage = QCustomQLabel(self.heroGlass)
         self.lampImage.setObjectName(u"lampImage")
         self.lampImage.setMinimumSize(QSize(128, 216))
         self.lampImage.setMaximumSize(QSize(128, 216))
-        self.lampImage.setScaledContents(True)
+        self.lampImage.setProperty(u"imageCornerRadius", 18)
 
         self.heroLayout.addWidget(self.lampImage, 0, Qt.AlignVCenter)
 
@@ -199,7 +199,7 @@ class Ui_DeviceHero(object):
 
     def retranslateUi(self, DeviceHero):
         self.heroGlass.setProperty(u"backdropSource", QCoreApplication.translate("DeviceHero", u"wallpaper", None))
-        self.lampImage.setText("")
+        self.lampImage.setProperty(u"imageSource", QCoreApplication.translate("DeviceHero", u"https://picsum.photos/seed/glasslamp/256/432", None))
         self.heroKicker.setText(QCoreApplication.translate("DeviceHero", u"Device", None))
         self.heroKicker.setProperty(u"role", QCoreApplication.translate("DeviceHero", u"kicker", None))
         self.heroTitle.setText(QCoreApplication.translate("DeviceHero", u"Luminens LED Modern Standing Lamp", None))

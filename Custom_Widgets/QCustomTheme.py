@@ -319,6 +319,62 @@ class QCustomTheme(QObject):
         app = QApplication.instance() if QApplication.instance() else QApplication([])
         return app.palette()
 
+    # -- app-facing colour + theme helpers -------------------------------- #
+    # So apps don't read style.json themselves or hand-compute a toggle target.
+    def customColors(self):
+        """The ACTIVE theme's `Other-variables` as a dict — named brand / chart
+        colours that live WITH the theme (so they flip on a theme switch). These
+        are the same values exposed to SCSS as `$<name>`. Empty dict if none."""
+        t = self.currentTheme
+        ov = getattr(t, "other_variables", None) if t is not None else None
+        return dict(ov) if isinstance(ov, dict) else {}
+
+    def themeColor(self, role, default=""):
+        """Look up a colour by name for the active theme: first its
+        Other-variables, then a built-in token (e.g. 'ACCENT_1' →
+        COLOR_ACCENT_1), else `default`."""
+        colors = self.customColors()
+        if role in colors:
+            return colors[role]
+        norm = str(role).upper().replace("-", "_")
+        for attr in (norm, "COLOR_" + norm):
+            if hasattr(self, attr) and getattr(self, attr):
+                return getattr(self, attr)
+        return default
+
+    def _themeIsDark(self, theme):
+        try:
+            c = QColor(getattr(theme, "bg_color", None)
+                       or getattr(theme, "backgroundColor", "#ffffff"))
+            lum = (0.299 * c.red() + 0.587 * c.green() + 0.114 * c.blue()) / 255
+            return lum < 0.5
+        except Exception:
+            return False
+
+    def toggleTheme(self, dark=None, light=None):
+        """Flip to the 'opposite' theme so the app doesn't compute a target: if
+        `dark`/`light` names are given, switch to whichever is NOT current;
+        otherwise switch to the first theme whose dark/light-ness differs from
+        the current one (falls back to cycling through the theme list)."""
+        cur = self.theme
+        if dark and light:
+            self.setTheme(light if cur == dark else dark)
+            return self.theme
+        curDark = None
+        for t in self.themes:
+            if t.name == cur:
+                curDark = self._themeIsDark(t)
+                break
+        if curDark is not None:
+            for t in self.themes:
+                if t.name != cur and self._themeIsDark(t) != curDark:
+                    self.setTheme(t.name)
+                    return self.theme
+        names = [t.name for t in self.themes]
+        if cur in names and len(names) > 1:
+            self.setTheme(names[(names.index(cur) + 1) % len(names)])
+        return self.theme
+
     def _resolveThemedIconPath(self, abs_icon_url):
         """Themed icons are SVG. UI files designed against the old rasterized
         set may still name .png files - map them to the .svg equivalent."""
@@ -1161,9 +1217,14 @@ class QCustomTheme(QObject):
                 if name.endswith('.scss'):
                     fp = os.path.join(scss_dir, name)
                     mtimes.append((name, os.path.getmtime(fp)))
-            # include the light/dark state: token() values change with the
-            # theme even when no .scss file changed, so a flip must recompile.
-            compile_key = (tuple(mtimes), bool(getattr(self, "_isThemeDark", False)))
+            # include the light/dark state AND the active theme NAME: token()
+            # values change with the theme even when no .scss file changed, so a
+            # flip must recompile. Keying on the name (not just the dark/light
+            # bool) is essential when several custom themes share a light/dark
+            # class — otherwise a switch between two same-class themes reuses the
+            # previous theme's stale compiled CSS.
+            compile_key = (tuple(mtimes), bool(getattr(self, "_isThemeDark", False)),
+                           str(self.theme))
         except Exception:
             compile_key = None
 
@@ -1285,6 +1346,21 @@ class QCustomTheme(QObject):
                     qss=app.styleSheet() if app is not None else "")
             except Exception as e:
                 logDebug(f"Designer bridge notify skipped: {e}")
+
+        # Re-polish the whole tree so qproperty-* colours (painted widgets,
+        # icon tints, glass tints) from the freshly compiled sheet re-land on a
+        # LIVE switch — without this every app had to walk/repolish widgets in
+        # its own onThemeChangeComplete handler (the long-standing known gap).
+        try:
+            if app is not None:
+                for w in app.allWidgets():
+                    try:
+                        w.style().unpolish(w)
+                        w.style().polish(w)
+                    except Exception:
+                        pass
+        except Exception as e:
+            logDebug(f"theme repolish walk skipped: {e}")
 
         self.onThemeChangeComplete.emit()
         logInfo("all icons have been checked and missing icons generated!")

@@ -18,11 +18,11 @@
       <property name="rightMargin"><number>20</number></property><property name="bottomMargin"><number>18</number></property>
       <property name="spacing"><number>18</number></property>
       <item alignment="Qt::AlignVCenter">
-       <widget class="QLabel" name="lampImage">
+       <widget class="QCustomQLabel" name="lampImage">
         <property name="minimumSize"><size><width>128</width><height>216</height></size></property>
         <property name="maximumSize"><size><width>128</width><height>216</height></size></property>
-        <property name="scaledContents"><bool>true</bool></property>
-        <property name="text"><string/></property>
+        <property name="imageSource" stdset="0"><string>https://picsum.photos/seed/glasslamp/256/432</string></property>
+        <property name="imageCornerRadius" stdset="0"><number>18</number></property>
        </widget>
       </item>
       <item>

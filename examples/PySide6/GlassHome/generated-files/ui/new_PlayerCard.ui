@@ -20,9 +20,9 @@
         <property name="sizePolicy"><sizepolicy hsizetype="Expanding" vsizetype="Expanding"><horstretch>0</horstretch><verstretch>0</verstretch></sizepolicy></property>
         <property name="title" stdset="0"><string>Greater Than One</string></property>
         <property name="artist" stdset="0"><string>Ericdoa x Valorant</string></property>
-        <property name="elapsedText" stdset="0"><string>0:34</string></property>
-        <property name="totalText" stdset="0"><string>2:27</string></property>
-        <property name="position" stdset="0"><double>0.23</double></property>
+        <property name="durationSeconds" stdset="0"><double>147.0</double></property>
+        <property name="elapsedSeconds" stdset="0"><double>34.0</double></property>
+        <property name="coverPath" stdset="0"><string>https://picsum.photos/seed/glasscover/128/128</string></property>
         <property name="playing" stdset="0"><bool>true</bool></property>
         <property name="cornerRadius" stdset="0"><number>18</number></property>
         <property name="compactMode" stdset="0"><bool>true</bool></property>

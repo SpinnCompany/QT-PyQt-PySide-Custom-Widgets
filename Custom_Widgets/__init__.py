@@ -15,7 +15,9 @@ import re
 from Custom_Widgets.JSonStyles import loadJsonStyle
 from Custom_Widgets.HotReload import enable_hot_reload
 from Custom_Widgets.QCustomTheme import QCustomTheme
-from Custom_Widgets.Utils import is_in_designer, SharedData
+from Custom_Widgets.Utils import (is_in_designer, SharedData, recolor_icon,
+                                  themed_icon, resolve_icon_path, set_state)
+from Custom_Widgets.ImageLoader import load_image, rounded_pixmap, ImageLoader
 
 from Custom_Widgets.Log import *
 from Custom_Widgets.QCustomComponentLoader import QCustomComponentLoader

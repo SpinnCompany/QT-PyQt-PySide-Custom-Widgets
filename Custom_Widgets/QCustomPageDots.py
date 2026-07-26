@@ -77,6 +77,26 @@ class QCustomPageDots(QWidget):
             self.updateGeometry()
             self.update()
 
+    def bindTo(self, control):
+        """Two-way bind the dots to any paged control (QCustomSegmentedControl,
+        QStackedWidget, a carousel…): the control's ``currentChanged(int)``
+        drives the active dot, clicking a dot calls ``setCurrentIndex``. Also
+        adopts the control's ``count()`` when available. One declarative line
+        instead of two lambdas per app."""
+        count = getattr(control, "count", None)
+        if callable(count):
+            try:
+                self.setCount(int(count()))
+            except Exception:
+                pass
+        sig = getattr(control, "currentChanged", None)
+        if sig is not None:
+            sig.connect(self.setActiveIndex)
+        setter = getattr(control, "setCurrentIndex", None)
+        if callable(setter):
+            self.pageChanged.connect(setter)
+        return self
+
     def setColors(self, dot=None, active=None):
         if dot is not None:
             self._dot = QColor(dot)

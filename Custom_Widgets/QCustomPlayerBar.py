@@ -630,6 +630,37 @@ class QCustomPlayerBar(QWidget):
         self._radius = max(0, int(v))
         self.update()
 
+    # Numeric time API — the bar formats m:ss and derives `position` itself,
+    # so managers feed SECONDS instead of hand-formatting display strings.
+    @staticmethod
+    def _fmt(seconds):
+        m, s = divmod(max(0, int(seconds)), 60)
+        return "%d:%02d" % (m, s)
+
+    @Property(float)
+    def durationSeconds(self):
+        return getattr(self, "_duration_s", 0.0)
+
+    @durationSeconds.setter
+    def durationSeconds(self, secs):
+        self._duration_s = max(0.0, float(secs))
+        if self._duration_s > 0:
+            self._total = self._fmt(self._duration_s)
+        self.update()
+
+    @Property(float)
+    def elapsedSeconds(self):
+        return getattr(self, "_elapsed_s", 0.0)
+
+    @elapsedSeconds.setter
+    def elapsedSeconds(self, secs):
+        self._elapsed_s = max(0.0, float(secs))
+        self._elapsed = self._fmt(self._elapsed_s)
+        dur = getattr(self, "_duration_s", 0.0)
+        if dur > 0:
+            self._pos = max(0.0, min(1.0, self._elapsed_s / dur))
+        self.update()
+
     @Property(bool)
     def compactMode(self):
         """Opt-in stacked layout (cover+titles / seek / centred transport) for

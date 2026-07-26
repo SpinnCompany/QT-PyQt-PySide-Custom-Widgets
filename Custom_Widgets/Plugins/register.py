@@ -1228,6 +1228,32 @@ except Exception as e:
     logException(e, message="Error registering QCustomGlassFrame")
 
 
+from Custom_Widgets.QCustomWallpaper import QCustomWallpaper
+
+# Registering QCustomWallpaper with error handling
+try:
+    logInfo("Registering QCustomWallpaper")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomWallpaper, module=QCustomWallpaper.WIDGET_MODULE,
+        tool_tip=QCustomWallpaper.WIDGET_TOOLTIP, xml=QCustomWallpaper.WIDGET_DOM_XML,
+        icon=QCustomWallpaper.WIDGET_ICON, group="Display Widgets")
+except Exception as e:
+    logException(e, message="Error registering QCustomWallpaper")
+
+
+from Custom_Widgets.QCustomClockLabel import QCustomClockLabel
+
+# Registering QCustomClockLabel with error handling
+try:
+    logInfo("Registering QCustomClockLabel")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomClockLabel, module=QCustomClockLabel.WIDGET_MODULE,
+        tool_tip=QCustomClockLabel.WIDGET_TOOLTIP, xml=QCustomClockLabel.WIDGET_DOM_XML,
+        icon=QCustomClockLabel.WIDGET_ICON, group="Display Widgets")
+except Exception as e:
+    logException(e, message="Error registering QCustomClockLabel")
+
+
 ########################################################################
 ## DESIGNER BRIDGE - lets a running app push theme changes into Designer
 ## (refresh icons / restyle open forms). See Custom_Widgets/DesignerBridge.py

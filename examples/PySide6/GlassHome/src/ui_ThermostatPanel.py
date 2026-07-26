@@ -19,6 +19,7 @@ from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QLabel,
     QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout,
     QWidget)
 
+from Custom_Widgets.QCustomClockLabel import QCustomClockLabel
 from Custom_Widgets.QCustomQPushButton import QCustomQPushButton
 from Custom_Widgets.QCustomRadialGauge import QCustomRadialGauge
 from Custom_Widgets.QCustomSwitch import QCustomSwitch
@@ -31,7 +32,7 @@ class Ui_ThermostatPanel(object):
         self.thermoRoot.setSpacing(12)
         self.thermoRoot.setObjectName(u"thermoRoot")
         self.thermoRoot.setContentsMargins(0, 0, 0, 0)
-        self.clockLabel = QLabel(ThermostatPanel)
+        self.clockLabel = QCustomClockLabel(ThermostatPanel)
         self.clockLabel.setObjectName(u"clockLabel")
 
         self.thermoRoot.addWidget(self.clockLabel)
@@ -124,13 +125,11 @@ class Ui_ThermostatPanel(object):
     # setupUi
 
     def retranslateUi(self, ThermostatPanel):
-        self.clockLabel.setText(QCoreApplication.translate("ThermostatPanel", u"10:02 PM", None))
         self.clockLabel.setProperty(u"role", QCoreApplication.translate("ThermostatPanel", u"clock", None))
         self.thermoTitle.setText(QCoreApplication.translate("ThermostatPanel", u"Thermostat", None))
         self.thermoTitle.setProperty(u"role", QCoreApplication.translate("ThermostatPanel", u"cardTitle", None))
         self.thermoSwitch.setProperty(u"sizeVariant", QCoreApplication.translate("ThermostatPanel", u"sm", None))
         self.thermoGauge.setProperty(u"zonesCsv", "")
-        self.thermoGauge.setProperty(u"centerText", QCoreApplication.translate("ThermostatPanel", u"64", None))
         self.thermoGauge.setProperty(u"centerSuffix", QCoreApplication.translate("ThermostatPanel", u"\u00b0", None))
         self.thermoGauge.setProperty(u"statusText", QCoreApplication.translate("ThermostatPanel", u"(\u00b0Fahrenheit)", None))
         self.thermoMinus.setProperty(u"iconName", QCoreApplication.translate("ThermostatPanel", u"feather/minus", None))

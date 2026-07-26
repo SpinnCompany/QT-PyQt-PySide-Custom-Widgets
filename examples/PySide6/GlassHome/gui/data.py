@@ -1,9 +1,6 @@
-"""Demo content for the GlassHome dashboard (the reference screen's data)."""
-
-WALLPAPER_URL = "https://picsum.photos/seed/glasshome/1600/1000"
-LAMP_URL = "https://picsum.photos/seed/glasslamp/256/432"
-COVER_URL = "https://picsum.photos/seed/glasscover/128/128"
-AVATAR_URL = "https://i.pravatar.cc/96?img=12"
+"""Demo content for the GlassHome dashboard (the reference screen's data).
+Media sources (wallpaper / lamp / cover / avatar photos) live in the .ui files
+as widget properties — only per-instance texts and states remain here."""
 
 STATS = [
     ("statCurrentContainer", "Current Consumption", "1,5 kWh"),
@@ -24,6 +21,3 @@ MODE_ICONS = {
     "modeFan": "wind",
     "modeCold": "cloud-snow",
 }
-
-TRACK_SECONDS = 2 * 60 + 27          # 2:27
-TRACK_START = 34                     # 0:34

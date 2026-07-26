@@ -273,3 +273,85 @@ def download_font(url, cache_dir=None, timeout=20, force=False):
         logError(f"Failed to download remote font {url}: {e}")
         return None
 
+
+
+########################################################################
+## Icon helpers — recolour a themed SVG (feather / material / font_awesome)
+## to ANY colour at ANY size, cached. Apps SHOULD use these instead of
+## re-implementing QSvgRenderer tinting in every GuiFunctions. For a SINGLE
+## theme colour prefer the QSS `theme-icons:` path; use these when a widget
+## needs a specific colour (e.g. an ACTIVE nav item in the accent colour).
+########################################################################
+_ICONS_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Qss", "icons")
+_ICON_SETS = ("feather", "material_design", "font_awesome")
+_ICON_PM_CACHE = {}
+
+
+def resolve_icon_path(name_or_path):
+    """Resolve a bare icon NAME (e.g. 'home') against the bundled icon sets
+    (feather → material_design → font_awesome), or pass an absolute path
+    through unchanged."""
+    if not name_or_path:
+        return ""
+    if os.path.isabs(name_or_path) or os.path.exists(name_or_path):
+        return name_or_path
+    base = name_or_path[:-4] if name_or_path.lower().endswith(".svg") else name_or_path
+    for pack in _ICON_SETS:
+        p = os.path.join(_ICONS_ROOT, pack, base + ".svg")
+        if os.path.exists(p):
+            return p
+    return os.path.join(_ICONS_ROOT, _ICON_SETS[0], base + ".svg")
+
+
+def recolor_icon(name_or_path, color, size=22):
+    """Return a `QPixmap` of the icon recoloured to `color` (any stroke- or
+    fill-based SVG), rendered at 2x for crispness. Cached by (path, colour,
+    size)."""
+    from qtpy.QtGui import QPixmap, QPainter, QColor
+    path = resolve_icon_path(name_or_path)
+    key = (path, str(QColor(color).name()), int(size))
+    if key in _ICON_PM_CACHE:
+        return _ICON_PM_CACHE[key]
+    pm = QPixmap(int(size * 2), int(size * 2))
+    pm.fill(QColor(0, 0, 0, 0))
+    try:
+        from qtpy.QtSvg import QSvgRenderer
+    except Exception:
+        QSvgRenderer = None
+    if path and os.path.exists(path) and QSvgRenderer is not None:
+        r = QSvgRenderer(path)
+        p = QPainter(pm)
+        p.setRenderHint(QPainter.Antialiasing, True)
+        r.render(p)
+        p.setCompositionMode(QPainter.CompositionMode_SourceIn)
+        p.fillRect(pm.rect(), QColor(color))
+        p.end()
+    pm.setDevicePixelRatio(2.0)
+    _ICON_PM_CACHE[key] = pm
+    return pm
+
+
+def themed_icon(name_or_path, color, size=22):
+    """Return a `QIcon` of the icon recoloured to `color` (see recolor_icon)."""
+    return QIcon(recolor_icon(name_or_path, color, size))
+
+
+def set_state(widget, prop, value, children=True):
+    """Toggle a QSS dynamic-property state and RE-POLISH so `[prop="value"]`
+    selectors (including qproperty-* rules) re-land — on the widget and, by
+    default, its child widgets. The one-liner every manager needs instead of
+    hand-rolled setProperty + unpolish/polish walks."""
+    from qtpy.QtWidgets import QWidget
+
+    if isinstance(value, bool):
+        value = "true" if value else "false"
+    widget.setProperty(prop, value)
+    targets = [widget]
+    if children:
+        targets += widget.findChildren(QWidget)
+    for w in targets:
+        try:
+            w.style().unpolish(w)
+            w.style().polish(w)
+        except Exception:
+            pass

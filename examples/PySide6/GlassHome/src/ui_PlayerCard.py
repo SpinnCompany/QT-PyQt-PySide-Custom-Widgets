@@ -43,7 +43,8 @@ class Ui_PlayerCard(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.player.sizePolicy().hasHeightForWidth())
         self.player.setSizePolicy(sizePolicy)
-        self.player.setProperty(u"position", 0.230000000000000)
+        self.player.setProperty(u"durationSeconds", 147.000000000000000)
+        self.player.setProperty(u"elapsedSeconds", 34.000000000000000)
         self.player.setProperty(u"playing", True)
         self.player.setProperty(u"cornerRadius", 18)
         self.player.setProperty(u"compactMode", True)
@@ -63,8 +64,7 @@ class Ui_PlayerCard(object):
         self.playerGlass.setProperty(u"backdropSource", QCoreApplication.translate("PlayerCard", u"wallpaper", None))
         self.player.setProperty(u"title", QCoreApplication.translate("PlayerCard", u"Greater Than One", None))
         self.player.setProperty(u"artist", QCoreApplication.translate("PlayerCard", u"Ericdoa x Valorant", None))
-        self.player.setProperty(u"elapsedText", QCoreApplication.translate("PlayerCard", u"0:34", None))
-        self.player.setProperty(u"totalText", QCoreApplication.translate("PlayerCard", u"2:27", None))
+        self.player.setProperty(u"coverPath", QCoreApplication.translate("PlayerCard", u"https://picsum.photos/seed/glasscover/128/128", None))
         pass
     # retranslateUi
 

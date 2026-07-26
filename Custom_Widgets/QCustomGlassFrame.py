@@ -171,6 +171,7 @@ class QCustomGlassFrame(QFrame):
             return
         self._refresh_queued = False
         src = self._resolve_source()
+        self._watch_source(src)
         if src is None or src.width() <= 0 or src.height() <= 0:
             self._backdrop_pix = None
             self.update()
@@ -234,6 +235,31 @@ class QCustomGlassFrame(QFrame):
             return
         self._refresh_queued = True
         QTimer.singleShot(0, self.refreshBackdrop)
+
+    def _watch_source(self, src):
+        """Auto-refresh when the backdrop SOURCE changes (async photo arrival,
+        resize) — apps no longer fan refreshBackdrop() out by hand. The whole
+        window is never watched (its repaints include our own — feedback)."""
+        current = getattr(self, "_watched_source", None)
+        if src is current:
+            return
+        if current is not None:
+            try:
+                current.removeEventFilter(self)
+            except RuntimeError:
+                pass
+        self._watched_source = None
+        if src is not None and src is not self.window():
+            src.installEventFilter(self)
+            self._watched_source = src
+
+    def eventFilter(self, obj, e):
+        # NB: render() during our own grab paints the source synchronously and
+        # emits no UpdateRequest, so sampling can't re-trigger this.
+        if obj is getattr(self, "_watched_source", None) and not self._grabbing:
+            if e.type() in (QEvent.UpdateRequest, QEvent.Resize, QEvent.Move):
+                self._schedule_refresh()
+        return super().eventFilter(obj, e)
 
     def _noise_tile(self):
         if self._noise_pm is None:

@@ -10,10 +10,9 @@
     <property name="rightMargin"><number>0</number></property><property name="bottomMargin"><number>0</number></property>
     <property name="spacing"><number>0</number></property>
     <item row="0" column="0">
-     <widget class="QLabel" name="wallpaper">
+     <widget class="QCustomWallpaper" name="wallpaper">
       <property name="sizePolicy"><sizepolicy hsizetype="Ignored" vsizetype="Ignored"><horstretch>0</horstretch><verstretch>0</verstretch></sizepolicy></property>
-      <property name="scaledContents"><bool>true</bool></property>
-      <property name="text"><string /></property>
+      <property name="imageSource" stdset="0"><string>https://picsum.photos/seed/glasshome/1600/1000</string></property>
      </widget>
     </item>
     <item row="0" column="0">
@@ -175,6 +174,7 @@
   </widget>
  </widget>
  <customwidgets>
+  <customwidget><class>QCustomWallpaper</class><extends>QWidget</extends><header>Custom_Widgets.QCustomWallpaper</header><container>0</container></customwidget>
   <customwidget><class>QCustomGlassFrame</class><extends>QFrame</extends><header>Custom_Widgets.QCustomGlassFrame</header><container>1</container></customwidget>
   <customwidget><class>QCustomComponentContainer</class><extends>QWidget</extends><header>Custom_Widgets.QCustomComponentContainer</header><container>1</container></customwidget>
  <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
