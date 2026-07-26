@@ -1703,18 +1703,24 @@ QCustomQLabel[role="appsIcon"] {
   qproperty-iconColor: #a9b1c6; }
 
 /* ---- main sheet + right column glass ----------------------------- */
+/* Radii are QSS-driven: qproperty-cornerRadius is the glass frame's
+   border-radius (a painted rounded path — a QSS border-radius rule can't
+   clip custom painting). */
 #sheetGlass {
   qproperty-tintColor: #78121620;
-  qproperty-borderColor: #37ffffff; }
+  qproperty-borderColor: #37ffffff;
+  qproperty-cornerRadius: 34; }
 
 #rightGlass {
   qproperty-tintColor: #7d0e111a;
-  qproperty-borderColor: #24ffffff; }
+  qproperty-borderColor: #24ffffff;
+  qproperty-cornerRadius: 26; }
 
 /* ---- floating nav rail ------------------------------------------- */
 #NavRail #navGlass {
   qproperty-tintColor: #8c121620;
-  qproperty-borderColor: #37ffffff; }
+  qproperty-borderColor: #37ffffff;
+  qproperty-cornerRadius: 30; }
 
 #NavRail QCustomQPushButton[role="navBtn"] {
   background: transparent;
@@ -1753,7 +1759,8 @@ QCustomQLabel[role="appsIcon"] {
   #DeviceHero #heroGlass {
     qproperty-tintColor: #5aebf0fa;
     qproperty-brightness: 1.08;
-    qproperty-borderColor: #37ffffff; }
+    qproperty-borderColor: #37ffffff;
+    qproperty-cornerRadius: 26; }
   #DeviceHero QLabel {
     color: #1b2233; }
   #DeviceHero QLabel[role="kicker"] {
@@ -1764,6 +1771,7 @@ QCustomQLabel[role="appsIcon"] {
   #DeviceHero #heroStats {
     qproperty-tintColor: #780a0d14;
     qproperty-borderColor: #24ffffff;
+    qproperty-cornerRadius: 18;
     /* …but the stats INSET is dense glass again */ }
     #DeviceHero #heroStats QLabel {
       color: #ffffff; }
@@ -1805,7 +1813,8 @@ QCustomQLabel[role="appsIcon"] {
 /* ---- power consumption chart ------------------------------------- */
 #PowerChart #powerGlass {
   qproperty-tintColor: #78121620;
-  qproperty-borderColor: #24ffffff; }
+  qproperty-borderColor: #24ffffff;
+  qproperty-cornerRadius: 26; }
 
 #PowerChart #powerMenu {
   qproperty-pixmap: url("theme-icons:icons/feather/more-horizontal.svg");
@@ -1823,7 +1832,8 @@ QCustomQLabel[role="appsIcon"] {
 /* ---- stat cards --------------------------------------------------- */
 #StatCard #statGlass {
   qproperty-tintColor: #78121620;
-  qproperty-borderColor: #24ffffff; }
+  qproperty-borderColor: #24ffffff;
+  qproperty-cornerRadius: 22; }
 
 /* ---- device tiles -------------------------------------------------- */
 #DeviceTile #tileApps {
@@ -1832,7 +1842,8 @@ QCustomQLabel[role="appsIcon"] {
 
 #DeviceTile #tileGlass {
   qproperty-tintColor: #78121620;
-  qproperty-borderColor: #24ffffff; }
+  qproperty-borderColor: #24ffffff;
+  qproperty-cornerRadius: 22; }
 
 #DeviceTile #tileGlass[active="true"] {
   qproperty-tintColor: #5aebf0fa;
@@ -1849,7 +1860,8 @@ QCustomQLabel[role="appsIcon"] {
 /* ---- room tabs pill ------------------------------------------------ */
 #RoomTabs #tabsGlass {
   qproperty-tintColor: #8c121620;
-  qproperty-borderColor: #37ffffff; }
+  qproperty-borderColor: #37ffffff;
+  qproperty-cornerRadius: 27; }
 
 #RoomTabs #roomSegments {
   background: transparent; }
@@ -1918,7 +1930,8 @@ QCustomQLabel[role="appsIcon"] {
 /* ---- player card ----------------------------------------------------- */
 #PlayerCard #playerGlass {
   qproperty-tintColor: #780a0d14;
-  qproperty-borderColor: #24ffffff; }
+  qproperty-borderColor: #24ffffff;
+  qproperty-cornerRadius: 22; }
 
 #PlayerCard #player {
   qproperty-barColor: #00000000;

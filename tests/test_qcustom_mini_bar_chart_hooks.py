@@ -70,3 +70,50 @@ def test_y_labels_scale_max_extends_range(qapp):
     plain = _make()
     assert plain.yLabelsCsv == ""
     assert plain.calloutText == ""
+
+
+def _mouse_move(widget, x, y):
+    from qtpy.QtCore import QEvent, QPointF, Qt
+    from qtpy.QtGui import QMouseEvent
+    ev = QMouseEvent(QEvent.MouseMove, QPointF(x, y), Qt.NoButton,
+                     Qt.NoButton, Qt.NoModifier)
+    widget.mouseMoveEvent(ev)
+
+
+def test_hover_highlights_and_bubbles(qapp):
+    chart = _make(hoverSuffix=" kWh")
+    hovered = []
+    chart.barHovered.connect(hovered.append)
+    _grab(chart)                       # paint once to build the column spans
+    assert chart._col_spans
+    x = sum(chart._col_spans[1]) / 2.0 # centre of the Feb column
+    _mouse_move(chart, x, 100)
+    assert chart._hover_index == 1
+    assert hovered == [1]
+    img = _grab(chart)
+    # a bubble appears above the hovered bar even with no static callout
+    assert _has_color(img, (255, 255, 255), (30, 2, 330, 120))
+    chart.leaveEvent(None)
+    assert chart._hover_index == -1
+    assert hovered == [1, -1]
+
+
+def test_click_emits_bar_index(qapp):
+    from qtpy.QtCore import QEvent, QPointF, Qt
+    from qtpy.QtGui import QMouseEvent
+    chart = _make()
+    clicked = []
+    chart.barClicked.connect(clicked.append)
+    _grab(chart)
+    x = sum(chart._col_spans[3]) / 2.0
+    ev = QMouseEvent(QEvent.MouseButtonPress, QPointF(x, 100), Qt.LeftButton,
+                     Qt.LeftButton, Qt.NoModifier)
+    chart.mousePressEvent(ev)
+    assert clicked == [3]
+
+
+def test_hover_disabled_is_inert(qapp):
+    chart = _make(hoverEnabled=False)
+    _grab(chart)
+    _mouse_move(chart, 100, 100)
+    assert chart._hover_index == -1

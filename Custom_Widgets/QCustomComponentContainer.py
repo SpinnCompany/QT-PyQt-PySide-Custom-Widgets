@@ -96,6 +96,23 @@ class QCustomComponentContainer(QWidget):
                 self.component = self.form.ui
             except Exception:
                 self.shownForm = None
+
+            # A container is a pure composition shell — it must NEVER paint the
+            # palette (a rounded/glass component otherwise shows dark squares
+            # at its corners). Re-applied on every refresh so hot reloads can't
+            # bring the background back. Explicit QSS backgrounds still paint.
+            try:
+                from qtpy.QtCore import Qt as _Qt
+                from qtpy.QtWidgets import QWidget as _QW
+                for w in (self, self.form):
+                    w.setAutoFillBackground(False)
+                    w.setAttribute(_Qt.WA_TranslucentBackground, True)
+                for child in self.form.children():
+                    if isinstance(child, _QW):
+                        child.setAutoFillBackground(False)
+                        child.setAttribute(_Qt.WA_TranslucentBackground, True)
+            except Exception:
+                pass
         except Exception as e:
             logError(f"QCustomComponentContainer: refresh failed: {e}")
             logException(e)

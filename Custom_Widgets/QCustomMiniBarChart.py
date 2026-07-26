@@ -15,12 +15,15 @@
 ## single highlighted value). Give data via setData([...]) in code, or the
 ## valuesCsv / colorsCsv / labelsCsv properties in Qt Designer.
 ########################################################################
-from qtpy.QtCore import Qt, Property, QRectF
+from qtpy.QtCore import Qt, Property, QRectF, Signal
 from qtpy.QtGui import QColor, QPainter, QBrush, QPainterPath, QFont, QFontMetrics
 from qtpy.QtWidgets import QWidget, QSizePolicy
 
 
 class QCustomMiniBarChart(QWidget):
+
+    barHovered = Signal(int)   # index under the cursor, -1 when it leaves
+    barClicked = Signal(int)
 
     WIDGET_ICON = "components/icons/bar_chart.png"
     WIDGET_TOOLTIP = "A compact axis-less bar chart (per-bar colours, labels)"
@@ -48,8 +51,10 @@ class QCustomMiniBarChart(QWidget):
                   "calloutBg": {"type": "color", "default": "#ffffff"},
                   "calloutTextColor": {"type": "color", "default": "#1a1e2c"},
                   "yLabelsCsv": {"type": "string", "default": ""},
-                  "yLabelColor": {"type": "color", "default": "#8b909e"}},
-        "signals": [],
+                  "yLabelColor": {"type": "color", "default": "#8b909e"},
+                  "hoverEnabled": {"type": "bool", "default": True},
+                  "hoverSuffix": {"type": "string", "default": ""}},
+        "signals": ["barHovered", "barClicked"],
         "tokens_used": ["accent"],
     }
 
@@ -77,6 +82,13 @@ class QCustomMiniBarChart(QWidget):
         self._callout_text_color = QColor("#1a1e2c")
         self._y_labels = []                     # [(value, text)] left-edge scale
         self._y_label_color = QColor("#8b909e")
+        # Interactivity: hover brightens the bar + shows a painted value bubble
+        # (never the native QToolTip); click emits barClicked.
+        self._hover_enabled = True
+        self._hover_suffix = ""
+        self._hover_index = -1
+        self._col_spans = []                    # [(x0, x1)] per bar, from paint
+        self.setMouseTracking(True)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.setMinimumSize(60, 60)
 
@@ -128,12 +140,21 @@ class QCustomMiniBarChart(QWidget):
     # ------------------------------------------------------------------ #
     def _bar_color_for(self, i, val):
         if i == self._highlight_index:
-            return self._highlight_color
-        if self._colors and i < len(self._colors):
-            return self._colors[i]
-        if self._idle_at_or_below is not None and val <= self._idle_at_or_below:
-            return self._idle_color
-        return self._bar_color
+            base = self._highlight_color
+        elif self._colors and i < len(self._colors):
+            base = self._colors[i]
+        elif self._idle_at_or_below is not None and val <= self._idle_at_or_below:
+            base = self._idle_color
+        else:
+            base = self._bar_color
+        if self._hover_enabled and i == self._hover_index:
+            base = QColor(base)
+            base.setAlpha(min(255, base.alpha() + 90))
+            return base.lighter(125)
+        return base
+
+    def _format_value(self, val):
+        return ("%g" % val) + self._hover_suffix
 
     @staticmethod
     def _top_rounded_path(x, y, w, h, r):
@@ -171,6 +192,11 @@ class QCustomMiniBarChart(QWidget):
         callout = self._callout_text if (self._callout_text and 0 <= self._highlight_index < len(self._values)) else ""
         callout_room = (fm.height() + 12 + 6 + 4) if callout else 0  # pad + pointer + gap
 
+        # hover shows a bubble too — reserve the headroom whenever either can
+        # appear so bars don't jump on the first hover
+        if self._hover_enabled and not callout_room:
+            callout_room = fm.height() + 12 + 6 + 4
+
         chart_top = float(callout_room)
         chart_h = max(1.0, h - label_room)
         maxv = max(self._values) or 1.0
@@ -193,8 +219,10 @@ class QCustomMiniBarChart(QWidget):
                 p.drawText(rect, Qt.AlignRight | Qt.AlignVCenter, t)
 
         p.setPen(Qt.NoPen)
+        self._col_spans = []
         for i, val in enumerate(self._values):
-            cx, y, bh, _ = bar_geo(i, val)
+            cx, y, bh, col_w = bar_geo(i, val)
+            self._col_spans.append((cx - col_w / 2.0, cx + col_w / 2.0))
             x = cx - self._bar_width / 2.0
             p.setBrush(QBrush(self._bar_color_for(i, val)))
             p.drawPath(self._top_rounded_path(x, y, float(self._bar_width), bh, float(self._corner_radius)))
@@ -210,8 +238,18 @@ class QCustomMiniBarChart(QWidget):
                 rect = QRectF(cx - col_w / 2.0, ly, col_w, lbl_h)
                 p.drawText(rect, Qt.AlignHCenter | Qt.AlignVCenter, str(self._labels[i]))
 
+        # the hover bubble takes precedence over the static callout
+        if self._hover_enabled and 0 <= self._hover_index < len(self._values):
+            hv = self._values[self._hover_index]
+            label = (str(self._labels[self._hover_index]) + "  "
+                     if self._hover_index < len(self._labels) else "")
+            callout = label + self._format_value(hv)
+            callout_idx = self._hover_index
+        else:
+            callout_idx = self._highlight_index
+
         if callout:
-            cx, bar_y, _, _ = bar_geo(self._highlight_index, self._values[self._highlight_index])
+            cx, bar_y, _, _ = bar_geo(callout_idx, self._values[callout_idx])
             bw = fm.horizontalAdvance(callout) + 20
             bh_c = fm.height() + 10
             bx = min(max(cx - bw / 2.0, 2.0), w - bw - 2.0)
@@ -230,6 +268,41 @@ class QCustomMiniBarChart(QWidget):
             p.setFont(lbl_font)
             p.drawText(QRectF(bx, by, bw, bh_c), Qt.AlignCenter, callout)
         p.end()
+
+    # ------------------------------------------------------------------ #
+    ## Interactivity (painted hover bubble — never the native QToolTip)
+    # ------------------------------------------------------------------ #
+    def _index_at(self, x):
+        for i, (x0, x1) in enumerate(self._col_spans):
+            if x0 <= x < x1:
+                return i
+        return -1
+
+    def mouseMoveEvent(self, e):
+        super().mouseMoveEvent(e)
+        if not self._hover_enabled:
+            return
+        pos = e.position().x() if hasattr(e, "position") else e.pos().x()
+        idx = self._index_at(pos)
+        if idx != self._hover_index:
+            self._hover_index = idx
+            self.barHovered.emit(idx)
+            self.update()
+
+    def leaveEvent(self, e):
+        super().leaveEvent(e)
+        if self._hover_index != -1:
+            self._hover_index = -1
+            self.barHovered.emit(-1)
+            self.update()
+
+    def mousePressEvent(self, e):
+        super().mousePressEvent(e)
+        if e.button() == Qt.LeftButton:
+            pos = e.position().x() if hasattr(e, "position") else e.pos().x()
+            idx = self._index_at(pos)
+            if idx >= 0:
+                self.barClicked.emit(idx)
 
     # ------------------------------------------------------------------ #
     ## Designer properties
@@ -390,4 +463,25 @@ class QCustomMiniBarChart(QWidget):
     @yLabelColor.setter
     def yLabelColor(self, c):
         self._y_label_color = QColor(c)
+        self.update()
+
+    @Property(bool)
+    def hoverEnabled(self):
+        return self._hover_enabled
+
+    @hoverEnabled.setter
+    def hoverEnabled(self, v):
+        self._hover_enabled = bool(v)
+        if not self._hover_enabled:
+            self._hover_index = -1
+        self.update()
+
+    @Property(str)
+    def hoverSuffix(self):
+        """Unit appended to the hover bubble's value, e.g. ' kWh'."""
+        return self._hover_suffix
+
+    @hoverSuffix.setter
+    def hoverSuffix(self, text):
+        self._hover_suffix = str(text)
         self.update()
