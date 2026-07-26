@@ -8,9 +8,7 @@ from typing import Any, ClassVar
 class QCustomQPushButton(QPushButton):
     variant: str
     sizeVariant: str
-    iconName: str
     iconColor: str
-    iconNameActive: str
     iconColorActive: str
     def __init__(self, parent = ...) -> None: ...
     def setIconSize(self, size) -> None: ...

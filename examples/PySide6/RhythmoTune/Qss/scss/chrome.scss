@@ -1,0 +1,137 @@
+// RhythmoTune chrome — ALL styling lives here (app QSS), driven by objectName
+// selectors + the active theme's Other-variables ($shell/$sidebar/$accent/…,
+// which flip on a theme switch) + dynamic-property state selectors. Python only
+// sets content (text/icon), custom-widget properties and dynamic props — never
+// a stylesheet. Painted custom widgets (coverflow/cards/player) get their
+// colours via their own Qt properties in the manager (setProperty), not here.
+
+// ---- button icons: the FILE via qproperty-icon url ($PATH_RESOURCES), the
+//      COLOUR via qproperty-iconColor (the button tints it). QCustomQLabel
+//      icons (logo/search/playlists*) still use iconName + size in the .ui. ---
+#navHome      { qproperty-icon: url($PATH_RESOURCES+'feather/home.svg'); }
+#navCategories{ qproperty-icon: url($PATH_RESOURCES+'feather/grid.svg'); }
+#navArtists   { qproperty-icon: url($PATH_RESOURCES+'feather/user.svg'); }
+#navLogout    { qproperty-icon: url($PATH_RESOURCES+'feather/log-out.svg'); }
+#heartBtn     { qproperty-icon: url($PATH_RESOURCES+'feather/heart.svg'); }
+#settingsBtn  { qproperty-icon: url($PATH_RESOURCES+'feather/settings.svg'); }
+#prevCatBtn, #prevSongBtn { qproperty-icon: url($PATH_RESOURCES+'feather/chevron-left.svg'); }
+#nextCatBtn, #nextSongBtn { qproperty-icon: url($PATH_RESOURCES+'feather/chevron-right.svg'); }
+
+// ---- icon COLOURS: the button tints its SVG to `iconColor` (resting) /
+//      `iconColorActive` (checked). Qt does NOT re-apply qproperty-* from a
+//      :checked selector, so the active nav colour uses iconColorActive. ------
+#logoIcon               { qproperty-iconColor: $logo; }
+#searchIcon, #playlistsIcon, #playlistsChevron { qproperty-iconColor: $muted; }
+#navHome, #navCategories, #navArtists, #navLogout {
+    qproperty-iconColor: $muted; qproperty-iconColorActive: $accent; }
+#heartBtn, #settingsBtn { qproperty-iconColor: $iconMuted; }
+#prevCatBtn, #nextCatBtn, #prevSongBtn, #nextSongBtn { qproperty-iconColor: $iconMuted; }
+
+// ---- app shell ---------------------------------------------------------- //
+QWidget#shell { background: $shell; }
+
+QScrollArea, #contentScroll, #contentInner, #songsScroll, #songsInner {
+    background: transparent;
+    border: none;
+}
+QScrollBar:vertical {
+    background: transparent; width: 8px; margin: 4px 2px 4px 0;
+}
+QScrollBar::handle:vertical {
+    background: $COLOR_BACKGROUND_4; border-radius: 4px; min-height: 30px;
+}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: transparent; }
+QScrollBar:horizontal { height: 0px; }
+
+// ---- sidebar ------------------------------------------------------------ //
+QWidget#sidebarRoot { background: $sidebar; }
+QLabel#logoText     { background: transparent; color: $text;  font-size: 18px; font-weight: 800; }
+QLabel#playlistsTitle { background: transparent; color: $muted; font-size: 13px; font-weight: 700; }
+
+QPushButton#navHome, QPushButton#navCategories,
+QPushButton#navArtists, QPushButton#navLogout {
+    text-align: left; padding-left: 14px; border: none; border-radius: 13px;
+    background: transparent; color: $muted; font-size: 14px; font-weight: 600;
+}
+QPushButton#navHome:hover, QPushButton#navCategories:hover,
+QPushButton#navArtists:hover, QPushButton#navLogout:hover { background: $chipBg; }
+QPushButton#navHome:checked, QPushButton#navCategories:checked,
+QPushButton#navArtists:checked { background: $navActive; color: $text; }
+
+#playlistRow   { background: transparent; }
+QLabel#playlistLabel { background: transparent; color: $chipText; font-size: 13px; font-weight: 600; }
+QLabel#playlistLabel[muted="true"] { color: $muted; }
+
+// ---- top bar ------------------------------------------------------------ //
+QWidget#topBarRoot { background: transparent; }
+QFrame#searchFrame { background: $searchBg; border: none; border-radius: 16px; }
+QLineEdit#searchEdit { background: transparent; border: none; color: $searchText; font-size: 13px; }
+QLabel#userName  { background: transparent; color: $text; font-size: 14px; font-weight: 700; }
+QLabel#planBadge {
+    background: $premiumBg; color: $premiumText; border-radius: 9px;
+    font-size: 9px; font-weight: 700; padding: 0 8px;
+}
+QPushButton#heartBtn, QPushButton#settingsBtn {
+    background: $iconBtnBg; border: none; border-radius: 22px;
+}
+QPushButton#heartBtn:hover, QPushButton#settingsBtn:hover { background: $navActive; }
+
+// ---- section headers + carousel arrows ---------------------------------- //
+QLabel#categoriesTitle, QLabel#popularTitle {
+    background: transparent; color: $text; font-size: 19px; font-weight: 800;
+}
+QPushButton#prevCatBtn, QPushButton#nextCatBtn,
+QPushButton#prevSongBtn, QPushButton#nextSongBtn {
+    background: $iconBtnBg; border: none; border-radius: 17px;
+}
+QPushButton#prevCatBtn:hover, QPushButton#nextCatBtn:hover,
+QPushButton#prevSongBtn:hover, QPushButton#nextSongBtn:hover { background: $navActive; }
+
+// ---- category chips (chip sets its own pill radius; app QSS owns the rest) //
+QCustomChip {
+    background: $chipBg;
+    border: 1px solid $chipBorder;
+    font-size: 12px; font-weight: 600;
+}
+QCustomChip #chipLabel { background: transparent; color: $chipText; padding: 1px 8px; }
+QCustomChip:hover { border: 1px solid $accent; }
+QCustomChip[selected="true"] { background: $accent; border: 1px solid $accent; }
+QCustomChip[selected="true"] #chipLabel { color: $onAccent; font-weight: 700; }
+
+// ---- painted custom widgets: colours via qproperty ---------------------- //
+// These re-apply on every repolish, so theme-token colours flip on a theme
+// switch with NO Python. (qproperty is set by the app QSS, not a stylesheet.)
+QCustomPlayerBar#playerBar {
+    qproperty-barColor: $playerBar;
+    qproperty-accentColor: $accent;
+    qproperty-trackColor: $seekTrack;
+    qproperty-textColor: $text;
+    qproperty-subTextColor: $muted;
+    qproperty-iconColor: $iconMuted;
+}
+QCustomAvatar#userAvatar { qproperty-bgColor: $accent; }
+#playlistRow QCustomAvatar {
+    qproperty-bgColor: $accent;
+    qproperty-cornerRadius: 7;
+    qproperty-showStatus: false;
+}
+QCustomCoverFlow#coverFlow {
+    qproperty-titleColor: $onCover;
+    qproperty-artistColor: $onCoverMuted;
+    qproperty-playColor: $onCover;
+}
+// cards: constants shared by every tile
+QCustomCoverCard {
+    qproperty-titleColor: $onCover;
+    qproperty-artistColor: $onCoverMuted;
+    qproperty-textAlign: center;
+    qproperty-titleScale: 0.9;
+}
+// cards: per-slot album accent (the coloured bottom band)
+#song0 { qproperty-accentColor: $songA; qproperty-scrimColor: $songA; }
+#song1 { qproperty-accentColor: $songB; qproperty-scrimColor: $songB; }
+#song2 { qproperty-accentColor: $songC; qproperty-scrimColor: $songC; }
+#song3 { qproperty-accentColor: $songD; qproperty-scrimColor: $songD; }
+#song4 { qproperty-accentColor: $songE; qproperty-scrimColor: $songE; }
+#song5 { qproperty-accentColor: $songF; qproperty-scrimColor: $songF; }

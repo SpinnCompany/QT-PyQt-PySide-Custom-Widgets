@@ -3,14 +3,12 @@
    RULE: styles are NESTED per UI component, scoped by the component's
    objectName — each region/component owns one self-contained block.
 
-   Icons: each button's base icon is ALSO set in Designer (.ui iconset,
-   theme-icons path) for design-time preview. At runtime the CUSTOM BUTTON
-   recolours its own SVG from QSS tokens — `qproperty-iconName` (bundled name)
-   + `qproperty-iconColor` (resting) + `qproperty-iconColorActive` (while
-   CHECKED). This is what lets the ACTIVE/selected button's icon turn accent
-   (the theme-icons url path recolours every icon to ONE Icons-color and cannot
-   do a per-state accent). Recolours on theme (tokens reapply) with no Python.
-   Tokens only. Dark theme: BG_1 is DARKEST. Never styled in a .ui.
+   Icons: the icon FILE is set with `qproperty-icon: url($PATH_RESOURCES+'...')`
+   (the path variable = theme-icons:icons/) — also settable in Designer via the
+   .ui iconset. The custom button then TINTS that icon to `qproperty-iconColor`
+   (resting) or `qproperty-iconColorActive` (while CHECKED), so the SELECTED
+   button's icon turns accent and every icon recolours on theme change — no
+   Python. iconSize is per button in the .ui. Tokens only; dark: BG_1 darkest.
    =================================================================== */
 
 #centralwidget { background-color: $COLOR_BACKGROUND_1; }
@@ -25,7 +23,6 @@ QSplitter::handle:hover { background-color: $COLOR_ACCENT_1; }
 
     #appMark { background-color: $COLOR_ACCENT_1; border-radius: 8px; }
 
-    /* document tabs — active tab icon brightens */
     #tabNew, #tabFramer, #tabUntitled {
         background-color: transparent;
         color: $COLOR_TEXT_3;
@@ -41,11 +38,10 @@ QSplitter::handle:hover { background-color: $COLOR_ACCENT_1; }
         &:checked { background-color: $COLOR_BACKGROUND_3; color: $COLOR_TEXT_1;
                     border: 1px solid $COLOR_BACKGROUND_4; }
     }
-    #tabNew      { qproperty-iconName: "auto_awesome"; }
-    #tabFramer   { qproperty-iconName: "dashboard"; }
-    #tabUntitled { qproperty-iconName: "hexagon"; }
+    #tabNew      { qproperty-icon: url($PATH_RESOURCES+'material_design/auto_awesome.svg'); }
+    #tabFramer   { qproperty-icon: url($PATH_RESOURCES+'material_design/dashboard.svg'); }
+    #tabUntitled { qproperty-icon: url($PATH_RESOURCES+'feather/hexagon.svg'); }
 
-    /* generic momentary icon buttons */
     #tabAdd, #navPrev, #navNext, #codeBtn, #playBtn, #shareBtn {
         background-color: transparent;
         color: $COLOR_TEXT_2;
@@ -55,12 +51,12 @@ QSplitter::handle:hover { background-color: $COLOR_ACCENT_1; }
         &:hover   { background-color: $COLOR_BACKGROUND_3; color: $COLOR_TEXT_1; }
         &:pressed { background-color: $COLOR_ACCENT_1; color: #ffffff; }
     }
-    #tabAdd   { qproperty-iconName: "add"; }
-    #navPrev  { qproperty-iconName: "arrow_back_ios_new"; }
-    #navNext  { qproperty-iconName: "arrow_forward_ios"; }
-    #codeBtn  { qproperty-iconName: "code"; }
-    #shareBtn { qproperty-iconName: "ios_share"; }
-    #playBtn  { qproperty-iconName: "play_arrow"; qproperty-iconNameActive: "pause"; }
+    #tabAdd   { qproperty-icon: url($PATH_RESOURCES+'material_design/add.svg'); }
+    #navPrev  { qproperty-icon: url($PATH_RESOURCES+'material_design/arrow_back_ios_new.svg'); }
+    #navNext  { qproperty-icon: url($PATH_RESOURCES+'material_design/arrow_forward_ios.svg'); }
+    #codeBtn  { qproperty-icon: url($PATH_RESOURCES+'feather/code.svg'); }
+    #playBtn  { qproperty-icon: url($PATH_RESOURCES+'material_design/play_arrow.svg'); }
+    #shareBtn { qproperty-icon: url($PATH_RESOURCES+'material_design/ios_share.svg'); }
 
     #durationBtn {
         background-color: $COLOR_BACKGROUND_3;
@@ -70,8 +66,8 @@ QSplitter::handle:hover { background-color: $COLOR_ACCENT_1; }
         padding: 0 10px;
         font-size: 12px;
         font-weight: 600;
-        qproperty-iconName: "timer";
         qproperty-iconColor: $COLOR_TEXT_1;
+        qproperty-icon: url($PATH_RESOURCES+'material_design/timer.svg');
     }
     #exportBtn {
         background-color: $COLOR_ACCENT_1;
@@ -80,8 +76,8 @@ QSplitter::handle:hover { background-color: $COLOR_ACCENT_1; }
         border-radius: 9px;
         font-size: 12px;
         font-weight: 700;
-        qproperty-iconName: "bolt";
         qproperty-iconColor: #ffffff;
+        qproperty-icon: url($PATH_RESOURCES+'material_design/bolt.svg');
         &:hover { background-color: $COLOR_ACCENT_2; }
     }
 }
@@ -103,21 +99,21 @@ QSplitter::handle:hover { background-color: $COLOR_ACCENT_1; }
         &:hover   { background-color: $COLOR_BACKGROUND_3; color: $COLOR_TEXT_1; }
         &:checked { background-color: $COLOR_BACKGROUND_3; }
     }
-    #rlText      { qproperty-iconName: "text_fields"; }
-    #rlLayers    { qproperty-iconName: "layers"; }
-    #rlPen       { qproperty-iconName: "edit_note"; }
-    #rlBrush     { qproperty-iconName: "brush"; }
-    #rlGrid      { qproperty-iconName: "grid_view"; }
-    #rlAttach    { qproperty-iconName: "attach_file"; }
-    #themeToggle { qproperty-iconName: "dark_mode"; }
+    #rlText      { qproperty-icon: url($PATH_RESOURCES+'material_design/text_fields.svg'); }
+    #rlLayers    { qproperty-icon: url($PATH_RESOURCES+'feather/layers.svg'); }
+    #rlPen       { qproperty-icon: url($PATH_RESOURCES+'material_design/edit_note.svg'); }
+    #rlBrush     { qproperty-icon: url($PATH_RESOURCES+'material_design/brush.svg'); }
+    #rlGrid      { qproperty-icon: url($PATH_RESOURCES+'material_design/grid_view.svg'); }
+    #rlAttach    { qproperty-icon: url($PATH_RESOURCES+'material_design/attach_file.svg'); }
+    #themeToggle { qproperty-icon: url($PATH_RESOURCES+'material_design/dark_mode.svg'); }
 
     #fabAdd {
         background-color: $COLOR_ACCENT_1;
         color: #ffffff;
         border: none;
         border-radius: 9px;
-        qproperty-iconName: "add";
         qproperty-iconColor: #ffffff;
+        qproperty-icon: url($PATH_RESOURCES+'material_design/add.svg');
         &:hover   { background-color: $COLOR_ACCENT_2; }
         &:pressed { background-color: $COLOR_ACCENT_3; }
     }
@@ -139,11 +135,11 @@ QSplitter::handle:hover { background-color: $COLOR_ACCENT_1; }
         &:hover   { background-color: $COLOR_BACKGROUND_3; color: $COLOR_TEXT_1; }
         &:checked { background-color: $COLOR_BACKGROUND_3; }
     }
-    #rrCursor { qproperty-iconName: "near_me"; }
-    #rrStar   { qproperty-iconName: "star_border"; }
-    #rrDrop   { qproperty-iconName: "opacity"; }
-    #rrLock   { qproperty-iconName: "lock"; }
-    #rrBulb   { qproperty-iconName: "lightbulb"; }
+    #rrCursor { qproperty-icon: url($PATH_RESOURCES+'material_design/near_me.svg'); }
+    #rrStar   { qproperty-icon: url($PATH_RESOURCES+'material_design/star_border.svg'); }
+    #rrDrop   { qproperty-icon: url($PATH_RESOURCES+'material_design/opacity.svg'); }
+    #rrLock   { qproperty-icon: url($PATH_RESOURCES+'feather/lock.svg'); }
+    #rrBulb   { qproperty-icon: url($PATH_RESOURCES+'material_design/lightbulb.svg'); }
 }
 
 /* ======================= CANVAS COMPONENT ======================== */

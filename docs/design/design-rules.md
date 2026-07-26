@@ -39,24 +39,24 @@ The linter scans **string literals** in `.py` and text in `.ui` (module/class/
 function docstrings and code comments are ignored), so prose that merely *names*
 a glyph is fine — only glyphs that would render in the UI are flagged.
 
-> **Convention — icons: set in Designer, driven from QSS url, never Python.**
-> Give each icon button its icon in the `.ui` (Designer `icon`/iconset) via a
-> `theme-icons:icons/<pack>/<name>.svg` path for design-time preview, and set
-> `iconSize` in the `.ui`. Drive/recolour it at runtime from QSS with the path
-> variable — this is applied after the theme engine registers the `theme-icons`
-> search path and recolours the SVGs, so it resolves and follows the theme:
+> **Convention — icons: file from Designer/QSS url, colour from `iconColor`.**
+> Set the icon *file* the normal way — in the `.ui` (Designer `icon`/iconset) for
+> preview **and** at runtime from QSS with the path variable (a `.ui` iconset
+> alone can be blank at runtime — setupUi builds the QIcon before the
+> `theme-icons` search path exists — so the QSS url is what reliably renders it),
+> and set `iconSize` in the `.ui`. Then set the *colour* from QSS:
+> `QCustomQPushButton`/`QCustomSidebarButton` **tint** that icon to
+> `qproperty-iconColor` (resting) / `qproperty-iconColorActive` (checked), so a
+> selected button's icon turns accent and the colour tracks the theme — no
+> Python, no `iconName`:
 > ```scss
-> #saveBtn { qproperty-icon: url($PATH_RESOURCES+'material_design/save.svg'); }
+> #navHome { qproperty-icon: url($PATH_RESOURCES+'feather/home.svg');
+>            qproperty-iconColor: $muted;
+>            qproperty-iconColorActive: $accent; }   /* checked icon -> accent */
 > ```
-> A `.ui` iconset **alone** can render blank at runtime (setupUi builds the QIcon
-> before the search path exists), so the QSS url is what makes it reliably render
-> and recolour. The engine recolours every icon to **one** Icons-color per theme,
-> so carry an active/selected state with the button **background** (`:checked`),
-> not a per-state icon colour. (When you genuinely need a per-state icon *colour*,
-> `QCustomQPushButton`/`QCustomSidebarButton` also expose
-> `iconName`/`iconColor`/`iconColorActive` that recolour an SVG in code on toggle
-> — a `:checked { qproperty-… }` rule can't, since Qt does not re-apply
-> `qproperty-*` from a pseudo-state selector.)
+> The active colour is a **base-rule** property (`iconColorActive`) the button
+> swaps to on toggle — **not** `:checked { qproperty-iconColor }`, since Qt does
+> not re-apply `qproperty-*` from a pseudo-state selector.
 
 ### `hardcoded-hex` — colours come from token roles
 
