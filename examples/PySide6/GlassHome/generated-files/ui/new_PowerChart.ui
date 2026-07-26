@@ -54,6 +54,7 @@
         <property name="yLabelsCsv" stdset="0"><string>0,50,90,130,170</string></property>
         <property name="highlightIndexProp" stdset="0"><number>2</number></property>
         <property name="calloutText" stdset="0"><string>169 kWh</string></property>
+        <property name="hoverSuffix" stdset="0"><string> kWh</string></property>
         <property name="barWidth" stdset="0"><number>14</number></property>
         <property name="cornerRadius" stdset="0"><number>7</number></property>
         <property name="showLabels" stdset="0"><bool>true</bool></property>

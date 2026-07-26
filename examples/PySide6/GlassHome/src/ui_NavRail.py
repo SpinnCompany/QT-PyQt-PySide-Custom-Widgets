@@ -30,8 +30,17 @@ class Ui_NavRail(object):
         self.navRoot.setSpacing(0)
         self.navRoot.setObjectName(u"navRoot")
         self.navRoot.setContentsMargins(0, 0, 0, 0)
+        self.navTopStretch = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.navRoot.addItem(self.navTopStretch)
+
         self.navGlass = QCustomGlassFrame(NavRail)
         self.navGlass.setObjectName(u"navGlass")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.navGlass.sizePolicy().hasHeightForWidth())
+        self.navGlass.setSizePolicy(sizePolicy)
         self.navGlass.setProperty(u"cornerRadius", 30)
         self.navLayout = QVBoxLayout(self.navGlass)
         self.navLayout.setSpacing(14)
@@ -88,7 +97,7 @@ class Ui_NavRail(object):
 
         self.navLayout.addWidget(self.navAutomation, 0, Qt.AlignHCenter)
 
-        self.navSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        self.navSpacer = QSpacerItem(20, 30, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
 
         self.navLayout.addItem(self.navSpacer)
 
@@ -103,6 +112,10 @@ class Ui_NavRail(object):
 
 
         self.navRoot.addWidget(self.navGlass)
+
+        self.navBottomStretch = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.navRoot.addItem(self.navBottomStretch)
 
 
         self.retranslateUi(NavRail)

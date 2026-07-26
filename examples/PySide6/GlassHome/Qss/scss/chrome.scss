@@ -105,17 +105,24 @@ QCustomQLabel[role="appsIcon"] { qproperty-iconColor: $TXT_MUTED; }
     &:hover { background-color: $TRACK; }
   }
   #brightIcon { qproperty-pixmap: url($PATH_RESOURCES+'feather/sun.svg'); qproperty-iconColor: $HERO_TEXT; }
+  /* brightness range — the bare QSlider otherwise paints its PALETTE
+     background as a dark strip behind the groove */
+  QSlider { background: transparent; border: none; min-height: 24px; }
   QSlider::groove:horizontal {
-    height: 6px; border-radius: 3px;
+    height: 8px; border-radius: 4px; border: none;
     background-color: $TRACK;
   }
   QSlider::sub-page:horizontal {
-    height: 6px; border-radius: 3px;
+    height: 8px; border-radius: 4px; border: none;
     background-color: $HANDLE;
   }
+  QSlider::add-page:horizontal {
+    height: 8px; border-radius: 4px; border: none;
+    background-color: $TRACK;
+  }
   QSlider::handle:horizontal {
-    width: 16px; height: 16px; margin: -5px 0;
-    border-radius: 8px;
+    width: 18px; height: 18px; margin: -5px 0;
+    border-radius: 9px; border: none;
     background-color: $HANDLE;
   }
 }
@@ -180,7 +187,9 @@ QCustomQLabel[role="appsIcon"] { qproperty-iconColor: $TXT_MUTED; }
       background: transparent;
       color: $TXT_MUTED;
       border: none;
-      border-radius: 20px;
+      /* Qt paints a SQUARE when border-radius > height/2 (no clamping) —
+         the chip is ~34px tall, so 14px keeps the pill */
+      border-radius: 14px;
       padding: 9px 18px;
       font-size: 13px;
       &:hover   { color: $TXT_ON_GLASS; }
