@@ -525,3 +525,47 @@ showGuide=False, showScaleLabels=False, roundedCaps=True, zonesCsv=""` (clear th
 default zones so the two-stop `gradientStart`→`gradientEnd` is used), a ~285°
 span (`startAngle≈232, spanAngle≈-284`), `innerColor` = white,
 `centerTextColor` = dark, `centerIcon` = a thermometer / lightning svg.
+
+## Glassmorphism (2026-07-26)
+
+## QCustomGlassFrame
+`Custom_Widgets/QCustomGlassFrame.py` — the GLASSMORPHISM / "liquid glass"
+**container** (group Containers, `container=True`). Qt has no CSS
+`backdrop-filter`, so the frame composites a BLURRED copy of the content behind
+it, then tint + brightness scrim + deterministic film-grain + hairline border;
+children laid out inside sit on frosted glass (visionOS-panel look).
+
+Sampling modes:
+- **`backdropSource`** (objectName of a NON-ancestor widget — typically the
+  full-window photo QLabel below the glass panels) or `setBackdropWidget(w)`.
+  Cheap and flicker-free, so `liveBackdrop=True` (+ `refreshInterval` ms,
+  min 30) can re-sample continuously; the user can always turn it off.
+- **No source set** → guarded whole-window grab (hides itself during an
+  offscreen render). Static: refreshes on show/resize/move or an explicit
+  `refreshBackdrop()`. Call `refreshBackdrop()` after an async backdrop photo
+  arrives.
+- **Nothing to sample** (Designer palette / render_widget) → seeded placeholder
+  gradient so it still previews.
+
+Blur pipeline = downsample (`downsample`, default 3) → offscreen
+`QGraphicsBlurEffect` scene render → smooth upsample; `blurRadius` (default 28)
+is in FULL-RES pixels. Knobs (all typed Designer props; colours are qproperties
+so QSS/themes drive them): `tintColor` (default rgba 18,22,32,110),
+`brightness` (0..2 — white/black scrim), `noiseOpacity` (0..1, default 0.05,
+deterministic seed=7 so pixel probes stay stable), `cornerRadius` (24),
+`borderColor`/`borderWidth` (hairline, rgba 255,255,255,55 @ 1.0).
+
+Liquid glass (opt-in, defaults OFF): `liquidEdge` + `edgeIntensity` (0..1) —
+a zoomed-backdrop refraction ring clipped to the edge band + a specular top rim
+fading to a dark bottom seat.
+
+GOTCHAS: (a) frame→source coord mapping goes through
+`mapToGlobal`/`mapFromGlobal` (`mapTo` requires an ancestor; the wallpaper is a
+sibling). (b) A QSS `background-color` on the frame would paint OVER the glass —
+style it via its qproperties (`qproperty-tintColor: ...`), not a background
+rule. (c) Window-LEVEL blur (behind the app, compositor-side) remains
+`BlurWindow.py`; this widget is the PANEL-level glass inside the window.
+
+Tests: `tests/test_qcustom_glass_frame.py` (10, incl. a blur-evidence probe —
+a red|blue backdrop boundary blends under the glass at blurRadius=40 and stays
+sharp at 0).
