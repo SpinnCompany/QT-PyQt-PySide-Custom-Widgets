@@ -112,6 +112,26 @@ class HeroManager(QObject):
         hero.lampImage.setPixmap(_rounded(pm, 128, 216, 18))
 
 
+class PowerManager(QObject):
+    """The highlighted bar isn't frozen on March — clicking any bar moves the
+    selection: highlight + '<value> kWh' callout follow the click."""
+
+    def __init__(self, window):
+        super().__init__(window)
+        self.window = window
+
+    def initialize(self):
+        chart = self.window.ui.powerContainer.component.powerBars
+        chart.barClicked.connect(self._select)
+
+    def _select(self, index):
+        chart = self.window.ui.powerContainer.component.powerBars
+        values = chart.values()
+        if 0 <= index < len(values):
+            chart.highlightIndex(index)
+            chart.calloutText = "%g kWh" % values[index]
+
+
 class StatsManager(QObject):
     def __init__(self, window):
         super().__init__(window)
@@ -270,6 +290,7 @@ class GuiFunctions(QObject):
         self.managers = [
             self.wallpaper,
             HeroManager(window),
+            PowerManager(window),
             StatsManager(window),
             TilesManager(window),
             ThermostatManager(window),

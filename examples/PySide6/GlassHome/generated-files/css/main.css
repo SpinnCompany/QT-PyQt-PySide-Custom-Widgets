@@ -1755,7 +1755,9 @@ QCustomQLabel[role="appsIcon"] {
 
 /* ---- device hero ------------------------------------------------- */
 #DeviceHero {
-  /* dark text over the LIGHT hero glass… */ }
+  /* dark text over the LIGHT hero glass… */
+  /* brightness range — the bare QSlider otherwise paints its PALETTE
+     background as a dark strip behind the groove */ }
   #DeviceHero #heroGlass {
     qproperty-tintColor: #5aebf0fa;
     qproperty-brightness: 1.08;
@@ -1795,19 +1797,31 @@ QCustomQLabel[role="appsIcon"] {
   #DeviceHero #brightIcon {
     qproperty-pixmap: url("theme-icons:icons/feather/sun.svg");
     qproperty-iconColor: #1b2233; }
+  #DeviceHero QSlider {
+    background: transparent;
+    border: none;
+    min-height: 24px; }
   #DeviceHero QSlider::groove:horizontal {
-    height: 6px;
-    border-radius: 3px;
+    height: 8px;
+    border-radius: 4px;
+    border: none;
     background-color: #38ffffff; }
   #DeviceHero QSlider::sub-page:horizontal {
-    height: 6px;
-    border-radius: 3px;
+    height: 8px;
+    border-radius: 4px;
+    border: none;
     background-color: #ffffff; }
+  #DeviceHero QSlider::add-page:horizontal {
+    height: 8px;
+    border-radius: 4px;
+    border: none;
+    background-color: #38ffffff; }
   #DeviceHero QSlider::handle:horizontal {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     margin: -5px 0;
-    border-radius: 8px;
+    border-radius: 9px;
+    border: none;
     background-color: #ffffff; }
 
 /* ---- power consumption chart ------------------------------------- */
@@ -1869,7 +1883,9 @@ QCustomQLabel[role="appsIcon"] {
     background: transparent;
     color: #a9b1c6;
     border: none;
-    border-radius: 20px;
+    /* Qt paints a SQUARE when border-radius > height/2 (no clamping) —
+         the chip is ~34px tall, so 14px keeps the pill */
+    border-radius: 14px;
     padding: 9px 18px;
     font-size: 13px; }
     #RoomTabs #roomSegments QPushButton#segmentButton:hover {

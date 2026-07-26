@@ -99,6 +99,7 @@ class Ui_PowerChart(object):
         self.powerBars.setProperty(u"labelsCsv", QCoreApplication.translate("PowerChart", u"Jan,Feb,Mar,Apr,May,Jun", None))
         self.powerBars.setProperty(u"yLabelsCsv", QCoreApplication.translate("PowerChart", u"0,50,90,130,170", None))
         self.powerBars.setProperty(u"calloutText", QCoreApplication.translate("PowerChart", u"169 kWh", None))
+        self.powerBars.setProperty(u"hoverSuffix", QCoreApplication.translate("PowerChart", u" kWh", None))
         pass
     # retranslateUi
 
