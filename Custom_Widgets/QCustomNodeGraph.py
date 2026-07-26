@@ -125,13 +125,17 @@ class QCustomNodeGraph(QWidget):
     nodeSelected = Signal(str)
     nodeClicked = Signal(str)
     connectionMade = Signal(str, int, str, int)
+    connectionRemoved = Signal(str, int, str, int)
     canvasClicked = Signal()
     rowClicked = Signal(str, int)     # (node_id, row_index) — a settings row tap
+    nodeRemoved = Signal(str)
+    editRequested = Signal(str)       # the pen (edit) button on a node was clicked
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("QCustomNodeGraph")
         self.setMouseTracking(True)
+        self.setFocusPolicy(Qt.StrongFocus)   # so Delete/Backspace reach us
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.setMinimumSize(240, 180)
 
@@ -161,6 +165,7 @@ class QCustomNodeGraph(QWidget):
 
         # interaction state
         self._sel = None          # selected node id
+        self._sel_edge = None     # selected edge index (for disconnect)
         self._drag_node = None    # node being dragged
         self._drag_dx = 0.0
         self._drag_dy = 0.0
@@ -247,6 +252,72 @@ class QCustomNodeGraph(QWidget):
             n.rows[idx]["value"] = str(value)
             self.update()
 
+    # -- edit -------------------------------------------------------------- #
+    def nodeTitle(self, nid):
+        n = self.nodeById(nid)
+        return n.title if n else ""
+
+    def setNodeTitle(self, nid, title):
+        n = self.nodeById(nid)
+        if n:
+            n.title = str(title)
+            self.update()
+
+    def nodeText(self, nid):
+        n = self.nodeById(nid)
+        return n.text if n else ""
+
+    def setNodeText(self, nid, text):
+        n = self.nodeById(nid)
+        if n:
+            n.text = str(text)
+            self.update()
+
+    # -- delete / disconnect ---------------------------------------------- #
+    def removeNode(self, nid):
+        """Delete a node and every cable attached to it."""
+        n = self.nodeById(nid)
+        if n is None:
+            return
+        self._edges = [e for e in self._edges
+                       if e.src != nid and e.dst != nid]
+        self._nodes.remove(n)
+        if self._sel == nid:
+            self._sel = None
+        if self._hover == nid:
+            self._hover = None
+        self._sel_edge = None
+        self.nodeRemoved.emit(nid)
+        self.update()
+
+    def removeEdgeAt(self, index):
+        """Disconnect (remove) the edge at `index`."""
+        if 0 <= index < len(self._edges):
+            e = self._edges.pop(index)
+            if self._sel_edge == index:
+                self._sel_edge = None
+            self.connectionRemoved.emit(e.src, e.src_port, e.dst, e.dst_port)
+            self.update()
+
+    def removeEdge(self, src, src_port, dst, dst_port):
+        for i, e in enumerate(self._edges):
+            if (e.src == src and e.src_port == src_port
+                    and e.dst == dst and e.dst_port == dst_port):
+                self.removeEdgeAt(i)
+                return
+
+    def disconnectNode(self, nid):
+        """Remove every cable attached to a node (keeps the node)."""
+        kept, dropped = [], []
+        for e in self._edges:
+            (dropped if e.src == nid or e.dst == nid else kept).append(e)
+        self._edges = kept
+        for e in dropped:
+            self.connectionRemoved.emit(e.src, e.src_port, e.dst, e.dst_port)
+        if dropped:
+            self._sel_edge = None
+            self.update()
+
     def fitToView(self, margin=40):
         if not self._nodes:
             return
@@ -306,6 +377,43 @@ class QCustomNodeGraph(QWidget):
                 return n
         return None
 
+    def _close_btn_rect(self, n):
+        """Screen rect of the node's header × (delete) button."""
+        rect = self._node_rect_screen(n)
+        sc = self._scale
+        s = 15.0 * sc
+        return QRectF(rect.right() - s - 9 * sc, rect.y() + (34.0 * sc - s) / 2, s, s)
+
+    def _edit_btn_rect(self, n):
+        """Screen rect of the node's header pen (edit) button, left of the ×."""
+        cb = self._close_btn_rect(n)
+        s = cb.width()
+        return QRectF(cb.left() - s - 5 * self._scale, cb.top(), s, s)
+
+    def _glyph(self, name, color, size):
+        key = ("glyph", name, color.name(), int(size))
+        if key not in self._pix_cache:
+            from Custom_Widgets.Utils import recolor_icon
+            self._pix_cache[key] = recolor_icon(name, color, max(8, int(size)))
+        return self._pix_cache[key]
+
+    def _edge_at(self, screen_pt, tol=7.0):
+        """Index of the cable near the screen point, or None."""
+        for i, edge in enumerate(self._edges):
+            ns = self.nodeById(edge.src)
+            nd = self.nodeById(edge.dst)
+            if ns is None or nd is None:
+                continue
+            aw = self._port_pos(ns, False, edge.src_port)
+            bw = self._port_pos(nd, True, edge.dst_port)
+            path = self._cable_path(self._w2s(aw.x(), aw.y()),
+                                    self._w2s(bw.x(), bw.y()))
+            for k in range(0, 41):
+                pt = path.pointAtPercent(k / 40.0)
+                if (pt.x() - screen_pt.x()) ** 2 + (pt.y() - screen_pt.y()) ** 2 <= tol * tol:
+                    return i
+        return None
+
     def _row_at(self, node, screen_pt):
         """Index of the label/value row under the point, or None (rows nodes)."""
         if not node.rows:
@@ -330,8 +438,8 @@ class QCustomNodeGraph(QWidget):
         p.setRenderHint(QPainter.Antialiasing, True)
         p.fillRect(self.rect(), self._bg)
         self._paint_grid(p)
-        for edge in self._edges:
-            self._paint_edge(p, edge)
+        for i, edge in enumerate(self._edges):
+            self._paint_edge(p, edge, i)
         if self._connect_from is not None:
             self._paint_pending_edge(p)
         for n in self._nodes:
@@ -362,7 +470,7 @@ class QCustomNodeGraph(QWidget):
                      QPointF(b.x() - dx, b.y()), b)
         return path
 
-    def _paint_edge(self, p, edge):
+    def _paint_edge(self, p, edge, index=-1):
         ns = self.nodeById(edge.src)
         nd = self.nodeById(edge.dst)
         if ns is None or nd is None:
@@ -372,11 +480,18 @@ class QCustomNodeGraph(QWidget):
         a = self._w2s(aw.x(), aw.y())
         b = self._w2s(bw.x(), bw.y())
         col = edge.color or self._edge
+        selected = (index == self._sel_edge)
+        path = self._cable_path(a, b)
+        if selected:                          # selection halo (click a cable to select)
+            hp = QPen(self._selected, max(4.0, 6.0 * self._scale))
+            hp.setCapStyle(Qt.RoundCap)
+            p.setPen(hp)
+            p.setBrush(Qt.NoBrush)
+            p.drawPath(path)
         pen = QPen(col, max(1.6, 2.2 * self._scale))
         pen.setCapStyle(Qt.RoundCap)
         p.setPen(pen)
         p.setBrush(Qt.NoBrush)
-        path = self._cable_path(a, b)
         p.drawPath(path)
         # a bright pulse flowing along the cable (animated "energy")
         if self._animated:
@@ -452,8 +567,26 @@ class QCustomNodeGraph(QWidget):
         f.setLetterSpacing(QFont.PercentageSpacing, 108)
         p.setFont(f)
         p.setPen(QPen(self._muted))
-        p.drawText(QRectF(rect.x() + 26 * sc, rect.y(), rect.width() - 40 * sc, hh),
+        tw = rect.width() - 40 * sc
+        if selected or n.id == self._hover:
+            tw -= 40 * sc                      # leave room for pen + × buttons
+        p.drawText(QRectF(rect.x() + 26 * sc, rect.y(), tw, hh),
                    Qt.AlignVCenter | Qt.AlignLeft, n.title)
+
+        # pen (edit) + delete (×) buttons on the hovered / selected node's header
+        if selected or n.id == self._hover:
+            eb = self._edit_btn_rect(n)
+            pm = self._glyph("edit", self._muted, eb.width())
+            pr = pm.devicePixelRatio() or 1.0
+            p.drawPixmap(eb, pm, QRectF(0, 0, pm.width() / pr, pm.height() / pr))
+
+            cb = self._close_btn_rect(n)
+            p.setPen(QPen(self._muted, max(1.2, 1.6 * sc)))
+            m = cb.width() * 0.28
+            p.drawLine(QPointF(cb.left() + m, cb.top() + m),
+                       QPointF(cb.right() - m, cb.bottom() - m))
+            p.drawLine(QPointF(cb.right() - m, cb.top() + m),
+                       QPointF(cb.left() + m, cb.bottom() - m))
 
         # body content
         p.setClipRect(rect)
@@ -590,6 +723,18 @@ class QCustomNodeGraph(QWidget):
         pt = QPointF(e.position()) if hasattr(e, "position") else QPointF(e.pos())
         self._cursor = pt
         if e.button() == Qt.LeftButton:
+            # the pen (edit) + × (delete) header buttons on a hovered/selected node
+            for nn in reversed(self._nodes):
+                if nn.id != self._sel and nn.id != self._hover:
+                    continue
+                if self._edit_btn_rect(nn).contains(pt):
+                    self._sel = nn.id
+                    self.editRequested.emit(nn.id)
+                    self.update()
+                    return
+                if self._close_btn_rect(nn).contains(pt):
+                    self.removeNode(nn.id)
+                    return
             hit = self._hit_port(pt)
             if hit is not None:
                 self._connect_from = hit
@@ -601,6 +746,7 @@ class QCustomNodeGraph(QWidget):
                 self._nodes.remove(n)
                 self._nodes.append(n)
                 self._sel = n.id
+                self._sel_edge = None
                 self._drag_node = n
                 wp = self._s2w(pt)
                 self._drag_dx = wp.x() - n.x
@@ -612,8 +758,16 @@ class QCustomNodeGraph(QWidget):
                 self.nodeClicked.emit(n.id)
                 self.update()
                 return
+            # a cable? select it (so it can be disconnected with Delete)
+            ei = self._edge_at(pt)
+            if ei is not None:
+                self._sel_edge = ei
+                self._sel = None
+                self.update()
+                return
             # empty canvas -> pan
             self._sel = None
+            self._sel_edge = None
             self._panning = True
             self._pan_start = pt
             self._pan_off0 = QPointF(self._offset)
@@ -621,6 +775,32 @@ class QCustomNodeGraph(QWidget):
             self.setCursor(Qt.ClosedHandCursor)
             self.update()
         super().mousePressEvent(e)
+
+    def keyPressEvent(self, e):
+        if e.key() in (Qt.Key_Delete, Qt.Key_Backspace):
+            if self._sel is not None:
+                self.removeNode(self._sel)
+                return
+            if self._sel_edge is not None:
+                self.removeEdgeAt(self._sel_edge)
+                return
+        super().keyPressEvent(e)
+
+    def contextMenuEvent(self, e):
+        from qtpy.QtWidgets import QMenu
+        pt = QPointF(e.pos())
+        menu = QMenu(self)
+        n = self._hit_node(pt)
+        ei = self._edge_at(pt)
+        if n is not None:
+            act = menu.addAction("Delete node")
+            act.triggered.connect(lambda: self.removeNode(n.id))
+        elif ei is not None:
+            act = menu.addAction("Disconnect")
+            act.triggered.connect(lambda: self.removeEdgeAt(ei))
+        else:
+            return
+        menu.exec_(e.globalPos()) if hasattr(menu, "exec_") else menu.exec(e.globalPos())
 
     def mouseMoveEvent(self, e):
         pt = QPointF(e.position()) if hasattr(e, "position") else QPointF(e.pos())

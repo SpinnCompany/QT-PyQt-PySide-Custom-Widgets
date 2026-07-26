@@ -11,9 +11,11 @@ LOGIC only (the .ui carries structure, chrome.scss carries chrome). This:
 
 import math
 
-from qtpy.QtCore import Qt, QTimer, QRectF, QPointF, QObject, QEvent
+from qtpy.QtCore import Qt, QTimer, QRectF, QPointF, QObject, QEvent, QPoint
 from qtpy.QtGui import (QPixmap, QPainter, QColor, QBrush, QPen, QLinearGradient,
                         QRadialGradient, QPainterPath, QFont)
+from qtpy.QtWidgets import (QFrame, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
+                            QPlainTextEdit, QPushButton)
 
 from . import theme as T
 
@@ -380,6 +382,12 @@ class GuiFunctions:
         self.ui.navNext.clicked.connect(lambda: self._nudge_playhead(1))
         # tapping a SETTINGS row cycles its value and drives the render
         self._nodeGraph.rowClicked.connect(self._on_row_clicked)
+        # node properties panel — opened ONLY by the node's pen (edit) button,
+        # never on a plain click (that would fight dragging).
+        self._build_panel()
+        self._nodeGraph.editRequested.connect(self._show_panel)
+        self._nodeGraph.canvasClicked.connect(self._hide_panel)
+        self._nodeGraph.nodeRemoved.connect(self._on_node_removed)
         # the preview label must never push the layout (its pixmap is drawn to
         # fit the label, not the other way round)
         lbl = self._previewImage
@@ -410,6 +418,101 @@ class GuiFunctions:
     def _nudge_playhead(self, direction):
         tl = self._timeline
         tl.setPosition(tl.positionSeconds() + direction)
+
+    # ------------------------------------------------------------------ #
+    ## Node properties panel (edit / delete / disconnect)
+    # ------------------------------------------------------------------ #
+    def _build_panel(self):
+        self._panel_nid = None
+        p = QFrame(self.win)
+        p.setObjectName("nodePanel")
+        p.setFrameShape(QFrame.StyledPanel)
+        p.setFixedWidth(250)
+        p.hide()
+        lay = QVBoxLayout(p)
+        lay.setContentsMargins(14, 12, 14, 14)
+        lay.setSpacing(9)
+
+        head = QHBoxLayout()
+        title = QLabel("PROPERTIES")
+        title.setObjectName("nodePanelHeader")
+        close = QPushButton("")
+        close.setObjectName("nodePanelClose")
+        close.setFixedSize(20, 20)
+        close.setCursor(Qt.PointingHandCursor)
+        head.addWidget(title)
+        head.addStretch(1)
+        head.addWidget(close)
+        lay.addLayout(head)
+
+        lay.addWidget(self._panel_label("Title"))
+        self._panel_title = QLineEdit()
+        self._panel_title.setObjectName("nodePanelTitle")
+        lay.addWidget(self._panel_title)
+
+        lay.addWidget(self._panel_label("Text"))
+        self._panel_text = QPlainTextEdit()
+        self._panel_text.setObjectName("nodePanelText")
+        self._panel_text.setFixedHeight(96)
+        lay.addWidget(self._panel_text)
+        lay.addStretch(1)
+
+        btns = QHBoxLayout()
+        disc = QPushButton("Disconnect")
+        disc.setObjectName("nodePanelDisconnect")
+        disc.setCursor(Qt.PointingHandCursor)
+        dele = QPushButton("Delete")
+        dele.setObjectName("nodePanelDelete")
+        dele.setCursor(Qt.PointingHandCursor)
+        btns.addWidget(disc)
+        btns.addWidget(dele)
+        lay.addLayout(btns)
+
+        close.clicked.connect(self._hide_panel)
+        self._panel_title.textEdited.connect(
+            lambda t: self._panel_nid and self._nodeGraph.setNodeTitle(self._panel_nid, t))
+        self._panel_text.textChanged.connect(self._on_panel_text)
+        disc.clicked.connect(
+            lambda: self._panel_nid and self._nodeGraph.disconnectNode(self._panel_nid))
+        dele.clicked.connect(
+            lambda: self._panel_nid and self._nodeGraph.removeNode(self._panel_nid))
+        self._panel = p
+
+    def _panel_label(self, text):
+        lb = QLabel(text)
+        lb.setObjectName("nodePanelFieldLabel")
+        return lb
+
+    def _on_panel_text(self):
+        if self._panel_nid:
+            self._nodeGraph.setNodeText(self._panel_nid, self._panel_text.toPlainText())
+
+    def _show_panel(self, nid):
+        self._panel_nid = nid
+        self._panel_title.blockSignals(True)
+        self._panel_text.blockSignals(True)
+        self._panel_title.setText(self._nodeGraph.nodeTitle(nid))
+        self._panel_text.setPlainText(self._nodeGraph.nodeText(nid))
+        self._panel_title.blockSignals(False)
+        self._panel_text.blockSignals(False)
+        # anchor to the top-right of the canvas region
+        cc = self.ui.canvasContainer
+        tl = cc.mapTo(self.win, QPoint(0, 0))
+        self._panel.setFixedHeight(min(320, max(240, cc.height() - 32)))
+        self._panel.move(tl.x() + cc.width() - self._panel.width() - 16, tl.y() + 16)
+        self._panel.show()
+        self._panel.raise_()
+        # ensure the app QSS (#nodePanel rules) is applied to this late-built child
+        self._panel.style().unpolish(self._panel)
+        self._panel.style().polish(self._panel)
+
+    def _hide_panel(self):
+        self._panel_nid = None
+        self._panel.hide()
+
+    def _on_node_removed(self, nid):
+        if nid == self._panel_nid:
+            self._hide_panel()
 
     def _on_row_clicked(self, node_id, idx):
         """Cycle a SETTINGS row to its next option and apply it to the render."""
