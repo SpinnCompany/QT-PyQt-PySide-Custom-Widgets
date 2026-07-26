@@ -34,7 +34,7 @@
 import random
 
 from qtpy.QtCore import Qt, Property, QPoint, QRect, QRectF, QSize, QTimer
-from qtpy.QtGui import QColor, QImage, QLinearGradient, QPainter, QPainterPath, QPen, QPixmap
+from qtpy.QtGui import QBrush, QColor, QImage, QLinearGradient, QPainter, QPainterPath, QPen, QPixmap
 from qtpy.QtWidgets import (QFrame, QGraphicsBlurEffect, QGraphicsPixmapItem,
                             QGraphicsScene, QSizePolicy, QWidget)
 
@@ -111,6 +111,10 @@ class QCustomGlassFrame(QFrame):
         self.setObjectName("QCustomGlassFrame")
         self.setFrameShape(QFrame.NoFrame)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        # The glass paints ONLY inside its rounded path — never let the frame's
+        # own palette/stylesheet background fill the square corners behind it.
+        self.setAutoFillBackground(False)
+        self.setAttribute(Qt.WA_StyledBackground, False)
 
         self._backdrop_source = ""
         self._backdrop_widget = None
@@ -258,37 +262,55 @@ class QCustomGlassFrame(QFrame):
     def paintEvent(self, e):
         if self._grabbing:
             return
+        w, h = self.width(), self.height()
+        if w <= 0 or h <= 0:
+            return
+
+        # Compose the full glass stack (backdrop + scrims + tint + noise) into
+        # an UNROUNDED offscreen pixmap, then fill the rounded path with it as
+        # a texture brush. QPainter clipping is not antialiased — the old
+        # setClipPath approach left hard, stair-stepped corners over whatever
+        # sat behind the frame.
+        dpr = self.devicePixelRatioF()
+        composed = QPixmap(max(1, int(w * dpr)), max(1, int(h * dpr)))
+        composed.setDevicePixelRatio(dpr)
+        composed.fill(Qt.transparent)
+        cp = QPainter(composed)
+        cp.setRenderHint(QPainter.SmoothPixmapTransform, True)
+
+        if self._backdrop_pix is not None and not self._backdrop_pix.isNull():
+            cp.drawPixmap(0, 0, self._backdrop_pix)
+        else:
+            # seeded placeholder so the frame previews with no backdrop around
+            grad = QLinearGradient(0, 0, 0, h)
+            grad.setColorAt(0.0, QColor(64, 74, 104))
+            grad.setColorAt(1.0, QColor(28, 32, 48))
+            cp.fillRect(self.rect(), grad)
+
+        b = float(self._brightness)
+        if b > 1.0:
+            cp.fillRect(self.rect(), QColor(255, 255, 255, min(255, int((b - 1.0) * 255))))
+        elif b < 1.0:
+            cp.fillRect(self.rect(), QColor(0, 0, 0, min(255, int((1.0 - b) * 255))))
+
+        if self._tint.alpha() > 0:
+            cp.fillRect(self.rect(), self._tint)
+
+        if self._noise_opacity > 0.0:
+            cp.setOpacity(min(1.0, float(self._noise_opacity)))
+            tile = self._noise_tile()
+            for ty in range(0, h, tile.height()):
+                for tx in range(0, w, tile.width()):
+                    cp.drawPixmap(tx, ty, tile)
+            cp.setOpacity(1.0)
+        cp.end()
+
         p = QPainter(self)
         p.setRenderHint(QPainter.Antialiasing, True)
         p.setRenderHint(QPainter.SmoothPixmapTransform, True)
         outer = self._outer_path()
-        p.setClipPath(outer)
-
-        if self._backdrop_pix is not None and not self._backdrop_pix.isNull():
-            p.drawPixmap(0, 0, self._backdrop_pix)
-        else:
-            # seeded placeholder so the frame previews with no backdrop around
-            grad = QLinearGradient(0, 0, 0, self.height())
-            grad.setColorAt(0.0, QColor(64, 74, 104))
-            grad.setColorAt(1.0, QColor(28, 32, 48))
-            p.fillRect(self.rect(), grad)
-
-        b = float(self._brightness)
-        if b > 1.0:
-            p.fillRect(self.rect(), QColor(255, 255, 255, min(255, int((b - 1.0) * 255))))
-        elif b < 1.0:
-            p.fillRect(self.rect(), QColor(0, 0, 0, min(255, int((1.0 - b) * 255))))
-
-        if self._tint.alpha() > 0:
-            p.fillRect(self.rect(), self._tint)
-
-        if self._noise_opacity > 0.0:
-            p.setOpacity(min(1.0, float(self._noise_opacity)))
-            tile = self._noise_tile()
-            for ty in range(0, self.height(), tile.height()):
-                for tx in range(0, self.width(), tile.width()):
-                    p.drawPixmap(tx, ty, tile)
-            p.setOpacity(1.0)
+        p.setPen(Qt.NoPen)
+        p.fillPath(outer, QBrush(composed))
 
         if self._liquid_edge:
             self._paint_liquid_edge(p, outer)
@@ -299,8 +321,8 @@ class QCustomGlassFrame(QFrame):
             p.setPen(QPen(self._border_color, self._border_width))
             p.setBrush(Qt.NoBrush)
             r = max(0.0, float(self._radius) - inset)
-            p.drawRoundedRect(QRectF(inset, inset, self.width() - 2 * inset,
-                                     self.height() - 2 * inset), r, r)
+            p.drawRoundedRect(QRectF(inset, inset, w - 2 * inset,
+                                     h - 2 * inset), r, r)
         p.end()
 
     def _paint_liquid_edge(self, p, outer):

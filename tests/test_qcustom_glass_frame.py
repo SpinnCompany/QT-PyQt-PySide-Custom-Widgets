@@ -155,3 +155,48 @@ class TestGlassFrame:
         w.liveBackdrop = False
         assert not w._live_timer.isActive(), "user can always turn the animation off"
         host.hide()
+
+
+class TestGlassFrameCorners:
+    """2026-07-26: corners must be TRIMMED — nothing painted outside the
+    rounded path (host shows through), and the edge is antialiased (the old
+    setClipPath left hard stair-stepped corners)."""
+
+    @staticmethod
+    def _render_alpha(glass):
+        # grab() fills the palette window background (opaque corners even
+        # though the widget never painted there) — render WITHOUT
+        # DrawWindowBackground to read what the widget itself paints.
+        from qtpy.QtCore import QPoint
+        from qtpy.QtGui import QImage, QPainter, QRegion
+        from qtpy.QtWidgets import QWidget
+        img = QImage(glass.width(), glass.height(), QImage.Format_ARGB32)
+        img.fill(Qt.transparent)
+        p = QPainter(img)
+        p.setRenderHint(QPainter.Antialiasing, True)
+        glass.render(p, QPoint(0, 0), QRegion(), QWidget.RenderFlag.DrawChildren)
+        p.end()
+        return img
+
+    def test_corner_pixels_untouched(self, qapp):
+        # anything outside the rounded path must stay fully transparent
+        host, glass = _make(qapp, cornerRadius=40)
+        img = self._render_alpha(glass)
+        assert img.pixelColor(1, 1).alpha() == 0                      # corner
+        assert img.pixelColor(img.width() - 2, 1).alpha() == 0
+        assert img.pixelColor(1, img.height() - 2).alpha() == 0
+        assert img.pixelColor(img.width() - 2, img.height() - 2).alpha() == 0
+        # …while the centre is (effectively) opaque glass
+        assert img.pixelColor(img.width() // 2, img.height() // 2).alpha() >= 250
+
+    def test_corner_edge_is_antialiased(self, qapp):
+        host, glass = _make(qapp, cornerRadius=40)
+        img = self._render_alpha(glass)
+        # walk the 45° diagonal through the top-left corner arc: an AA edge
+        # must produce at least one partially-transparent pixel (0 < a < 255)
+        partial = 0
+        for d in range(0, 40):
+            a = img.pixelColor(d, d).alpha()
+            if 0 < a < 255:
+                partial += 1
+        assert partial >= 1

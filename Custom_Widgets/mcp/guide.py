@@ -525,6 +525,14 @@ APP WIRING
 - A NEW QCustom*.py needs a DESIGNER restart (designer_quit -> designer_launch) to
   appear in the palette; render_widget/widgets_catalog usually pick it up without a
   full MCP restart — confirm with render_widget (no unknown_widget = available).
+- `container.component` IS THE Ui_ OBJECT, NOT A WIDGET. Child widgets are
+  attributes on it (component.statValue) but it has no QWidget API — for
+  widget-level calls (setAttribute, geometry) walk `container.children()`.
+- COMPONENT CONTAINERS ON GLASS (QCustomGlassFrame) black the panel out: the
+  native holder paints the palette over the glass. Fix in the orchestrator:
+  `setAttribute(Qt.WA_TranslucentBackground, True)` on the container AND its
+  child widgets, plus `QCustomComponentContainer { background: transparent; }`
+  in the scss (see examples/PySide6/GlassHome GuiFunctions).
 - MCP COLD-COMPILE TIMEOUT: on a cold .pyc cache the server can miss its connect
   handshake window and never mount. Pre-warm with `python -m compileall Custom_Widgets`
   then reconnect. Do NOT silently fall back to ad-hoc python/shell for build/run —

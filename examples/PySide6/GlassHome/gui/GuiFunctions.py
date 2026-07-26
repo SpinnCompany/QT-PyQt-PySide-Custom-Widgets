@@ -293,12 +293,10 @@ class GuiFunctions(QObject):
         NB: container.component is the Ui_ OBJECT, not a widget — walk the
         container's real child widgets instead."""
         from qtpy.QtWidgets import QWidget
-        ui = self.window.ui
-        for name in ("thermoContainer", "modeContainer", "playerContainer",
-                     "navRailContainer", "roomTabsContainer"):
-            container = getattr(ui, name, None)
-            if container is None:
-                continue
+        from Custom_Widgets.QCustomComponentContainer import QCustomComponentContainer
+        # EVERY container: a rounded glass card inside an opaque holder shows
+        # the palette as dark squares at the card's corners.
+        for container in self.window.findChildren(QCustomComponentContainer):
             container.setAttribute(Qt.WA_TranslucentBackground, True)
             for child in container.children():
                 if isinstance(child, QWidget):
