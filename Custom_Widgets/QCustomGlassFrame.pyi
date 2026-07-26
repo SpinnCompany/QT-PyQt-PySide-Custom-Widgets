@@ -1,0 +1,30 @@
+# Auto-generated type stub — DO NOT EDIT.
+# Regenerate with:  python -m Custom_Widgets.mcp.stubgen --write
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QFrame
+from typing import Any, ClassVar
+
+
+class QCustomGlassFrame(QFrame):
+    backdropSource: str
+    blurRadius: int
+    downsample: int
+    tintColor: str
+    brightness: float
+    noiseOpacity: float
+    cornerRadius: int
+    borderColor: str
+    borderWidth: float
+    liquidEdge: bool
+    edgeIntensity: float
+    liveBackdrop: bool
+    refreshInterval: int
+    def __init__(self, parent = ...) -> None: ...
+    def setBackdropWidget(self, widget) -> None: ...
+    def refreshBackdrop(self): ...
+    def showEvent(self, e): ...
+    def hideEvent(self, e): ...
+    def resizeEvent(self, e): ...
+    def moveEvent(self, e): ...
+    def paintEvent(self, e): ...
+    def sizeHint(self): ...
