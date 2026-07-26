@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>RoomTabs</class>
+ <widget class="QWidget" name="RoomTabs">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>720</width><height>92</height></rect></property>
+  <layout class="QVBoxLayout" name="tabsRoot">
+   <property name="leftMargin"><number>0</number></property><property name="topMargin"><number>0</number></property>
+   <property name="rightMargin"><number>0</number></property><property name="bottomMargin"><number>0</number></property>
+   <property name="spacing"><number>8</number></property>
+   <item alignment="Qt::AlignHCenter">
+    <widget class="QCustomGlassFrame" name="tabsGlass">
+     <property name="backdropSource" stdset="0"><string>wallpaper</string></property>
+     <property name="cornerRadius" stdset="0"><number>27</number></property>
+     <layout class="QHBoxLayout" name="tabsLayout">
+      <property name="leftMargin"><number>8</number></property><property name="topMargin"><number>7</number></property>
+      <property name="rightMargin"><number>8</number></property><property name="bottomMargin"><number>7</number></property>
+      <property name="spacing"><number>10</number></property>
+      <item>
+       <widget class="QCustomSegmentedControl" name="roomSegments">
+        <property name="segments" stdset="0"><string>Living Room,Bedroom,Kitchen,Backyard,Garage</string></property>
+        <property name="currentIndex" stdset="0"><number>0</number></property>
+        <property name="minimumSize"><size><width>560</width><height>40</height></size></property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomQPushButton" name="roomAdd">
+        <property name="minimumSize"><size><width>40</width><height>40</height></size></property>
+        <property name="maximumSize"><size><width>40</width><height>40</height></size></property>
+        <property name="iconSize"><size><width>18</width><height>18</height></size></property>
+        <property name="iconName" stdset="0"><string>feather/plus</string></property>
+        <property name="role" stdset="0"><string>addBtn</string></property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item alignment="Qt::AlignHCenter">
+    <widget class="QCustomPageDots" name="roomDots">
+     <property name="count" stdset="0"><number>5</number></property>
+     <property name="activeIndex" stdset="0"><number>0</number></property>
+     <property name="minimumSize"><size><width>90</width><height>14</height></size></property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget><class>QCustomGlassFrame</class><extends>QFrame</extends><header>Custom_Widgets.QCustomGlassFrame</header><container>1</container></customwidget>
+  <customwidget><class>QCustomSegmentedControl</class><extends>QWidget</extends><header>Custom_Widgets.QCustomSegmentedControl</header><container>0</container></customwidget>
+  <customwidget><class>QCustomQPushButton</class><extends>QPushButton</extends><header>Custom_Widgets.QCustomQPushButton</header><container>0</container></customwidget>
+  <customwidget><class>QCustomPageDots</class><extends>QWidget</extends><header>Custom_Widgets.QCustomPageDots</header><container>0</container></customwidget>
+ </customwidgets>
+ <connections/>
+</ui>

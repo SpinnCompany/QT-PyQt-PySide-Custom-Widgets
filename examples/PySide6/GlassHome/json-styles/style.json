@@ -1,0 +1,129 @@
+{
+    "ShowLogs": true,
+    "QtBinding": "PySide6",
+    "LiveCompileQss": true,
+    "CheckForMissingicons": true,
+    "QMainWindow": {
+        "title": "GlassHome — Smart Home"
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "GlassHome",
+            "OrganizationDomain": "spinncode.com"
+        },
+        "ThemeSettings": {
+            "QtDesignerIconsColor": "theme",
+            "CustomThemes": [
+                {
+                    "Theme-name": "Glass Dusk",
+                    "Default-Theme": true,
+                    "Create-icons": true,
+                    "Background-color": "#151928",
+                    "Text-color": "#f2f5fc",
+                    "Accent-color": "#4a8dff",
+                    "Icons-color": "#e8ecf8",
+                    "Other-variables": {
+                        "GLASS_SHEET": "#78121620",
+                        "GLASS_DENSE": "#7d0e111a",
+                        "GLASS_INSET": "#780a0d14",
+                        "GLASS_LIGHT": "#5aebf0fa",
+                        "GLASS_PILL": "#8c121620",
+                        "GLASS_BORDER": "#37ffffff",
+                        "GLASS_BORDER_SOFT": "#24ffffff",
+                        "TXT_ON_GLASS": "#ffffff",
+                        "TXT_MUTED": "#a9b1c6",
+                        "TRACK": "#38ffffff",
+                        "CHIP": "#26ffffff",
+                        "CALLOUT_BG": "#f2ffffff",
+                        "CALLOUT_TEXT": "#151928",
+                        "GAUGE_START": "#3f7dff",
+                        "GAUGE_END": "#8ab8ff",
+                        "HANDLE": "#ffffff",
+                        "ACCENT_SOFT": "#7fb0ff",
+                        "HERO_TEXT": "#1b2233",
+                        "HERO_MUTED": "#55607a",
+                        "HERO_CHIP": "#590f1524",
+                        "INSET_TEXT": "#ffffff",
+                        "INSET_MUTED": "#a9b1c6"
+                    }
+                },
+                {
+                    "Theme-name": "Glass Day",
+                    "Default-Theme": false,
+                    "Create-icons": true,
+                    "Background-color": "#dce4f2",
+                    "Text-color": "#182136",
+                    "Accent-color": "#2f6bff",
+                    "Icons-color": "#2c3550",
+                    "Other-variables": {
+                        "GLASS_SHEET": "#6effffff",
+                        "GLASS_DENSE": "#82f2f5fb",
+                        "GLASS_INSET": "#66ffffff",
+                        "GLASS_LIGHT": "#b4ffffff",
+                        "GLASS_PILL": "#78ffffff",
+                        "GLASS_BORDER": "#55ffffff",
+                        "GLASS_BORDER_SOFT": "#38ffffff",
+                        "TXT_ON_GLASS": "#182136",
+                        "TXT_MUTED": "#5a6478",
+                        "TRACK": "#2e101828",
+                        "CHIP": "#22101828",
+                        "CALLOUT_BG": "#f2182136",
+                        "CALLOUT_TEXT": "#ffffff",
+                        "GAUGE_START": "#2f6bff",
+                        "GAUGE_END": "#7fa7ff",
+                        "HANDLE": "#ffffff",
+                        "ACCENT_SOFT": "#6f9dff",
+                        "HERO_TEXT": "#1b2233",
+                        "HERO_MUTED": "#55607a",
+                        "HERO_CHIP": "#6e0f1524",
+                        "INSET_TEXT": "#182136",
+                        "INSET_MUTED": "#5a6478"
+                    }
+                }
+            ],
+            "Fonts": {
+                "_comment": "Remote web font — downloaded + cached + registered by the theme engine.",
+                "LoadFonts": [
+                    { "name": "Inter", "url": "https://cdn.jsdelivr.net/gh/rsms/inter@master/docs/font-files/InterVariable.ttf" }
+                ],
+                "DefaultFont": { "name": "Inter", "size": 10 }
+            }
+        }
+    },
+    "_comment_ChartPalette": "Read in code by gui/theme.py — painted hues that QSS can't drive (chart series-style data, wallpaper fallback gradient) live WITH the theme so they flip on switch.",
+    "ChartPalette": {
+        "Glass Dusk": {
+            "wallTop": "#2b3550",
+            "wallMid": "#4c4668",
+            "wallBottom": "#1a1e30",
+            "barIdle": "#66ffffff",
+            "barHighlight": "#4a8dff",
+            "gaugeTrack": "#4dffffff",
+            "gaugeStart": "#3f7dff",
+            "gaugeEnd": "#8ab8ff",
+            "handle": "#ffffff",
+            "sliderFill": "#ffffff",
+            "calloutBg": "#f2ffffff",
+            "calloutText": "#151928",
+            "tileOn": "#4a8dff",
+            "avatarRing": "#4a8dff"
+        },
+        "Glass Day": {
+            "wallTop": "#cfe0f5",
+            "wallMid": "#e8d9c8",
+            "wallBottom": "#b9c9e4",
+            "barIdle": "#66182136",
+            "barHighlight": "#2f6bff",
+            "gaugeTrack": "#33182136",
+            "gaugeStart": "#2f6bff",
+            "gaugeEnd": "#7fa7ff",
+            "handle": "#ffffff",
+            "sliderFill": "#2f6bff",
+            "calloutBg": "#f2182136",
+            "calloutText": "#ffffff",
+            "tileOn": "#2f6bff",
+            "avatarRing": "#2f6bff"
+        }
+    }
+}

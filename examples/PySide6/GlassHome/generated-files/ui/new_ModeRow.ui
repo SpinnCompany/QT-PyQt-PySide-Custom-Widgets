@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>ModeRow</class>
+ <widget class="QWidget" name="ModeRow">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>280</width><height>78</height></rect></property>
+  <layout class="QHBoxLayout" name="modeRoot">
+   <property name="leftMargin"><number>0</number></property><property name="topMargin"><number>0</number></property>
+   <property name="rightMargin"><number>0</number></property><property name="bottomMargin"><number>0</number></property>
+   <property name="spacing"><number>10</number></property>
+   <item>
+    <widget class="QCustomTileButton" name="modeHot">
+     <property name="minimumSize"><size><width>0</width><height>66</height></size></property>
+     <property name="checkable"><bool>true</bool></property>
+     <property name="caption" stdset="0"><string>Hot</string></property>
+     <property name="cornerRadius" stdset="0"><number>16</number></property>
+     <property name="iconSize" stdset="0"><number>20</number></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCustomTileButton" name="modeEco">
+     <property name="minimumSize"><size><width>0</width><height>66</height></size></property>
+     <property name="checkable"><bool>true</bool></property>
+     <property name="checked"><bool>true</bool></property>
+     <property name="caption" stdset="0"><string>Eco</string></property>
+     <property name="cornerRadius" stdset="0"><number>16</number></property>
+     <property name="iconSize" stdset="0"><number>20</number></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCustomTileButton" name="modeFan">
+     <property name="minimumSize"><size><width>0</width><height>66</height></size></property>
+     <property name="checkable"><bool>true</bool></property>
+     <property name="caption" stdset="0"><string>Fan</string></property>
+     <property name="cornerRadius" stdset="0"><number>16</number></property>
+     <property name="iconSize" stdset="0"><number>20</number></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCustomTileButton" name="modeCold">
+     <property name="minimumSize"><size><width>0</width><height>66</height></size></property>
+     <property name="checkable"><bool>true</bool></property>
+     <property name="caption" stdset="0"><string>Cold</string></property>
+     <property name="cornerRadius" stdset="0"><number>16</number></property>
+     <property name="iconSize" stdset="0"><number>20</number></property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget><class>QCustomTileButton</class><extends>QAbstractButton</extends><header>Custom_Widgets.QCustomTileButton</header><container>0</container></customwidget>
+ <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>

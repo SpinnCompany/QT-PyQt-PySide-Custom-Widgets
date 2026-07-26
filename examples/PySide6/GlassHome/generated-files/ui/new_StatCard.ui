@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>StatCard</class>
+ <widget class="QWidget" name="StatCard">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>260</width><height>110</height></rect></property>
+  <layout class="QVBoxLayout" name="statRoot">
+   <property name="leftMargin"><number>0</number></property><property name="topMargin"><number>0</number></property>
+   <property name="rightMargin"><number>0</number></property><property name="bottomMargin"><number>0</number></property>
+   <property name="spacing"><number>0</number></property>
+   <item>
+    <widget class="QCustomGlassFrame" name="statGlass">
+     <property name="backdropSource" stdset="0"><string>wallpaper</string></property>
+     <property name="cornerRadius" stdset="0"><number>22</number></property>
+     <layout class="QVBoxLayout" name="statLayout">
+      <property name="leftMargin"><number>18</number></property><property name="topMargin"><number>16</number></property>
+      <property name="rightMargin"><number>18</number></property><property name="bottomMargin"><number>16</number></property>
+      <property name="spacing"><number>6</number></property>
+      <item>
+       <widget class="QLabel" name="statLabel">
+        <property name="text"><string>Current Consumption</string></property>
+        <property name="role" stdset="0"><string>mutedSm</string></property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="statValue">
+        <property name="text"><string>1,5 kWh</string></property>
+        <property name="role" stdset="0"><string>statValue</string></property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget><class>QCustomGlassFrame</class><extends>QFrame</extends><header>Custom_Widgets.QCustomGlassFrame</header><container>1</container></customwidget>
+ <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>

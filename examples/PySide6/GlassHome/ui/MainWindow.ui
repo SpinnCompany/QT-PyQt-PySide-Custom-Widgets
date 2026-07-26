@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>1400</width><height>860</height></rect></property>
+  <property name="windowTitle"><string>GlassHome — Smart Home</string></property>
+  <widget class="QWidget" name="shell">
+   <layout class="QGridLayout" name="shellGrid">
+    <property name="leftMargin"><number>0</number></property><property name="topMargin"><number>0</number></property>
+    <property name="rightMargin"><number>0</number></property><property name="bottomMargin"><number>0</number></property>
+    <property name="spacing"><number>0</number></property>
+    <item row="0" column="0">
+     <widget class="QLabel" name="wallpaper">
+      <property name="sizePolicy"><sizepolicy hsizetype="Ignored" vsizetype="Ignored"><horstretch>0</horstretch><verstretch>0</verstretch></sizepolicy></property>
+      <property name="scaledContents"><bool>true</bool></property>
+      <property name="text"><string/></property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QWidget" name="overlay" native="true">
+      <layout class="QHBoxLayout" name="overlayLayout">
+       <property name="leftMargin"><number>22</number></property><property name="topMargin"><number>22</number></property>
+       <property name="rightMargin"><number>22</number></property><property name="bottomMargin"><number>16</number></property>
+       <property name="spacing"><number>18</number></property>
+       <item>
+        <widget class="QCustomComponentContainer" name="navRailContainer" native="true">
+         <property name="minimumSize"><size><width>84</width><height>0</height></size></property>
+         <property name="maximumSize"><size><width>84</width><height>16777215</height></size></property>
+         <property name="filePath" stdset="0"><string>ui/NavRail.ui</string></property>
+         <property name="previewComponent" stdset="0"><bool>false</bool></property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="mainCol">
+         <property name="spacing"><number>12</number></property>
+         <item>
+          <widget class="QCustomGlassFrame" name="sheetGlass">
+           <property name="sizePolicy"><sizepolicy hsizetype="Expanding" vsizetype="Expanding"><horstretch>0</horstretch><verstretch>0</verstretch></sizepolicy></property>
+           <property name="backdropSource" stdset="0"><string>wallpaper</string></property>
+           <property name="cornerRadius" stdset="0"><number>34</number></property>
+           <property name="liquidEdge" stdset="0"><bool>true</bool></property>
+           <property name="edgeIntensity" stdset="0"><double>0.4</double></property>
+           <layout class="QGridLayout" name="sheetGrid">
+            <property name="leftMargin"><number>20</number></property><property name="topMargin"><number>20</number></property>
+            <property name="rightMargin"><number>20</number></property><property name="bottomMargin"><number>20</number></property>
+            <property name="horizontalSpacing"><number>16</number></property>
+            <property name="verticalSpacing"><number>16</number></property>
+            <item row="0" column="0">
+             <widget class="QCustomComponentContainer" name="heroContainer" native="true">
+              <property name="sizePolicy"><sizepolicy hsizetype="Expanding" vsizetype="Expanding"><horstretch>5</horstretch><verstretch>3</verstretch></sizepolicy></property>
+              <property name="filePath" stdset="0"><string>ui/DeviceHero.ui</string></property>
+              <property name="previewComponent" stdset="0"><bool>false</bool></property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QCustomComponentContainer" name="powerContainer" native="true">
+              <property name="sizePolicy"><sizepolicy hsizetype="Expanding" vsizetype="Expanding"><horstretch>4</horstretch><verstretch>3</verstretch></sizepolicy></property>
+              <property name="filePath" stdset="0"><string>ui/PowerChart.ui</string></property>
+              <property name="previewComponent" stdset="0"><bool>false</bool></property>
+             </widget>
+            </item>
+            <item row="1" column="0" colspan="2">
+             <layout class="QHBoxLayout" name="statsRow">
+              <property name="spacing"><number>16</number></property>
+              <item>
+               <widget class="QCustomComponentContainer" name="statCurrentContainer" native="true">
+                <property name="sizePolicy"><sizepolicy hsizetype="Expanding" vsizetype="Preferred"><horstretch>1</horstretch><verstretch>0</verstretch></sizepolicy></property>
+                <property name="filePath" stdset="0"><string>ui/StatCard.ui</string></property>
+                <property name="previewComponent" stdset="0"><bool>false</bool></property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCustomComponentContainer" name="statHumidityContainer" native="true">
+                <property name="sizePolicy"><sizepolicy hsizetype="Expanding" vsizetype="Preferred"><horstretch>1</horstretch><verstretch>0</verstretch></sizepolicy></property>
+                <property name="filePath" stdset="0"><string>ui/StatCard.ui</string></property>
+                <property name="previewComponent" stdset="0"><bool>false</bool></property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCustomComponentContainer" name="statTempContainer" native="true">
+                <property name="sizePolicy"><sizepolicy hsizetype="Expanding" vsizetype="Preferred"><horstretch>1</horstretch><verstretch>0</verstretch></sizepolicy></property>
+                <property name="filePath" stdset="0"><string>ui/StatCard.ui</string></property>
+                <property name="previewComponent" stdset="0"><bool>false</bool></property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="2" column="0" colspan="2">
+             <layout class="QHBoxLayout" name="tilesRow">
+              <property name="spacing"><number>16</number></property>
+              <item>
+               <widget class="QCustomComponentContainer" name="tileHumidifierContainer" native="true">
+                <property name="sizePolicy"><sizepolicy hsizetype="Expanding" vsizetype="Expanding"><horstretch>1</horstretch><verstretch>1</verstretch></sizepolicy></property>
+                <property name="filePath" stdset="0"><string>ui/DeviceTile.ui</string></property>
+                <property name="previewComponent" stdset="0"><bool>false</bool></property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCustomComponentContainer" name="tileSpeakerContainer" native="true">
+                <property name="sizePolicy"><sizepolicy hsizetype="Expanding" vsizetype="Expanding"><horstretch>1</horstretch><verstretch>1</verstretch></sizepolicy></property>
+                <property name="filePath" stdset="0"><string>ui/DeviceTile.ui</string></property>
+                <property name="previewComponent" stdset="0"><bool>false</bool></property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCustomComponentContainer" name="tileLampContainer" native="true">
+                <property name="sizePolicy"><sizepolicy hsizetype="Expanding" vsizetype="Expanding"><horstretch>1</horstretch><verstretch>1</verstretch></sizepolicy></property>
+                <property name="filePath" stdset="0"><string>ui/DeviceTile.ui</string></property>
+                <property name="previewComponent" stdset="0"><bool>false</bool></property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCustomComponentContainer" name="tileCameraContainer" native="true">
+                <property name="sizePolicy"><sizepolicy hsizetype="Expanding" vsizetype="Expanding"><horstretch>1</horstretch><verstretch>1</verstretch></sizepolicy></property>
+                <property name="filePath" stdset="0"><string>ui/DeviceTile.ui</string></property>
+                <property name="previewComponent" stdset="0"><bool>false</bool></property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="2" rowspan="3">
+             <widget class="QCustomGlassFrame" name="rightGlass">
+              <property name="sizePolicy"><sizepolicy hsizetype="Fixed" vsizetype="Expanding"><horstretch>0</horstretch><verstretch>0</verstretch></sizepolicy></property>
+              <property name="minimumSize"><size><width>300</width><height>0</height></size></property>
+              <property name="maximumSize"><size><width>300</width><height>16777215</height></size></property>
+              <property name="backdropSource" stdset="0"><string>wallpaper</string></property>
+              <property name="cornerRadius" stdset="0"><number>26</number></property>
+              <layout class="QVBoxLayout" name="rightLayout">
+               <property name="leftMargin"><number>18</number></property><property name="topMargin"><number>18</number></property>
+               <property name="rightMargin"><number>18</number></property><property name="bottomMargin"><number>16</number></property>
+               <property name="spacing"><number>14</number></property>
+               <item>
+                <widget class="QCustomComponentContainer" name="thermoContainer" native="true">
+                 <property name="sizePolicy"><sizepolicy hsizetype="Expanding" vsizetype="Expanding"><horstretch>0</horstretch><verstretch>1</verstretch></sizepolicy></property>
+                 <property name="filePath" stdset="0"><string>ui/ThermostatPanel.ui</string></property>
+                 <property name="previewComponent" stdset="0"><bool>false</bool></property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCustomComponentContainer" name="modeContainer" native="true">
+                 <property name="minimumSize"><size><width>0</width><height>66</height></size></property>
+                 <property name="maximumSize"><size><width>16777215</width><height>66</height></size></property>
+                 <property name="filePath" stdset="0"><string>ui/ModeRow.ui</string></property>
+                 <property name="previewComponent" stdset="0"><bool>false</bool></property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCustomComponentContainer" name="playerContainer" native="true">
+                 <property name="minimumSize"><size><width>0</width><height>150</height></size></property>
+                 <property name="maximumSize"><size><width>16777215</width><height>165</height></size></property>
+                 <property name="filePath" stdset="0"><string>ui/PlayerCard.ui</string></property>
+                 <property name="previewComponent" stdset="0"><bool>false</bool></property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCustomComponentContainer" name="roomTabsContainer" native="true">
+           <property name="minimumSize"><size><width>0</width><height>78</height></size></property>
+           <property name="maximumSize"><size><width>16777215</width><height>78</height></size></property>
+           <property name="filePath" stdset="0"><string>ui/RoomTabs.ui</string></property>
+           <property name="previewComponent" stdset="0"><bool>false</bool></property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget><class>QCustomGlassFrame</class><extends>QFrame</extends><header>Custom_Widgets.QCustomGlassFrame</header><container>1</container></customwidget>
+  <customwidget><class>QCustomComponentContainer</class><extends>QWidget</extends><header>Custom_Widgets.QCustomComponentContainer</header><container>1</container></customwidget>
+ </customwidgets>
+ <connections/>
+</ui>
