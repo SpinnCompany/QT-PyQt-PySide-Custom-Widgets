@@ -158,6 +158,9 @@ class QCustomNodeGraph(QWidget):
         self._edges = []          # list[_Edge]
         self._auto = 0            # auto id counter
         self._pix_cache = {}
+        self._edit_pm = None      # pre-rendered header button icons
+        self._x_pm = None
+        self._rebuild_glyphs()
 
         # view transform (world -> screen: p*scale + offset)
         self._scale = 1.0
@@ -390,12 +393,12 @@ class QCustomNodeGraph(QWidget):
         s = cb.width()
         return QRectF(cb.left() - s - 5 * self._scale, cb.top(), s, s)
 
-    def _glyph(self, name, color, size):
-        key = ("glyph", name, color.name(), int(size))
-        if key not in self._pix_cache:
-            from Custom_Widgets.Utils import recolor_icon
-            self._pix_cache[key] = recolor_icon(name, color, max(8, int(size)))
-        return self._pix_cache[key]
+    def _rebuild_glyphs(self):
+        """Pre-render the header button icons OUTSIDE paint (recolour_icon opens
+        its own QPainter, which corrupts the widget painter if called mid-paint)."""
+        from Custom_Widgets.Utils import recolor_icon
+        self._edit_pm = recolor_icon("edit-2", self._muted, 40)
+        self._x_pm = recolor_icon("x", self._muted, 40)
 
     def _edge_at(self, screen_pt, tol=7.0):
         """Index of the cable near the screen point, or None."""
@@ -573,22 +576,16 @@ class QCustomNodeGraph(QWidget):
         p.drawText(QRectF(rect.x() + 26 * sc, rect.y(), tw, hh),
                    Qt.AlignVCenter | Qt.AlignLeft, n.title)
 
-        # pen (edit) + delete (×) buttons on the hovered / selected node's header
+        # pen (edit) + delete (×) header buttons — both rendered feather icons at
+        # the same size so they read consistently (shown on hover / select)
         if selected or n.id == self._hover:
-            eb = self._edit_btn_rect(n)
-            inset = eb.width() * 0.24          # match the × button's visual weight
-            er = eb.adjusted(inset, inset, -inset, -inset)
-            pm = self._glyph("edit", self._muted, er.width())
-            pr = pm.devicePixelRatio() or 1.0
-            p.drawPixmap(er, pm, QRectF(0, 0, pm.width() / pr, pm.height() / pr))
-
-            cb = self._close_btn_rect(n)
-            p.setPen(QPen(self._muted, max(1.2, 1.6 * sc)))
-            m = cb.width() * 0.28
-            p.drawLine(QPointF(cb.left() + m, cb.top() + m),
-                       QPointF(cb.right() - m, cb.bottom() - m))
-            p.drawLine(QPointF(cb.right() - m, cb.top() + m),
-                       QPointF(cb.left() + m, cb.bottom() - m))
+            for brect, pm in ((self._edit_btn_rect(n), self._edit_pm),
+                              (self._close_btn_rect(n), self._x_pm)):
+                if pm is None or pm.isNull():
+                    continue
+                inset = brect.width() * 0.14
+                ir = brect.adjusted(inset, inset, -inset, -inset)
+                p.drawPixmap(ir, pm, QRectF(0, 0, pm.width(), pm.height()))
 
         # body content
         p.setClipRect(rect)
@@ -964,6 +961,7 @@ class QCustomNodeGraph(QWidget):
     @mutedColor.setter
     def mutedColor(self, c):
         self._muted = QColor(c)
+        self._rebuild_glyphs()
         self.update()
 
     @Property(QColor)
