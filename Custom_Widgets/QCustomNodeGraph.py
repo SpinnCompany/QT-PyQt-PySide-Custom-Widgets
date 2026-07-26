@@ -276,6 +276,17 @@ class QCustomNodeGraph(QWidget):
             n.text = str(text)
             self.update()
 
+    def nodeAccent(self, nid):
+        n = self.nodeById(nid)
+        return QColor(n.accent) if n else QColor()
+
+    def setNodeAccent(self, nid, color):
+        """Recolour a node (its header dot + underline, chips, glow)."""
+        n = self.nodeById(nid)
+        if n:
+            n.accent = QColor(color)
+            self.update()
+
     # -- delete / disconnect ---------------------------------------------- #
     def removeNode(self, nid):
         """Delete a node and every cable attached to it."""
@@ -560,6 +571,11 @@ class QCustomNodeGraph(QWidget):
         p.drawPath(hp.simplified())
 
         sc = self._scale
+        # accent underline — makes the node's (layer's) colour clearly visible
+        p.setBrush(n.accent)
+        p.drawRect(QRectF(rect.x() + r, rect.y() + hh - 2.0 * sc,
+                          rect.width() - 2 * r, 2.0 * sc))
+
         # accent dot + title
         p.setBrush(n.accent)
         p.drawEllipse(QPointF(rect.x() + 15 * sc, rect.y() + hh / 2), 4 * sc, 4 * sc)
