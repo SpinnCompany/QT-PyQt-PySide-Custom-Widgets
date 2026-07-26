@@ -576,9 +576,11 @@ class QCustomNodeGraph(QWidget):
         # pen (edit) + delete (×) buttons on the hovered / selected node's header
         if selected or n.id == self._hover:
             eb = self._edit_btn_rect(n)
-            pm = self._glyph("edit", self._muted, eb.width())
+            inset = eb.width() * 0.24          # match the × button's visual weight
+            er = eb.adjusted(inset, inset, -inset, -inset)
+            pm = self._glyph("edit", self._muted, er.width())
             pr = pm.devicePixelRatio() or 1.0
-            p.drawPixmap(eb, pm, QRectF(0, 0, pm.width() / pr, pm.height() / pr))
+            p.drawPixmap(er, pm, QRectF(0, 0, pm.width() / pr, pm.height() / pr))
 
             cb = self._close_btn_rect(n)
             p.setPen(QPen(self._muted, max(1.2, 1.6 * sc)))
