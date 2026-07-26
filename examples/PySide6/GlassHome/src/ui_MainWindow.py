@@ -21,6 +21,7 @@ from PySide6.QtWidgets import (QApplication, QGridLayout, QHBoxLayout, QLabel,
 
 from Custom_Widgets.QCustomComponentContainer import QCustomComponentContainer
 from Custom_Widgets.QCustomGlassFrame import QCustomGlassFrame
+from Custom_Widgets.QCustomWallpaper import QCustomWallpaper
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
@@ -32,14 +33,13 @@ class Ui_MainWindow(object):
         self.shellGrid.setSpacing(0)
         self.shellGrid.setObjectName(u"shellGrid")
         self.shellGrid.setContentsMargins(0, 0, 0, 0)
-        self.wallpaper = QLabel(self.shell)
+        self.wallpaper = QCustomWallpaper(self.shell)
         self.wallpaper.setObjectName(u"wallpaper")
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Ignored)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.wallpaper.sizePolicy().hasHeightForWidth())
         self.wallpaper.setSizePolicy(sizePolicy)
-        self.wallpaper.setScaledContents(True)
 
         self.shellGrid.addWidget(self.wallpaper, 0, 0, 1, 1)
 
@@ -241,7 +241,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"GlassHome \u2014 Smart Home", None))
-        self.wallpaper.setText("")
+        self.wallpaper.setProperty(u"imageSource", QCoreApplication.translate("MainWindow", u"https://picsum.photos/seed/glasshome/1600/1000", None))
         self.navRailContainer.setProperty(u"filePath", QCoreApplication.translate("MainWindow", u"ui/NavRail.ui", None))
         self.sheetGlass.setProperty(u"backdropSource", QCoreApplication.translate("MainWindow", u"wallpaper", None))
         self.heroContainer.setProperty(u"filePath", QCoreApplication.translate("MainWindow", u"ui/DeviceHero.ui", None))

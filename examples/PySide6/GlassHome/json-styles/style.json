@@ -4,7 +4,7 @@
     "LiveCompileQss": true,
     "CheckForMissingicons": true,
     "QMainWindow": {
-        "title": "GlassHome — Smart Home"
+        "title": "GlassHome \u2014 Smart Home"
     },
     "QSettings": {
         "AppSettings": {
@@ -45,7 +45,10 @@
                         "HERO_MUTED": "#55607a",
                         "HERO_CHIP": "#590f1524",
                         "INSET_TEXT": "#ffffff",
-                        "INSET_MUTED": "#a9b1c6"
+                        "INSET_MUTED": "#a9b1c6",
+                        "WALL_TOP": "#2b3550",
+                        "WALL_MID": "#4c4668",
+                        "WALL_BOTTOM": "#1a1e30"
                     }
                 },
                 {
@@ -78,52 +81,26 @@
                         "HERO_MUTED": "#55607a",
                         "HERO_CHIP": "#6e0f1524",
                         "INSET_TEXT": "#182136",
-                        "INSET_MUTED": "#5a6478"
+                        "INSET_MUTED": "#5a6478",
+                        "WALL_TOP": "#cfe0f5",
+                        "WALL_MID": "#e8d9c8",
+                        "WALL_BOTTOM": "#b9c9e4"
                     }
                 }
             ],
             "Fonts": {
-                "_comment": "Remote web font — downloaded + cached + registered by the theme engine.",
+                "_comment": "Remote web font \u2014 downloaded + cached + registered by the theme engine.",
                 "LoadFonts": [
-                    { "name": "Inter", "url": "https://cdn.jsdelivr.net/gh/rsms/inter@master/docs/font-files/InterVariable.ttf" }
+                    {
+                        "name": "Inter",
+                        "url": "https://cdn.jsdelivr.net/gh/rsms/inter@master/docs/font-files/InterVariable.ttf"
+                    }
                 ],
-                "DefaultFont": { "name": "Inter", "size": 10 }
+                "DefaultFont": {
+                    "name": "Inter",
+                    "size": 10
+                }
             }
-        }
-    },
-    "_comment_ChartPalette": "Read in code by gui/theme.py — painted hues that QSS can't drive (chart series-style data, wallpaper fallback gradient) live WITH the theme so they flip on switch.",
-    "ChartPalette": {
-        "Glass Dusk": {
-            "wallTop": "#2b3550",
-            "wallMid": "#4c4668",
-            "wallBottom": "#1a1e30",
-            "barIdle": "#66ffffff",
-            "barHighlight": "#4a8dff",
-            "gaugeTrack": "#4dffffff",
-            "gaugeStart": "#3f7dff",
-            "gaugeEnd": "#8ab8ff",
-            "handle": "#ffffff",
-            "sliderFill": "#ffffff",
-            "calloutBg": "#f2ffffff",
-            "calloutText": "#151928",
-            "tileOn": "#4a8dff",
-            "avatarRing": "#4a8dff"
-        },
-        "Glass Day": {
-            "wallTop": "#cfe0f5",
-            "wallMid": "#e8d9c8",
-            "wallBottom": "#b9c9e4",
-            "barIdle": "#66182136",
-            "barHighlight": "#2f6bff",
-            "gaugeTrack": "#33182136",
-            "gaugeStart": "#2f6bff",
-            "gaugeEnd": "#7fa7ff",
-            "handle": "#ffffff",
-            "sliderFill": "#2f6bff",
-            "calloutBg": "#f2182136",
-            "calloutText": "#ffffff",
-            "tileOn": "#2f6bff",
-            "avatarRing": "#2f6bff"
         }
     }
 }

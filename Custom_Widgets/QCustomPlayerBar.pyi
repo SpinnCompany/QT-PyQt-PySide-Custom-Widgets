@@ -32,6 +32,9 @@ class QCustomPlayerBar(QWidget):
     coverPath: str
     position: float
     cornerRadius: int
+    durationSeconds: Any
+    elapsedSeconds: Any
+    compactMode: bool
     def __init__(self, parent = ...) -> None: ...
     def setTrack(self, title = ..., artist = ..., coverPath = ..., elapsed = ..., total = ..., position = ...) -> None: ...
     def setPlaying(self, on) -> None: ...

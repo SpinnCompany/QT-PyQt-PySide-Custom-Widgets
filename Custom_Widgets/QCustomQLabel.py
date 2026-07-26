@@ -42,13 +42,17 @@ class QCustomQLabel(QLabel):
     __catalog__ = {
         "name": "QCustomQLabel",
         "props": {"iconColor": {"type": "color", "default": ""},
-                  "iconSize": {"type": "int", "default": 0}},
+                  "iconSize": {"type": "int", "default": 0},
+                  "imageSource": {"type": "string", "default": ""},
+                  "imageCornerRadius": {"type": "int", "default": 0}},
         "signals": [],
         "tokens_used": ["on-surface"],
     }
     DESIGNER_CUSTOM_PROPS = [
         {"name": "iconColor", "kind": "color", "group": "Icon"},
         {"name": "iconSize", "kind": "int", "group": "Icon"},
+        {"name": "imageSource", "kind": "str", "group": "Image"},
+        {"name": "imageCornerRadius", "kind": "int", "group": "Image"},
     ]
 
     def __init__(self, parent=None, iconColor=""):
@@ -93,7 +97,9 @@ class QCustomQLabel(QLabel):
 
     def resizeEvent(self, e):
         super().resizeEvent(e)
-        if not self._icon_size:                # tracking the widget size
+        if getattr(self, "_image_pm", None) is not None:
+            self._applyImage()                 # re-fit the cover photo
+        elif not self._icon_size:              # tracking the widget size
             self._applyTint()
 
     @Property(QColor)
@@ -113,3 +119,67 @@ class QCustomQLabel(QLabel):
     def iconSize(self, v):
         self._icon_size = max(0, int(v))
         self._applyTint()
+
+    # ------------------------------------------------------------------ #
+    ## Image mode (opt-in): async cover-fit photo with rounded corners.
+    ## Orthogonal to the icon-tint path — set imageSource (path or http(s)
+    ## url, loaded + cached async) and the label renders the photo COVER-FIT
+    ## at its size, clipped to imageCornerRadius. No manager pixmap code.
+    # ------------------------------------------------------------------ #
+    def setImageSource(self, source):
+        source = str(source or "")
+        self._image_source = source
+        if not source:
+            return
+        from Custom_Widgets.ImageLoader import load_image
+        load_image(source, self._onImageLoaded)
+
+    def _onImageLoaded(self, pm):
+        if pm is None or pm.isNull():
+            return
+        self._image_pm = pm
+        self._applyImage()
+
+    def _applyImage(self):
+        pm = getattr(self, "_image_pm", None)
+        if pm is None or pm.isNull():
+            return
+        from qtpy.QtCore import QRectF
+        from qtpy.QtGui import QPainterPath
+        w = max(1, self.width())
+        h = max(1, self.height())
+        r = max(0, int(getattr(self, "_image_radius", 0)))
+        out = QPixmap(w * 2, h * 2)
+        out.fill(QColor(0, 0, 0, 0))
+        p = QPainter(out)
+        p.setRenderHint(QPainter.Antialiasing, True)
+        p.setRenderHint(QPainter.SmoothPixmapTransform, True)
+        if r > 0:
+            path = QPainterPath()
+            path.addRoundedRect(QRectF(0, 0, w * 2, h * 2), r * 2, r * 2)
+            p.setClipPath(path)
+        scaled = pm.scaled(w * 2, h * 2, Qt.KeepAspectRatioByExpanding,
+                           Qt.SmoothTransformation)
+        p.drawPixmap((w * 2 - scaled.width()) // 2, (h * 2 - scaled.height()) // 2, scaled)
+        p.end()
+        out.setDevicePixelRatio(2.0)
+        QLabel.setPixmap(self, out)
+        cp = self.pixmap()
+        self._tinted_key = cp.cacheKey() if cp else 0   # don't re-tint the photo
+
+    @Property(str)
+    def imageSource(self):
+        return getattr(self, "_image_source", "")
+
+    @imageSource.setter
+    def imageSource(self, v):
+        self.setImageSource(v)
+
+    @Property(int)
+    def imageCornerRadius(self):
+        return getattr(self, "_image_radius", 0)
+
+    @imageCornerRadius.setter
+    def imageCornerRadius(self, v):
+        self._image_radius = max(0, int(v))
+        self._applyImage()

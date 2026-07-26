@@ -19,6 +19,13 @@ QCustomGlassFrame { background: transparent; }
 
 QLabel { color: $TXT_ON_GLASS; background: transparent; }
 
+/* offline / not-yet-loaded wallpaper: a THEMED gradient, not a grey box */
+#wallpaper {
+  qproperty-fallbackTop: $WALL_TOP;
+  qproperty-fallbackMid: $WALL_MID;
+  qproperty-fallbackBottom: $WALL_BOTTOM;
+}
+
 /* ---- shared role chrome ------------------------------------------ */
 QLabel[role="kicker"]      { font-size: 12px; color: $TXT_MUTED; }
 QLabel[role="heroTitle"]   { font-size: 17px; font-weight: 600; }
@@ -67,6 +74,13 @@ QCustomQLabel[role="appsIcon"] { qproperty-iconColor: $TXT_MUTED; }
   #navStats      { qproperty-icon: url($PATH_RESOURCES+'feather/bar-chart-2.svg'); }
   #navAdd        { qproperty-icon: url($PATH_RESOURCES+'feather/plus.svg'); }
   #navAutomation { qproperty-icon: url($PATH_RESOURCES+'feather/sliders.svg'); }
+  #navThemeToggle {
+    background: transparent;
+    border: none;
+    border-radius: 23px;
+    qproperty-icon: url($PATH_RESOURCES+'feather/moon.svg');
+    &:hover { background-color: $CHIP; }
+  }
   QCustomAvatar {
     qproperty-bgColor: $CHIP;
     qproperty-textColor: $TXT_ON_GLASS;

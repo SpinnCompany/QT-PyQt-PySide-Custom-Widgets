@@ -72,6 +72,7 @@ class Ui_PowerChart(object):
         sizePolicy.setHeightForWidth(self.powerBars.sizePolicy().hasHeightForWidth())
         self.powerBars.setSizePolicy(sizePolicy)
         self.powerBars.setProperty(u"highlightIndexProp", 2)
+        self.powerBars.setProperty(u"selectOnClick", True)
         self.powerBars.setProperty(u"barWidth", 14)
         self.powerBars.setProperty(u"cornerRadius", 7)
         self.powerBars.setProperty(u"showLabels", True)

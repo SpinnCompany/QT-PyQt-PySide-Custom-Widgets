@@ -53,7 +53,8 @@ class QCustomMiniBarChart(QWidget):
                   "yLabelsCsv": {"type": "string", "default": ""},
                   "yLabelColor": {"type": "color", "default": "#8b909e"},
                   "hoverEnabled": {"type": "bool", "default": True},
-                  "hoverSuffix": {"type": "string", "default": ""}},
+                  "hoverSuffix": {"type": "string", "default": ""},
+                  "selectOnClick": {"type": "bool", "default": False}},
         "signals": ["barHovered", "barClicked"],
         "tokens_used": ["accent"],
     }
@@ -87,6 +88,7 @@ class QCustomMiniBarChart(QWidget):
         self._hover_enabled = True
         self._hover_suffix = ""
         self._hover_index = -1
+        self._select_on_click = False           # click moves highlight+callout
         self._col_spans = []                    # [(x0, x1)] per bar, from paint
         self.setMouseTracking(True)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -302,6 +304,11 @@ class QCustomMiniBarChart(QWidget):
             pos = e.position().x() if hasattr(e, "position") else e.pos().x()
             idx = self._index_at(pos)
             if idx >= 0:
+                if self._select_on_click:
+                    self._highlight_index = idx
+                    if self._callout_text:      # callout follows the selection
+                        self._callout_text = self._format_value(self._values[idx])
+                    self.update()
                 self.barClicked.emit(idx)
 
     # ------------------------------------------------------------------ #
@@ -485,3 +492,13 @@ class QCustomMiniBarChart(QWidget):
     def hoverSuffix(self, text):
         self._hover_suffix = str(text)
         self.update()
+
+    @Property(bool)
+    def selectOnClick(self):
+        """When true, clicking a bar moves the highlight (and the callout, if
+        one is showing) to it — no app wiring needed."""
+        return self._select_on_click
+
+    @selectOnClick.setter
+    def selectOnClick(self, v):
+        self._select_on_click = bool(v)

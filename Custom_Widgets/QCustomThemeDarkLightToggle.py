@@ -38,6 +38,8 @@ class QCustomThemeDarkLightToggle(QPushButton):
     DESIGNER_CUSTOM_PROPS = [
         {"name": "updateLabelText", "kind": "bool", "group": "Toggle"},
         {"name": "updateButtonIcon", "kind": "bool", "group": "Toggle"},
+        {"name": "darkTheme", "kind": "str", "group": "Toggle"},
+        {"name": "lightTheme", "kind": "str", "group": "Toggle"},
     ]
 
     def __init__(self, parent=None, *args, **kwargs):
@@ -66,15 +68,41 @@ class QCustomThemeDarkLightToggle(QPushButton):
         self.update_button_icon()
         self.update_button_text()
 
-    def toggle_theme(self):   
-        self.themeEngine = QCustomTheme()      
-        # Toggle theme based on current state
-        new_theme = "Light" if self.themeEngine.isAppDarkThemed() else "Dark"
+    def toggle_theme(self):
+        self.themeEngine = QCustomTheme()
+        # CUSTOM theme pair when configured (darkTheme/lightTheme props) —
+        # the generic built-in Light/Dark can never match a custom theme name.
+        dark = getattr(self, "_dark_theme_name", "")
+        light = getattr(self, "_light_theme_name", "")
+        if dark and light:
+            current = getattr(self.themeEngine, "theme", "")
+            new_theme = light if current == dark else dark
+        else:
+            new_theme = "Light" if self.themeEngine.isAppDarkThemed() else "Dark"
         self.themeEngine.theme = new_theme  # This updates the theme in QCustomTheme
 
         # Update button icon and text based on the new theme
         self.update_button_icon()
         self.update_button_text()
+
+    @Property(str)
+    def darkTheme(self):
+        """Name of the CUSTOM dark theme this toggle flips to (paired with
+        lightTheme). Empty = the built-in Light/Dark behaviour."""
+        return getattr(self, "_dark_theme_name", "")
+
+    @darkTheme.setter
+    def darkTheme(self, name):
+        self._dark_theme_name = str(name)
+
+    @Property(str)
+    def lightTheme(self):
+        """Name of the CUSTOM light theme this toggle flips to."""
+        return getattr(self, "_light_theme_name", "")
+
+    @lightTheme.setter
+    def lightTheme(self, name):
+        self._light_theme_name = str(name)
     
     def setText(self, text: str):
         # Override the setText method to only allow theme-based text changes

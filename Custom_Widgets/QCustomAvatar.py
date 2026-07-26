@@ -48,7 +48,9 @@ class QCustomAvatar(QWidget):
                                      "default": "top-right"},
                   "statusBorderColor": {"type": "color", "default": "#ffffff"},
                   "ringColor": {"type": "color", "default": "#00000000"},
-                  "ringWidth": {"type": "int", "default": 0}},
+                  "ringWidth": {"type": "int", "default": 0},
+                  "cornerRadius": {"type": "int", "default": -1},
+                  "imageSource": {"type": "string", "default": ""}},
         "signals": ["clicked"],
         "tokens_used": ["accent"],
     }
@@ -58,6 +60,7 @@ class QCustomAvatar(QWidget):
         self.setObjectName("QCustomAvatar")
         self._text = str(text)
         self._pixmap = None
+        self._img_source = ""
         self._bg = QColor("#3355e8")
         self._text_color = QColor("#ffffff")
         self._show_status = True
@@ -68,6 +71,7 @@ class QCustomAvatar(QWidget):
         self._ring_color = QColor(0, 0, 0, 0)
         self._ring_width = 0
         self._font_ratio = 0.42
+        self._corner_radius = -1        # -1 = circle; >=0 = rounded-square radius
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.setMinimumSize(24, 24)
         self.setCursor(Qt.PointingHandCursor)
@@ -87,6 +91,19 @@ class QCustomAvatar(QWidget):
             image = QPixmap(image)
         self._pixmap = image if isinstance(image, QPixmap) and not image.isNull() else None
         self.update()
+
+    def setImageSource(self, source):
+        """Set the avatar image from a local PATH or an http(s) URL — the URL is
+        downloaded + disk-cached asynchronously (see Custom_Widgets.ImageLoader)
+        and the circular crop is handled by paintEvent. Falls back to the
+        initials until the image lands."""
+        self._img_source = str(source or "")
+        if not self._img_source:
+            self._pixmap = None
+            self.update()
+            return
+        from Custom_Widgets.ImageLoader import load_image
+        load_image(self._img_source, self.setImage)
 
     def setBgColor(self, c):
         self._bg = QColor(c)
@@ -108,6 +125,7 @@ class QCustomAvatar(QWidget):
         cx = (self.width() - side) / 2.0
         cy = (self.height() - side) / 2.0
         inset = self._ring_width + 1 if self._ring_width > 0 else 0
+        rounded = self._corner_radius is not None and self._corner_radius >= 0
 
         # outer ring
         if self._ring_width > 0 and self._ring_color.alpha() > 0:
@@ -116,13 +134,19 @@ class QCustomAvatar(QWidget):
             p.setBrush(Qt.NoBrush)
             r = QRectF(cx + self._ring_width / 2.0, cy + self._ring_width / 2.0,
                        side - self._ring_width, side - self._ring_width)
-            p.drawEllipse(r)
+            if rounded:
+                p.drawRoundedRect(r, self._corner_radius, self._corner_radius)
+            else:
+                p.drawEllipse(r)
 
         face = QRectF(cx + inset, cy + inset, side - 2 * inset, side - 2 * inset)
 
         if self._pixmap is not None:
             path = QPainterPath()
-            path.addEllipse(face)
+            if rounded:
+                path.addRoundedRect(face, self._corner_radius, self._corner_radius)
+            else:
+                path.addEllipse(face)
             p.setClipPath(path)
             scaled = self._pixmap.scaled(int(face.width()), int(face.height()),
                                          Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
@@ -133,7 +157,10 @@ class QCustomAvatar(QWidget):
         else:
             p.setPen(Qt.NoPen)
             p.setBrush(QBrush(self._bg))
-            p.drawEllipse(face)
+            if rounded:
+                p.drawRoundedRect(face, self._corner_radius, self._corner_radius)
+            else:
+                p.drawEllipse(face)
             f = QFont(self.font())
             f.setPixelSize(max(8, int(face.height() * self._font_ratio)))
             f.setBold(True)
@@ -176,6 +203,23 @@ class QCustomAvatar(QWidget):
     @text.setter
     def text(self, v):
         self.setText(v)
+
+    @Property(str)
+    def imageSource(self):
+        return self._img_source
+
+    @imageSource.setter
+    def imageSource(self, v):
+        self.setImageSource(v)
+
+    @Property(int)
+    def cornerRadius(self):
+        return self._corner_radius
+
+    @cornerRadius.setter
+    def cornerRadius(self, v):
+        self._corner_radius = int(v)     # -1 = circle; >=0 = rounded-square radius
+        self.update()
 
     @Property(QColor)
     def bgColor(self):

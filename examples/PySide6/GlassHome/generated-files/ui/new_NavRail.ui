@@ -86,12 +86,25 @@
        </spacer>
       </item>
       <item alignment="Qt::AlignHCenter">
+       <widget class="QCustomThemeDarkLightToggle" name="navThemeToggle">
+        <property name="minimumSize"><size><width>46</width><height>46</height></size></property>
+        <property name="maximumSize"><size><width>46</width><height>46</height></size></property>
+        <property name="updateLabelText" stdset="0"><bool>false</bool></property>
+        <property name="updateButtonIcon" stdset="0"><bool>false</bool></property>
+        <property name="darkTheme" stdset="0"><string>Glass Dusk</string></property>
+        <property name="lightTheme" stdset="0"><string>Glass Day</string></property>
+        <property name="iconSize"><size><width>20</width><height>20</height></size></property>
+        <property name="role" stdset="0"><string>navBtn</string></property>
+       </widget>
+      </item>
+      <item alignment="Qt::AlignHCenter">
        <widget class="QCustomAvatar" name="navAvatar">
         <property name="minimumSize"><size><width>46</width><height>46</height></size></property>
         <property name="maximumSize"><size><width>46</width><height>46</height></size></property>
         <property name="text"><string>K</string></property>
         <property name="showStatus" stdset="0"><bool>false</bool></property>
         <property name="ringWidth" stdset="0"><number>2</number></property>
+        <property name="imageSource" stdset="0"><string>https://i.pravatar.cc/96?img=12</string></property>
        </widget>
       </item>
      </layout>
@@ -108,6 +121,7 @@
  <customwidgets>
   <customwidget><class>QCustomGlassFrame</class><extends>QFrame</extends><header>Custom_Widgets.QCustomGlassFrame</header><container>1</container></customwidget>
   <customwidget><class>QCustomQPushButton</class><extends>QPushButton</extends><header>Custom_Widgets.QCustomQPushButton</header><container>0</container></customwidget>
+  <customwidget><class>QCustomThemeDarkLightToggle</class><extends>QPushButton</extends><header>Custom_Widgets.QCustomThemeDarkLightToggle</header><container>0</container></customwidget>
   <customwidget><class>QCustomAvatar</class><extends>QWidget</extends><header>Custom_Widgets.QCustomAvatar</header><container>0</container></customwidget>
  <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
  <connections />

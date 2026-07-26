@@ -1669,6 +1669,12 @@ QLabel {
   color: #ffffff;
   background: transparent; }
 
+/* offline / not-yet-loaded wallpaper: a THEMED gradient, not a grey box */
+#wallpaper {
+  qproperty-fallbackTop: #2b3550;
+  qproperty-fallbackMid: #4c4668;
+  qproperty-fallbackBottom: #1a1e30; }
+
 /* ---- shared role chrome ------------------------------------------ */
 QLabel[role="kicker"] {
   font-size: 12px;
@@ -1750,6 +1756,14 @@ QCustomQLabel[role="appsIcon"] {
 
 #NavRail #navAutomation {
   qproperty-icon: url("theme-icons:icons/feather/sliders.svg"); }
+
+#NavRail #navThemeToggle {
+  background: transparent;
+  border: none;
+  border-radius: 23px;
+  qproperty-icon: url("theme-icons:icons/feather/moon.svg"); }
+  #NavRail #navThemeToggle:hover {
+    background-color: #26ffffff; }
 
 #NavRail QCustomAvatar {
   qproperty-bgColor: #26ffffff;

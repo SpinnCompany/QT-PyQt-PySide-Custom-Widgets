@@ -21,6 +21,7 @@ from PySide6.QtWidgets import (QApplication, QLabel, QPushButton, QSizePolicy,
 from Custom_Widgets.QCustomAvatar import QCustomAvatar
 from Custom_Widgets.QCustomGlassFrame import QCustomGlassFrame
 from Custom_Widgets.QCustomQPushButton import QCustomQPushButton
+from Custom_Widgets.QCustomThemeDarkLightToggle import QCustomThemeDarkLightToggle
 class Ui_NavRail(object):
     def setupUi(self, NavRail):
         if not NavRail.objectName():
@@ -101,6 +102,16 @@ class Ui_NavRail(object):
 
         self.navLayout.addItem(self.navSpacer)
 
+        self.navThemeToggle = QCustomThemeDarkLightToggle(self.navGlass)
+        self.navThemeToggle.setObjectName(u"navThemeToggle")
+        self.navThemeToggle.setMinimumSize(QSize(46, 46))
+        self.navThemeToggle.setMaximumSize(QSize(46, 46))
+        self.navThemeToggle.setProperty(u"updateLabelText", False)
+        self.navThemeToggle.setProperty(u"updateButtonIcon", False)
+        self.navThemeToggle.setIconSize(QSize(20, 20))
+
+        self.navLayout.addWidget(self.navThemeToggle, 0, Qt.AlignHCenter)
+
         self.navAvatar = QCustomAvatar(self.navGlass)
         self.navAvatar.setObjectName(u"navAvatar")
         self.navAvatar.setMinimumSize(QSize(46, 46))
@@ -135,7 +146,11 @@ class Ui_NavRail(object):
         self.navAdd.setProperty(u"role", QCoreApplication.translate("NavRail", u"navBtn", None))
         self.navAutomation.setProperty(u"iconName", QCoreApplication.translate("NavRail", u"feather/sliders", None))
         self.navAutomation.setProperty(u"role", QCoreApplication.translate("NavRail", u"navBtn", None))
+        self.navThemeToggle.setProperty(u"darkTheme", QCoreApplication.translate("NavRail", u"Glass Dusk", None))
+        self.navThemeToggle.setProperty(u"lightTheme", QCoreApplication.translate("NavRail", u"Glass Day", None))
+        self.navThemeToggle.setProperty(u"role", QCoreApplication.translate("NavRail", u"navBtn", None))
         self.navAvatar.setText(QCoreApplication.translate("NavRail", u"K", None))
+        self.navAvatar.setProperty(u"imageSource", QCoreApplication.translate("NavRail", u"https://i.pravatar.cc/96?img=12", None))
         pass
     # retranslateUi
 

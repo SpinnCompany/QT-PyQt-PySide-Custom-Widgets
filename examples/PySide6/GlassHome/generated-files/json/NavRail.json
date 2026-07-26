@@ -1,1 +1,9 @@
-{}
+{
+  "QCustomThemeDarkLightToggle": [
+    {
+      "name": "navThemeToggle",
+      "darkThemeIcon": null,
+      "lightThemeIcon": null
+    }
+  ]
+}

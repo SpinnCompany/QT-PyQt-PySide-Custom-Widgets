@@ -8,8 +8,7 @@
    <property name="rightMargin"><number>0</number></property><property name="bottomMargin"><number>0</number></property>
    <property name="spacing"><number>12</number></property>
    <item>
-    <widget class="QLabel" name="clockLabel">
-     <property name="text"><string>10:02 PM</string></property>
+    <widget class="QCustomClockLabel" name="clockLabel">
      <property name="role" stdset="0"><string>clock</string></property>
     </widget>
    </item>
@@ -58,7 +57,6 @@
      <property name="showScaleLabels" stdset="0"><bool>false</bool></property>
      <property name="showTicks" stdset="0"><bool>false</bool></property>
      <property name="roundedCaps" stdset="0"><bool>true</bool></property>
-     <property name="centerText" stdset="0"><string>64</string></property>
      <property name="centerSuffix" stdset="0"><string>°</string></property>
      <property name="statusText" stdset="0"><string>(°Fahrenheit)</string></property>
      <property name="animated" stdset="0"><bool>true</bool></property>
@@ -96,6 +94,7 @@
   </layout>
  </widget>
  <customwidgets>
+  <customwidget><class>QCustomClockLabel</class><extends>QLabel</extends><header>Custom_Widgets.QCustomClockLabel</header><container>0</container></customwidget>
   <customwidget><class>QCustomSwitch</class><extends>QWidget</extends><header>Custom_Widgets.QCustomSwitch</header><container>0</container></customwidget>
   <customwidget><class>QCustomRadialGauge</class><extends>QWidget</extends><header>Custom_Widgets.QCustomRadialGauge</header><container>0</container></customwidget>
   <customwidget><class>QCustomQPushButton</class><extends>QPushButton</extends><header>Custom_Widgets.QCustomQPushButton</header><container>0</container></customwidget>
