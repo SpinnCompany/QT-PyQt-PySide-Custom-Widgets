@@ -1215,6 +1215,19 @@ except Exception as e:
     logException(e, message="Error registering QCustomQLabel")
 
 
+from Custom_Widgets.QCustomGlassFrame import QCustomGlassFrame
+
+# Registering QCustomGlassFrame with error handling
+try:
+    logInfo("Registering QCustomGlassFrame")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomGlassFrame, module=QCustomGlassFrame.WIDGET_MODULE,
+        tool_tip=QCustomGlassFrame.WIDGET_TOOLTIP, xml=QCustomGlassFrame.WIDGET_DOM_XML,
+        icon=QCustomGlassFrame.WIDGET_ICON, group="Containers", container=True)
+except Exception as e:
+    logException(e, message="Error registering QCustomGlassFrame")
+
+
 ########################################################################
 ## DESIGNER BRIDGE - lets a running app push theme changes into Designer
 ## (refresh icons / restyle open forms). See Custom_Widgets/DesignerBridge.py
