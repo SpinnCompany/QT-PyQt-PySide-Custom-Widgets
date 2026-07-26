@@ -88,6 +88,11 @@ class TestNodeGraph:
         g.setNodeText("a", "new body")
         assert g.nodeTitle("a") == "Renamed" and g.nodeText("a") == "new body"
 
+    def test_node_accent_customisation(self, qapp):
+        g = self._graph()
+        g.setNodeAccent("a", "#e5484d")
+        assert QColor(g.nodeAccent("a")).name() == "#e5484d"
+
     def _rows_graph(self, qapp):
         from Custom_Widgets.QCustomNodeGraph import QCustomNodeGraph
         from qtpy.QtCore import QPointF

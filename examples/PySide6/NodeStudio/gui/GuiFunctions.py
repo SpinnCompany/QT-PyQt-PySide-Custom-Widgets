@@ -453,8 +453,14 @@ class GuiFunctions:
         lay.addWidget(self._panel_label("Text"))
         self._panel_text = QPlainTextEdit()
         self._panel_text.setObjectName("nodePanelText")
-        self._panel_text.setFixedHeight(96)
+        self._panel_text.setFixedHeight(84)
         lay.addWidget(self._panel_text)
+
+        lay.addWidget(self._panel_label("Colour"))
+        from Custom_Widgets.QCustomColorPicker import QCustomColorPicker
+        self._panel_color = QCustomColorPicker()
+        self._panel_color.setObjectName("nodePanelColor")
+        lay.addWidget(self._panel_color)
         lay.addStretch(1)
 
         btns = QHBoxLayout()
@@ -472,6 +478,8 @@ class GuiFunctions:
         self._panel_title.textEdited.connect(
             lambda t: self._panel_nid and self._nodeGraph.setNodeTitle(self._panel_nid, t))
         self._panel_text.textChanged.connect(self._on_panel_text)
+        self._panel_color.colorChanged.connect(
+            lambda c: self._panel_nid and self._nodeGraph.setNodeAccent(self._panel_nid, c))
         disc.clicked.connect(
             lambda: self._panel_nid and self._nodeGraph.disconnectNode(self._panel_nid))
         dele.clicked.connect(
@@ -491,14 +499,17 @@ class GuiFunctions:
         self._panel_nid = nid
         self._panel_title.blockSignals(True)
         self._panel_text.blockSignals(True)
+        self._panel_color.blockSignals(True)
         self._panel_title.setText(self._nodeGraph.nodeTitle(nid))
         self._panel_text.setPlainText(self._nodeGraph.nodeText(nid))
+        self._panel_color.setColor(self._nodeGraph.nodeAccent(nid))
         self._panel_title.blockSignals(False)
         self._panel_text.blockSignals(False)
+        self._panel_color.blockSignals(False)
         # anchor to the top-right of the canvas region
         cc = self.ui.canvasContainer
         tl = cc.mapTo(self.win, QPoint(0, 0))
-        self._panel.setFixedHeight(min(320, max(240, cc.height() - 32)))
+        self._panel.setFixedHeight(min(360, max(280, cc.height() - 32)))
         self._panel.move(tl.x() + cc.width() - self._panel.width() - 16, tl.y() + 16)
         self._panel.show()
         self._panel.raise_()
