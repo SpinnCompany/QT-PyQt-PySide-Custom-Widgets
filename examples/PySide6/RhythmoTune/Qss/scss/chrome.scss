@@ -17,7 +17,14 @@
 #prevCatBtn, #prevSongBtn { qproperty-icon: url($PATH_RESOURCES+'feather/chevron-left.svg'); }
 #nextCatBtn, #nextSongBtn { qproperty-icon: url($PATH_RESOURCES+'feather/chevron-right.svg'); }
 
-// ---- icon COLOURS: the button tints its SVG to `iconColor` (resting) /
+// ---- QCustomQLabel icons: FILE via qproperty-pixmap url (labels have no
+//      qproperty-icon), COLOUR via qproperty-iconColor (the label tints it). ---
+#logoIcon         { qproperty-pixmap: url($PATH_RESOURCES+'feather/activity.svg'); }
+#searchIcon       { qproperty-pixmap: url($PATH_RESOURCES+'feather/search.svg'); }
+#playlistsIcon    { qproperty-pixmap: url($PATH_RESOURCES+'feather/music.svg'); }
+#playlistsChevron { qproperty-pixmap: url($PATH_RESOURCES+'feather/chevron-up.svg'); }
+
+// ---- icon COLOURS: the button/label tints its SVG to `iconColor` (resting) /
 //      `iconColorActive` (checked). Qt does NOT re-apply qproperty-* from a
 //      :checked selector, so the active nav colour uses iconColorActive. ------
 #logoIcon               { qproperty-iconColor: $logo; }

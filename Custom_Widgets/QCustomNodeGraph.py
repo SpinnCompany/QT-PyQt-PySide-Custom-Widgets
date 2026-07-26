@@ -25,7 +25,7 @@
 import os
 import math
 
-from qtpy.QtCore import Qt, Property, QRectF, QPointF, QByteArray, QSize, Signal
+from qtpy.QtCore import Qt, Property, QRectF, QPointF, QByteArray, QSize, Signal, QTimer
 from qtpy.QtGui import (QColor, QPainter, QBrush, QPen, QFont, QPainterPath,
                         QLinearGradient, QPixmap)
 from qtpy.QtWidgets import QWidget, QSizePolicy
@@ -96,7 +96,8 @@ class QCustomNodeGraph(QWidget):
                   "portColor": {"type": "color", "default": "#f2a63b"},
                   "edgeColor": {"type": "color", "default": "#c98a3a"},
                   "selectedColor": {"type": "color", "default": "#6c7bff"},
-                  "cornerRadius": {"type": "int", "default": 14}},
+                  "cornerRadius": {"type": "int", "default": 14},
+                  "animated": {"type": "bool", "default": True}},
         "signals": ["nodeMoved", "nodeSelected", "nodeClicked",
                     "connectionMade", "canvasClicked", "rowClicked"],
         "tokens_used": ["accent", "background"],
@@ -117,6 +118,7 @@ class QCustomNodeGraph(QWidget):
         {"name": "portColor", "kind": "color", "group": "Wiring"},
         {"name": "edgeColor", "kind": "color", "group": "Wiring"},
         {"name": "selectedColor", "kind": "color", "group": "Wiring"},
+        {"name": "animated", "kind": "bool", "group": "Canvas"},
     ]
 
     nodeMoved = Signal(str)
@@ -170,6 +172,23 @@ class QCustomNodeGraph(QWidget):
         self._press_node = None    # node id pressed (for click-vs-drag)
         self._press_row = None     # row index under the press, if any
         self._did_move = False     # became a drag?
+        self._hover = None         # node id currently hovered
+
+        # animation: a phase drives a bright pulse flowing along each cable, and
+        # hovered/selected nodes get an animated glow (animated content).
+        self._phase = 0.0
+        self._animated = True
+        self._anim = QTimer(self)
+        self._anim.setInterval(40)
+        self._anim.timeout.connect(self._tick)
+        self._anim.start()
+
+    def _tick(self):
+        if not self._animated or not self.isVisible():
+            return
+        self._phase = (self._phase + 0.012) % 1.0
+        if self._edges or self._hover or self._sel:
+            self.update()
 
     # ------------------------------------------------------------------ #
     ## Public data API
@@ -357,7 +376,18 @@ class QCustomNodeGraph(QWidget):
         pen.setCapStyle(Qt.RoundCap)
         p.setPen(pen)
         p.setBrush(Qt.NoBrush)
-        p.drawPath(self._cable_path(a, b))
+        path = self._cable_path(a, b)
+        p.drawPath(path)
+        # a bright pulse flowing along the cable (animated "energy")
+        if self._animated:
+            off = (self._phase + 0.13 * (hash(edge.src) % 7)) % 1.0
+            pt = path.pointAtPercent(off)
+            glow = QColor(col).lighter(170)
+            p.setPen(Qt.NoPen)
+            p.setBrush(QColor(glow.red(), glow.green(), glow.blue(), 80))
+            p.drawEllipse(pt, 5 * self._scale, 5 * self._scale)
+            p.setBrush(glow)
+            p.drawEllipse(pt, 2.3 * self._scale, 2.3 * self._scale)
 
     def _paint_pending_edge(self, p):
         nid, is_in, idx = self._connect_from
@@ -379,6 +409,14 @@ class QCustomNodeGraph(QWidget):
         rect = self._node_rect_screen(n)
         r = self._radius * self._scale
         selected = (n.id == self._sel)
+
+        # animated glow ring on the hovered / selected node
+        if self._animated and (selected or n.id == self._hover):
+            pulse = 0.5 + 0.5 * math.sin(self._phase * 2 * math.pi)
+            g = self._selected if selected else self._port
+            p.setPen(Qt.NoPen)
+            p.setBrush(QColor(g.red(), g.green(), g.blue(), int(34 + 46 * pulse)))
+            p.drawRoundedRect(rect.adjusted(-5, -5, 5, 6), r + 5, r + 5)
 
         # drop shadow
         sh = QColor(0, 0, 0, 90)
@@ -605,14 +643,25 @@ class QCustomNodeGraph(QWidget):
         if self._connect_from is not None:
             self.update()
             return
-        # hover cursor feedback over ports
+        # hover cursor feedback over ports + track hovered node for the glow
+        hn = self._hit_node(pt)
+        new_hover = hn.id if hn is not None else None
+        if new_hover != self._hover:
+            self._hover = new_hover
+            self.update()
         if self._hit_port(pt) is not None:
             self.setCursor(Qt.CrossCursor)
-        elif self._hit_node(pt) is not None:
+        elif hn is not None:
             self.setCursor(Qt.OpenHandCursor)
         else:
             self.setCursor(Qt.ArrowCursor)
         super().mouseMoveEvent(e)
+
+    def leaveEvent(self, e):
+        if self._hover is not None:
+            self._hover = None
+            self.update()
+        super().leaveEvent(e)
 
     def mouseReleaseEvent(self, e):
         pt = QPointF(e.position()) if hasattr(e, "position") else QPointF(e.pos())
@@ -769,4 +818,17 @@ class QCustomNodeGraph(QWidget):
     @cornerRadius.setter
     def cornerRadius(self, v):
         self._radius = max(0, int(v))
+        self.update()
+
+    @Property(bool)
+    def animated(self):
+        return self._animated
+
+    @animated.setter
+    def animated(self, v):
+        self._animated = bool(v)
+        if self._animated:
+            self._anim.start()
+        else:
+            self._anim.stop()
         self.update()

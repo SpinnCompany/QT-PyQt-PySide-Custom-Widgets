@@ -21,7 +21,7 @@
 ########################################################################
 import math
 
-from qtpy.QtCore import Qt, Property, QRectF, QPointF, QSize, Signal
+from qtpy.QtCore import Qt, Property, QRectF, QPointF, QSize, Signal, QTimer
 from qtpy.QtGui import QColor, QPainter, QBrush, QPen, QFont, QPainterPath, QLinearGradient
 from qtpy.QtWidgets import QWidget, QSizePolicy
 
@@ -70,7 +70,9 @@ class QCustomMediaTimeline(QWidget):
                   "clipColor": {"type": "color", "default": "#c17ce0"},
                   "waveColor": {"type": "color", "default": "#8b90a6"},
                   "textColor": {"type": "color", "default": "#e7e9f3"},
-                  "cornerRadius": {"type": "int", "default": 10}},
+                  "cornerRadius": {"type": "int", "default": 10},
+                  "playing": {"type": "bool", "default": False},
+                  "loop": {"type": "bool", "default": True}},
         "signals": ["positionChanged", "clipMoved", "clipTrimmed", "clipClicked"],
         "tokens_used": ["accent", "background"],
     }
@@ -79,6 +81,8 @@ class QCustomMediaTimeline(QWidget):
         {"name": "duration", "kind": "double", "group": "Timeline"},
         {"name": "position", "kind": "double", "group": "Timeline"},
         {"name": "cornerRadius", "kind": "int", "group": "Timeline"},
+        {"name": "playing", "kind": "bool", "group": "Timeline"},
+        {"name": "loop", "kind": "bool", "group": "Timeline"},
         {"name": "bgColor", "kind": "color", "group": "Colours"},
         {"name": "rulerColor", "kind": "color", "group": "Colours"},
         {"name": "playheadColor", "kind": "color", "group": "Colours"},
@@ -92,6 +96,7 @@ class QCustomMediaTimeline(QWidget):
     clipMoved = Signal(int, int)
     clipTrimmed = Signal(int, int)
     clipClicked = Signal(int, int)
+    playToggled = Signal(bool)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -120,6 +125,52 @@ class QCustomMediaTimeline(QWidget):
 
         # interaction
         self._drag = None   # ("scrub",) | ("move", ti, ci, grabOffset) | ("trim", ti, ci, edge)
+        self._hover_clip = None    # (track, clip) under the cursor
+
+        # animation: a self-driven playhead so the widget animates on its own
+        # (play()/pause()); clips also glow on hover.
+        self._playing = False
+        self._loop = True
+        self._play_timer = QTimer(self)
+        self._play_timer.setInterval(33)
+        self._play_timer.timeout.connect(self._advance)
+
+    # ------------------------------------------------------------------ #
+    ## Playback (self-animating playhead)
+    # ------------------------------------------------------------------ #
+    def setPlaying(self, on):
+        on = bool(on)
+        if on == self._playing:
+            return
+        self._playing = on
+        if on:
+            self._play_timer.start()
+        else:
+            self._play_timer.stop()
+        self.playToggled.emit(on)
+
+    def play(self):
+        self.setPlaying(True)
+
+    def pause(self):
+        self.setPlaying(False)
+
+    def togglePlay(self):
+        self.setPlaying(not self._playing)
+
+    def isPlaying(self):
+        return self._playing
+
+    def _advance(self):
+        step = self._play_timer.interval() / 1000.0
+        nxt = self._position + step
+        if nxt >= self._duration:
+            if self._loop:
+                nxt = 0.0
+            else:
+                nxt = self._duration
+                self.setPlaying(False)
+        self.setPosition(nxt)
 
     # ------------------------------------------------------------------ #
     ## Public data API
@@ -271,10 +322,12 @@ class QCustomMediaTimeline(QWidget):
         rect = self._clip_rect(ti, clip)
         r = float(self._radius)
         col = clip.color or self._clip
+        hovered = (self._hover_clip == (ti, ci))
+        top = col.lighter(140 if hovered else 118)
         grad = QLinearGradient(rect.topLeft(), rect.bottomLeft())
-        grad.setColorAt(0.0, col.lighter(118))
-        grad.setColorAt(1.0, col)
-        p.setPen(Qt.NoPen)
+        grad.setColorAt(0.0, top)
+        grad.setColorAt(1.0, col.lighter(112) if hovered else col)
+        p.setPen(QPen(QColor(255, 255, 255, 150), 1.0) if hovered else Qt.NoPen)
         p.setBrush(QBrush(grad))
         p.drawRoundedRect(rect, r, r)
         # trim handles
@@ -366,21 +419,26 @@ class QCustomMediaTimeline(QWidget):
     def mouseMoveEvent(self, e):
         pt = self._pos(e)
         if self._drag is None:
-            # cursor feedback
+            # cursor feedback + track the hovered clip (for its glow)
             cur = Qt.ArrowCursor
+            hover = None
             if pt.y() <= self._tracks_top():
                 cur = Qt.SizeHorCursor
             else:
                 for ti, track in enumerate(self._tracks):
                     if track.kind != "clips":
                         continue
-                    for clip in track.clips:
+                    for ci, clip in enumerate(track.clips):
                         rect = self._clip_rect(ti, clip)
                         if rect.contains(pt):
+                            hover = (ti, ci)
                             if (pt.x() - rect.left() <= 9.0) or (rect.right() - pt.x() <= 9.0):
                                 cur = Qt.SizeHorCursor
                             else:
                                 cur = Qt.OpenHandCursor
+            if hover != self._hover_clip:
+                self._hover_clip = hover
+                self.update()
             self.setCursor(cur)
             return super().mouseMoveEvent(e)
 
@@ -414,6 +472,12 @@ class QCustomMediaTimeline(QWidget):
         self.setCursor(Qt.ArrowCursor)
         super().mouseReleaseEvent(e)
 
+    def leaveEvent(self, e):
+        if self._hover_clip is not None:
+            self._hover_clip = None
+            self.update()
+        super().leaveEvent(e)
+
     def sizeHint(self):
         return QSize(620, 150)
 
@@ -435,6 +499,22 @@ class QCustomMediaTimeline(QWidget):
     @position.setter
     def position(self, v):
         self.setPosition(v)
+
+    @Property(bool)
+    def playing(self):
+        return self._playing
+
+    @playing.setter
+    def playing(self, v):
+        self.setPlaying(v)
+
+    @Property(bool)
+    def loop(self):
+        return self._loop
+
+    @loop.setter
+    def loop(self, v):
+        self._loop = bool(v)
 
     @Property(QColor)
     def bgColor(self):
