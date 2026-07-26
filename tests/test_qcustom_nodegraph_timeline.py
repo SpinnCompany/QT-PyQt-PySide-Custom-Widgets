@@ -133,3 +133,43 @@ class TestMediaTimeline:
         tl = self._tl()
         tl.duration = 20
         assert tl.duration == 20.0
+
+    def test_self_animating_playhead(self, qapp):
+        tl = self._tl()
+        tl.setPosition(0.0)
+        assert tl.playing is False
+        tl.play()
+        assert tl.playing is True and tl.isPlaying()
+        tl._advance()                          # one tick advances the playhead
+        assert tl.positionSeconds() > 0.0
+        tl.pause()
+        assert tl.playing is False
+
+    def test_playhead_loops(self, qapp):
+        tl = self._tl()
+        tl.loop = True
+        tl.setPosition(tl.duration - 0.01)
+        tl.play(); tl._advance()               # crossing the end wraps to 0
+        assert tl.positionSeconds() < 1.0
+        tl.pause()
+
+
+class TestNodeGraphAnimation:
+    def test_animated_default_and_toggle(self, qapp):
+        from Custom_Widgets.QCustomNodeGraph import QCustomNodeGraph
+        g = QCustomNodeGraph()
+        assert g.animated is True
+        assert g._anim.isActive()
+        g.animated = False
+        assert g.animated is False and not g._anim.isActive()
+        g.animated = True
+        assert g._anim.isActive()
+
+    def test_phase_advances(self, qapp):
+        from Custom_Widgets.QCustomNodeGraph import QCustomNodeGraph
+        g = QCustomNodeGraph()
+        g.resize(300, 200)
+        g.show()                               # _tick only advances when visible
+        p0 = g._phase
+        g._tick()
+        assert g._phase != p0

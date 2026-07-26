@@ -1665,6 +1665,18 @@ PlotWidget {
   qproperty-icon: url("theme-icons:icons/feather/chevron-right.svg"); }
 
 #logoIcon {
+  qproperty-pixmap: url("theme-icons:icons/feather/activity.svg"); }
+
+#searchIcon {
+  qproperty-pixmap: url("theme-icons:icons/feather/search.svg"); }
+
+#playlistsIcon {
+  qproperty-pixmap: url("theme-icons:icons/feather/music.svg"); }
+
+#playlistsChevron {
+  qproperty-pixmap: url("theme-icons:icons/feather/chevron-up.svg"); }
+
+#logoIcon {
   qproperty-iconColor: #f26a21; }
 
 #searchIcon, #playlistsIcon, #playlistsChevron {

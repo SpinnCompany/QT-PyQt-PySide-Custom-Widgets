@@ -71,9 +71,6 @@ class GuiFunctions:
         self.win = win
         self.ui = win.ui
         self.themeEngine = getattr(win, "themeEngine", None)
-        self._play_timer = QTimer(win)
-        self._play_timer.setInterval(33)
-        self._play_timer.timeout.connect(self._advance_playhead)
 
     # ------------------------------------------------------------------ #
     def initialize(self):
@@ -400,13 +397,9 @@ class GuiFunctions:
             pass
 
     def _toggle_play(self):
-        # playBtn is checkable, so the click already toggled :checked (which the
-        # QSS uses to swap the play/pause icon) — just follow that state.
-        self._playing = self.ui.playBtn.isChecked()
-        if self._playing:
-            self._play_timer.start()
-        else:
-            self._play_timer.stop()
+        # the timeline animates its OWN playhead now (play/pause); just drive it.
+        self._timeline.togglePlay()
+        self.ui.playBtn.setChecked(self._timeline.isPlaying())
 
     def _cycle_duration(self):
         self._dur_idx = (self._dur_idx + 1) % len(DURATIONS)
@@ -452,13 +445,6 @@ class GuiFunctions:
             w=200, h=92, accent=p["models"], inputs=["in"], outputs=["out"],
             text="New node — drag me, wire my ports.")
         self._toast("info", "Node added")
-
-    def _advance_playhead(self):
-        tl = self._timeline
-        nxt = tl.positionSeconds() + 0.05
-        if nxt >= tl.duration:
-            nxt = 0.0
-        tl.setPosition(nxt)
 
     # -- theme ---------------------------------------------------------- #
     def _toggle_theme(self):
