@@ -74,6 +74,22 @@ The whole screen responds to clicks (visual, not a real backend):
 - On the timeline: drag the ruler/playhead to scrub, drag a clip to move it,
   drag its edges to trim.
 
+### Editing nodes (layers)
+
+Hover or select a node to reveal a **pen** and **×** in its header.
+
+- **Delete**: click **×**, or select a node and press **Delete/Backspace**, or
+  **right-click → Delete node**. Its cables go too.
+- **Disconnect**: **click a cable** to select it (it highlights) then **Delete**,
+  or **right-click a cable → Disconnect**, or the panel's **Disconnect** button.
+- **Edit**: click the **pen** to open the **Properties panel** (opens *only* via
+  the pen, so it never fights dragging) — edit **Title**, **Text**, and the
+  **Colour** (a `QCustomColorPicker`; the node recolours live — dot + header
+  underline + chips + glow).
+- Both animated widgets are user-controllable: `QCustomNodeGraph.animated` /
+  `QCustomMediaTimeline.animated` (enable/disable) + `play()`/`pause()`/
+  `togglePlay()` on the timeline.
+
 ## Notes / gotchas captured here
 
 - The preview `QLabel` uses an **Ignored** size policy — a pixmap set on a
@@ -83,12 +99,17 @@ The whole screen responds to clicks (visual, not a real backend):
   (uic instantiates promoted widgets as `Widget(parent)`).
 - Theme is persisted by QSettings between runs; `Default-Theme:true` only sets
   the first-run theme.
-- **Icons are recoloured from QSS on the custom buttons**, never in Python:
-  `QCustomQPushButton` recolours its own SVG via `qproperty-iconName: "layers";`
-  + `qproperty-iconColor: $token;` (recolours on theme change, previews in Qt
-  Designer). The **selected tool's icon turns accent** via
-  `qproperty-iconColorActive: $COLOR_ACCENT_1;` and play/pause swaps via
-  `qproperty-iconNameActive: "pause";` — these are *base-rule* properties the
-  button swaps to on toggle, **not** `:checked { qproperty-… }` (Qt does not
-  re-apply `qproperty-*` from a pseudo-state selector). `iconSize` is per button
-  in the `.ui`.
+- **Icons: file via QSS url, colour via `iconColor`** — never `setIcon` in Python.
+  The icon file is `qproperty-icon: url($PATH_RESOURCES+'…')` (also in the `.ui`
+  iconset for Designer preview); the custom button **tints** it to
+  `qproperty-iconColor` (resting) / `qproperty-iconColorActive` (checked), so the
+  **selected tool's icon turns accent** and recolours on theme change. The active
+  colour is a *base-rule* property the button swaps to on toggle — **not**
+  `:checked { qproperty-… }` (Qt doesn't re-apply `qproperty-*` from a pseudo-state
+  selector). `iconSize` is per button in the `.ui`. (There is no `iconName`.)
+- QSS is **nested per component**, keyed by objectName (`#topBar { … }`,
+  `#CanvasComponent { … }`, `#nodePanel { … }`).
+- Two node-paint gotchas fixed here: `recolor_icon` must NOT be called inside a
+  `paintEvent` (it opens its own painter → corrupts the frame) — pre-render icons;
+  and never name a paint loop variable `rect` (it clobbers the node rect and the
+  later `setClipRect(rect)` hides the body).
