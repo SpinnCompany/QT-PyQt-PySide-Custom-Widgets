@@ -47,58 +47,57 @@ class TestTabWidgetEnhance:
 
 
 class TestCustomButtonIconRecolor:
-    """The custom buttons recolour their icon FROM QSS (iconName + iconColor),
-    so a :checked state selector recolours the icon with no setIcon in code."""
+    """The custom buttons TINT the icon set via qproperty-icon url (no iconName)
+    to iconColor (resting) / iconColorActive (checked). Colours come from QSS."""
 
-    def test_qpushbutton_icon_from_qss_props(self, qapp):
-        from Custom_Widgets.QCustomQPushButton import QCustomQPushButton
-        b = QCustomQPushButton()
-        assert b.icon().isNull()
-        b.iconName = "layers"
-        b.iconColor = QColor("#6c7bff")
-        assert not b.icon().isNull()
-        assert b.iconName == "layers"
-        assert QColor(b.iconColor).name() == "#6c7bff"
+    def _src(self):
+        from Custom_Widgets.Utils import resolve_icon_path
+        from qtpy.QtGui import QIcon
+        return QIcon(resolve_icon_path("layers"))
 
-    def test_sidebarbutton_icon_from_qss_props(self, qapp):
-        from Custom_Widgets.QCustomSidebarButton import QCustomSidebarButton
-        b = QCustomSidebarButton()
-        assert b.icon().isNull()
-        b.iconName = "home"
-        b.iconColor = QColor("#22a55b")
-        assert not b.icon().isNull()
-        assert b.iconName == "home"
-        assert QColor(b.iconColor).name() == "#22a55b"
-
-    def test_iconcolor_change_rebuilds(self, qapp):
-        from Custom_Widgets.QCustomSidebarButton import QCustomSidebarButton
-        b = QCustomSidebarButton()
-        b.iconName = "home"
-        b.iconColor = QColor("#888888")
-        first = b.icon().pixmap(20, 20).toImage()
-        b.iconColor = QColor("#ff2200")
-        second = b.icon().pixmap(20, 20).toImage()
-        assert first != second, "icon did not recolour when iconColor changed"
-
-    def test_active_state_swaps_colour_and_name_on_toggle(self, qapp):
-        # Qt does NOT re-apply :checked qproperty, so the active look is a base
-        # property the button swaps to on toggle. Both custom buttons must do it.
+    def test_iconname_removed(self, qapp):
         from Custom_Widgets.QCustomQPushButton import QCustomQPushButton
         from Custom_Widgets.QCustomSidebarButton import QCustomSidebarButton
         for cls in (QCustomQPushButton, QCustomSidebarButton):
             b = cls()
-            b.setCheckable(True)
-            b.iconName = "play_arrow"
+            assert not hasattr(b, "iconName"), "%s still has iconName" % cls.__name__
+            assert not hasattr(b, "iconNameActive")
+
+    def test_iconcolor_tints_the_current_icon(self, qapp):
+        from Custom_Widgets.QCustomQPushButton import QCustomQPushButton
+        from Custom_Widgets.QCustomSidebarButton import QCustomSidebarButton
+        from qtpy.QtCore import QSize
+        from qtpy.QtWidgets import QApplication
+        for cls in (QCustomQPushButton, QCustomSidebarButton):
+            b = cls()
+            b.setIconSize(QSize(20, 20))
+            b.setIcon(self._src())
             b.iconColor = QColor("#8b90a6")
-            b.iconNameActive = "pause"
+            QApplication.processEvents()           # deferred tint runs
+            muted = b.icon().pixmap(20, 20).toImage()
+            b.iconColor = QColor("#ff2200")
+            QApplication.processEvents()
+            red = b.icon().pixmap(20, 20).toImage()
+            assert muted != red, "%s icon did not re-tint on iconColor change" % cls.__name__
+
+    def test_active_colour_on_toggle(self, qapp):
+        from Custom_Widgets.QCustomQPushButton import QCustomQPushButton
+        from Custom_Widgets.QCustomSidebarButton import QCustomSidebarButton
+        from qtpy.QtCore import QSize
+        from qtpy.QtWidgets import QApplication
+        for cls in (QCustomQPushButton, QCustomSidebarButton):
+            b = cls()
+            b.setCheckable(True)
+            b.setIconSize(QSize(20, 20))
+            b.setIcon(self._src())
+            b.iconColor = QColor("#8b90a6")
             b.iconColorActive = QColor("#6c7bff")
+            QApplication.processEvents()
             rest = b.icon().pixmap(20, 20).toImage()
-            b.setChecked(True)                     # toggled -> rebuild w/ active
+            b.setChecked(True)                     # toggled -> tint w/ active colour
+            QApplication.processEvents()
             active = b.icon().pixmap(20, 20).toImage()
-            assert rest != active, "%s icon did not swap on checked" % cls.__name__
-            b.setChecked(False)
-            assert b.icon().pixmap(20, 20).toImage() == rest, \
-                "%s icon did not revert on uncheck" % cls.__name__
+            assert rest != active, "%s active icon colour did not update" % cls.__name__
 
 
 class TestListRowDragHandle:

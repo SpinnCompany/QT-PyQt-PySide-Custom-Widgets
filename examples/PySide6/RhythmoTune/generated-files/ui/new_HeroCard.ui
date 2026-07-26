@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>HeroCard</class>
+ <widget class="QWidget" name="heroRoot">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>900</width><height>330</height></rect></property>
+  <layout class="QVBoxLayout" name="heroLayout">
+   <property name="leftMargin"><number>0</number></property>
+   <property name="topMargin"><number>0</number></property>
+   <property name="rightMargin"><number>0</number></property>
+   <property name="bottomMargin"><number>0</number></property>
+   <property name="spacing"><number>0</number></property>
+   <item>
+    <widget class="QCustomCoverFlow" name="coverFlow" native="true">
+     <property name="sizePolicy"><sizepolicy hsizetype="Expanding" vsizetype="Expanding"><horstretch>0</horstretch><verstretch>0</verstretch></sizepolicy></property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget><class>QCustomCoverFlow</class><extends>QWidget</extends><header>Custom_Widgets.QCustomCoverFlow</header></customwidget>
+ <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>

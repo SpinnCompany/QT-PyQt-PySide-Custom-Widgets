@@ -114,24 +114,24 @@ painted QCustomDonut; wire the sidebar toggle once (or via toggleButtonName).
    assets qrc). The form-construction tools inject the icons qrc automatically
    when a form uses <iconset>; if you author .ui another way, include it.
 
-9. ICONS: set from Designer, driven from QSS url (never setIcon in Python).
-   Give each icon button its ICON in the .ui (Designer `icon` property / iconset)
-   using a `theme-icons:icons/<pack>/<name>.svg` path (for design-time preview),
-   and set iconSize in the .ui. Then DRIVE/recolour it at RUNTIME from QSS with
-   the path variable:
+9. ICONS: file from Designer/QSS url, COLOUR from iconColor (never setIcon in
+   Python). Set the icon FILE the normal way — in the .ui (Designer `icon`/
+   iconset) for design-time preview AND at runtime from QSS with the path
+   variable (a .ui iconset alone can be blank at runtime — setupUi builds the
+   QIcon before the `theme-icons` search path is registered — so the QSS url is
+   what reliably renders it):
        #saveBtn { qproperty-icon: url($PATH_RESOURCES+'material_design/save.svg'); }
-   ($PATH_RESOURCES = `theme-icons:icons/`.) The QSS is applied AFTER the theme
-   engine registers the `theme-icons` search path + recolours the SVGs, so it
-   resolves and follows the theme's Icons-color automatically. Why BOTH: a .ui
-   iconset ALONE can render blank at runtime, because setupUi() builds the QIcon
-   before the search path is registered — so the QSS url is what makes the icon
-   reliably render AND recolour on theme change. The engine recolours every
-   theme-icon to ONE Icons-color per theme, so carry an ACTIVE/selected state
-   with the button BACKGROUND (`:checked`/objectName), NOT a per-state icon
-   colour. (When you truly need a per-state icon COLOUR, QCustomQPushButton /
-   QCustomSidebarButton also expose iconName/iconColor/iconColorActive that
-   recolour an SVG in code on toggle — Qt does not re-apply qproperty-* from a
-   `:checked` selector, so that state look cannot come from a pseudo-state rule.)
+   ($PATH_RESOURCES = `theme-icons:icons/`.) Then set the icon COLOUR from QSS:
+   QCustomQPushButton / QCustomSidebarButton TINT that icon to `qproperty-iconColor`
+   (resting) and `qproperty-iconColorActive` (while CHECKED), so a SELECTED button's
+   icon turns accent and the colour tracks the theme — no Python, no iconName:
+       #navHome { qproperty-icon: url($PATH_RESOURCES+'feather/home.svg');
+                  qproperty-iconColor: $muted;
+                  qproperty-iconColorActive: $accent; }   /* checked icon -> accent */
+   The active colour is a BASE-rule property (iconColorActive) the button swaps to
+   on toggle — NOT a `:checked { qproperty-iconColor }` rule, because Qt does not
+   re-apply qproperty-* from a pseudo-state selector on state change. Set iconSize
+   in the .ui. (Leave iconColor unset to just show the plain themed icon.)
 
 10. NEST QSS PER COMPONENT, keyed by the component's objectName. Don't scatter
     flat global `#childObjectName` rules — wrap each component's chrome in a block

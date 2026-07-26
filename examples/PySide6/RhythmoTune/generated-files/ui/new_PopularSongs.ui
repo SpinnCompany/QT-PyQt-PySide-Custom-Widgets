@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>PopularSongs</class>
+ <widget class="QWidget" name="popularRoot">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>900</width><height>230</height></rect></property>
+  <layout class="QVBoxLayout" name="popularLayout">
+   <property name="leftMargin"><number>0</number></property>
+   <property name="topMargin"><number>4</number></property>
+   <property name="rightMargin"><number>0</number></property>
+   <property name="bottomMargin"><number>0</number></property>
+   <property name="spacing"><number>12</number></property>
+   <item>
+    <layout class="QHBoxLayout" name="popHeader">
+     <property name="spacing"><number>8</number></property>
+     <item>
+      <widget class="QLabel" name="popularTitle">
+       <property name="text"><string>Popular songs</string></property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="popHeaderSpacer">
+       <property name="orientation"><enum>Qt::Horizontal</enum></property>
+       <property name="sizeHint" stdset="0"><size><width>40</width><height>10</height></size></property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QCustomQPushButton" name="prevSongBtn">
+       <property name="minimumSize"><size><width>34</width><height>34</height></size></property>
+       <property name="maximumSize"><size><width>34</width><height>34</height></size></property>
+       <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
+       <property name="text"><string /></property>
+       <property name="iconName" stdset="0"><string>chevron-left</string></property>
+       <property name="iconSize"><size><width>16</width><height>16</height></size></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCustomQPushButton" name="nextSongBtn">
+       <property name="minimumSize"><size><width>34</width><height>34</height></size></property>
+       <property name="maximumSize"><size><width>34</width><height>34</height></size></property>
+       <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
+       <property name="text"><string /></property>
+       <property name="iconName" stdset="0"><string>chevron-right</string></property>
+       <property name="iconSize"><size><width>16</width><height>16</height></size></property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QScrollArea" name="songsScroll">
+     <property name="widgetResizable"><bool>true</bool></property>
+     <property name="frameShape"><enum>QFrame::NoFrame</enum></property>
+     <property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property>
+     <property name="verticalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property>
+     <widget class="QWidget" name="songsInner">
+      <layout class="QHBoxLayout" name="songsRow">
+       <property name="leftMargin"><number>0</number></property>
+       <property name="topMargin"><number>0</number></property>
+       <property name="rightMargin"><number>0</number></property>
+       <property name="bottomMargin"><number>0</number></property>
+       <property name="spacing"><number>16</number></property>
+       <item>
+        <widget class="QCustomCoverCard" name="song0" native="true">
+         <property name="sizePolicy"><sizepolicy hsizetype="Fixed" vsizetype="Expanding"><horstretch>0</horstretch><verstretch>0</verstretch></sizepolicy></property>
+         <property name="minimumSize"><size><width>182</width><height>150</height></size></property>
+         <property name="maximumSize"><size><width>182</width><height>16777215</height></size></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomCoverCard" name="song1" native="true">
+         <property name="sizePolicy"><sizepolicy hsizetype="Fixed" vsizetype="Expanding"><horstretch>0</horstretch><verstretch>0</verstretch></sizepolicy></property>
+         <property name="minimumSize"><size><width>182</width><height>150</height></size></property>
+         <property name="maximumSize"><size><width>182</width><height>16777215</height></size></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomCoverCard" name="song2" native="true">
+         <property name="sizePolicy"><sizepolicy hsizetype="Fixed" vsizetype="Expanding"><horstretch>0</horstretch><verstretch>0</verstretch></sizepolicy></property>
+         <property name="minimumSize"><size><width>182</width><height>150</height></size></property>
+         <property name="maximumSize"><size><width>182</width><height>16777215</height></size></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomCoverCard" name="song3" native="true">
+         <property name="sizePolicy"><sizepolicy hsizetype="Fixed" vsizetype="Expanding"><horstretch>0</horstretch><verstretch>0</verstretch></sizepolicy></property>
+         <property name="minimumSize"><size><width>182</width><height>150</height></size></property>
+         <property name="maximumSize"><size><width>182</width><height>16777215</height></size></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomCoverCard" name="song4" native="true">
+         <property name="sizePolicy"><sizepolicy hsizetype="Fixed" vsizetype="Expanding"><horstretch>0</horstretch><verstretch>0</verstretch></sizepolicy></property>
+         <property name="minimumSize"><size><width>182</width><height>150</height></size></property>
+         <property name="maximumSize"><size><width>182</width><height>16777215</height></size></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomCoverCard" name="song5" native="true">
+         <property name="sizePolicy"><sizepolicy hsizetype="Fixed" vsizetype="Expanding"><horstretch>0</horstretch><verstretch>0</verstretch></sizepolicy></property>
+         <property name="minimumSize"><size><width>182</width><height>150</height></size></property>
+         <property name="maximumSize"><size><width>182</width><height>16777215</height></size></property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="songsTail">
+         <property name="orientation"><enum>Qt::Horizontal</enum></property>
+         <property name="sizeHint" stdset="0"><size><width>0</width><height>10</height></size></property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget><class>QCustomCoverCard</class><extends>QWidget</extends><header>Custom_Widgets.QCustomCoverCard</header></customwidget>
+  <customwidget><class>QCustomQPushButton</class><extends>QPushButton</extends><header>Custom_Widgets.QCustomQPushButton</header></customwidget>
+ <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>

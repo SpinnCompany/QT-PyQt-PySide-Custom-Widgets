@@ -1,11 +1,11 @@
 from qtpy.QtCore import Qt, QEvent, QPropertyAnimation, QEasingCurve, Property, Signal, QSize, QPoint, QTimer, QCoreApplication
 from qtpy.QtWidgets import QPushButton, QWidget, QLabel, QStyleOption, QStyle, QHBoxLayout, QVBoxLayout, QSizePolicy, QGraphicsOpacityEffect, QSpacerItem, QApplication, QGraphicsDropShadowEffect
-from qtpy.QtGui import QPainter, QIcon, QPaintEvent, QEnterEvent, QMouseEvent, QHoverEvent, QColor, QCursor
+from qtpy.QtGui import QPainter, QIcon, QPaintEvent, QEnterEvent, QMouseEvent, QHoverEvent, QColor, QCursor, QPixmap
 import os
 
 # Import your custom sidebar and utility functions
 from Custom_Widgets.QCustomSidebar import QCustomSidebar
-from Custom_Widgets.Utils import replace_url_prefix, is_in_designer, get_icon_path, recolor_icon
+from Custom_Widgets.Utils import replace_url_prefix, is_in_designer, get_icon_path
 from Custom_Widgets.Log import *
 
 class QCustomSidebarButton(QPushButton):
@@ -30,9 +30,7 @@ class QCustomSidebarButton(QPushButton):
         {"name": "textPrefixSpaces", "kind": "int", "group": "Label"},
         {"name": "hideOnCollapse", "kind": "bool", "group": "Sidebar"},
         {"name": "showOnCollapse", "kind": "bool", "group": "Sidebar"},
-        {"name": "iconName", "kind": "str", "group": "Icon"},
         {"name": "iconColor", "kind": "color", "group": "Icon"},
-        {"name": "iconNameActive", "kind": "str", "group": "Icon"},
         {"name": "iconColorActive", "kind": "color", "group": "Icon"},
     ]
 
@@ -65,47 +63,53 @@ class QCustomSidebarButton(QPushButton):
         self._fadeOutTimer.setSingleShot(True)
         self._fadeOutTimer.timeout.connect(self._doFadeOut)
 
-        # SVG icon recoloured FROM QSS. `iconName`/`iconColor` are the resting
-        # look; `iconNameActive`/`iconColorActive` (when set) are used while the
-        # button is CHECKED. Qt does NOT re-apply `qproperty-*` from a `:checked`
-        # selector on state change, so the active look is a SEPARATE base-rule
-        # property the button swaps to in code on toggle:
-        #   #navHome { qproperty-iconName: "home";
-        #              qproperty-iconColor: $muted;
-        #              qproperty-iconColorActive: $accent; }
-        # -> checked icon turns $accent, no setIcon() in Python. Renders in Qt
-        # Designer too (the setter draws the SVG immediately).
-        self._icon_name = ""
-        self._icon_name_active = ""
-        self._icon_color = QColor("#c7ccdb")
+        # Icon RECOLOUR from QSS: the icon is set the normal way (.ui /
+        # `qproperty-icon: url($PATH_RESOURCES+'...')`); the button TINTS it to
+        # `iconColor` (resting) / `iconColorActive` (CHECKED). Qt does not
+        # re-apply qproperty-* from a `:checked` selector, so the active colour is
+        # a base-rule property the button swaps to on toggle. Both invalid by
+        # default -> no tint unless a colour is set.
+        self._icon_color = QColor()
         self._icon_color_active = QColor()
-        self.toggled.connect(self._rebuildIcon)
+        self._src_icon = QIcon()
+        self._tinted_key = 0
+        self.toggled.connect(self._applyTint)
 
-    def _rebuildIcon(self, *args):
-        active = self.isChecked()
-        name = (self._icon_name_active if active and self._icon_name_active
-                else self._icon_name)
-        if not name:
-            return
-        color = (self._icon_color_active if active and self._icon_color_active.isValid()
-                 else self._icon_color)
+    def _tintIcon(self, icon, color):
         sz = self.iconSize().width() or 20
-        icon = QIcon(recolor_icon(name, color, sz))
-        super().setIcon(icon)
-        self.originalIcon = icon      # keep collapse/expand save-restore in sync
+        pm = icon.pixmap(QSize(sz, sz))
+        if pm.isNull():
+            return icon
+        out = QPixmap(pm.size())
+        out.setDevicePixelRatio(pm.devicePixelRatio())
+        out.fill(Qt.transparent)
+        p = QPainter(out)
+        p.drawPixmap(0, 0, pm)
+        p.setCompositionMode(QPainter.CompositionMode_SourceIn)
+        p.fillRect(out.rect(), QColor(color))
+        p.end()
+        return QIcon(out)
+
+    def _applyTint(self, *args):
+        cur = self.icon()
+        if cur.isNull():
+            return
+        if cur.cacheKey() != self._tinted_key:
+            self._src_icon = cur
+        active = self.isChecked()
+        color = (self._icon_color_active
+                 if active and self._icon_color_active.isValid() else self._icon_color)
+        icon = self._tintIcon(self._src_icon, color) if color.isValid() else self._src_icon
+        QPushButton.setIcon(self, icon)
+        self.originalIcon = icon       # keep collapse/expand save-restore in sync
+        self._tinted_key = self.icon().cacheKey()
+
+    def _scheduleTint(self):
+        QTimer.singleShot(0, self._applyTint)
 
     def setIconSize(self, size):
         super().setIconSize(size)
-        self._rebuildIcon()
-
-    @Property(str)
-    def iconName(self):
-        return self._icon_name
-
-    @iconName.setter
-    def iconName(self, value):
-        self._icon_name = str(value)
-        self._rebuildIcon()
+        self._applyTint()
 
     @Property(QColor)
     def iconColor(self):
@@ -114,16 +118,7 @@ class QCustomSidebarButton(QPushButton):
     @iconColor.setter
     def iconColor(self, value):
         self._icon_color = QColor(value)
-        self._rebuildIcon()
-
-    @Property(str)
-    def iconNameActive(self):
-        return self._icon_name_active
-
-    @iconNameActive.setter
-    def iconNameActive(self, value):
-        self._icon_name_active = str(value)
-        self._rebuildIcon()
+        self._scheduleTint()
 
     @Property(QColor)
     def iconColorActive(self):
@@ -132,7 +127,7 @@ class QCustomSidebarButton(QPushButton):
     @iconColorActive.setter
     def iconColorActive(self, value):
         self._icon_color_active = QColor(value)
-        self._rebuildIcon()
+        self._scheduleTint()
 
     @Property(bool)
     def hideOnCollapse(self):

@@ -13,11 +13,10 @@ from Custom_Widgets import iconify as ico
 ########################################################################
 ## MODULE UPDATED TO USE QT.PY
 ########################################################################
-from qtpy.QtCore import QVariantAnimation, QAbstractAnimation, QSize, Property
-from qtpy.QtGui import QColor, QIcon
+from qtpy.QtCore import QVariantAnimation, QAbstractAnimation, QSize, Property, QTimer, Qt
+from qtpy.QtGui import QColor, QIcon, QPixmap, QPainter
 from qtpy.QtWidgets import QPushButton, QGraphicsDropShadowEffect
 
-from Custom_Widgets.Utils import recolor_icon
 
 class QCustomQPushButton(QPushButton):
     """Modern push button with design-token variants and sizes.
@@ -105,36 +104,56 @@ class QCustomQPushButton(QPushButton):
         self._variant = "primary"
         self._sizeVariant = "md"
 
-        # SVG icon recoloured FROM QSS. `iconName`/`iconColor` are the resting
-        # look; `iconNameActive`/`iconColorActive` (when set) are used while the
-        # button is CHECKED. Qt does NOT re-apply `qproperty-*` from a `:checked`
-        # selector on state change, so the active look is a SEPARATE base-rule
-        # property that the button swaps to in code on toggle:
-        #   #navHome { qproperty-iconName: "home";
-        #              qproperty-iconColor: $muted;
-        #              qproperty-iconColorActive: $accent; }
-        # -> checked icon turns $accent, no setIcon() in Python. iconNameActive
-        # likewise swaps the glyph (e.g. play_arrow -> pause) on toggle.
-        self._icon_name = ""
-        self._icon_name_active = ""
-        self._icon_color = QColor("#c7ccdb")
-        self._icon_color_active = QColor()          # invalid -> fall back
-        self.toggled.connect(self._rebuildIcon)     # re-tint on checked change
+        # Icon RECOLOUR from QSS: the icon itself is set the normal way (in the
+        # .ui / `qproperty-icon: url($PATH_RESOURCES+'...')`); the button TINTS
+        # that icon to `iconColor` (resting) or `iconColorActive` (while CHECKED),
+        # e.g.  #navHome { qproperty-iconColor: $muted; qproperty-iconColorActive: $accent; }
+        # Qt does NOT re-apply qproperty-* from a `:checked` selector, so the
+        # active colour is a base-rule property the button swaps to on toggle.
+        # Both invalid by default -> no tint (plain icon) unless a colour is set.
+        self._icon_color = QColor()
+        self._icon_color_active = QColor()
+        self._src_icon = QIcon()        # the un-tinted source (from qproperty-icon)
+        self._tinted_key = 0            # cacheKey of the icon WE last set
+        self.toggled.connect(self._applyTint)
 
-    def _rebuildIcon(self, *args):
-        active = self.isChecked()
-        name = (self._icon_name_active if active and self._icon_name_active
-                else self._icon_name)
-        if not name:
-            return
-        color = (self._icon_color_active if active and self._icon_color_active.isValid()
-                 else self._icon_color)
+    def _tintIcon(self, icon, color):
         sz = self.iconSize().width() or 20
-        super().setIcon(QIcon(recolor_icon(name, color, sz)))
+        pm = icon.pixmap(QSize(sz, sz))
+        if pm.isNull():
+            return icon
+        out = QPixmap(pm.size())
+        out.setDevicePixelRatio(pm.devicePixelRatio())
+        out.fill(Qt.transparent)
+        p = QPainter(out)
+        p.drawPixmap(0, 0, pm)
+        p.setCompositionMode(QPainter.CompositionMode_SourceIn)
+        p.fillRect(out.rect(), QColor(color))
+        p.end()
+        return QIcon(out)
+
+    def _applyTint(self, *args):
+        cur = self.icon()
+        if cur.isNull():
+            return
+        # a cacheKey != the one WE set means a fresh source arrived (the .ui or a
+        # qproperty-icon url) — capture it before tinting
+        if cur.cacheKey() != self._tinted_key:
+            self._src_icon = cur
+        active = self.isChecked()
+        color = (self._icon_color_active
+                 if active and self._icon_color_active.isValid() else self._icon_color)
+        QPushButton.setIcon(self, self._tintIcon(self._src_icon, color)
+                            if color.isValid() else self._src_icon)
+        self._tinted_key = self.icon().cacheKey()
+
+    def _scheduleTint(self):
+        # run AFTER the current QSS batch so the qproperty-icon source is in place
+        QTimer.singleShot(0, self._applyTint)
 
     def setIconSize(self, size):
         super().setIconSize(size)
-        self._rebuildIcon()
+        self._applyTint()
 
     # -- Machine-readable catalog (MCP / agent introspection) --
     __catalog__ = {
@@ -146,9 +165,7 @@ class QCustomQPushButton(QPushButton):
                         "default": "primary"},
             "sizeVariant": {"type": "enum", "values": ["sm", "md", "lg"],
                             "default": "md"},
-            "iconName": {"type": "string", "default": ""},
-            "iconColor": {"type": "color", "default": "#c7ccdb"},
-            "iconNameActive": {"type": "string", "default": ""},
+            "iconColor": {"type": "color", "default": ""},
             "iconColorActive": {"type": "color", "default": ""},
         },
         "signals": ["clicked"],
@@ -183,15 +200,6 @@ class QCustomQPushButton(QPushButton):
         self._sizeVariant = str(value)
         self._repolish()
 
-    @Property(str)
-    def iconName(self):
-        return self._icon_name
-
-    @iconName.setter
-    def iconName(self, value):
-        self._icon_name = str(value)
-        self._rebuildIcon()
-
     @Property(QColor)
     def iconColor(self):
         return self._icon_color
@@ -199,16 +207,7 @@ class QCustomQPushButton(QPushButton):
     @iconColor.setter
     def iconColor(self, value):
         self._icon_color = QColor(value)
-        self._rebuildIcon()
-
-    @Property(str)
-    def iconNameActive(self):
-        return self._icon_name_active
-
-    @iconNameActive.setter
-    def iconNameActive(self, value):
-        self._icon_name_active = str(value)
-        self._rebuildIcon()
+        self._scheduleTint()
 
     @Property(QColor)
     def iconColorActive(self):
@@ -217,7 +216,7 @@ class QCustomQPushButton(QPushButton):
     @iconColorActive.setter
     def iconColorActive(self, value):
         self._icon_color_active = QColor(value)
-        self._rebuildIcon()
+        self._scheduleTint()
 
     ########################################################################
     ## BUTTON THEMES
