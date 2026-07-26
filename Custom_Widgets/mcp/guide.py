@@ -152,6 +152,20 @@ painted QCustomDonut; wire the sidebar toggle once (or via toggleButtonName).
     — if it's tweakable, it's a Designer property. (Inherently dynamic data — a
     node graph's nodes/edges, a table's rows — is set via a method, not a property.)
 
+12. CREATING A NEW WIDGET — ASK FIRST, then cover the checklist. Before you build
+    ANY new custom widget, ASK the user to clarify scope + look + behaviour (which
+    states, what data/API, sizing/flex, theming, and whether it needs ANIMATION) —
+    don't guess. Then every new widget is evaluated for ANIMATION / ANIMATED
+    CONTENT: hover / press / checked transitions, show-hide, value changes, and
+    live/streaming data should ANIMATE where it makes the widget feel alive
+    (QPropertyAnimation / QVariantAnimation for property tweens; a QTimer tick for
+    continuous or streaming content). That is the library norm — 26+ widgets
+    animate (Switch, Toast, Drawer, LiquidGauge, RadialGauge, Waveform, Skeleton,
+    Carousel, CoverFlow…). A new widget that only paints a static frame should be a
+    deliberate choice, not an oversight. (Also: expose config to Designer per #11,
+    recolour icons from QSS per #9, paint + tokenise colours per the widget
+    conventions.)
+
 == MULTI-PROJECT / MULTI-AGENT ==
 
 Every tool takes an optional `project` (a folder — absolute, used verbatim; or
