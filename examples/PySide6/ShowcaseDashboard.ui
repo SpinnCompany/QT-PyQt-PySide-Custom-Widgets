@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ShowcaseDashboard</class>
+ <widget class="QCustomQMainWindow" name="ShowcaseDashboard">
+  <property name="geometry">
+   <rect><x>0</x><y>0</y><width>960</width><height>640</height></rect>
+  </property>
+  <property name="windowTitle"><string>ShowcaseDashboard</string></property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="mainLayout">
+    <property name="spacing"><number>0</number></property>
+    <item>
+     <widget class="QCustomSidebar" name="leftMenu">
+      <layout class="QVBoxLayout" name="menuLayout">
+       <item>
+        <widget class="QPushButton" name="menuBtn">
+         <property name="text"><string>MENU</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomSidebarButton" name="homeBtn">
+         <property name="text"><string>Home</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomSidebarButton" name="settingsBtn">
+         <property name="text"><string>Settings</string></property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="menuSpacer">
+         <property name="orientation"><enum>Qt::Vertical</enum></property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCustomQStackedWidget" name="mainPages">
+      <widget class="QWidget" name="homePage">
+       <layout class="QVBoxLayout" name="homeLayout">
+        <item>
+         <widget class="QLabel" name="homeTitle">
+          <property name="text"><string>Home</string></property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="settingsPage">
+       <layout class="QVBoxLayout" name="settingsLayout">
+        <item>
+         <widget class="QLabel" name="settingsTitle">
+          <property name="text"><string>Settings</string></property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomQMainWindow</class><extends>QMainWindow</extends>
+   <header>Custom_Widgets.QCustomQMainWindow</header><container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomSidebar</class><extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomSidebar</header><container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomSidebarButton</class><extends>QPushButton</extends>
+   <header>Custom_Widgets.QCustomSidebarButton</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomQStackedWidget</class><extends>QStackedWidget</extends>
+   <header>Custom_Widgets.QCustomQStackedWidget</header><container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
