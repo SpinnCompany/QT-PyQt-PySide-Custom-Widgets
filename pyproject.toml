@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "QT-PyQt-PySide-Custom-Widgets"
-version = "2.2.1"
+version = "2.3.0"
 description = "A comprehensive library of custom Qt widgets, animations, and UI components for PySide and PyQt desktop applications."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -45,7 +45,14 @@ loaders = ["perlin_noise"]                  # QCustomPerlinLoader
 mcp = ["mcp"]                               # Custom_Widgets-mcp server
 # Type-checking the generated widget stubs + regenerating them (needs PySide6
 # for base resolution and mcp for the catalog the generator reads).
-dev = ["mypy>=1.10", "PySide6", "mcp"]
+dev = [
+    "mypy>=1.10",
+    "PySide6",
+    "mcp",
+    "build",
+    "pytest",
+    "pytest-asyncio",
+]
 all = [
     "qrcode>=8.0", "Pillow", "numpy", "colorthief", "scipy",
     "perlin_noise", "mcp",
