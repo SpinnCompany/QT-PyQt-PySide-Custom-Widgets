@@ -48,6 +48,7 @@ from Custom_Widgets.JSonStyles import loadJsonStyle
 
 class QCustomTheme(QObject):
     _instance = None  # Class-level variable to hold the singleton instance
+    _initialized = False  # Class-level flag (avoid self access before super().__init__)
     onThemeChanged = Signal()  # Define a class-level signal
     onThemeChangeComplete = Signal()
 
@@ -58,42 +59,43 @@ class QCustomTheme(QObject):
         return cls._instance
 
     def __init__(self, parent=None):
-        if not hasattr(self, "_initialized"):  # To prevent reinitialization
-            # NEVER adopt a QObject parent: the theme engine is a process
-            # singleton and a parent (e.g. the first QCustomQMainWindow)
-            # would let Qt destroy it with that widget, leaving every later
-            # QCustomTheme() caller a dead C++ wrapper.
-            super().__init__(None)
-            self._theme = "default"
-            self._themes = []
-            self._last_variables_scss = None
-            self._initialized = True  # Mark as initialized to avoid multiple init calls
-            self.checkForMissingicons = True
-            self.script_dir = projectRoot().replace("\\", "/") + "/"
+        # Class-level guard — NO self access before return (PySide6 raises
+        # "super-class __init__() was never called" if we touch self before
+        # super().__init__()).  Also: QObject can only be init'd once, so we
+        # must early-return on subsequent singleton __init__ calls.
+        if QCustomTheme._initialized:
+            return
+        super().__init__(None)
+        self._theme = "default"
+        self._themes = []
+        self._last_variables_scss = None
+        self.checkForMissingicons = True
+        self.script_dir = projectRoot().replace("\\", "/") + "/"
 
-            self.initializeThemeVars()
-            self.defineThemeVarMapping()
-            self.loadAppFont()
+        self.initializeThemeVars()
+        self.defineThemeVarMapping()
+        self.loadAppFont()
 
-            QCoreApplication.instance().aboutToQuit.connect(self.stopWorkers)
+        QCoreApplication.instance().aboutToQuit.connect(self.stopWorkers)
 
-            # START THREAD
-            self.customWidgetsThreadpool = QThreadPool()
+        # START THREAD
+        self.customWidgetsThreadpool = QThreadPool()
+        QCustomTheme._initialized = True
 
-            self._themes.append(Light())
-            self._themes.append(Dark())
+        self._themes.append(Light())
+        self._themes.append(Dark())
 
-            self.jsonStyleSheets = [] 
-            self.jsonStyleData = {}
+        self.jsonStyleSheets = [] 
+        self.jsonStyleData = {}
 
-            self.designerIconsColor = ""  # empty = follow theme / $ICONS_COLOR
-            self.themesRead = False
+        self.designerIconsColor = ""  # empty = follow theme / $ICONS_COLOR
+        self.themesRead = False
 
-            self._isThemeDark = False 
-            # Theme indicator variables 
-            self.THEME_MODE = ""      # Will be "DARK" or "LIGHT"
-            self.THEME_ICON = ""      # Will be "moon" or "sun"
-            self.THEME_STATUS = ""    # Will be "Dark Mode Active" or "Light Mode Active"
+        self._isThemeDark = False 
+        # Theme indicator variables 
+        self.THEME_MODE = ""      # Will be "DARK" or "LIGHT"
+        self.THEME_ICON = ""      # Will be "moon" or "sun"
+        self.THEME_STATUS = ""    # Will be "Dark Mode Active" or "Light Mode Active"
 
     def updateThemeIndicators(self):
         """Update theme indicator variables based on current theme"""

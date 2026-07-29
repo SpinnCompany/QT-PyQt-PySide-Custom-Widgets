@@ -752,6 +752,7 @@ class QSsFileMonitor(QObject):
     """Monitors QSS/SCSS files for changes and auto-reloads styles."""
     
     _instance = None
+    _initialized = False
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -759,7 +760,7 @@ class QSsFileMonitor(QObject):
         return cls._instance
 
     def __init__(self, parent=None):
-        if hasattr(self, "_initialized"):
+        if QSsFileMonitor._initialized:
             return
         super().__init__(parent)
 
@@ -771,7 +772,7 @@ class QSsFileMonitor(QObject):
         self.themeEngine = None
 
         self.destroyed.connect(lambda: logWarning("Global QSsFileMonitor deleted."))
-        self._initialized = True
+        QSsFileMonitor._initialized = True
 
     @staticmethod
     def instance():
