@@ -33,12 +33,15 @@ class QAppSettings():
 
         themeEngine = self.themeEngine
 
-        if len(str(themeEngine.organizationName)) > 0:
-            QCoreApplication.setOrganizationName(str(themeEngine.organizationName))
-        if len(str(themeEngine.applicationName)) > 0:
-            QCoreApplication.setApplicationName(str(themeEngine.applicationName))
-        if len(str(themeEngine.organizationDomain)) > 0:
-            QCoreApplication.setOrganizationDomain(str(themeEngine.organizationDomain))
+        org_name = getattr(themeEngine, "organizationName", "")
+        if len(str(org_name)) > 0:
+            QCoreApplication.setOrganizationName(str(org_name))
+        app_name = getattr(themeEngine, "applicationName", "")
+        if len(str(app_name)) > 0:
+            QCoreApplication.setApplicationName(str(app_name))
+        org_domain = getattr(themeEngine, "organizationDomain", "")
+        if len(str(org_domain)) > 0:
+            QCoreApplication.setOrganizationDomain(str(org_domain))
 
         settings = QSettings()
 

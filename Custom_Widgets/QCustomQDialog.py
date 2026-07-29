@@ -252,8 +252,8 @@ class QCustomQDialog(QDialog, Ui_Form):
         c = 0 if self.isDark() else 255
         if self.maskWidget is None:
             self.maskWidget = MaskWidget(parent=self.parent(), dialog=self)
-            # self.maskWidget.lower()
-            self.maskWidget.updateAcrylicEffect()
+            if self.blurBackground:
+                self.maskWidget.updateAcrylicEffect()
         
         if not self.blurBackground:
             self.maskWidget.setStyleSheet(f'background:rgba({c}, {c}, {c}, .8)')
@@ -484,6 +484,9 @@ class MaskWidget(QWidget):
         if is_in_designer(self):
             return None
 
-        if self.parent():
+        if self.parent() and hasattr(self, 'acrylicEffect') and self.acrylicEffect is not None:
             global_rect = self.parent().rect()
-            self.acrylicEffect.grabFromScreen(global_rect)
+            try:
+                self.acrylicEffect.grabFromScreen(global_rect)
+            except Exception:
+                pass
