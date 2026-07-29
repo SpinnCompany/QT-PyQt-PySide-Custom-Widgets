@@ -5,17 +5,26 @@
 > then read its agent guide + skills.** If you can't reach the MCP tools, STOP
 > and ask the user to mount it — don't fall back to a raw `python`/Bash run.
 
-## Mount the MCP (auto or manual)
+## Mount the MCP (HTTP daemon — required)
 
-- **Auto:** this repo ships [`.mcp.json`](.mcp.json) — Claude Code mounts the
-  `custom-widgets` server on session start. Approve it when prompted.
-- **Manual / other agents:**
-  ```
-  claude mcp add custom-widgets -- Custom_Widgets-mcp --project-dir .
-  # or, environment-portable:
-  python -m Custom_Widgets.mcp --project-dir .
-  ```
-  Requires the package installed with the MCP extra: `pip install -e .[mcp]`.
+The MCP runs as a **persistent HTTP daemon** (stdio transport is unreliable with
+this client). Before any session, start the daemon:
+
+```bash
+cd /home/p/git/QT-PyQt-PySide-Custom-Widgets
+./start-mcp-daemon.sh        # starts on port 8765
+```
+
+Or manually:
+```bash
+python -m Custom_Widgets.mcp --transport http --port 8765 &
+```
+
+Config (both formats):
+- **opencode.json** — `"type": "remote"`, `"url": "http://127.0.0.1:8765/mcp"`
+- **.mcp.json** (Claude Code) — `"type": "http"`, `"url": "http://127.0.0.1:8765/mcp"`
+
+Requires the MCP extra: `pip install -e .[mcp]`. Kill with `pkill -f "Custom_Widgets.mcp"`.
 
 ## Read these first (RULE #1 step 2)
 
@@ -54,6 +63,47 @@ designer_run_app → app_screenshot / app_click / app_object_tree # run + observ
 designer_stop_app → designer_quit                               # tear down cleanly
 ```
 
+## ⭐ RULE #4 — showcase images: 2 themed, polished, non-blank
+
+Every widget rendered for the documentation showcase **must produce 2 PNGs**
+(light theme + dark theme) that show the widget's **full visual potential**:
+
+- **Styled**: populate meaningful data/props so the widget isn't blank or tiny
+  — data-driven widgets (DataTable, ChipGroup, ChatList, CardStack, etc.)
+  need seed data set via their public API *before* the grab (e.g.
+  `setColumns`+`setData` on DataTable, `setChips([...])` on ChipGroup,
+  `setAvatars([...])` on AvatarGroup).
+- **Themed**: apply the design-token theme using `applyDesignTokens` with
+  `theme="light"`/`"dark"` AND the green docs-brand accent
+  (`primary="#41CD52"`, `accent="#41CD52"`). Override `DesignTokens` default
+  blue with:
+  ```python
+  tokens = DesignTokens(theme="light",
+      semantic={"light": {"primary": "#41CD52", "accent": "#41CD52"}})
+  ```
+- **Margins**: wrap every widget in a container with **≥24px padding**
+  so the widget breathes — no cramped/cropped edges. Use a `QMainWindow`
+  with a central widget whose layout has `setContentsMargins(24,24,24,24)`.
+- **Show()**: call `.show()` on the parent window before grabbing so Qt's
+  paint system renders fonts, sub-controls, and native styling fully. An
+  offscreen widget that is never shown can render blank or clipped.
+- **Sized correctly**: use generous explicit sizes that let painted elements
+  (gauges, charts, arcs, text) breathe. Never clip labels or value readouts.
+- **Both themes**: produce a `<name>.png` (light) and
+  `<name>-dark.png` (dark) pair. The canonical Docs path is
+  `static/img/showcase/<name>[-dark].png`.
+- **Meta present**: the associated doc `.md` page references **both** images
+  (e.g. a light/dark toggle or side-by-side), along with the widget name and
+  a sentence on what it does.
+
+A widget render that is blank, cropped, shows only an unstyled default state,
+or lacks a dark-theme variant is **not acceptable** for the showcase — fix
+the render script or add seed data to the widget before delivering.
+
+**Reference pattern** — see GlassHome (`examples/PySide6/GlassHome/`) for the
+gold standard of modern widget styling: glassmorphism surfaces with the
+design-token theme, green accent, proper spacing, and seeded data.
+
 ## Design rules (enforced — not optional)
 
 The library ships a design-rule linter (`Custom_Widgets.lint`) that enforces the
@@ -87,3 +137,66 @@ genuine false positive with `# noqa: <rule-id>`.
 | `.claude/skills/` | Claude Code skills for this repo |
 
 **If a capability is missing, add it to the MCP** — don't work around it in a shell.
+
+## ⭐ RULE #3 — artifact/content boundary (repo vs docs)
+
+**All documentation, guides, tutorials, blog posts, changelogs, API docs, and showcase screenshots** belong in:
+- `/home/p/git/Docs-QT-PyQt-PySide-Custom-Widgets/` — the canonical Docusaurus documentation site (free + pro)
+
+**The pro website** (`/home/p/git/custom-widgets-pro-website/`) handles billing, pricing, downloads, and high-level feature pages only — no long-form docs or showcase screenshots.
+
+**Code repos** are for code and README only:
+- `/home/p/git/QT-PyQt-PySide-Custom-Widgets/` — the library + examples (`examples/` READMEs are fine, but long-form docs go to Docs)
+- `/home/p/git/QT-PyQt-PySide-Custom-Widgets-Pro/` — pro add-ons
+
+Never save screenshots, documentation pages, or marketing assets into the code repos. An agent that generates a screenshot must save it to the Docs repo, not anywhere under `QT-PyQt-PySide-Custom-Widgets/`, `QT-PyQt-PySide-Custom-Widgets-Pro/`, or the pro website repo.
+
+## ⭐ RULE #5 — Qt Designer Layout & Spacing (enforced)
+
+**Spacing between widgets must be handled by the parent layout**, never by QSS `margin` or by assuming `padding` on arbitrary widgets.
+
+- **Layout owns spacing**: `Contents Margins`, `Spacing`, stretch factors, and alignment are set in Qt Designer / the `.ui` file / layout code — never via QSS `margin`.
+- **QSS `padding`** may be used only on widgets where Qt reliably supports it (e.g. `QPushButton`, `QToolButton`). Do not assume `padding` works on every widget; verify first.
+- **QSS `margin` is never a spacing tool** — many widgets ignore it. Use parent-layout properties instead.
+- **Separation**: `.ui` = placement / margins / spacing / stretch / size policies. External QSS/theme = colours / borders / border-radius / fonts / icons / states / widget appearance. Never intermix them.
+
+Before a change, classify the issue:
+- **visual styling** → external QSS/theme
+- **spacing or layout** → `.ui` / Qt Designer layout properties
+
+### Alignment Over Spacers
+
+Do not insert `QSpacerItem`s unless actually needed. For simple positioning, use the layout's alignment properties:
+- Align Left / Right / Top / Bottom / Center / HCenter / VCenter
+
+Use `QSpacerItem` only when flexible empty space is required (pushing widgets to opposite ends, distributing extra space proportionally, responsive expansion). Avoid stacking multiple spacers — first consider alignment, stretch factors, or layout properties.
+
+### Use Icons, Not Boring UIs
+
+Every showcase/app must use themed SVG icons (feather set) on buttons, nav items, and action controls. A professional UI without icons is a failure — icons give visual anchors that text alone cannot. Set `qproperty-icon` in the `.ui` / QSS with `$PATH_RESOURCES+'feather/<name>.svg'` and drive colour via `qproperty-iconColor` token so they flip with the theme.
+
+## ⭐ Operational Rules (from hard-won debugging)
+
+### Never `setStyleSheet()` in Python
+All styling comes from QSS/SCSS files. In Python you may only `setProperty` (incl. custom-widget Qt properties), `style().polish()`/`unpolish()`, and set CONTENT (setText). **Never call `setStyleSheet(...)`** anywhere — not the window, a region container, a code-built row, or a child.
+
+### `applyCompiledSass(generateIcons=True)` Deadlocks
+The `generateIcons=True` path starts a `Worker` thread that accesses `QSettings()` at `QCustomTheme.py:1511`. If the main thread also touches `QSettings()` during startup, Qt's lock-file mechanism deadlocks the entire process. **Fix:** pass `generateIcons=False` on startup; icons regenerate on theme switch anyway.
+
+### Don't Mix `enable_hot_reload` with `applyCompiledSass`
+`enable_hot_reload(window, build)` sets up a `QFileSystemWatcher` + `QTimer` after `build()` returns. If `build()` calls `applyCompiledSass`, the background icon thread combined with the watcher setup deadlocks. **Fix:** call build logic directly in `__init__`; the dev server handles file watching externally.
+
+### `.venv` + `QT_API=pyside6` Required
+Every example must use the project `.venv` and set `os.environ["QT_API"] = "pyside6"` before any import. Compiled `.ui` files hard-code `PySide6` while `qtpy` defaults to `PyQt5`; mismatched QT_API causes type errors.
+
+### `QAppSettings.updateAppSettings()` Hangs in Constructors
+Calling `QAppSettings.updateAppSettings(self)` inside `__init__`/`build()` can hang due to the icon-generation thread deadlock. **Fix:** inline the equivalent steps manually (QSettings, reloadJsonStyles, applyCompiledSass(generateIcons=False), maybe_start_app_control).
+
+### No Circular @import in SCSS
+`main.scss` already does `@import 'defaultStyle'`. Never write `@import 'defaultStyle'` inside `defaultStyle.scss` itself — that creates a circular self-import that breaks SCSS compilation and can hang the compilers. When using `project_write_style` to write to `defaultStyle.scss`, strip any `@import` line the tool might append.
+
+### AppControl Server Summary
+- Socket path: `/tmp/customwidgets-app-{sha1(projectRoot)[:12]}`
+- Server starts via `maybe_start_app_control()` inside `QAppSettings.updateAppSettings()` when `CUSTOM_WIDGETS_APP_CONTROL=1`
+- Dev server sets this env var automatically when running `designer_run_app`
+- The MCP `app_status` tool checks reachability via `QLocalSocket` connection

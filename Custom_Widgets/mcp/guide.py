@@ -198,6 +198,60 @@ it once as a shared daemon: `Custom_Widgets-mcp --transport http --port 8765`
 and point each .mcp.json at http://127.0.0.1:8765/mcp. Plain stdio (the default)
 is one client per process and needs none of this.
 
+== ⭐ RULE #3 — ARTIFACT/CONTENT BOUNDARY (REPO VS DOCS) ==
+
+**All documentation, guides, tutorials, blog posts, changelogs, API docs, and showcase screenshots** belong in:
+- `/home/p/git/Docs-QT-PyQt-PySide-Custom-Widgets/` — the canonical Docusaurus documentation site (free + pro)
+
+**The pro website** (`/home/p/git/custom-widgets-pro-website/`) handles billing, pricing, downloads, and high-level feature pages only — no long-form docs or showcase screenshots.
+
+**Code repos** are for code and README only:
+- `/home/p/git/QT-PyQt-PySide-Custom-Widgets/` — the library + examples (`examples/` READMEs are fine, but long-form docs go to Docs)
+- `/home/p/git/QT-PyQt-PySide-Custom-Widgets-Pro/` — pro add-ons
+
+Never save screenshots, documentation pages, or marketing assets into the code repos. An agent that generates a screenshot must save it to the Docs repo, not anywhere under `QT-PyQt-PySide-Custom-Widgets/`, `QT-PyQt-PySide-Custom-Widgets-Pro/`, or the pro website repo.
+
+== ⭐ RULE #4 — SHOWCASE IMAGES: 2 THEMED, POLISHED, NON-BLANK ==
+
+Every widget rendered for the documentation showcase **must produce 2 PNGs**
+(light theme + dark theme) that show the widget's **full visual potential**:
+
+- **Styled**: populate meaningful data/props so the widget isn't blank or tiny
+  — data-driven widgets (DataTable, ChipGroup, ChatList, CardStack, etc.)
+  need seed data set via their public API *before* the grab (e.g.
+  `setColumns`+`setData` on DataTable, `setChips([...])` on ChipGroup,
+  `setAvatars([...])` on AvatarGroup).
+- **Themed**: apply the design-token theme using `applyDesignTokens` with
+  `theme="light"`/`"dark"` AND the green docs-brand accent
+  (`primary="#41CD52"`, `accent="#41CD52"`). Override `DesignTokens` default
+  blue with:
+  ```python
+  tokens = DesignTokens(theme="light",
+      semantic={"light": {"primary": "#41CD52", "accent": "#41CD52"}})
+  ```
+- **Margins**: wrap every widget in a container with **≥24px padding**
+  so the widget breathes — no cramped/cropped edges. Use a `QMainWindow`
+  with a central widget whose layout has `setContentsMargins(24,24,24,24)`.
+- **Show()**: call `.show()` on the parent window before grabbing so Qt's
+  paint system renders fonts, sub-controls, and native styling fully. An
+  offscreen widget that is never shown can render blank or clipped.
+- **Sized correctly**: use generous explicit sizes that let painted elements
+  (gauges, charts, arcs, text) breathe. Never clip labels or value readouts.
+- **Both themes**: produce a `<name>.png` (light) and
+  `<name>-dark.png` (dark) pair. The canonical Docs path is
+  `static/img/showcase/<name>[-dark].png`.
+- **Meta present**: the associated doc `.md` page references **both** images
+  (e.g. a light/dark toggle or side-by-side), along with the widget name and
+  a sentence on what it does.
+
+A widget render that is blank, cropped, shows only an unstyled default state,
+or lacks a dark-theme variant is **not acceptable** for the showcase — fix
+the render script or add seed data to the widget before delivering.
+
+**Reference pattern** — see GlassHome (`examples/PySide6/GlassHome/`) for the
+gold standard of modern widget styling: glassmorphism surfaces with the
+design-token theme, green accent, proper spacing, and seeded data.
+
 == DESIGN RULES (ENFORCED — run design_lint) ==
 
 The library ships a design-rule linter (Custom_Widgets.lint) that enforces the
