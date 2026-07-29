@@ -155,6 +155,32 @@ Parallel strategic bets, both high-differentiation and mutually reinforcing:
 - **A:** WASM playground for the docs/gallery.
 - **B:** Extend MCP to runtime preview + testing + build.
 
+## Future work: modern, AI-friendly widget coverage
+
+The project should also explicitly track these AI/modern UX building blocks as future work:
+
+- **AI assistant / prompt panel** — a high-level assistant UI that combines prompt entry, model/tool selection, streaming response output, and retry/feedback actions.
+- **Autocomplete / token entry controls** — reusable searchable dropdowns, tag inputs, and prompt/token editors for command/query-driven workflows.
+- **Streaming output / console pane** — incremental response rendering for AI output, logs, and progressive status.
+- **Rich editable data grid** — inline editing, search/filter, sorting, column resize/reorder, selection, and hierarchical/tree table behavior.
+- **Inspector / property sidebar** — a live panel for editing widget fields, properties, enums, and theme settings in a structured UI.
+- **Responsive/adaptive layout containers** — dashboard/grid widgets that reflow and adapt to width changes.
+- **Complete widget metadata/catalog coverage** — every custom widget should expose typed designer props, `__catalog__` metadata, and token usage for tooling and agents.
+
+This is a future-work list, not current implementation. These additions are intended to make the library feel fully UI-development friendly, agent-ready, and aligned with modern desktop UI expectations.
+
+## Future work: code quality and maintainability
+
+Older widgets should also be treated as a maintainability backlog. The main themes are:
+
+- **Reduce broad exception handling** — replace blanket `except:` / `pass` patterns with specific exceptions and targeted logging so failures are observable and debuggable.
+- **Simplify tightly coupled modules** — reduce large monolithic widgets, especially where painting, state, theme, and behavior are mixed in a single class.
+- **Prefer explicit imports over package-root wildcard imports** — this improves readability, avoids accidental coupling, and lowers circular-import risk.
+- **Standardize newer patterns across older widgets** — newer widgets already show clearer property/animation/state conventions; older widgets should gradually adopt the same structure for consistency.
+- **Improve testability** — isolate rendering and state logic where possible so properties, resizing, and theme changes can be covered by focused tests.
+
+This work is not urgent for basic runtime correctness, but it will materially improve long-term maintainability, onboarding, and refactoring safety.
+
 ## Decisions (2026-07-22)
 
 Locked via planning quiz:
