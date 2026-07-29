@@ -1,0 +1,58 @@
+{
+  "QSettings": {
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Light",
+          "Default-Theme": true,
+          "Background-color": "#f8f9fc",
+          "Text-color": "#1a1d27",
+          "Accent-color": "#4A90D9",
+          "Icons-color": "#6b7280",
+          "Other-variables": {
+            "CW4": "#f59e0b",
+            "CW4_R": "245",
+            "CW4_G": "158",
+            "CW4_B": "11",
+            "CE4": "#ef4444",
+            "CE4_R": "239",
+            "CE4_G": "68",
+            "CE4_B": "68",
+            "CA4": "#22c55e",
+            "CA4_R": "34",
+            "CA4_G": "197",
+            "CA4_B": "94"
+          }
+        },
+        {
+          "Theme-name": "Dark",
+          "Default-Theme": false,
+          "Background-color": "#0f1117",
+          "Text-color": "#e8ecf1",
+          "Accent-color": "#7AB3F0",
+          "Icons-color": "#9ca3af",
+          "Other-variables": {
+            "CW4": "#f59e0b",
+            "CW4_R": "245",
+            "CW4_G": "158",
+            "CW4_B": "11",
+            "CE4": "#ef4444",
+            "CE4_R": "239",
+            "CE4_G": "68",
+            "CE4_B": "68",
+            "CA4": "#4ade80",
+            "CA4_R": "74",
+            "CA4_G": "222",
+            "CA4_B": "128"
+          }
+        }
+      ]
+    }
+  },
+  "Fonts": {
+    "DefaultFont": {
+      "name": "Inter",
+      "size": 10
+    }
+  }
+}

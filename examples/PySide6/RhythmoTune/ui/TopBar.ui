@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TopBar</class>
+ <widget class="QWidget" name="topBarRoot">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>960</width><height>84</height></rect></property>
+  <layout class="QHBoxLayout" name="topBarLayout">
+   <property name="leftMargin"><number>24</number></property>
+   <property name="topMargin"><number>16</number></property>
+   <property name="rightMargin"><number>24</number></property>
+   <property name="bottomMargin"><number>12</number></property>
+   <property name="spacing"><number>14</number></property>
+   <item>
+    <widget class="QFrame" name="searchFrame">
+     <property name="minimumSize"><size><width>360</width><height>48</height></size></property>
+     <property name="maximumSize"><size><width>470</width><height>48</height></size></property>
+     <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+     <layout class="QHBoxLayout" name="searchLayout">
+      <property name="leftMargin"><number>18</number></property>
+      <property name="topMargin"><number>0</number></property>
+      <property name="rightMargin"><number>16</number></property>
+      <property name="bottomMargin"><number>0</number></property>
+      <property name="spacing"><number>10</number></property>
+      <item>
+       <widget class="QLineEdit" name="searchEdit">
+        <property name="frame"><bool>false</bool></property>
+        <property name="placeholderText"><string>Search for a song</string></property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomQLabel" name="searchIcon">
+        <property name="minimumSize"><size><width>18</width><height>18</height></size></property>
+        <property name="maximumSize"><size><width>18</width><height>18</height></size></property>
+        <property name="iconName" stdset="0"><string>search</string></property>
+        <property name="text"><string/></property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="topSpacer">
+     <property name="orientation"><enum>Qt::Horizontal</enum></property>
+     <property name="sizeHint" stdset="0"><size><width>40</width><height>10</height></size></property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QCustomAvatar" name="userAvatar" native="true">
+     <property name="minimumSize"><size><width>44</width><height>44</height></size></property>
+     <property name="maximumSize"><size><width>44</width><height>44</height></size></property>
+     <property name="text" stdset="0"><string>MH</string></property>
+     <property name="showStatus" stdset="0"><bool>false</bool></property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="userTextLayout">
+     <property name="spacing"><number>2</number></property>
+     <item>
+      <widget class="QLabel" name="userName">
+       <property name="text"><string>Molly Hunter</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="planBadge">
+       <property name="minimumSize"><size><width>0</width><height>18</height></size></property>
+       <property name="maximumSize"><size><width>72</width><height>18</height></size></property>
+       <property name="alignment"><set>Qt::AlignCenter</set></property>
+       <property name="text"><string>Premium</string></property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QCustomQPushButton" name="heartBtn">
+     <property name="minimumSize"><size><width>44</width><height>44</height></size></property>
+     <property name="maximumSize"><size><width>44</width><height>44</height></size></property>
+     <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
+     <property name="text"><string/></property>
+     <property name="iconName" stdset="0"><string>heart</string></property>
+     <property name="iconSize"><size><width>19</width><height>19</height></size></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCustomQPushButton" name="settingsBtn">
+     <property name="minimumSize"><size><width>44</width><height>44</height></size></property>
+     <property name="maximumSize"><size><width>44</width><height>44</height></size></property>
+     <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
+     <property name="text"><string/></property>
+     <property name="iconName" stdset="0"><string>settings</string></property>
+     <property name="iconSize"><size><width>19</width><height>19</height></size></property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget><class>QCustomAvatar</class><extends>QWidget</extends><header>Custom_Widgets.QCustomAvatar</header></customwidget>
+  <customwidget><class>QCustomQPushButton</class><extends>QPushButton</extends><header>Custom_Widgets.QCustomQPushButton</header></customwidget>
+  <customwidget><class>QCustomQLabel</class><extends>QLabel</extends><header>Custom_Widgets.QCustomQLabel</header></customwidget>
+ </customwidgets>
+ <connections/>
+</ui>

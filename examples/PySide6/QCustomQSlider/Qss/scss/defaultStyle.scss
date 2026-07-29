@@ -1,0 +1,37 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#titleLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 22px;
+  font-weight: bold;
+  padding: 8px 0;
+}
+
+#card1, #card2 {
+  background: $COLOR_BACKGROUND_3;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+#section1Title {
+  color: $COLOR_TEXT_1;
+  font-size: 16px;
+  font-weight: 600;
+  padding-bottom: 4px;
+}
+
+#labelVolume, #labelBrightness, #labelTemperature {
+  color: $COLOR_TEXT_2;
+  font-size: 14px;
+  min-width: 100px;
+}
+
+#volumeValue, #brightnessValue, #tempValue {
+  color: $COLOR_ACCENT_1;
+  font-size: 14px;
+  font-weight: bold;
+  min-width: 40px;
+  text-align: right;
+}

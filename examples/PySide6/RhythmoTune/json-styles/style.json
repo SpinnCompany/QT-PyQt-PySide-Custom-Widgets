@@ -1,0 +1,107 @@
+{
+    "ShowLogs": true,
+    "QtBinding": "PySide6",
+    "LiveCompileQss": true,
+    "CheckForMissingicons": true,
+    "QMainWindow": {
+        "title": "RhythmoTune — Music Dashboard"
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "RhythmoTune",
+            "OrganizationDomain": "spinncode.com"
+        },
+        "ThemeSettings": {
+            "QtDesignerIconsColor": "theme",
+            "CustomThemes": [
+                {
+                    "Theme-name": "RhythmoTune Dark",
+                    "Default-Theme": true,
+                    "Create-icons": true,
+                    "Background-color": "#0e1017",
+                    "Text-color": "#eef1f8",
+                    "Accent-color": "#26c99e",
+                    "Icons-color": "#c7ccdb",
+                    "Other-variables": {
+                        "shell": "#0b0d14",
+                        "sidebar": "#12141d",
+                        "card": "#12141d",
+                        "navActive": "#1c2030",
+                        "text": "#ffffff",
+                        "muted": "#8b90a3",
+                        "accent": "#26c99e",
+                        "onAccent": "#06231b",
+                        "logo": "#f26a21",
+                        "chipBg": "#171a24",
+                        "chipBorder": "#3c4356",
+                        "chipText": "#c7ccdb",
+                        "searchBg": "#171a24",
+                        "searchText": "#8b90a3",
+                        "iconBtnBg": "#1b1e2b",
+                        "iconMuted": "#c7ccdb",
+                        "iconActive": "#ffffff",
+                        "playerBar": "#12141d",
+                        "seekTrack": "#2a2e3a",
+                        "premiumBg": "#123a30",
+                        "premiumText": "#38e0b0",
+                        "onCover": "#ffffff",
+                        "onCoverMuted": "#d6d8e2",
+                        "songA": "#e0592f",
+                        "songB": "#1f7a5a",
+                        "songC": "#26418f",
+                        "songD": "#d79a2b",
+                        "songE": "#a12f4b",
+                        "songF": "#2f6f8f"
+                    }
+                },
+                {
+                    "Theme-name": "RhythmoTune Light",
+                    "Default-Theme": false,
+                    "Create-icons": true,
+                    "Background-color": "#f2f3f7",
+                    "Text-color": "#14161d",
+                    "Accent-color": "#12b488",
+                    "Icons-color": "#5a6072",
+                    "Other-variables": {
+                        "shell": "#eef0f5",
+                        "sidebar": "#ffffff",
+                        "card": "#ffffff",
+                        "navActive": "#e9ecf4",
+                        "text": "#14161d",
+                        "muted": "#6b7180",
+                        "accent": "#12b488",
+                        "onAccent": "#ffffff",
+                        "logo": "#f26a21",
+                        "chipBg": "#f1f2f7",
+                        "chipBorder": "#cbd0dc",
+                        "chipText": "#4a4f5e",
+                        "searchBg": "#f1f2f7",
+                        "searchText": "#8b90a3",
+                        "iconBtnBg": "#f1f2f7",
+                        "iconMuted": "#5a6072",
+                        "iconActive": "#14161d",
+                        "playerBar": "#ffffff",
+                        "seekTrack": "#dfe2ea",
+                        "premiumBg": "#d6f5ec",
+                        "premiumText": "#0e8f6c",
+                        "onCover": "#ffffff",
+                        "onCoverMuted": "#d6d8e2",
+                        "songA": "#e0592f",
+                        "songB": "#1f7a5a",
+                        "songC": "#26418f",
+                        "songD": "#d79a2b",
+                        "songE": "#a12f4b",
+                        "songF": "#2f6f8f"
+                    }
+                }
+            ],
+            "Fonts": {
+                "LoadFonts": [
+                    { "name": "Inter", "url": "https://cdn.jsdelivr.net/gh/rsms/inter@master/docs/font-files/InterVariable.ttf" }
+                ],
+                "DefaultFont": { "name": "Inter", "size": 10 }
+            }
+        }
+    }
+}

@@ -4,8 +4,7 @@
     "LiveCompileQss": true,
     "CheckForMissingicons": true,
     "QMainWindow": {
-        "title": "Node Studio",
-        "sizeGrip": "exportBtn"
+        "title": "Node Studio"
     },
     "QSettings": {
         "AppSettings": {

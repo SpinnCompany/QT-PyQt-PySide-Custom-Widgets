@@ -1,0 +1,180 @@
+/* ─── MAIN WINDOW ─── */
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#header {
+  background: $COLOR_BACKGROUND_2;
+  border: none;
+}
+
+#title {
+  color: $COLOR_TEXT_1;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+#subtitle {
+  color: $COLOR_TEXT_3;
+  font-size: 14px;
+}
+
+#content {
+  background: $COLOR_BACKGROUND_1;
+  border: none;
+}
+
+#card {
+  background: $COLOR_BACKGROUND_3;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 16px;
+}
+
+#cardTitle {
+  color: $COLOR_TEXT_1;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+#statusCard {
+  background: $COLOR_BACKGROUND_2;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 10px;
+}
+
+#statusLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+/* ── Painted status dot (no glyph) ── */
+#statusIcon {
+  background-color: $COLOR_ACCENT_1;
+  border-radius: 4px;
+  min-width: 8px;
+  min-height: 8px;
+  max-width: 8px;
+  max-height: 8px;
+}
+
+/* ── Dialog trigger buttons with icons ── */
+#infoBtn {
+  qproperty-icon: url($PATH_RESOURCES+'feather/info.svg');
+  qproperty-iconColor: $COLOR_ON_PRIMARY;
+}
+#confirmBtn {
+  qproperty-icon: url($PATH_RESOURCES+'feather/check-circle.svg');
+  qproperty-iconColor: $COLOR_ACCENT_1;
+  background-color: rgba($CA4_R, $CA4_G, $CA4_B, 0.15);
+  color: $COLOR_ACCENT_1;
+  border: 1px solid rgba($CA4_R, $CA4_G, $CA4_B, 0.3);
+}
+#confirmBtn:hover {
+  background-color: rgba($CA4_R, $CA4_G, $CA4_B, 0.25);
+}
+#warningBtn {
+  qproperty-icon: url($PATH_RESOURCES+'feather/alert-triangle.svg');
+  qproperty-iconColor: $CW4;
+  background-color: rgba($CW4_R, $CW4_G, $CW4_B, 0.15);
+  color: $CW4;
+  border: 1px solid rgba($CW4_R, $CW4_G, $CW4_B, 0.3);
+}
+#warningBtn:hover {
+  background-color: rgba($CW4_R, $CW4_G, $CW4_B, 0.25);
+}
+#errorBtn {
+  qproperty-icon: url($PATH_RESOURCES+'feather/x-circle.svg');
+  qproperty-iconColor: $CE4;
+  background-color: rgba($CE4_R, $CE4_G, $CE4_B, 0.12);
+  color: $CE4;
+  border: 1px solid rgba($CE4_R, $CE4_G, $CE4_B, 0.25);
+}
+#errorBtn:hover {
+  background-color: rgba($CE4_R, $CE4_G, $CE4_B, 0.22);
+}
+
+QCustomQPushButton {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 10px;
+}
+
+QCustomQPushButton[variant="primary"] {
+  background-color: $COLOR_ACCENT_1;
+  color: $COLOR_ON_PRIMARY;
+  border: none;
+}
+QCustomQPushButton[variant="primary"]:hover {
+  background-color: $COLOR_ACCENT_2;
+}
+
+/* ─── DIALOG ─── */
+QCustomQDialog {
+  background: transparent;
+}
+
+QCustomQDialog #widget {
+  background: $COLOR_BACKGROUND_3;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 16px;
+}
+
+QCustomQDialog #titleBar {
+  background: transparent;
+  border: none;
+}
+
+QCustomQDialog #titleLabel {
+  color: $COLOR_TEXT_1;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+QCustomQDialog #mainBody {
+  background: transparent;
+  border: none;
+}
+
+QCustomQDialog #descriptionLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 14px;
+}
+
+QCustomQDialog #footer {
+  background: transparent;
+  border: none;
+  border-top: 1px solid $COLOR_BACKGROUND_4;
+}
+
+QCustomQDialog #footer QPushButton {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 20px;
+  border-radius: 8px;
+  min-width: 80px;
+}
+
+QCustomQDialog #yesButton {
+  background-color: $COLOR_ACCENT_1;
+  color: $COLOR_ON_PRIMARY;
+  border: none;
+}
+QCustomQDialog #yesButton:hover {
+  background-color: $COLOR_ACCENT_2;
+}
+
+QCustomQDialog #cancelButton {
+  background-color: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+}
+QCustomQDialog #cancelButton:hover {
+  background-color: $COLOR_BACKGROUND_3;
+}
+
+QScrollArea {
+  border: none;
+  background: transparent;
+}
+
