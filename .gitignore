@@ -117,3 +117,16 @@ splits/
 merged/
 pyvenv.cfg
 .DS_Store
+# Local tooling binaries accidentally dropped into examples (30MB, never ship)
+examples/**/stripe
+examples/**/stripe.tar.gz
+*.bak
+
+# Agent/editor scratch
+.opencode/
+
+# Theme output written when a demo is run from the repo root instead of its
+# own folder. The real per-example copies are tracked under examples/<App>/Qss.
+/Qss/
+/generated-files/
+examples/PySide6/Qss/
