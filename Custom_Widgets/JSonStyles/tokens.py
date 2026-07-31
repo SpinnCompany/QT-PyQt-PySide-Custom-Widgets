@@ -802,6 +802,15 @@ def switch_qss(tokens):
             "}\n" % (r("accent"), r("outline"), r("surface")))
 
 
+def radio_qss(tokens):
+    """Feed token colours to the painted QCustomRadioButton via qproperty."""
+    r = tokens.role
+    return ("QCustomRadioButton {\n"
+            "    qproperty-ringColor: %s; qproperty-ringCheckedColor: %s;\n"
+            "    qproperty-dotColor: %s; qproperty-textColor: %s;\n"
+            "}\n" % (r("outline"), r("accent"), r("accent"), r("on-surface")))
+
+
 def number_qss(tokens):
     """Generate QCustomNumberInput QSS (joined field + step buttons)."""
     r = tokens.role
@@ -1010,7 +1019,8 @@ def build_component_qss(tokens):
             + skeleton_qss(tokens) + avatargroup_qss(tokens) + timeline_qss(tokens)
             + pagination_qss(tokens) + popover_qss(tokens) + segmented_qss(tokens)
             + emptystate_qss(tokens) + dropzone_qss(tokens) + rangeslider_qss(tokens)
-            + switch_qss(tokens) + number_qss(tokens) + alert_qss(tokens)
+            + switch_qss(tokens) + radio_qss(tokens) + number_qss(tokens)
+            + alert_qss(tokens)
             + statcard_qss(tokens) + progressring_qss(tokens) + card_qss(tokens)
             + badge_qss(tokens) + kbd_qss(tokens) + splitter_qss(tokens)
             + carousel_qss(tokens))

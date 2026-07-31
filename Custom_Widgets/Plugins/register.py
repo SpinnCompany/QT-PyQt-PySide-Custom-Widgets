@@ -281,9 +281,11 @@ for _xw, _xg in ((QCustomEmptyState, "Display Widgets"),
 from Custom_Widgets.QCustomSwitch import QCustomSwitch
 from Custom_Widgets.QCustomNumberInput import QCustomNumberInput
 from Custom_Widgets.QCustomAlert import QCustomAlert
+from Custom_Widgets.QCustomRadioButton import QCustomRadioButton
 
 for _nw, _ng in ((QCustomSwitch, "Input Widgets"),
                  (QCustomNumberInput, "Input Widgets"),
+                 (QCustomRadioButton, "Input Widgets"),
                  (QCustomAlert, "Display Widgets")):
     try:
         logInfo("Registering %s" % _nw.__name__)
