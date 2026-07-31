@@ -26,6 +26,7 @@ from qtpy.QtCore import Signal, QObject
 from qtpy.QtGui import QColor
 
 from Custom_Widgets.QCustomTheme import QCustomTheme
+from Custom_Widgets._resources import packageDir
 
 class ProjectMaker(QObject):
     progress = Signal(int)
@@ -346,7 +347,7 @@ def create_project():
         os.makedirs(ui_dir)
         print_success("Created UI directory")
     
-    template_ui_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'components/uis/QCustomQMainWindow.ui'))
+    template_ui_path = os.path.abspath(os.path.join(packageDir(), 'components/uis/QCustomQMainWindow.ui'))
     if not os.path.exists(ui_path) and os.path.exists(template_ui_path):   
         shutil.copy(template_ui_path, ui_path)
         print_success("Copied UI template file")
@@ -380,7 +381,7 @@ def create_project():
 
     # Copy main.py template if needed
     main_py = os.path.abspath(os.path.join(os.getcwd(), 'main.py'))
-    template_main_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'components/python/main.py'))
+    template_main_path = os.path.abspath(os.path.join(packageDir(), 'components/python/main.py'))
     
     if not os.path.exists(main_py) and os.path.exists(template_main_path):   
         shutil.copy(template_main_path, main_py)
@@ -489,7 +490,7 @@ def create_project():
         os.makedirs(json_dir)
         print_success("Created JSON styles directory")
 
-    template_json_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'components/json/style.json'))
+    template_json_path = os.path.abspath(os.path.join(packageDir(), 'components/json/style.json'))
     if not os.path.exists(json_path) and os.path.exists(template_json_path):   
         shutil.copy(template_json_path, json_path)
         print_success("Copied JSON style template")
@@ -539,7 +540,7 @@ def create_project():
 
     # Copy README if needed
     readme_path = os.path.abspath(os.path.join(os.getcwd(), 'README.md'))
-    template_readme_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'components/md/README.md'))
+    template_readme_path = os.path.abspath(os.path.join(packageDir(), 'components/md/README.md'))
     
     if not os.path.exists(readme_path) and os.path.exists(template_readme_path):   
         shutil.copy(template_readme_path, readme_path)
