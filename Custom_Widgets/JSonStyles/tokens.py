@@ -811,6 +811,38 @@ def radio_qss(tokens):
             "}\n" % (r("outline"), r("accent"), r("accent"), r("on-surface")))
 
 
+def textarea_qss(tokens):
+    """Generate QCustomTextArea QSS (field chrome + counter colours).
+
+    Note QCustomInput has no equivalent generator, so it is currently styled by
+    whatever global QSS is loaded rather than by tokens. Worth closing, but not
+    by leaving this widget in the same state.
+    """
+    r = tokens.role
+    px = tokens.px
+    css = []
+    css.append("QCustomTextArea {\n"
+               "    background-color: %s; color: %s;\n"
+               "    border: 1px solid %s; border-radius: %s;\n"
+               "    qproperty-counterColor: %s;\n"
+               "    qproperty-counterOverColor: %s;\n"
+               "}\n" % (r("surface"), r("on-surface"), r("outline"),
+                        px("radius.md"), r("on-surface"), r("destructive")))
+    css.append("QCustomTextArea[state='focused'] {\n"
+               "    border: 1px solid %s;\n"
+               "}\n" % r("focus-ring"))
+    css.append("QCustomTextArea[state='error'] {\n"
+               "    border: 1px solid %s;\n"
+               "}\n" % r("destructive"))
+    css.append("QCustomTextArea[state='disabled'], QCustomTextArea:disabled {\n"
+               "    background-color: %s; color: %s;\n"
+               "}\n" % (r("surface-muted"), r("outline")))
+    css.append("QCustomTextArea[variant='ghost'] {\n"
+               "    background-color: transparent; border: 1px solid transparent;\n"
+               "}\n")
+    return "".join(css)
+
+
 def candlestick_qss(tokens):
     """Feed token colours to the painted QCustomCandlestickChart.
 
@@ -1043,7 +1075,8 @@ def build_component_qss(tokens):
             + pagination_qss(tokens) + popover_qss(tokens) + segmented_qss(tokens)
             + emptystate_qss(tokens) + dropzone_qss(tokens) + rangeslider_qss(tokens)
             + switch_qss(tokens) + radio_qss(tokens) + radiogroup_qss(tokens)
-            + candlestick_qss(tokens) + number_qss(tokens) + alert_qss(tokens)
+            + candlestick_qss(tokens) + textarea_qss(tokens)
+            + number_qss(tokens) + alert_qss(tokens)
             + statcard_qss(tokens) + progressring_qss(tokens) + card_qss(tokens)
             + badge_qss(tokens) + kbd_qss(tokens) + splitter_qss(tokens)
             + carousel_qss(tokens))

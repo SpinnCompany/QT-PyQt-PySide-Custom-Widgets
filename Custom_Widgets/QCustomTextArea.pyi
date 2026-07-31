@@ -1,0 +1,29 @@
+# Auto-generated type stub — DO NOT EDIT.
+# Regenerate with:  python -m Custom_Widgets.mcp.stubgen --write
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QPlainTextEdit
+from typing import Any, ClassVar
+
+
+class QCustomTextArea(QPlainTextEdit):
+    lengthChanged: ClassVar[Signal]
+    limitReached: ClassVar[Signal]
+    variant: str
+    sizeVariant: str
+    state: str
+    maxLength: int
+    showCounter: bool
+    autoGrow: bool
+    minRows: int
+    maxRows: int
+    counterColor: Any
+    counterOverColor: Any
+    def __init__(self, parent = ..., placeholder = ..., maxLength = ...) -> None: ...
+    def resizeEvent(self, e): ...
+    def length(self): ...
+    def remaining(self): ...
+    def isOverLimit(self): ...
+    def clearText(self): ...
+    def setError(self, error_text = ...) -> None: ...
+    def focusInEvent(self, event): ...
+    def focusOutEvent(self, event): ...
