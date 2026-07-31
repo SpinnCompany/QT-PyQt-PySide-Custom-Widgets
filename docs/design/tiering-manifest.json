@@ -1012,6 +1012,17 @@
     "tier": "free"
   },
   {
+    "module": "Custom_Widgets/QCustomRadioGroup.py",
+    "widget": "QCustomRadioGroup",
+    "loc": 304,
+    "pyi": true,
+    "catalog": true,
+    "test": true,
+    "example": true,
+    "designer": true,
+    "tier": "free"
+  },
+  {
     "module": "Custom_Widgets/QCustomRangeSlider.py",
     "widget": "QCustomRangeSlider",
     "loc": 220,
