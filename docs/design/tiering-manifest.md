@@ -21,9 +21,9 @@ ships at once.
 |---|---|
 | Has a test | 139/159 (87%) |
 | Has an example | 131/159 (82%) |
-| In `__catalog__` | 97/159 (61%) |
+| In `__catalog__` | 101/159 (64%) |
 | Designer-registered | 117/159 (74%) |
-| `.pyi` type stub | 96/159 (60%) |
+| `.pyi` type stub | 100/159 (63%) |
 
 Breakdown: **5** free-base-with-Pro-extension, **135** free
 standalone, **19** internal/engine (not shipped as standalone).
@@ -43,11 +43,11 @@ Stay free in the core; the Pro package extends them (never bundles them).
 
 | Widget | Test | Example | Catalog | Designer | .pyi | LOC | Module |
 |---|:--:|:--:|:--:|:--:|:--:|--:|---|
-| `QCustomAreaChart` | ✅ | ✅ | — | ✅ | — | 1135 | Custom_Widgets/widgets/charts/qtcharts/QCustomAreaChart.py |
-| `QCustomBarChart` | ✅ | ✅ | — | ✅ | — | 1044 | Custom_Widgets/widgets/charts/qtcharts/QCustomBarChart.py |
+| `QCustomAreaChart` | ✅ | ✅ | ✅ | ✅ | ✅ | 1196 | Custom_Widgets/widgets/charts/qtcharts/QCustomAreaChart.py |
+| `QCustomBarChart` | ✅ | ✅ | ✅ | ✅ | ✅ | 1103 | Custom_Widgets/widgets/charts/qtcharts/QCustomBarChart.py |
 | `QCustomDataTable` | ✅ | ✅ | ✅ | ✅ | ✅ | 1824 | Custom_Widgets/widgets/data/QCustomDataTable.py |
-| `QCustomLineChart` | ✅ | ✅ | — | ✅ | — | 735 | Custom_Widgets/widgets/charts/qtcharts/QCustomLineChart.py |
-| `QCustomPieChart` | ✅ | ✅ | — | ✅ | — | 1706 | Custom_Widgets/widgets/charts/qtcharts/QCustomPieChart.py |
+| `QCustomLineChart` | ✅ | ✅ | ✅ | ✅ | ✅ | 791 | Custom_Widgets/widgets/charts/qtcharts/QCustomLineChart.py |
+| `QCustomPieChart` | ✅ | ✅ | ✅ | ✅ | ✅ | 1777 | Custom_Widgets/widgets/charts/qtcharts/QCustomPieChart.py |
 
 Pro mapping:
 - `QCustomDataTable` -> DataTable Pro (SKU-1, LOCKED - built)
@@ -145,7 +145,7 @@ Pro mapping:
 | `QCustomProgressRing` | ✅ | ✅ | ✅ | ✅ | ✅ | 190 | Custom_Widgets/widgets/display/QCustomProgressRing.py |
 | `QCustomQDialog` | ✅ | ✅ | — | — | — | 492 | Custom_Widgets/widgets/containers/QCustomQDialog.py |
 | `QCustomQLabel` | ✅ | ✅ | ✅ | ✅ | ✅ | 186 | Custom_Widgets/widgets/display/QCustomQLabel.py |
-| `QCustomQMainWindow` | ✅ | ✅ | — | ✅ | — | 485 | Custom_Widgets/widgets/containers/QCustomQMainWindow.py |
+| `QCustomQMainWindow` | ✅ | ✅ | — | ✅ | — | 494 | Custom_Widgets/widgets/containers/QCustomQMainWindow.py |
 | `QCustomQProgressBar` | ✅ | ✅ | — | ✅ | — | 208 | Custom_Widgets/widgets/loading/QCustomQProgressBar.py |
 | `QCustomQPushButton` | ✅ | ✅ | ✅ | ✅ | ✅ | 610 | Custom_Widgets/widgets/buttons/QCustomQPushButton.py |
 | `QCustomQPushButtonGroup` | ✅ | ✅ | — | — | — | 60 | Custom_Widgets/widgets/buttons/QCustomQPushButtonGroup.py |
@@ -208,7 +208,7 @@ separate tier. (Most surface through the public chart types above.)
 | `QCustomChartConstants` | ✅ | — | — | — | — | 372 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartConstants.py |
 | `QCustomChartDataManager` | — | — | — | — | — | 605 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartDataManager.py |
 | `QCustomChartExporter` | — | — | — | — | — | 575 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartExporter.py |
-| `QCustomChartProps` | — | — | — | — | — | 369 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartProps.py |
+| `QCustomChartProps` | — | — | — | — | — | 485 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartProps.py |
 | `QCustomChartThemeManager` | — | — | — | — | — | 444 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartThemeManager.py |
 | `QCustomChartToolbar` | — | — | — | — | — | 511 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartToolbar.py |
 | `QCustomChartTooltip` | — | — | — | — | — | 415 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartTooltip.py |
@@ -238,14 +238,12 @@ separate tier. (Most surface through the public chart types above.)
 - `QCustomVideoPlayer` (QCustomVideoPlayer.py)
 - `Ui_CustomMainWindow` (QCustomQMainWindow_ui.py)
 
-### Missing `__catalog__` entry (43)
+### Missing `__catalog__` entry (39)
 - `AnalogGaugeWidget`
 - `Canvas`
 - `LoadForm`
 - `QCustom3CirclesLoader`
 - `QCustomArcLoader`
-- `QCustomAreaChart`
-- `QCustomBarChart`
 - `QCustomCheckBox`
 - `QCustomCodeEditor`
 - `QCustomEmbeddedWindow`
@@ -255,10 +253,8 @@ separate tier. (Most surface through the public chart types above.)
 - `QCustomForm`
 - `QCustomHamburgerMenu`
 - `QCustomHorizontalSeparator`
-- `QCustomLineChart`
 - `QCustomLoadingIndicators`
 - `QCustomPerlinLoader`
-- `QCustomPieChart`
 - `QCustomProgressBars`
 - `QCustomProgressIndicator`
 - `QCustomQDialog`

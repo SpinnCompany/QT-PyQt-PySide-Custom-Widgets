@@ -6,14 +6,16 @@ from qtpy.QtCharts import QChart, QLineSeries, QScatterSeries, QValueAxis
 
 from .QCustomChartBase import QCustomChartBase
 from .QCustomChartDataManager import QCustomChartDataManager
-from .QCustomChartProps import ChartCommonProps, AxisChartProps, SeriesStyleProps
+from .QCustomChartProps import (ChartCommonProps, AxisChartProps,
+                               SeriesStyleProps, ChartDataProps)
 from .QCustomQLineSeries import QCustomQLineSeries
 from Custom_Widgets.Utils import is_in_designer
 from .QCustomChartConstants import (
     QCustomChartEnums as _CE)
 
 
-class QCustomLineChart(QCustomChartBase, AxisChartProps, SeriesStyleProps, ChartCommonProps):
+class QCustomLineChart(QCustomChartBase, AxisChartProps, SeriesStyleProps,
+                       ChartCommonProps, ChartDataProps):
     """
     Line chart implementation using the modular architecture.
     Qt Designer compatible with property exposure.
@@ -36,7 +38,52 @@ class QCustomLineChart(QCustomChartBase, AxisChartProps, SeriesStyleProps, Chart
         </widget>
     </ui>
     """
-    WIDGET_MODULE = "Custom_Widgets.QCustomCharts"
+    __catalog__ = {
+        "name": "QCustomLineChart",
+        "props": {
+            "animationDuration": {"type": "int", "default": 1000},
+            "animationEnabled": {"type": "bool", "default": True},
+            "antialiasing": {"type": "bool", "default": True},
+            "autoScale": {"type": "bool", "default": True},
+            "categoriesCsv": {"type": "string", "default": ""},
+            "chartTitle": {"type": "string", "default": "Line Chart"},
+            "compactMode": {"type": "bool", "default": False},
+            "crosshairColor": {"type": "color", "default": "#000000"},
+            "crosshairWidth": {"type": "float", "default": 1.0},
+            "defaultLineStyle": {"type": "int", "default": 0},
+            "defaultMarkerStyle": {"type": "int", "default": 6},
+            "enableShadow": {"type": "bool", "default": False},
+            "fillArea": {"type": "bool", "default": False},
+            "fillOpacity": {"type": "float", "default": 0.3},
+            "gridColor": {"type": "color", "default": "#c8c8c8"},
+            "highlightSize": {"type": "int", "default": 8},
+            "legendBackgroundVisible": {"type": "bool", "default": False},
+            "legendFontSize": {"type": "int", "default": 8},
+            "legendPosition": {"type": "int", "default": 1},
+            "markerSize": {"type": "float", "default": 8.0},
+            "seriesCsv": {"type": "string", "default": ""},
+            "shadowBlur": {"type": "int", "default": 15},
+            "showCrosshair": {"type": "bool", "default": True},
+            "showDataPoints": {"type": "bool", "default": True},
+            "showFooter": {"type": "bool", "default": True},
+            "showGrid": {"type": "bool", "default": True},
+            "showLegend": {"type": "bool", "default": True},
+            "showToolbar": {"type": "bool", "default": False},
+            "theme": {"type": "int", "default": 0},
+            "tooltipDelay": {"type": "int", "default": 500},
+            "tooltipDuration": {"type": "int", "default": 5000},
+            "tooltipsEnabled": {"type": "bool", "default": True},
+            "xAxisTitle": {"type": "string", "default": "X Axis"},
+            "yAxisTitle": {"type": "string", "default": "Y Axis"},
+        },
+        "signals": ["chartExportComplete", "dataPointClicked", "dataPointHovered", "legendPositionChanged", "seriesAdded", "seriesRemoved"],
+        "tokens_used": ["surface", "on-surface", "outline", "accent"],
+    }
+    # Per-class, not the package: all four sharing one module string made
+    # Designer write a coarse header and collapsed every generated stub
+    # onto a single path. This matches what existing .ui files already
+    # carry: <header>Custom_Widgets.QCustomCharts.QCustomLineChart</header>
+    WIDGET_MODULE = "Custom_Widgets.QCustomCharts.QCustomLineChart"
 
     # Rich editors for the Designer "Custom Properties" dock (see
     # DesignerTools.CustomPropertiesDock).
@@ -732,3 +779,12 @@ class QCustomLineChart(QCustomChartBase, AxisChartProps, SeriesStyleProps, Chart
         """Set fill opacity"""
         self._fill_opacity = value
         self.updateChart()
+
+    # ------------------------------------------------------------------ #
+    ## Designer data entry (see ChartDataProps)
+    # ------------------------------------------------------------------ #
+    def _applyCsvSeries(self, series):
+        """CSV values become y, with x taken from the point index."""
+        self.clearAllData()
+        for name, values in series:
+            self.addSeries(name, [(float(i), v) for i, v in enumerate(values)])

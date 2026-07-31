@@ -228,6 +228,11 @@ def _is_snake_public(name: str) -> bool:
         return False
     if name in _CAMEL_EXEMPT:
         return False
+    # pytest discovers by the test_ prefix and collects snake_case names; a
+    # camelCase test method simply would not run. Flagging these is a false
+    # positive that would push every new test file into the baseline.
+    if name.startswith("test_"):
+        return False
     return "_" in name
 
 

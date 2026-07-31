@@ -6,14 +6,15 @@ from qtpy.QtCharts import QChart, QBarSeries, QBarSet, QBarCategoryAxis, QValueA
 
 from .QCustomChartBase import QCustomChartBase
 from .QCustomBarChartBase import _RoundedBarOverlay
-from .QCustomChartProps import ChartCommonProps, AxisChartProps
+from .QCustomChartProps import ChartCommonProps, AxisChartProps, ChartDataProps
 from Custom_Widgets.Utils import is_in_designer
 from .QCustomChartConstants import (
     QCustomChartEnums as _CE,
     QCustomChartConstants as _CC, chart_str_to_int, chart_int_to_str,
     BAR_LABELS_TO_INT, INT_TO_BAR_LABELS)
 
-class QCustomBarChart(QCustomChartBase, AxisChartProps, ChartCommonProps):
+class QCustomBarChart(QCustomChartBase, AxisChartProps, ChartCommonProps,
+                      ChartDataProps):
     """
     Bar chart implementation using the modular architecture.
     Qt Designer compatible with property exposure.
@@ -36,7 +37,47 @@ class QCustomBarChart(QCustomChartBase, AxisChartProps, ChartCommonProps):
         </widget>
     </ui>
     """
-    WIDGET_MODULE = "Custom_Widgets.QCustomCharts"
+    __catalog__ = {
+        "name": "QCustomBarChart",
+        "props": {
+            "animationDuration": {"type": "int", "default": 1000},
+            "animationEnabled": {"type": "bool", "default": True},
+            "antialiasing": {"type": "bool", "default": True},
+            "autoScale": {"type": "bool", "default": True},
+            "barWidth": {"type": "float", "default": 0.7},
+            "categoriesCsv": {"type": "string", "default": ""},
+            "chartTitle": {"type": "string", "default": "Bar Chart"},
+            "compactMode": {"type": "bool", "default": False},
+            "crosshairColor": {"type": "color", "default": "#000000"},
+            "crosshairWidth": {"type": "float", "default": 1.0},
+            "gridColor": {"type": "color", "default": "#c8c8c8"},
+            "labelsPosition": {"type": "int", "default": 0},
+            "legendBackgroundVisible": {"type": "bool", "default": False},
+            "legendFontSize": {"type": "int", "default": 8},
+            "legendPosition": {"type": "int", "default": 1},
+            "seriesCsv": {"type": "string", "default": ""},
+            "showCrosshair": {"type": "bool", "default": True},
+            "showGrid": {"type": "bool", "default": True},
+            "showLegend": {"type": "bool", "default": True},
+            "showToolbar": {"type": "bool", "default": False},
+            "showValueLabels": {"type": "bool", "default": True},
+            "stacked": {"type": "bool", "default": False},
+            "theme": {"type": "int", "default": 0},
+            "tooltipDelay": {"type": "int", "default": 500},
+            "tooltipDuration": {"type": "int", "default": 5000},
+            "tooltipsEnabled": {"type": "bool", "default": True},
+            "valueLabelsFormat": {"type": "string", "default": "{:.1f}"},
+            "xAxisTitle": {"type": "string", "default": "Categories"},
+            "yAxisTitle": {"type": "string", "default": "Values"},
+        },
+        "signals": ["barClicked", "barHovered", "chartExportComplete", "legendPositionChanged", "seriesAdded", "seriesRemoved"],
+        "tokens_used": ["surface", "on-surface", "outline", "accent"],
+    }
+    # Per-class, not the package: all four sharing one module string made
+    # Designer write a coarse header and collapsed every generated stub
+    # onto a single path. This matches what existing .ui files already
+    # carry: <header>Custom_Widgets.QCustomCharts.QCustomBarChart</header>
+    WIDGET_MODULE = "Custom_Widgets.QCustomCharts.QCustomBarChart"
 
     # Rich editors for the Designer "Custom Properties" dock (see
     # DesignerTools.CustomPropertiesDock).
@@ -1041,3 +1082,21 @@ class QCustomBarChart(QCustomChartBase, AxisChartProps, ChartCommonProps):
     def labelsPosition(self, value):
         self._labels_position = chart_int_to_str(INT_TO_BAR_LABELS, value, _CC.BAR_LABELS_CENTER)
         self.updateChart()
+
+    # ------------------------------------------------------------------ #
+    ## Designer data entry (see ChartDataProps)
+    # ------------------------------------------------------------------ #
+    def _applyCsvSeries(self, series):
+        self.clearAllData()
+        categories = self._parseLabelsCsv(self._getCategoriesCsv()) or None
+        for name, values in series:
+            self.addSeries(name, values, categories=categories)
+
+    def _applyCsvCategories(self, labels):
+        """Re-apply the series too: categories are per-series on a bar chart,
+        so setting them after the data would otherwise be ignored."""
+        if labels:
+            self.setCategories(labels)
+        current = self._getSeriesCsv()
+        if current:
+            self._applyCsvSeries(self._parseSeriesCsv(current))

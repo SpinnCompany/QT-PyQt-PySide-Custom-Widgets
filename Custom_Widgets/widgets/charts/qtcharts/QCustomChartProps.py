@@ -366,3 +366,119 @@ class SeriesStyleProps:
         return chart_str_to_int(MARKER_STYLE_TO_INT, self.MARKER_NONE)
 
     defaultMarkerStyle = Property(int, _getDefaultMarkerStyle)
+
+
+class ChartDataProps:
+    """Designer-authorable data entry for the QtCharts widgets.
+
+    These charts exposed 27-37 styling properties to Qt Designer but no way to
+    put anything *in* them: data arrived only through addSeries(), which is
+    code-only. A form author could pick colours, legends and axis titles and
+    still be left with an empty chart. This closes that, following the
+    valuesCsv convention the painted charts already use.
+
+        seriesCsv      "10,20,30"                    one unnamed series
+                       "Revenue=10,20,30;Costs=5,8"  named series, ";" separated
+        categoriesCsv  "Jan,Feb,Mar"                 x categories / slice labels
+
+    Both round-trip, so Designer reads back what it wrote. Setting seriesCsv
+    replaces the chart's contents rather than appending: a .ui file describes
+    the whole chart, and re-applying a property on every load would otherwise
+    stack duplicate series.
+
+    Each chart implements _applyCsvSeries()/_applyCsvCategories(), because the
+    underlying data shapes genuinely differ - x/y points for line and area,
+    bare values plus categories for bar, (label, value) pairs for pie.
+    """
+
+    _CSV_SERIES_DEFAULT = ""
+    _CSV_CATEGORIES_DEFAULT = ""
+
+    # -- parsing helpers ------------------------------------------------ #
+    @staticmethod
+    def _parseCsvNumbers(chunk):
+        out = []
+        for token in str(chunk).split(","):
+            token = token.strip()
+            if not token:
+                continue
+            try:
+                out.append(float(token))
+            except ValueError:
+                pass            # a stray label in a numeric column is skipped
+        return out
+
+    @classmethod
+    def _parseSeriesCsv(cls, text):
+        """-> [(name, [values]), ...]. Unnamed chunks get "Series N"."""
+        series = []
+        for index, chunk in enumerate(str(text).replace("|", ";").split(";")):
+            chunk = chunk.strip()
+            if not chunk:
+                continue
+            if "=" in chunk:
+                name, _, values = chunk.partition("=")
+                name = name.strip() or "Series %d" % (len(series) + 1)
+            else:
+                name, values = "Series %d" % (len(series) + 1), chunk
+            numbers = cls._parseCsvNumbers(values)
+            if numbers:
+                series.append((name, numbers))
+        return series
+
+    @staticmethod
+    def _parseLabelsCsv(text):
+        return [t.strip() for t in str(text).replace(";", ",").split(",")
+                if t.strip()]
+
+    @staticmethod
+    def _formatSeriesCsv(series):
+        return ";".join(
+            "%s=%s" % (name, ",".join("%g" % v for v in values))
+            for name, values in series)
+
+    # -- Designer properties -------------------------------------------- #
+    def _getSeriesCsv(self):
+        return getattr(self, "_series_csv", self._CSV_SERIES_DEFAULT)
+
+    def _setSeriesCsv(self, value):
+        text = str(value)
+        parsed = self._parseSeriesCsv(text)
+        self._series_csv = self._formatSeriesCsv(parsed)
+        try:
+            self._applyCsvSeries(parsed)
+        except Exception as exc:                  # never break form loading
+            _logCsvFailure(self, "seriesCsv", exc)
+
+    seriesCsv = Property(str, _getSeriesCsv, _setSeriesCsv)
+
+    def _getCategoriesCsv(self):
+        return getattr(self, "_categories_csv", self._CSV_CATEGORIES_DEFAULT)
+
+    def _setCategoriesCsv(self, value):
+        labels = self._parseLabelsCsv(value)
+        self._categories_csv = ",".join(labels)
+        try:
+            self._applyCsvCategories(labels)
+        except Exception as exc:
+            _logCsvFailure(self, "categoriesCsv", exc)
+
+    categoriesCsv = Property(str, _getCategoriesCsv, _setCategoriesCsv)
+
+    # -- per-chart hooks ------------------------------------------------- #
+    def _applyCsvSeries(self, series):
+        raise NotImplementedError
+
+    def _applyCsvCategories(self, labels):
+        """Charts without categories ignore them rather than erroring."""
+        return None
+
+
+def _logCsvFailure(widget, prop, exc):
+    """A malformed property in a .ui must not abort loading the form."""
+    try:
+        from Custom_Widgets.Log import logException
+        logException(exc, message="%s: %s could not be applied"
+                                  % (type(widget).__name__, prop))
+    except Exception:
+        pass

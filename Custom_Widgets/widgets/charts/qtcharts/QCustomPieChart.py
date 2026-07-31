@@ -6,7 +6,7 @@ from qtpy.QtCharts import QChart, QPieSeries, QPieSlice, QChartView
 from qtpy.QtWidgets import QGraphicsLayout
 
 from .QCustomChartBase import QCustomChartBase # This already includes QCustomChartConstants
-from .QCustomChartProps import ChartCommonProps
+from .QCustomChartProps import ChartCommonProps, ChartDataProps
 from Custom_Widgets.Utils import is_in_designer
 from .QCustomChartConstants import (
     QCustomChartEnums as _CE,
@@ -14,7 +14,7 @@ from .QCustomChartConstants import (
     LABELS_POSITION_TO_INT, INT_TO_LABELS_POSITION)
 
 
-class QCustomPieChart(QCustomChartBase, ChartCommonProps):
+class QCustomPieChart(QCustomChartBase, ChartCommonProps, ChartDataProps):
     """
     Pie chart implementation using the modular architecture.
     Qt Designer compatible with property exposure.
@@ -36,7 +36,55 @@ class QCustomPieChart(QCustomChartBase, ChartCommonProps):
         </widget>
     </ui>
     """
-    WIDGET_MODULE = "Custom_Widgets.QCustomCharts"
+    __catalog__ = {
+        "name": "QCustomPieChart",
+        "props": {
+            "animationDuration": {"type": "int", "default": 1000},
+            "animationEnabled": {"type": "bool", "default": True},
+            "antialiasing": {"type": "bool", "default": True},
+            "borderColor": {"type": "color", "default": "#ffffff"},
+            "borderWidth": {"type": "float", "default": 2.0},
+            "categoriesCsv": {"type": "string", "default": ""},
+            "chartTitle": {"type": "string", "default": "Pie Chart"},
+            "compactMode": {"type": "bool", "default": False},
+            "endAngle": {"type": "float", "default": 360.0},
+            "explodeOnHover": {"type": "bool", "default": True},
+            "explosionDistance": {"type": "float", "default": 0.1},
+            "gradientFill": {"type": "bool", "default": True},
+            "gradientType": {"type": "string", "default": "radial"},
+            "hatchCsv": {"type": "string", "default": ""},
+            "hatchPattern": {"type": "string", "default": "bdiag"},
+            "holeSize": {"type": "float", "default": 0.0},
+            "hoverExplosionDistance": {"type": "float", "default": 0.15},
+            "labelsPosition": {"type": "int", "default": 0},
+            "legendBackgroundVisible": {"type": "bool", "default": False},
+            "legendFontSize": {"type": "int", "default": 8},
+            "legendMarkerBorderWidth": {"type": "float", "default": 1.0},
+            "legendPosition": {"type": "int", "default": 1},
+            "pieAngularSpan": {"type": "float", "default": 180.0},
+            "semicircleEnabled": {"type": "bool", "default": False},
+            "semicircleOrientation": {"type": "string", "default": "right"},
+            "seriesCsv": {"type": "string", "default": ""},
+            "showLabels": {"type": "bool", "default": True},
+            "showLegend": {"type": "bool", "default": True},
+            "showPercentLabels": {"type": "bool", "default": False},
+            "showPercentages": {"type": "bool", "default": True},
+            "showToolbar": {"type": "bool", "default": False},
+            "showValues": {"type": "bool", "default": True},
+            "startAngle": {"type": "float", "default": 0.0},
+            "theme": {"type": "int", "default": 0},
+            "tooltipDelay": {"type": "int", "default": 500},
+            "tooltipDuration": {"type": "int", "default": 5000},
+            "tooltipsEnabled": {"type": "bool", "default": True},
+        },
+        "signals": ["chartExportComplete", "legendPositionChanged", "seriesAdded", "seriesRemoved", "sliceClicked", "sliceExploded", "sliceHovered"],
+        "tokens_used": ["surface", "on-surface", "outline", "accent"],
+    }
+    # Per-class, not the package: all four sharing one module string made
+    # Designer write a coarse header and collapsed every generated stub
+    # onto a single path. This matches what existing .ui files already
+    # carry: <header>Custom_Widgets.QCustomCharts.QCustomPieChart</header>
+    WIDGET_MODULE = "Custom_Widgets.QCustomCharts.QCustomPieChart"
 
     # Rich editors for the Designer "Custom Properties" dock (see
     # DesignerTools.CustomPropertiesDock).
@@ -1703,3 +1751,26 @@ class QCustomPieChart(QCustomChartBase, ChartCommonProps):
                 slice_obj.setExplodeDistanceFactor(value)
                 self._chart.update()
     
+
+    # ------------------------------------------------------------------ #
+    ## Designer data entry (see ChartDataProps)
+    # ------------------------------------------------------------------ #
+    def _applyCsvSeries(self, series):
+        """A pie shows one series; labels come from categoriesCsv, falling
+        back to "Slice N" so the chart is never unlabelled."""
+        self.clearAllData()
+        if not series:
+            return
+        labels = self._parseLabelsCsv(self._getCategoriesCsv())
+        name, values = series[0]
+        data = []
+        for i, value in enumerate(values):
+            label = labels[i] if i < len(labels) else "Slice %d" % (i + 1)
+            data.append((label, value))
+        self.addSeries(name, data)
+
+    def _applyCsvCategories(self, labels):
+        """Slice labels only take effect through the series, so rebuild it."""
+        current = self._getSeriesCsv()
+        if current:
+            self._applyCsvSeries(self._parseSeriesCsv(current))
