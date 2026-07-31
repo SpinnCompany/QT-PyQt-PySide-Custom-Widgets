@@ -6,12 +6,13 @@ from Custom_Widgets.QCustomSidebar import QCustomSidebar
 from Custom_Widgets.Utils import is_in_designer
 
 import os
+from Custom_Widgets._resources import packageDir
 
 class QCustomSidebarContainer(QWidget):
     """A container widget that can hide or show its contents when the parent sidebar collapses/expands."""
     
     visibilityChanged = Signal(bool)
-    script_dir = os.path.dirname(os.path.realpath(__file__))
+    script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/featured_play_list.png")
     WIDGET_TOOLTIP = "A container widget that can hide or show its contents when the parent sidebar collapses/expands"
     WIDGET_DOM_XML = """

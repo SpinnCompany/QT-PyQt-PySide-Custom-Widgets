@@ -22,7 +22,7 @@
     "tier": "pro-ext"
   },
   {
-    "module": "Custom_Widgets/QCustomDataTable.py",
+    "module": "Custom_Widgets/widgets/data/QCustomDataTable.py",
     "widget": "QCustomDataTable",
     "loc": 1824,
     "pyi": true,
@@ -55,14 +55,36 @@
     "tier": "pro-ext"
   },
   {
-    "module": "Custom_Widgets/AnalogGaugeWidget.py",
+    "module": "Custom_Widgets/widgets/display/AnalogGaugeWidget.py",
     "widget": "AnalogGaugeWidget",
-    "loc": 1014,
+    "loc": 1015,
     "pyi": false,
     "catalog": false,
     "test": true,
     "example": true,
     "designer": true,
+    "tier": "free"
+  },
+  {
+    "module": "Custom_Widgets/widgets/data/QCustomAnnotationWidget.py",
+    "widget": "Canvas",
+    "loc": 547,
+    "pyi": false,
+    "catalog": false,
+    "test": true,
+    "example": false,
+    "designer": false,
+    "tier": "free"
+  },
+  {
+    "module": "Custom_Widgets/widgets/display/QCustomModals.py",
+    "widget": "LoadForm",
+    "loc": 873,
+    "pyi": false,
+    "catalog": false,
+    "test": true,
+    "example": true,
+    "designer": false,
     "tier": "free"
   },
   {
@@ -77,7 +99,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomAccordion.py",
+    "module": "Custom_Widgets/widgets/containers/QCustomAccordion.py",
     "widget": "QCustomAccordion",
     "loc": 150,
     "pyi": true,
@@ -88,7 +110,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomActionButton.py",
+    "module": "Custom_Widgets/widgets/buttons/QCustomActionButton.py",
     "widget": "QCustomActionButton",
     "loc": 152,
     "pyi": true,
@@ -99,7 +121,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomAgendaList.py",
+    "module": "Custom_Widgets/widgets/display/QCustomAgendaList.py",
     "widget": "QCustomAgendaList",
     "loc": 365,
     "pyi": true,
@@ -110,7 +132,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomAlert.py",
+    "module": "Custom_Widgets/widgets/display/QCustomAlert.py",
     "widget": "QCustomAlert",
     "loc": 166,
     "pyi": true,
@@ -118,17 +140,6 @@
     "test": true,
     "example": true,
     "designer": true,
-    "tier": "free"
-  },
-  {
-    "module": "Custom_Widgets/QCustomAnnotationWidget.py",
-    "widget": "QCustomAnnotationWidget",
-    "loc": 547,
-    "pyi": false,
-    "catalog": false,
-    "test": true,
-    "example": false,
-    "designer": false,
     "tier": "free"
   },
   {
@@ -143,7 +154,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomAvatar.py",
+    "module": "Custom_Widgets/widgets/display/QCustomAvatar.py",
     "widget": "QCustomAvatar",
     "loc": 297,
     "pyi": true,
@@ -154,7 +165,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomAvatarGroup.py",
+    "module": "Custom_Widgets/widgets/display/QCustomAvatarGroup.py",
     "widget": "QCustomAvatarGroup",
     "loc": 150,
     "pyi": true,
@@ -165,7 +176,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomBadge.py",
+    "module": "Custom_Widgets/widgets/display/QCustomBadge.py",
     "widget": "QCustomBadge",
     "loc": 224,
     "pyi": true,
@@ -176,7 +187,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomBeeswarm.py",
+    "module": "Custom_Widgets/widgets/charts/QCustomBeeswarm.py",
     "widget": "QCustomBeeswarm",
     "loc": 303,
     "pyi": true,
@@ -187,7 +198,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomBreadcrumbs.py",
+    "module": "Custom_Widgets/widgets/navigation/QCustomBreadcrumbs.py",
     "widget": "QCustomBreadcrumbs",
     "loc": 89,
     "pyi": true,
@@ -198,7 +209,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomBubbleChart.py",
+    "module": "Custom_Widgets/widgets/charts/QCustomBubbleChart.py",
     "widget": "QCustomBubbleChart",
     "loc": 634,
     "pyi": true,
@@ -220,7 +231,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomCandlestickChart.py",
+    "module": "Custom_Widgets/widgets/charts/QCustomCandlestickChart.py",
     "widget": "QCustomCandlestickChart",
     "loc": 501,
     "pyi": true,
@@ -231,7 +242,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomCard.py",
+    "module": "Custom_Widgets/widgets/display/QCustomCard.py",
     "widget": "QCustomCard",
     "loc": 118,
     "pyi": true,
@@ -242,7 +253,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomCardStack.py",
+    "module": "Custom_Widgets/widgets/containers/QCustomCardStack.py",
     "widget": "QCustomCardStack",
     "loc": 283,
     "pyi": true,
@@ -253,7 +264,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomCarousel.py",
+    "module": "Custom_Widgets/widgets/containers/QCustomCarousel.py",
     "widget": "QCustomCarousel",
     "loc": 224,
     "pyi": true,
@@ -264,7 +275,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomChatBubble.py",
+    "module": "Custom_Widgets/widgets/chat/QCustomChatBubble.py",
     "widget": "QCustomChatBubble",
     "loc": 410,
     "pyi": true,
@@ -275,7 +286,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomChatDivider.py",
+    "module": "Custom_Widgets/widgets/chat/QCustomChatDivider.py",
     "widget": "QCustomChatDivider",
     "loc": 180,
     "pyi": true,
@@ -286,7 +297,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomChatInput.py",
+    "module": "Custom_Widgets/widgets/chat/QCustomChatInput.py",
     "widget": "QCustomChatInput",
     "loc": 174,
     "pyi": true,
@@ -297,7 +308,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomChatList.py",
+    "module": "Custom_Widgets/widgets/chat/QCustomChatList.py",
     "widget": "QCustomChatList",
     "loc": 262,
     "pyi": true,
@@ -308,7 +319,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomChatListItem.py",
+    "module": "Custom_Widgets/widgets/chat/QCustomChatListItem.py",
     "widget": "QCustomChatListItem",
     "loc": 401,
     "pyi": true,
@@ -319,7 +330,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomChatThread.py",
+    "module": "Custom_Widgets/widgets/chat/QCustomChatThread.py",
     "widget": "QCustomChatThread",
     "loc": 412,
     "pyi": true,
@@ -330,9 +341,9 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomCheckBox.py",
+    "module": "Custom_Widgets/widgets/input/QCustomCheckBox.py",
     "widget": "QCustomCheckBox",
-    "loc": 269,
+    "loc": 270,
     "pyi": false,
     "catalog": false,
     "test": true,
@@ -341,7 +352,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomChip.py",
+    "module": "Custom_Widgets/widgets/display/QCustomChip.py",
     "widget": "QCustomChip",
     "loc": 181,
     "pyi": true,
@@ -352,7 +363,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomClockLabel.py",
+    "module": "Custom_Widgets/widgets/display/QCustomClockLabel.py",
     "widget": "QCustomClockLabel",
     "loc": 89,
     "pyi": true,
@@ -363,9 +374,9 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomCodeEditor.py",
+    "module": "Custom_Widgets/widgets/data/QCustomCodeEditor.py",
     "widget": "QCustomCodeEditor",
-    "loc": 342,
+    "loc": 343,
     "pyi": false,
     "catalog": false,
     "test": true,
@@ -374,7 +385,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomColorPicker.py",
+    "module": "Custom_Widgets/widgets/input/QCustomColorPicker.py",
     "widget": "QCustomColorPicker",
     "loc": 139,
     "pyi": true,
@@ -385,7 +396,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomComboBox.py",
+    "module": "Custom_Widgets/widgets/input/QCustomComboBox.py",
     "widget": "QCustomComboBox",
     "loc": 140,
     "pyi": true,
@@ -396,7 +407,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomCommandPalette.py",
+    "module": "Custom_Widgets/widgets/navigation/QCustomCommandPalette.py",
     "widget": "QCustomCommandPalette",
     "loc": 247,
     "pyi": true,
@@ -407,7 +418,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomCompass.py",
+    "module": "Custom_Widgets/widgets/charts/QCustomCompass.py",
     "widget": "QCustomCompass",
     "loc": 374,
     "pyi": true,
@@ -418,7 +429,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomCompassDial.py",
+    "module": "Custom_Widgets/widgets/charts/QCustomCompassDial.py",
     "widget": "QCustomCompassDial",
     "loc": 400,
     "pyi": true,
@@ -429,7 +440,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomCoverCard.py",
+    "module": "Custom_Widgets/widgets/display/QCustomCoverCard.py",
     "widget": "QCustomCoverCard",
     "loc": 406,
     "pyi": true,
@@ -440,7 +451,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomCoverFlow.py",
+    "module": "Custom_Widgets/widgets/media/QCustomCoverFlow.py",
     "widget": "QCustomCoverFlow",
     "loc": 539,
     "pyi": true,
@@ -451,7 +462,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomDateTimeEdit.py",
+    "module": "Custom_Widgets/widgets/input/QCustomDateTimeEdit.py",
     "widget": "QCustomDateEdit",
     "loc": 181,
     "pyi": true,
@@ -462,7 +473,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomDateRangePicker.py",
+    "module": "Custom_Widgets/widgets/input/QCustomDateRangePicker.py",
     "widget": "QCustomDateRangePicker",
     "loc": 413,
     "pyi": true,
@@ -473,7 +484,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomDivergingBarChart.py",
+    "module": "Custom_Widgets/widgets/charts/QCustomDivergingBarChart.py",
     "widget": "QCustomDivergingBarChart",
     "loc": 412,
     "pyi": true,
@@ -484,7 +495,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomDonut.py",
+    "module": "Custom_Widgets/widgets/charts/QCustomDonut.py",
     "widget": "QCustomDonut",
     "loc": 398,
     "pyi": true,
@@ -495,7 +506,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomDotMatrix.py",
+    "module": "Custom_Widgets/widgets/charts/QCustomDotMatrix.py",
     "widget": "QCustomDotMatrix",
     "loc": 253,
     "pyi": true,
@@ -506,7 +517,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomDrawer.py",
+    "module": "Custom_Widgets/widgets/navigation/QCustomDrawer.py",
     "widget": "QCustomDrawer",
     "loc": 138,
     "pyi": true,
@@ -517,7 +528,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomEmbeddedWindow.py",
+    "module": "Custom_Widgets/widgets/containers/QCustomEmbeddedWindow.py",
     "widget": "QCustomEmbeddedWindow",
     "loc": 266,
     "pyi": false,
@@ -528,9 +539,9 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomEmojiPicker.py",
+    "module": "Custom_Widgets/widgets/input/QCustomEmojiPicker.py",
     "widget": "QCustomEmojiPicker",
-    "loc": 557,
+    "loc": 558,
     "pyi": false,
     "catalog": false,
     "test": true,
@@ -539,7 +550,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomEmptyState.py",
+    "module": "Custom_Widgets/widgets/display/QCustomEmptyState.py",
     "widget": "QCustomEmptyState",
     "loc": 90,
     "pyi": true,
@@ -550,7 +561,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomFileCard.py",
+    "module": "Custom_Widgets/widgets/display/QCustomFileCard.py",
     "widget": "QCustomFileCard",
     "loc": 263,
     "pyi": true,
@@ -561,7 +572,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomFileDropZone.py",
+    "module": "Custom_Widgets/widgets/input/QCustomFileDropZone.py",
     "widget": "QCustomFileDropZone",
     "loc": 160,
     "pyi": true,
@@ -572,7 +583,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomFlowLayout.py",
+    "module": "Custom_Widgets/widgets/containers/QCustomFlowLayout.py",
     "widget": "QCustomFlowLayout",
     "loc": 750,
     "pyi": false,
@@ -583,9 +594,9 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomFlowWidget.py",
+    "module": "Custom_Widgets/widgets/containers/QCustomFlowWidget.py",
     "widget": "QCustomFlowWidget",
-    "loc": 399,
+    "loc": 400,
     "pyi": false,
     "catalog": false,
     "test": true,
@@ -594,7 +605,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomForm.py",
+    "module": "Custom_Widgets/widgets/input/QCustomForm.py",
     "widget": "QCustomForm",
     "loc": 114,
     "pyi": false,
@@ -605,7 +616,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomGanttChart.py",
+    "module": "Custom_Widgets/widgets/charts/QCustomGanttChart.py",
     "widget": "QCustomGanttChart",
     "loc": 361,
     "pyi": true,
@@ -616,7 +627,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomGlassFrame.py",
+    "module": "Custom_Widgets/widgets/containers/QCustomGlassFrame.py",
     "widget": "QCustomGlassFrame",
     "loc": 529,
     "pyi": true,
@@ -627,9 +638,9 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomHamburgerMenu.py",
+    "module": "Custom_Widgets/widgets/navigation/QCustomHamburgerMenu.py",
     "widget": "QCustomHamburgerMenu",
-    "loc": 839,
+    "loc": 840,
     "pyi": false,
     "catalog": false,
     "test": true,
@@ -638,7 +649,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomHeatmap.py",
+    "module": "Custom_Widgets/widgets/charts/QCustomHeatmap.py",
     "widget": "QCustomHeatmap",
     "loc": 527,
     "pyi": true,
@@ -649,9 +660,9 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomHorizontalSeparator.py",
+    "module": "Custom_Widgets/widgets/display/QCustomHorizontalSeparator.py",
     "widget": "QCustomHorizontalSeparator",
-    "loc": 119,
+    "loc": 120,
     "pyi": false,
     "catalog": false,
     "test": true,
@@ -671,7 +682,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomImageViewer.py",
+    "module": "Custom_Widgets/widgets/media/QCustomImageViewer.py",
     "widget": "QCustomImageViewer",
     "loc": 301,
     "pyi": true,
@@ -693,7 +704,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomKbd.py",
+    "module": "Custom_Widgets/widgets/display/QCustomKbd.py",
     "widget": "QCustomKbd",
     "loc": 112,
     "pyi": true,
@@ -704,7 +715,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomLinkPreview.py",
+    "module": "Custom_Widgets/widgets/display/QCustomLinkPreview.py",
     "widget": "QCustomLinkPreview",
     "loc": 211,
     "pyi": true,
@@ -715,7 +726,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomLiquidGauge.py",
+    "module": "Custom_Widgets/widgets/charts/QCustomLiquidGauge.py",
     "widget": "QCustomLiquidGauge",
     "loc": 502,
     "pyi": true,
@@ -726,7 +737,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomListRow.py",
+    "module": "Custom_Widgets/widgets/display/QCustomListRow.py",
     "widget": "QCustomListRow",
     "loc": 311,
     "pyi": true,
@@ -737,7 +748,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomLoadingIndicators.py",
+    "module": "Custom_Widgets/widgets/display/QCustomLoadingIndicators.py",
     "widget": "QCustomLoadingIndicators",
     "loc": 7,
     "pyi": false,
@@ -748,7 +759,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomMediaGrid.py",
+    "module": "Custom_Widgets/widgets/media/QCustomMediaGrid.py",
     "widget": "QCustomMediaGrid",
     "loc": 198,
     "pyi": true,
@@ -759,7 +770,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomMediaTimeline.py",
+    "module": "Custom_Widgets/widgets/media/QCustomMediaTimeline.py",
     "widget": "QCustomMediaTimeline",
     "loc": 608,
     "pyi": true,
@@ -770,7 +781,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomMenu.py",
+    "module": "Custom_Widgets/widgets/navigation/QCustomMenu.py",
     "widget": "QCustomMenu",
     "loc": 181,
     "pyi": true,
@@ -781,7 +792,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomMessageStatus.py",
+    "module": "Custom_Widgets/widgets/chat/QCustomMessageStatus.py",
     "widget": "QCustomMessageStatus",
     "loc": 152,
     "pyi": false,
@@ -792,7 +803,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomMiniBarChart.py",
+    "module": "Custom_Widgets/widgets/charts/QCustomMiniBarChart.py",
     "widget": "QCustomMiniBarChart",
     "loc": 505,
     "pyi": true,
@@ -803,7 +814,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomModal.py",
+    "module": "Custom_Widgets/widgets/containers/QCustomModal.py",
     "widget": "QCustomModal",
     "loc": 289,
     "pyi": true,
@@ -811,17 +822,6 @@
     "test": true,
     "example": true,
     "designer": true,
-    "tier": "free"
-  },
-  {
-    "module": "Custom_Widgets/QCustomModals.py",
-    "widget": "QCustomModals",
-    "loc": 873,
-    "pyi": false,
-    "catalog": false,
-    "test": true,
-    "example": true,
-    "designer": false,
     "tier": "free"
   },
   {
@@ -836,7 +836,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomNodeGraph.py",
+    "module": "Custom_Widgets/widgets/data/QCustomNodeGraph.py",
     "widget": "QCustomNodeGraph",
     "loc": 1031,
     "pyi": true,
@@ -858,7 +858,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomPageDots.py",
+    "module": "Custom_Widgets/widgets/display/QCustomPageDots.py",
     "widget": "QCustomPageDots",
     "loc": 256,
     "pyi": true,
@@ -869,7 +869,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomPagination.py",
+    "module": "Custom_Widgets/widgets/navigation/QCustomPagination.py",
     "widget": "QCustomPagination",
     "loc": 122,
     "pyi": true,
@@ -880,7 +880,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomPaymentCard.py",
+    "module": "Custom_Widgets/widgets/display/QCustomPaymentCard.py",
     "widget": "QCustomPaymentCard",
     "loc": 358,
     "pyi": true,
@@ -902,7 +902,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomPlayerBar.py",
+    "module": "Custom_Widgets/widgets/media/QCustomPlayerBar.py",
     "widget": "QCustomPlayerBar",
     "loc": 678,
     "pyi": true,
@@ -913,7 +913,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomPopover.py",
+    "module": "Custom_Widgets/widgets/containers/QCustomPopover.py",
     "widget": "QCustomPopover",
     "loc": 171,
     "pyi": true,
@@ -924,7 +924,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomProgressBars.py",
+    "module": "Custom_Widgets/widgets/display/QCustomProgressBars.py",
     "widget": "QCustomProgressBars",
     "loc": 1,
     "pyi": false,
@@ -935,7 +935,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomProgressIndicator.py",
+    "module": "Custom_Widgets/widgets/display/QCustomProgressIndicator.py",
     "widget": "QCustomProgressIndicator",
     "loc": 375,
     "pyi": false,
@@ -946,7 +946,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomProgressRing.py",
+    "module": "Custom_Widgets/widgets/display/QCustomProgressRing.py",
     "widget": "QCustomProgressRing",
     "loc": 190,
     "pyi": true,
@@ -957,7 +957,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomQDialog.py",
+    "module": "Custom_Widgets/widgets/containers/QCustomQDialog.py",
     "widget": "QCustomQDialog",
     "loc": 492,
     "pyi": false,
@@ -968,7 +968,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomQLabel.py",
+    "module": "Custom_Widgets/widgets/display/QCustomQLabel.py",
     "widget": "QCustomQLabel",
     "loc": 186,
     "pyi": true,
@@ -979,9 +979,9 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomQMainWindow.py",
+    "module": "Custom_Widgets/widgets/containers/QCustomQMainWindow.py",
     "widget": "QCustomQMainWindow",
-    "loc": 484,
+    "loc": 485,
     "pyi": false,
     "catalog": false,
     "test": true,
@@ -1001,7 +1001,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomQPushButton.py",
+    "module": "Custom_Widgets/widgets/buttons/QCustomQPushButton.py",
     "widget": "QCustomQPushButton",
     "loc": 610,
     "pyi": true,
@@ -1012,7 +1012,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomQPushButtonGroup.py",
+    "module": "Custom_Widgets/widgets/buttons/QCustomQPushButtonGroup.py",
     "widget": "QCustomQPushButtonGroup",
     "loc": 60,
     "pyi": false,
@@ -1023,9 +1023,9 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomQRGenerator.py",
+    "module": "Custom_Widgets/widgets/display/QCustomQRGenerator.py",
     "widget": "QCustomQRGenerator",
-    "loc": 721,
+    "loc": 722,
     "pyi": false,
     "catalog": false,
     "test": true,
@@ -1034,7 +1034,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomQSlider.py",
+    "module": "Custom_Widgets/widgets/input/QCustomQSlider.py",
     "widget": "QCustomQSlider",
     "loc": 47,
     "pyi": false,
@@ -1045,9 +1045,9 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomQStackedWidget.py",
+    "module": "Custom_Widgets/widgets/containers/QCustomQStackedWidget.py",
     "widget": "QCustomQStackedWidget",
-    "loc": 816,
+    "loc": 817,
     "pyi": false,
     "catalog": false,
     "test": true,
@@ -1056,7 +1056,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomQToolTip.py",
+    "module": "Custom_Widgets/widgets/display/QCustomQToolTip.py",
     "widget": "QCustomQToolTip",
     "loc": 662,
     "pyi": false,
@@ -1067,7 +1067,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomRadialGauge.py",
+    "module": "Custom_Widgets/widgets/charts/QCustomRadialGauge.py",
     "widget": "QCustomRadialGauge",
     "loc": 1088,
     "pyi": true,
@@ -1100,7 +1100,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomRangeSlider.py",
+    "module": "Custom_Widgets/widgets/input/QCustomRangeSlider.py",
     "widget": "QCustomRangeSlider",
     "loc": 220,
     "pyi": true,
@@ -1111,7 +1111,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomRating.py",
+    "module": "Custom_Widgets/widgets/input/QCustomRating.py",
     "widget": "QCustomRating",
     "loc": 135,
     "pyi": true,
@@ -1122,7 +1122,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomReactionBar.py",
+    "module": "Custom_Widgets/widgets/chat/QCustomReactionBar.py",
     "widget": "QCustomReactionBar",
     "loc": 202,
     "pyi": true,
@@ -1133,7 +1133,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomRichTextEditor.py",
+    "module": "Custom_Widgets/widgets/data/QCustomRichTextEditor.py",
     "widget": "QCustomRichTextEditor",
     "loc": 186,
     "pyi": true,
@@ -1155,7 +1155,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomRulerPicker.py",
+    "module": "Custom_Widgets/widgets/input/QCustomRulerPicker.py",
     "widget": "QCustomRulerPicker",
     "loc": 467,
     "pyi": true,
@@ -1166,7 +1166,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomSegmentedControl.py",
+    "module": "Custom_Widgets/widgets/input/QCustomSegmentedControl.py",
     "widget": "QCustomSegmentedControl",
     "loc": 146,
     "pyi": true,
@@ -1177,9 +1177,9 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomSidebar.py",
+    "module": "Custom_Widgets/widgets/navigation/QCustomSidebar.py",
     "widget": "QCustomSidebar",
-    "loc": 310,
+    "loc": 311,
     "pyi": false,
     "catalog": false,
     "test": true,
@@ -1188,9 +1188,9 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomSidebarButton.py",
+    "module": "Custom_Widgets/widgets/navigation/QCustomSidebarButton.py",
     "widget": "QCustomSidebarButton",
-    "loc": 543,
+    "loc": 544,
     "pyi": false,
     "catalog": false,
     "test": true,
@@ -1199,9 +1199,9 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomSidebarContainer.py",
+    "module": "Custom_Widgets/widgets/navigation/QCustomSidebarContainer.py",
     "widget": "QCustomSidebarContainer",
-    "loc": 246,
+    "loc": 247,
     "pyi": false,
     "catalog": false,
     "test": true,
@@ -1210,9 +1210,9 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomSidebarLabel.py",
+    "module": "Custom_Widgets/widgets/navigation/QCustomSidebarLabel.py",
     "widget": "QCustomSidebarLabel",
-    "loc": 241,
+    "loc": 242,
     "pyi": false,
     "catalog": false,
     "test": true,
@@ -1221,7 +1221,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomSkeleton.py",
+    "module": "Custom_Widgets/widgets/display/QCustomSkeleton.py",
     "widget": "QCustomSkeleton",
     "loc": 134,
     "pyi": true,
@@ -1232,7 +1232,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomSlideMenu.py",
+    "module": "Custom_Widgets/widgets/navigation/QCustomSlideMenu.py",
     "widget": "QCustomSlideMenu",
     "loc": 607,
     "pyi": false,
@@ -1243,7 +1243,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomSparkline.py",
+    "module": "Custom_Widgets/widgets/charts/QCustomSparkline.py",
     "widget": "QCustomSparkline",
     "loc": 290,
     "pyi": true,
@@ -1265,7 +1265,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomSplitter.py",
+    "module": "Custom_Widgets/widgets/containers/QCustomSplitter.py",
     "widget": "QCustomSplitter",
     "loc": 57,
     "pyi": true,
@@ -1276,7 +1276,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomStatCard.py",
+    "module": "Custom_Widgets/widgets/display/QCustomStatCard.py",
     "widget": "QCustomStatCard",
     "loc": 160,
     "pyi": true,
@@ -1287,7 +1287,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomStepper.py",
+    "module": "Custom_Widgets/widgets/navigation/QCustomStepper.py",
     "widget": "QCustomStepper",
     "loc": 132,
     "pyi": true,
@@ -1309,7 +1309,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomTableToolbar.py",
+    "module": "Custom_Widgets/widgets/data/QCustomTableToolbar.py",
     "widget": "QCustomTableToolbar",
     "loc": 541,
     "pyi": true,
@@ -1320,7 +1320,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomTabWidget.py",
+    "module": "Custom_Widgets/widgets/navigation/QCustomTabWidget.py",
     "widget": "QCustomTabWidget",
     "loc": 120,
     "pyi": true,
@@ -1342,9 +1342,9 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomThemeDarkLightToggle.py",
+    "module": "Custom_Widgets/widgets/buttons/QCustomThemeDarkLightToggle.py",
     "widget": "QCustomThemeDarkLightToggle",
-    "loc": 168,
+    "loc": 169,
     "pyi": false,
     "catalog": false,
     "test": true,
@@ -1353,7 +1353,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomTileButton.py",
+    "module": "Custom_Widgets/widgets/buttons/QCustomTileButton.py",
     "widget": "QCustomTileButton",
     "loc": 257,
     "pyi": true,
@@ -1364,7 +1364,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomTimeline.py",
+    "module": "Custom_Widgets/widgets/display/QCustomTimeline.py",
     "widget": "QCustomTimeline",
     "loc": 143,
     "pyi": true,
@@ -1375,7 +1375,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomTipOverlay.py",
+    "module": "Custom_Widgets/widgets/display/QCustomTipOverlay.py",
     "widget": "QCustomTipOverlay",
     "loc": 1043,
     "pyi": false,
@@ -1386,7 +1386,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomToast.py",
+    "module": "Custom_Widgets/widgets/display/QCustomToast.py",
     "widget": "QCustomToast",
     "loc": 233,
     "pyi": true,
@@ -1397,7 +1397,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomTreeWidget.py",
+    "module": "Custom_Widgets/widgets/data/QCustomTreeWidget.py",
     "widget": "QCustomTreeWidget",
     "loc": 102,
     "pyi": true,
@@ -1408,7 +1408,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomTrendChip.py",
+    "module": "Custom_Widgets/widgets/display/QCustomTrendChip.py",
     "widget": "QCustomTrendChip",
     "loc": 251,
     "pyi": true,
@@ -1419,7 +1419,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomTypingIndicator.py",
+    "module": "Custom_Widgets/widgets/chat/QCustomTypingIndicator.py",
     "widget": "QCustomTypingIndicator",
     "loc": 144,
     "pyi": true,
@@ -1441,9 +1441,9 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomVerticalSeparator.py",
+    "module": "Custom_Widgets/widgets/display/QCustomVerticalSeparator.py",
     "widget": "QCustomVerticalSeparator",
-    "loc": 117,
+    "loc": 118,
     "pyi": false,
     "catalog": false,
     "test": true,
@@ -1452,7 +1452,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomVideoPlayer.py",
+    "module": "Custom_Widgets/widgets/media/QCustomVideoPlayer.py",
     "widget": "QCustomVideoPlayer",
     "loc": 327,
     "pyi": true,
@@ -1463,7 +1463,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomVoiceMessage.py",
+    "module": "Custom_Widgets/widgets/media/QCustomVoiceMessage.py",
     "widget": "QCustomVoiceMessage",
     "loc": 302,
     "pyi": true,
@@ -1474,7 +1474,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomWallpaper.py",
+    "module": "Custom_Widgets/widgets/media/QCustomWallpaper.py",
     "widget": "QCustomWallpaper",
     "loc": 131,
     "pyi": true,
@@ -1485,7 +1485,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomWaveform.py",
+    "module": "Custom_Widgets/widgets/charts/QCustomWaveform.py",
     "widget": "QCustomWaveform",
     "loc": 457,
     "pyi": true,
@@ -1496,7 +1496,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QFlowProgressBar.py",
+    "module": "Custom_Widgets/widgets/display/QFlowProgressBar.py",
     "widget": "QFlowProgressBar",
     "loc": 381,
     "pyi": false,
@@ -1507,7 +1507,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomTagEdit.py",
+    "module": "Custom_Widgets/widgets/input/QCustomTagEdit.py",
     "widget": "QTagEdit",
     "loc": 269,
     "pyi": false,
@@ -1639,9 +1639,9 @@
     "tier": "internal"
   },
   {
-    "module": "Custom_Widgets/QCustomComponent.py",
+    "module": "Custom_Widgets/widgets/containers/QCustomComponent.py",
     "widget": "QCustomComponent",
-    "loc": 114,
+    "loc": 115,
     "pyi": false,
     "catalog": false,
     "test": true,
@@ -1650,9 +1650,9 @@
     "tier": "internal"
   },
   {
-    "module": "Custom_Widgets/QCustomComponentContainer.py",
+    "module": "Custom_Widgets/widgets/containers/QCustomComponentContainer.py",
     "widget": "QCustomComponentContainer",
-    "loc": 188,
+    "loc": 189,
     "pyi": false,
     "catalog": false,
     "test": true,
@@ -1661,7 +1661,7 @@
     "tier": "internal"
   },
   {
-    "module": "Custom_Widgets/QCustomComponentLoader.py",
+    "module": "Custom_Widgets/widgets/containers/QCustomComponentLoader.py",
     "widget": "QCustomComponentLoader",
     "loc": 678,
     "pyi": false,
@@ -1716,9 +1716,9 @@
     "tier": "internal"
   },
   {
-    "module": "Custom_Widgets/QCustomThemeList.py",
+    "module": "Custom_Widgets/widgets/input/QCustomThemeList.py",
     "widget": "QCustomThemeList",
-    "loc": 139,
+    "loc": 140,
     "pyi": false,
     "catalog": false,
     "test": true,

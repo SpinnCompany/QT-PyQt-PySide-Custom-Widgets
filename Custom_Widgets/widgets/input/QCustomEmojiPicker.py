@@ -35,8 +35,9 @@ from qtpy.QtSvg import QSvgRenderer
 
 from Custom_Widgets.components.python.ui_emojiPicker import Ui_Form
 from Custom_Widgets.QCustomTipOverlay import QCustomTipOverlay
+from Custom_Widgets._resources import packageDir
 
-_PKG = os.path.dirname(os.path.realpath(__file__))
+_PKG = packageDir()
 _BUNDLED_JSON = os.path.join(_PKG, "components", "json", "emojis.json")
 _MD_ICONS = os.path.join(_PKG, "Qss", "icons", "material_design")
 _FEATHER = os.path.join(_PKG, "Qss", "icons", "feather")

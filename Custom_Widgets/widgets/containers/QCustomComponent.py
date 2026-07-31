@@ -8,10 +8,11 @@ from Custom_Widgets.JSonStyles import updateJson, loadJsonStyle
 from Custom_Widgets.Log import logInfo, logError
 from Custom_Widgets.Utils import SharedData, is_in_designer
 from Custom_Widgets.QCustomTheme import QCustomTheme
+from Custom_Widgets._resources import packageDir
 
 class QCustomComponent(QWidget):
     # Icon path for the widget in Qt Designer
-    script_dir = os.path.dirname(os.path.realpath(__file__))
+    script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/widgets.png")
 
     # Tooltip for the widget

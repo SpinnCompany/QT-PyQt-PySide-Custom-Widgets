@@ -5,10 +5,11 @@ from Custom_Widgets.QCustomTheme import QCustomTheme
 from Custom_Widgets.QAppSettings import QAppSettings
 
 import os
+from Custom_Widgets._resources import packageDir
 
 class QCustomThemeList(QComboBox):
     # Icon path for the widget
-    script_dir = os.path.dirname(os.path.realpath(__file__))
+    script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/palette.png")
     
     # Tooltip for the widget

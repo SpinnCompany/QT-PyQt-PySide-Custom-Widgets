@@ -3,46 +3,46 @@ from qtpy.QtCore import QSize, Qt, Property
 from qtpy.QtGui import QPainter, QColor, QPalette
 
 import os
+from Custom_Widgets._resources import packageDir
 
-class QCustomHorizontalSeparator(QWidget):
+class QCustomVerticalSeparator(QWidget):
     # Meta-information for integration with Qt Designer or other uses
-    script_dir = os.path.dirname(os.path.realpath(__file__))
-    WIDGET_ICON = os.path.join(script_dir, "components/icons/horizontal_rule.png")
-    WIDGET_TOOLTIP = "A custom horizontal separator widget"
+    script_dir = packageDir()
+    WIDGET_ICON = os.path.join(script_dir, "components/icons/vertical_split.png")
+    WIDGET_TOOLTIP = "A custom vertical separator widget"
     WIDGET_DOM_XML = """
     <ui language='c++'>
-        <widget class='QCustomHorizontalSeparator' name='customHorizontalSeparator'>
+        <widget class='QCustomVerticalSeparator' name='customVerticalSeparator'>
         </widget>
     </ui>
     """
-    WIDGET_MODULE = "Custom_Widgets.QCustomHorizontalSeparator"
+    WIDGET_MODULE = "Custom_Widgets.QCustomVerticalSeparator"
 
     # Rich editors for the Designer "Custom Properties" dock (see
     # DesignerTools.CustomPropertiesDock).
     DESIGNER_CUSTOM_PROPS = [
         {"name": "color", "kind": "color", "group": "Separator"},
-        {"name": "height", "kind": "int", "group": "Separator"},
+        {"name": "width", "kind": "int", "group": "Separator"},
         {"name": "margin", "kind": "int", "group": "Separator"},
     ]
 
-    def __init__(self, parent=None, color=None, height=1, margin=8):
+    def __init__(self, parent=None, color=None, width=1, margin=8):
         super().__init__(parent)
         
         # If no color is passed, use the default text color from the palette
         if color is not None:
             self.setColor(color)
         
-        self._height = height
+        self._width = width
         self._margin = margin
         
-        # Set the size policy correctly using QSizePolicy enums
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        # Set the size policy correctly using QSizePolicy enums (Fixed for width, Expanding for height)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding)
         self.setSizePolicy(sizePolicy)
 
     def getColor(self):
         # Get the palette's text color (matches application theme)
         self._color = self.palette().color(QPalette.Text)
-
         return self._color
 
     def setColor(self, color):
@@ -58,29 +58,29 @@ class QCustomHorizontalSeparator(QWidget):
     def color(self, color):
         self.setColor(color)
 
-    # Height Property
-    def getHeight(self):
-        return self._height
+    # Width Property (equivalent to height in horizontal separator)
+    def getWidth(self):
+        return self._width
 
-    def setHeight(self, height):
-        """Sets the height (thickness) of the separator."""
-        self._height = height
+    def setWidth(self, width):
+        """Sets the width (thickness) of the separator."""
+        self._width = width
         self.updateGeometry()
 
     @Property(int)
-    def height(self):
-        return self.getHeight()
+    def width(self):
+        return self.getWidth()
 
-    @height.setter
-    def height(self, height):
-        self.setHeight(height)
+    @width.setter
+    def width(self, width):
+        self.setWidth(width)
 
     # Margin Property
     def getMargin(self):
         return self._margin
 
     def setMargin(self, margin):
-        """Sets the vertical margin around the separator line."""
+        """Sets the horizontal margin around the separator line."""
         self._margin = margin
         self.updateGeometry()
 
@@ -94,11 +94,11 @@ class QCustomHorizontalSeparator(QWidget):
 
     def sizeHint(self):
         """Returns the suggested size for the separator."""
-        return QSize(100, self._height + 2 * self._margin)
+        return QSize(self._width + 2 * self._margin, 100)
 
     def minimumSizeHint(self):
         """Returns the minimum size hint for the separator."""
-        return QSize(20, self._height + 2 * self._margin)
+        return QSize(self._width + 2 * self._margin, 20)
 
     def paintEvent(self, event):
         """Overrides the paint event to draw the separator."""
@@ -111,8 +111,8 @@ class QCustomHorizontalSeparator(QWidget):
         painter.setBrush(self._color)
         
         # Calculate the position and dimensions for the separator
-        y = self._margin
+        x = self._margin
         rect = self.rect()
-        painter.drawRect(0, y, rect.width(), self._height)
+        painter.drawRect(x, 0, self._width, rect.height())
 
         painter.end()

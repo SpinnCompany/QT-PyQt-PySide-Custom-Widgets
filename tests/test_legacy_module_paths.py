@@ -122,6 +122,50 @@ class TestToolingSeesMovedWidgets:
             assert "`%s`" % name in text, "%s missing from the launch gate" % name
 
 
+class TestBundledResourcePaths:
+    """Widget modules must anchor bundled data on the package root.
+
+    components/, Qss/, fonts/ and the CodeEditor* directories all live at
+    Custom_Widgets/. A module in Custom_Widgets/widgets/<group>/ that resolves
+    them from its own __file__ lands one or more directories too deep — which
+    is exactly how the regrouping broke every icon and theme lookup at once.
+    """
+
+    def test_no_module_local_file_anchoring(self, qapp):
+        import re
+        pattern = re.compile(
+            r"dirname\(\s*os\.path\.(realpath|abspath)\(\s*__file__|"
+            r"dirname\(\s*__file__|"
+            r"Path\(\s*__file__\s*\)\.parents?")
+        offenders = []
+        base = os.path.join(REPO, "Custom_Widgets", "widgets")
+        for dirpath, dirnames, filenames in os.walk(base):
+            dirnames[:] = [d for d in dirnames if d != "__pycache__"]
+            for filename in filenames:
+                if not filename.endswith(".py"):
+                    continue
+                path = os.path.join(dirpath, filename)
+                text = open(path, encoding="utf-8", errors="ignore").read()
+                if pattern.search(text):
+                    offenders.append(os.path.relpath(path, REPO))
+        assert not offenders, (
+            "these resolve bundled data from their own __file__ and will break "
+            "when moved — use Custom_Widgets._resources.packageDir(): %s"
+            % ", ".join(sorted(offenders)))
+
+    def test_package_dir_points_at_the_package_root(self, qapp):
+        from Custom_Widgets._resources import packageDir, resourcePath
+        assert os.path.isdir(os.path.join(packageDir(), "components"))
+        assert os.path.isdir(resourcePath("Qss"))
+
+    def test_a_moved_widget_still_finds_its_resources(self, qapp):
+        """AnalogGaugeWidget reads a JSON theme file; it moved two levels."""
+        from Custom_Widgets.AnalogGaugeWidget import AnalogGaugeWidget
+        gauge = AnalogGaugeWidget()
+        gauge.resize(160, 160)
+        gauge.grab()                       # would raise FileNotFoundError
+
+
 class TestUiHeadersResolve:
     def test_every_ui_header_in_repo_is_importable(self, qapp):
         """Walk the .ui files and import each Custom_Widgets header they name.

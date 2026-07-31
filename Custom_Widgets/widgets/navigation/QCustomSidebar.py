@@ -14,9 +14,10 @@ from Custom_Widgets.JSonStyles import updateJson
 from Custom_Widgets.Log import *
 from Custom_Widgets.Utils import replace_url_prefix, is_in_designer, get_icon_path
 from Custom_Widgets.QPropertyAnimation import returnAnimationEasingCurve, easingCurveToInt
+from Custom_Widgets._resources import packageDir
 
 class QCustomSidebar(QCustomSlideMenu):
-    script_dir = os.path.dirname(os.path.realpath(__file__))
+    script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/view_sidebar.png")
     WIDGET_TOOLTIP = "A custom collapsible sidebar widget"
     WIDGET_DOM_XML = """

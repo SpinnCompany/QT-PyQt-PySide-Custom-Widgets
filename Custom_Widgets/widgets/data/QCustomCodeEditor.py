@@ -14,6 +14,7 @@ import pathlib
 from qtpy.QtCore import QRegularExpression, Qt
 from qtpy.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel, QPlainTextEdit
 from qtpy.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QPainter, QPen, QBrush 
+from Custom_Widgets._resources import packageDir
 
 class QCustomCodeEditor(QWidget):
 
@@ -209,7 +210,7 @@ class QCustomSyntaxHighlighter(QSyntaxHighlighter):
             pass
 
         else:
-            path = pathlib.Path(__file__).parents[0] / "CodeEditorThemes" / f"{theme}.json"
+            path = pathlib.Path(packageDir()) / "CodeEditorThemes" / f"{theme}.json"
             with open(path, "r", encoding="utf-8") as f:
                 s = json.loads(f.read())
 
@@ -233,7 +234,7 @@ class QCustomSyntaxHighlighter(QSyntaxHighlighter):
 
             if self.lang == "plain": return
 
-            path = pathlib.Path(__file__).parents[0] / "CodeEditorSyntax" / f"{self.lang}.json"
+            path = pathlib.Path(packageDir()) / "CodeEditorSyntax" / f"{self.lang}.json"
             with open(path, "r", encoding="utf-8") as f:
                 rr = json.loads(f.read())
 

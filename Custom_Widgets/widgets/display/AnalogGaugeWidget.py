@@ -23,11 +23,12 @@ from qtpy.QtGui import QPolygon, QPolygonF, QColor, QPen, QFont, QPainter, QFont
 from qtpy.QtCore import Qt, QTimer, QPoint, QPointF, QRect, QSize, QObject, Signal, Property
 
 from Custom_Widgets.Log import *
+from Custom_Widgets._resources import packageDir
 
 # AnalogGaugeWidget CLASS
 class AnalogGaugeWidget(QWidget):
     # Icon path for the widget
-    script_dir = os.path.dirname(os.path.realpath(__file__))
+    script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/speed.png")
     
     # Tooltip for the widget
@@ -133,7 +134,7 @@ class AnalogGaugeWidget(QWidget):
         self._units = "℃"
         self._themeNumber = 1
 
-        QFontDatabase.addApplicationFont(os.path.join(os.path.dirname(__file__), 'fonts/Orbitron/Orbitron-VariableFont_wght.ttf'))
+        QFontDatabase.addApplicationFont(os.path.join(packageDir(), 'fonts/Orbitron/Orbitron-VariableFont_wght.ttf'))
         
         self.update()
         self.setGaugeTheme(0)
@@ -508,7 +509,7 @@ class AnalogGaugeWidget(QWidget):
 
 
     def setGaugeTheme(self, Theme=0):
-        script_dir = os.path.dirname(os.path.realpath(__file__))
+        script_dir = packageDir()
         theme_file = os.path.join(script_dir, "components/json/QAnalogGaugeThemes.json")
         with open(theme_file, 'r') as file:
             themes_data = json.load(file)

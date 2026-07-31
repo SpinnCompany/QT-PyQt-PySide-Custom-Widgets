@@ -2,10 +2,11 @@ from qtpy.QtCore import Qt, Signal, Property
 from qtpy.QtGui import QPixmap, QPainter, QPen, QColor, QPainterPath
 from qtpy.QtWidgets import QFrame
 import os 
+from Custom_Widgets._resources import packageDir
 
 class QAvatarWidget(QFrame):
     # Custom widget icon
-    script_dir = os.path.dirname(os.path.realpath(__file__))
+    script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/account_circle.png")
 
     WIDGET_TOOLTIP = "A custom avatar widget"

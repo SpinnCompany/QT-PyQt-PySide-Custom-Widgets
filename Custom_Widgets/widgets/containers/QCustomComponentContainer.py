@@ -10,11 +10,12 @@ from Custom_Widgets.QCustomTheme import QCustomTheme
 from Custom_Widgets.Utils import is_in_designer
 from Custom_Widgets.QCustomComponentLoader import QCustomComponentLoader
 from Custom_Widgets.Log import logError, logException
+from Custom_Widgets._resources import packageDir
 
 class QCustomComponentContainer(QWidget):
     """A custom widget to load and display a UI class defined in an external file."""
 
-    script_dir = os.path.dirname(os.path.realpath(__file__))
+    script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/view_quilt.png")
     WIDGET_TOOLTIP = "A custom component loader for dynamic UI loading."
     WIDGET_DOM_XML = """

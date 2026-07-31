@@ -14,13 +14,14 @@ from Custom_Widgets.QPropertyAnimation import returnAnimationEasingCurve, easing
 
 # Import the AcrylicEffect class
 from Custom_Widgets.AcrylicEffect import AcrylicEffect
+from Custom_Widgets._resources import packageDir
 
 class QCustomHamburgerMenu(QWidget):
     """
     A customizable hamburger menu widget for Qt Designer with four-position support.
     """
     
-    script_dir = os.path.dirname(os.path.realpath(__file__))
+    script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/reorder.png")
     WIDGET_TOOLTIP = "A customizable hamburger menu with four-position support"
     WIDGET_DOM_XML = """

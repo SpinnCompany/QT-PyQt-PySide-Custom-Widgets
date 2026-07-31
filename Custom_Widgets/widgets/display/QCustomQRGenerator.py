@@ -9,6 +9,7 @@ from qtpy.QtGui import QPainter, QColor, QPaintEvent, QPixmap, QIcon, QPalette
 from Custom_Widgets.Log import *
 from Custom_Widgets.Utils import is_in_designer
 from Custom_Widgets.QCustomTheme import QCustomTheme
+from Custom_Widgets._resources import packageDir
 
 # Optional qrcode stack. Install with
 # `pip install QT-PyQt-PySide-Custom-Widgets[qr]`.
@@ -35,7 +36,7 @@ class QCustomQRGenerator(QWidget):
     Uses QWidget with QLabel to display QR codes with customization through properties.
     """
     
-    script_dir = os.path.dirname(os.path.realpath(__file__))
+    script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/qr_code_scanner.png")
     WIDGET_TOOLTIP = "A customizable QR code generator widget"
     WIDGET_DOM_XML = """
