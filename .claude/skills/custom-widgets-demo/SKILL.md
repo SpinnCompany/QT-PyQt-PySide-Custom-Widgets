@@ -7,12 +7,29 @@ description: Build a runnable, screenshot-verified demo app with the design-toke
 
 ## ⛔ RULE #1 — MCP first (do this before anything below)
 
-Before ANY custom-widgets task: **mount the `customwidgets` MCP server, then read its
-shipped agent knowledge (AGENT_GUIDE / instructions) and its skills.** Only then start.
-Build and run apps **through the MCP** (runApp / app-control / Designer + QSS bridge) —
-**never** via ad-hoc `python`/Bash. If the MCP is not connected in your session, STOP
-and ask the user to connect it; do not silently fall back to a shell. This rule ships
-with the product and applies to every agent that touches this repo.
+Before building or running an **app**: **mount the `custom-widgets` MCP server, then read
+its shipped agent knowledge (AGENT_GUIDE / instructions) and its skills.** Only then
+start. Build and run apps **through the MCP** (runApp / app-control / Designer + QSS
+bridge) — **never** via ad-hoc `python`/Bash. This rule ships with the product and
+applies to every agent that touches this repo.
+
+**If it is not connected, start it — do not just give up.** `.mcp.json` registers it
+over HTTP (`http://127.0.0.1:8765/mcp`) as a *shared daemon* so several agents can dial
+into one process. An HTTP MCP server is never spawned by the client, so if nothing is
+listening on 8765 every session sees it as missing, with no error saying why:
+
+```bash
+python -m Custom_Widgets.mcp --transport http --port 8765   # leave running
+ss -ltn | grep 8765                                          # confirm it is up
+```
+
+Use `python -m`, not `Custom_Widgets-mcp` — the console script only exists after
+`pip install -e .`, and the repo is normally used from the source tree. Full detail and
+troubleshooting: [`docs/mcp-server.md`](../../../docs/mcp-server.md).
+
+**Scope.** This rule is about apps and Designer. The MCP has no equivalent for
+library-level work — editing widget source, running pytest, generating `.pyi` stubs or
+regenerating the tiering manifest are ordinary shell tasks and always were.
 
 ## ⭐ RULE #2 — don't ship a BORING GUI (hard-won, 2026-07-23)
 
