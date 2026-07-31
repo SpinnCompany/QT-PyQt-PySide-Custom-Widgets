@@ -43,6 +43,12 @@ acrylic = ["numpy", "colorthief", "Pillow"] # AcrylicEffect blur (scipy optional
 acrylic-hq = ["scipy"]                      # higher-quality acrylic blur
 loaders = ["perlin_noise"]                  # QCustomPerlinLoader
 mcp = ["mcp"]                               # Custom_Widgets-mcp server
+# QCustomMapView. Deliberately optional: a map drags in a mapping engine,
+# tile providers, API keys and provider ToS, which the core LGPL library
+# should not carry (docs/design/qcustommapview-project-plan.md). The
+# shipped backend uses QtLocation's osm plugin from PySide6-Addons — no
+# Chromium and no API key.
+map = ["PySide6-Addons"]                    # QCustomMapView (QtLocation)
 # Type-checking the generated widget stubs + regenerating them (needs PySide6
 # for base resolution and mcp for the catalog the generator reads).
 dev = [
