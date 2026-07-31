@@ -1,0 +1,19 @@
+# Auto-generated type stub — DO NOT EDIT.
+# Regenerate with:  python -m Custom_Widgets.mcp.stubgen --write
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QWidget
+from typing import Any, ClassVar
+
+
+class QCustomButtonGroup(QWidget):
+    selectionChanged: ClassVar[Signal]
+    variant: str
+    sizeVariant: str
+    exclusive: bool
+    orientation: str
+    def __init__(self, parent = ..., exclusive = ..., orientation = ...) -> None: ...
+    def addButton(self, text, button_id = ...): ...
+    def setButtons(self, items) -> None: ...
+    def selectedId(self): ...
+    def selectedText(self): ...
+    def setSelectedId(self, button_id) -> None: ...
