@@ -204,6 +204,65 @@ def _check_large_icon(ctx: FileCtx):
 
 
 # ------------------------------------------------------------------------- #
+# camelcase-api — public methods follow Qt's camelCase, not PEP 8 snake_case
+# ------------------------------------------------------------------------- #
+# These widgets are read alongside Qt's own API: a caller writes
+# setChecked(), sizeHint(), setSizeVariant(). A snake_case method dropped into
+# that surface reads as foreign and forces users to remember which convention
+# applies to which call. The codebase is already ~98% camelCase, so this locks
+# in existing practice rather than introducing a new one.
+#
+# Scope is deliberately narrow — only PUBLIC methods on classes:
+#   - module-level functions are exempt (plain Python helpers, not Qt API)
+#   - _private and __dunder names are exempt
+#   - Qt/unittest/pytest hooks that are snake_case by contract are exempt
+_CAMEL_EXEMPT = {
+    # pytest / unittest collection points
+    "setup_method", "teardown_method", "setup_class", "teardown_class",
+    # Qt's own snake_case-ish overrides are camelCase already; nothing here.
+}
+
+
+def _is_snake_public(name: str) -> bool:
+    if name.startswith("_"):
+        return False
+    if name in _CAMEL_EXEMPT:
+        return False
+    return "_" in name
+
+
+def _check_camelcase_api(ctx: FileCtx):
+    if ctx.tree is None:
+        return
+    for node in ast.walk(ctx.tree):
+        if not isinstance(node, (ast.ClassDef,)):
+            continue
+        for item in node.body:
+            if not isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                continue
+            if not _is_snake_public(item.name):
+                continue
+            line = item.lineno
+            src = ctx.lines[line - 1] if 0 < line <= len(ctx.lines) else ""
+            if "allow-snake-case" in src:
+                continue
+            suggestion = _to_camel(item.name)
+            yield Finding(
+                "camelcase-api", ctx.rel, line, item.col_offset + 1,
+                "public method %s.%s() is snake_case — these widgets sit "
+                "alongside Qt's own API, which is camelCase. Rename to %s(), "
+                "or mark it private with a leading underscore. Justify a "
+                "deliberate exception with a trailing `# allow-snake-case: "
+                "<reason>`." % (node.name, item.name, suggestion),
+                WARNING, symbol=item.name)
+
+
+def _to_camel(name: str) -> str:
+    head, *rest = name.split("_")
+    return head + "".join(part[:1].upper() + part[1:] for part in rest if part)
+
+
+# ------------------------------------------------------------------------- #
 # registry
 # ------------------------------------------------------------------------- #
 _ALL = [
@@ -233,6 +292,15 @@ _ALL = [
               "drawPixmap at 2x for prominent images; keep setIcon for small "
               "button glyphs. Only literal QSize sizes are checked (no false "
               "positives from computed sizes); suppress with `# allow-large-icon`."),
+    Rule("camelcase-api",
+         "Public methods use Qt's camelCase, not PEP 8 snake_case.",
+         WARNING, _check_camelcase_api,
+         help="These widgets are called alongside Qt's own API (setChecked, "
+              "sizeHint), so a snake_case method reads as foreign and makes "
+              "callers remember which convention applies where. Applies to "
+              "public methods on classes only — module-level functions, "
+              "_private and __dunder names are exempt. Suppress a deliberate "
+              "case with `# allow-snake-case: <reason>`."),
 ]
 
 RULES = {r.id: r for r in _ALL}
