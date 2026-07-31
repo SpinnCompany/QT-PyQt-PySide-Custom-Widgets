@@ -269,7 +269,7 @@ class WidgetShowcase(QMainWindow):
             section = QWidget()
             section_layout = QVBoxLayout(section)
             section_layout.addWidget(QLabel(f"Content for {title_text}"))
-            accordion.addItem(section, title_text)
+            accordion.addSection(title_text, section)
         layout.addWidget(accordion)
 
         layout.addStretch()

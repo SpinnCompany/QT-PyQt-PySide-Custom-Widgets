@@ -5,6 +5,7 @@ them); the live Designer path is covered by the bridge tests plus manual
 verification - here we cover registration, project tools and the
 actionable-error path when Designer is not running.
 """
+import asyncio
 import json
 import os
 
@@ -28,9 +29,13 @@ def mcp_project(tmp_path, monkeypatch):
     return tmp_path
 
 
-@pytest.mark.asyncio
-async def test_expected_tools_registered():
-    tools = {t.name for t in await McpServer.mcp.list_tools()}
+def test_expected_tools_registered():
+    # Driven with asyncio.run rather than @pytest.mark.asyncio: this is the
+    # only coroutine in the suite and it takes no async fixtures, so requiring
+    # the pytest-asyncio plugin for it means this test errors out wherever the
+    # plugin is absent — which includes any PEP 668 externally-managed Python,
+    # where installing it is blocked.
+    tools = {t.name for t in asyncio.run(McpServer.mcp.list_tools())}
     expected = {
         "designer_status", "designer_launch", "designer_open_files",
         "designer_close_files", "designer_reload_forms",
