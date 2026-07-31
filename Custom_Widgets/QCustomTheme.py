@@ -56,6 +56,13 @@ class QCustomTheme(QObject):
         if cls._instance is None:
             # Create a new instance if not already created
             cls._instance = super(QCustomTheme, cls).__new__(cls, *args, **kwargs)
+            # A genuinely fresh object has no C++ side yet, so __init__ MUST run.
+            # Clearing the flag here keeps it in lockstep with _instance: anything
+            # that drops the singleton (tests isolating theme state, a teardown)
+            # gets a properly initialized replacement instead of a hollow wrapper
+            # whose super().__init__() never ran — which surfaces much later as
+            # "Signal source has been deleted" from unrelated widgets.
+            cls._initialized = False
         return cls._instance
 
     def __init__(self, parent=None):
