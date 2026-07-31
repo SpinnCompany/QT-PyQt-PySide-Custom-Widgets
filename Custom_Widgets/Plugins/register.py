@@ -923,6 +923,15 @@ from Custom_Widgets.QCustomRangeBarChart import QCustomRangeBarChart
 from Custom_Widgets.QCustomRadialBars import QCustomRadialBars
 from Custom_Widgets.QCustomRadialLines import QCustomRadialLines
 from Custom_Widgets.QCustomSankey import QCustomSankey
+from Custom_Widgets.QCustomFeaturedIcon import QCustomFeaturedIcon
+from Custom_Widgets.QCustomCopyButton import QCustomCopyButton
+from Custom_Widgets.QCustomSocialButton import QCustomSocialButton
+from Custom_Widgets.QCustomHeaderNav import QCustomHeaderNav
+from Custom_Widgets.QCustomNumberCounter import QCustomNumberCounter
+from Custom_Widgets.QCustomTypewriterText import QCustomTypewriterText
+from Custom_Widgets.QCustomGradientText import QCustomGradientText
+from Custom_Widgets.QCustomRainbowButton import QCustomRainbowButton
+from Custom_Widgets.QCustomSparklesText import QCustomSparklesText
 
 # Registering QCustomCandlestickChart with error handling
 try:
@@ -1011,6 +1020,105 @@ try:
         icon=QCustomSankey.WIDGET_ICON, group="Charts")
 except Exception as e:
     logException(e, message="Error registering QCustomSankey")
+
+# Registering QCustomFeaturedIcon with error handling
+try:
+    logInfo("Registering QCustomFeaturedIcon")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomFeaturedIcon, module=QCustomFeaturedIcon.WIDGET_MODULE,
+        tool_tip=QCustomFeaturedIcon.WIDGET_TOOLTIP,
+        xml=QCustomFeaturedIcon.WIDGET_DOM_XML,
+        icon=QCustomFeaturedIcon.WIDGET_ICON, group="Display Widgets")
+except Exception as e:
+    logException(e, message="Error registering QCustomFeaturedIcon")
+
+# Registering QCustomCopyButton with error handling
+try:
+    logInfo("Registering QCustomCopyButton")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomCopyButton, module=QCustomCopyButton.WIDGET_MODULE,
+        tool_tip=QCustomCopyButton.WIDGET_TOOLTIP,
+        xml=QCustomCopyButton.WIDGET_DOM_XML,
+        icon=QCustomCopyButton.WIDGET_ICON, group="Buttons")
+except Exception as e:
+    logException(e, message="Error registering QCustomCopyButton")
+
+# Registering QCustomSocialButton with error handling
+try:
+    logInfo("Registering QCustomSocialButton")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomSocialButton, module=QCustomSocialButton.WIDGET_MODULE,
+        tool_tip=QCustomSocialButton.WIDGET_TOOLTIP,
+        xml=QCustomSocialButton.WIDGET_DOM_XML,
+        icon=QCustomSocialButton.WIDGET_ICON, group="Buttons")
+except Exception as e:
+    logException(e, message="Error registering QCustomSocialButton")
+
+# Registering QCustomHeaderNav with error handling
+try:
+    logInfo("Registering QCustomHeaderNav")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomHeaderNav, module=QCustomHeaderNav.WIDGET_MODULE,
+        tool_tip=QCustomHeaderNav.WIDGET_TOOLTIP,
+        xml=QCustomHeaderNav.WIDGET_DOM_XML,
+        icon=QCustomHeaderNav.WIDGET_ICON, group="Navigation")
+except Exception as e:
+    logException(e, message="Error registering QCustomHeaderNav")
+
+# Registering QCustomNumberCounter with error handling
+try:
+    logInfo("Registering QCustomNumberCounter")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomNumberCounter, module=QCustomNumberCounter.WIDGET_MODULE,
+        tool_tip=QCustomNumberCounter.WIDGET_TOOLTIP,
+        xml=QCustomNumberCounter.WIDGET_DOM_XML,
+        icon=QCustomNumberCounter.WIDGET_ICON, group="Display Widgets")
+except Exception as e:
+    logException(e, message="Error registering QCustomNumberCounter")
+
+# Registering QCustomTypewriterText with error handling
+try:
+    logInfo("Registering QCustomTypewriterText")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomTypewriterText, module=QCustomTypewriterText.WIDGET_MODULE,
+        tool_tip=QCustomTypewriterText.WIDGET_TOOLTIP,
+        xml=QCustomTypewriterText.WIDGET_DOM_XML,
+        icon=QCustomTypewriterText.WIDGET_ICON, group="Display Widgets")
+except Exception as e:
+    logException(e, message="Error registering QCustomTypewriterText")
+
+# Registering QCustomGradientText with error handling
+try:
+    logInfo("Registering QCustomGradientText")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomGradientText, module=QCustomGradientText.WIDGET_MODULE,
+        tool_tip=QCustomGradientText.WIDGET_TOOLTIP,
+        xml=QCustomGradientText.WIDGET_DOM_XML,
+        icon=QCustomGradientText.WIDGET_ICON, group="Display Widgets")
+except Exception as e:
+    logException(e, message="Error registering QCustomGradientText")
+
+# Registering QCustomRainbowButton with error handling
+try:
+    logInfo("Registering QCustomRainbowButton")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomRainbowButton, module=QCustomRainbowButton.WIDGET_MODULE,
+        tool_tip=QCustomRainbowButton.WIDGET_TOOLTIP,
+        xml=QCustomRainbowButton.WIDGET_DOM_XML,
+        icon=QCustomRainbowButton.WIDGET_ICON, group="Buttons")
+except Exception as e:
+    logException(e, message="Error registering QCustomRainbowButton")
+
+# Registering QCustomSparklesText with error handling
+try:
+    logInfo("Registering QCustomSparklesText")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomSparklesText, module=QCustomSparklesText.WIDGET_MODULE,
+        tool_tip=QCustomSparklesText.WIDGET_TOOLTIP,
+        xml=QCustomSparklesText.WIDGET_DOM_XML,
+        icon=QCustomSparklesText.WIDGET_ICON, group="Display Widgets")
+except Exception as e:
+    logException(e, message="Error registering QCustomSparklesText")
 
 
 from Custom_Widgets.QCustomAgendaList import QCustomAgendaList
