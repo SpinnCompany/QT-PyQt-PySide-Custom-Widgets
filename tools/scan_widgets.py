@@ -19,7 +19,7 @@ import re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CW = os.path.join(ROOT, "Custom_Widgets")
-DATE = "2026-07-24"  # bump when regenerating
+DATE = "2026-07-31"  # bump when regenerating
 
 # Rendered into the Markdown table. Built via chr() so this .py stays glyph-free
 # for the design linter; the generated .md still shows a real check mark / dash.
