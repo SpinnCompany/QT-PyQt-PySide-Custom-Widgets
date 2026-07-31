@@ -66,6 +66,17 @@
     "tier": "free"
   },
   {
+    "module": "Custom_Widgets/LoadingIndicators/QCustom3CirclesLoader.py",
+    "widget": "QCustom3CirclesLoader",
+    "loc": 188,
+    "pyi": false,
+    "catalog": false,
+    "test": true,
+    "example": true,
+    "designer": false,
+    "tier": "free"
+  },
+  {
     "module": "Custom_Widgets/QCustomAccordion.py",
     "widget": "QCustomAccordion",
     "loc": 150,
@@ -117,6 +128,17 @@
     "catalog": false,
     "test": true,
     "example": false,
+    "designer": false,
+    "tier": "free"
+  },
+  {
+    "module": "Custom_Widgets/LoadingIndicators/QCustomArcLoader.py",
+    "widget": "QCustomArcLoader",
+    "loc": 143,
+    "pyi": false,
+    "catalog": false,
+    "test": true,
+    "example": true,
     "designer": false,
     "tier": "free"
   },
@@ -187,7 +209,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomButtonGroup.py",
+    "module": "Custom_Widgets/widgets/input/QCustomButtonGroup.py",
     "widget": "QCustomButtonGroup",
     "loc": 160,
     "pyi": true,
@@ -649,7 +671,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomInput.py",
+    "module": "Custom_Widgets/widgets/input/QCustomInput.py",
     "widget": "QCustomInput",
     "loc": 115,
     "pyi": true,
@@ -803,7 +825,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomNumberInput.py",
+    "module": "Custom_Widgets/widgets/input/QCustomNumberInput.py",
     "widget": "QCustomNumberInput",
     "loc": 196,
     "pyi": true,
@@ -844,6 +866,17 @@
     "test": true,
     "example": true,
     "designer": true,
+    "tier": "free"
+  },
+  {
+    "module": "Custom_Widgets/LoadingIndicators/QCustomPerlinLoader.py",
+    "widget": "QCustomPerlinLoader",
+    "loc": 143,
+    "pyi": false,
+    "catalog": false,
+    "test": true,
+    "example": true,
+    "designer": false,
     "tier": "free"
   },
   {
@@ -935,6 +968,17 @@
     "tier": "free"
   },
   {
+    "module": "Custom_Widgets/LoadingIndicators/QCustomQProgressBar.py",
+    "widget": "QCustomQProgressBar",
+    "loc": 207,
+    "pyi": false,
+    "catalog": false,
+    "test": true,
+    "example": true,
+    "designer": true,
+    "tier": "free"
+  },
+  {
     "module": "Custom_Widgets/QCustomQPushButton.py",
     "widget": "QCustomQPushButton",
     "loc": 610,
@@ -1012,7 +1056,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomRadioButton.py",
+    "module": "Custom_Widgets/widgets/input/QCustomRadioButton.py",
     "widget": "QCustomRadioButton",
     "loc": 268,
     "pyi": true,
@@ -1023,7 +1067,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomRadioGroup.py",
+    "module": "Custom_Widgets/widgets/input/QCustomRadioGroup.py",
     "widget": "QCustomRadioGroup",
     "loc": 304,
     "pyi": true,
@@ -1072,6 +1116,17 @@
     "loc": 186,
     "pyi": true,
     "catalog": true,
+    "test": true,
+    "example": true,
+    "designer": true,
+    "tier": "free"
+  },
+  {
+    "module": "Custom_Widgets/ProgressBars/QCustomRoundProgressBar.py",
+    "widget": "QCustomRoundProgressBar",
+    "loc": 227,
+    "pyi": false,
+    "catalog": false,
     "test": true,
     "example": true,
     "designer": true,
@@ -1177,6 +1232,17 @@
     "tier": "free"
   },
   {
+    "module": "Custom_Widgets/LoadingIndicators/QCustomSpinner.py",
+    "widget": "QCustomSpinner",
+    "loc": 79,
+    "pyi": false,
+    "catalog": false,
+    "test": true,
+    "example": true,
+    "designer": false,
+    "tier": "free"
+  },
+  {
     "module": "Custom_Widgets/QCustomSplitter.py",
     "widget": "QCustomSplitter",
     "loc": 57,
@@ -1210,7 +1276,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomSwitch.py",
+    "module": "Custom_Widgets/widgets/input/QCustomSwitch.py",
     "widget": "QCustomSwitch",
     "loc": 190,
     "pyi": true,
@@ -1243,7 +1309,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomTextArea.py",
+    "module": "Custom_Widgets/widgets/input/QCustomTextArea.py",
     "widget": "QCustomTextArea",
     "loc": 344,
     "pyi": true,
@@ -1342,7 +1408,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomVerificationCode.py",
+    "module": "Custom_Widgets/widgets/input/QCustomVerificationCode.py",
     "widget": "QCustomVerificationCode",
     "loc": 430,
     "pyi": true,
@@ -1425,6 +1491,17 @@
     "pyi": false,
     "catalog": false,
     "test": true,
+    "example": false,
+    "designer": false,
+    "tier": "free"
+  },
+  {
+    "module": "Custom_Widgets/components/uis/QCustomQMainWindow_ui.py",
+    "widget": "Ui_CustomMainWindow",
+    "loc": 40,
+    "pyi": false,
+    "catalog": false,
+    "test": false,
     "example": false,
     "designer": false,
     "tier": "free"
