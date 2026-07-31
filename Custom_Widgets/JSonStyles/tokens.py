@@ -811,6 +811,19 @@ def radio_qss(tokens):
             "}\n" % (r("outline"), r("accent"), r("accent"), r("on-surface")))
 
 
+def imagepicker_qss(tokens):
+    """Feed token colours to the painted QCustomImagePicker drop target."""
+    r = tokens.role
+    return ("QCustomImagePicker {\n"
+            "    qproperty-borderColor: %s;\n"
+            "    qproperty-borderActiveColor: %s;\n"
+            "    qproperty-borderErrorColor: %s;\n"
+            "    qproperty-backgroundColor: %s;\n"
+            "    qproperty-textColor: %s;\n"
+            "}\n" % (r("outline"), r("accent"), r("destructive"),
+                     r("surface-muted"), r("on-surface")))
+
+
 def multiselect_qss(tokens):
     """Feed token colours to QCustomMultiSelect (painted field + its popup)."""
     r = tokens.role
@@ -1116,6 +1129,7 @@ def build_component_qss(tokens):
             + switch_qss(tokens) + radio_qss(tokens) + radiogroup_qss(tokens)
             + candlestick_qss(tokens) + textarea_qss(tokens)
             + verificationcode_qss(tokens) + multiselect_qss(tokens)
+            + imagepicker_qss(tokens)
             + number_qss(tokens) + alert_qss(tokens)
             + statcard_qss(tokens) + progressring_qss(tokens) + card_qss(tokens)
             + badge_qss(tokens) + kbd_qss(tokens) + splitter_qss(tokens)
