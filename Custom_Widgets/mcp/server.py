@@ -603,7 +603,13 @@ def _discover_widgets():
     return {name: entry}. Parsed via AST — nothing is imported or instantiated,
     so it's safe and fast in the headless server process."""
     out = {}
-    for path in sorted(glob.glob(os.path.join(_widgets_package_dir(), "QCustom*.py"))):
+    # Recursive: widgets live under Custom_Widgets/widgets/<group>/ since the
+    # 2026-07-31 regrouping. A top-level-only glob silently dropped every
+    # module that had moved, emptying them out of the MCP catalog and out of
+    # stub generation with no error to show for it.
+    _paths = glob.glob(os.path.join(_widgets_package_dir(), "**", "QCustom*.py"),
+                       recursive=True)
+    for path in sorted(p for p in _paths if "__pycache__" not in p):
         stem = os.path.splitext(os.path.basename(path))[0]
         try:
             with open(path, encoding="utf-8") as fh:

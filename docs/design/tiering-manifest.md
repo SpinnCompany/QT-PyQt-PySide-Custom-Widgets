@@ -15,17 +15,17 @@ ships at once.
 > Regenerate: `python tools/scan_widgets.py`. Presence signals are objective; the
 > tier decisions above are ratified; Stable/Secure remain a human review pass.
 
-## Coverage summary (156 widget modules)
+## Coverage summary (157 widget modules)
 
 | Signal | Coverage |
 |---|---|
-| Has a test | 136/156 (87%) |
-| Has an example | 128/156 (82%) |
-| In `__catalog__` | 94/156 (60%) |
-| Designer-registered | 114/156 (73%) |
-| `.pyi` type stub | 93/156 (60%) |
+| Has a test | 137/157 (87%) |
+| Has an example | 129/157 (82%) |
+| In `__catalog__` | 95/157 (61%) |
+| Designer-registered | 115/157 (73%) |
+| `.pyi` type stub | 85/157 (54%) |
 
-Breakdown: **5** free-base-with-Pro-extension, **132** free
+Breakdown: **5** free-base-with-Pro-extension, **133** free
 standalone, **19** internal/engine (not shipped as standalone).
 
 ## Legend
@@ -56,7 +56,7 @@ Pro mapping:
 - `QCustomBarChart` -> Charts Pro (SKU-2, candidate)
 - `QCustomPieChart` -> Charts Pro (SKU-2, candidate)
 
-## Tier: free -- standalone (132)
+## Tier: free -- standalone (133)
 
 | Widget | Test | Example | Catalog | Designer | .pyi | LOC | Module |
 |---|:--:|:--:|:--:|:--:|:--:|--:|---|
@@ -74,7 +74,7 @@ Pro mapping:
 | `QCustomBeeswarm` | ✅ | ✅ | ✅ | ✅ | ✅ | 303 | Custom_Widgets/QCustomBeeswarm.py |
 | `QCustomBreadcrumbs` | ✅ | ✅ | ✅ | ✅ | ✅ | 89 | Custom_Widgets/QCustomBreadcrumbs.py |
 | `QCustomBubbleChart` | ✅ | ✅ | ✅ | ✅ | ✅ | 634 | Custom_Widgets/QCustomBubbleChart.py |
-| `QCustomButtonGroup` | ✅ | ✅ | ✅ | — | ✅ | 160 | Custom_Widgets/widgets/input/QCustomButtonGroup.py |
+| `QCustomButtonGroup` | ✅ | ✅ | ✅ | — | — | 160 | Custom_Widgets/widgets/input/QCustomButtonGroup.py |
 | `QCustomCandlestickChart` | ✅ | ✅ | ✅ | ✅ | ✅ | 501 | Custom_Widgets/QCustomCandlestickChart.py |
 | `QCustomCard` | ✅ | ✅ | ✅ | ✅ | ✅ | 118 | Custom_Widgets/QCustomCard.py |
 | `QCustomCardStack` | ✅ | ✅ | ✅ | ✅ | ✅ | 283 | Custom_Widgets/QCustomCardStack.py |
@@ -116,7 +116,7 @@ Pro mapping:
 | `QCustomHeatmap` | ✅ | ✅ | ✅ | ✅ | ✅ | 527 | Custom_Widgets/QCustomHeatmap.py |
 | `QCustomHorizontalSeparator` | ✅ | — | — | ✅ | — | 119 | Custom_Widgets/QCustomHorizontalSeparator.py |
 | `QCustomImageViewer` | — | ✅ | ✅ | ✅ | ✅ | 301 | Custom_Widgets/QCustomImageViewer.py |
-| `QCustomInput` | ✅ | ✅ | ✅ | — | ✅ | 115 | Custom_Widgets/widgets/input/QCustomInput.py |
+| `QCustomInput` | ✅ | ✅ | ✅ | — | — | 115 | Custom_Widgets/widgets/input/QCustomInput.py |
 | `QCustomKbd` | ✅ | ✅ | ✅ | ✅ | ✅ | 112 | Custom_Widgets/QCustomKbd.py |
 | `QCustomLinkPreview` | — | ✅ | ✅ | ✅ | ✅ | 211 | Custom_Widgets/QCustomLinkPreview.py |
 | `QCustomLiquidGauge` | ✅ | ✅ | ✅ | ✅ | ✅ | 502 | Custom_Widgets/QCustomLiquidGauge.py |
@@ -129,8 +129,9 @@ Pro mapping:
 | `QCustomMiniBarChart` | ✅ | ✅ | ✅ | ✅ | ✅ | 505 | Custom_Widgets/QCustomMiniBarChart.py |
 | `QCustomModal` | ✅ | ✅ | ✅ | ✅ | ✅ | 289 | Custom_Widgets/QCustomModal.py |
 | `QCustomModals` | ✅ | ✅ | — | — | — | 873 | Custom_Widgets/QCustomModals.py |
+| `QCustomMultiSelect` | ✅ | ✅ | ✅ | ✅ | — | 534 | Custom_Widgets/widgets/input/QCustomMultiSelect.py |
 | `QCustomNodeGraph` | ✅ | ✅ | ✅ | ✅ | ✅ | 1031 | Custom_Widgets/QCustomNodeGraph.py |
-| `QCustomNumberInput` | ✅ | ✅ | ✅ | ✅ | ✅ | 196 | Custom_Widgets/widgets/input/QCustomNumberInput.py |
+| `QCustomNumberInput` | ✅ | ✅ | ✅ | ✅ | — | 196 | Custom_Widgets/widgets/input/QCustomNumberInput.py |
 | `QCustomPageDots` | ✅ | ✅ | ✅ | ✅ | ✅ | 256 | Custom_Widgets/QCustomPageDots.py |
 | `QCustomPagination` | ✅ | ✅ | ✅ | ✅ | ✅ | 122 | Custom_Widgets/QCustomPagination.py |
 | `QCustomPaymentCard` | ✅ | ✅ | ✅ | ✅ | ✅ | 358 | Custom_Widgets/QCustomPaymentCard.py |
@@ -151,8 +152,8 @@ Pro mapping:
 | `QCustomQStackedWidget` | ✅ | ✅ | — | ✅ | — | 816 | Custom_Widgets/QCustomQStackedWidget.py |
 | `QCustomQToolTip` | ✅ | ✅ | — | — | — | 662 | Custom_Widgets/QCustomQToolTip.py |
 | `QCustomRadialGauge` | ✅ | ✅ | ✅ | ✅ | ✅ | 1088 | Custom_Widgets/QCustomRadialGauge.py |
-| `QCustomRadioButton` | ✅ | ✅ | ✅ | ✅ | ✅ | 268 | Custom_Widgets/widgets/input/QCustomRadioButton.py |
-| `QCustomRadioGroup` | ✅ | ✅ | ✅ | ✅ | ✅ | 304 | Custom_Widgets/widgets/input/QCustomRadioGroup.py |
+| `QCustomRadioButton` | ✅ | ✅ | ✅ | ✅ | — | 268 | Custom_Widgets/widgets/input/QCustomRadioButton.py |
+| `QCustomRadioGroup` | ✅ | ✅ | ✅ | ✅ | — | 304 | Custom_Widgets/widgets/input/QCustomRadioGroup.py |
 | `QCustomRangeSlider` | ✅ | ✅ | ✅ | ✅ | ✅ | 220 | Custom_Widgets/QCustomRangeSlider.py |
 | `QCustomRating` | ✅ | ✅ | ✅ | ✅ | ✅ | 135 | Custom_Widgets/QCustomRating.py |
 | `QCustomReactionBar` | — | — | ✅ | ✅ | ✅ | 202 | Custom_Widgets/QCustomReactionBar.py |
@@ -171,10 +172,10 @@ Pro mapping:
 | `QCustomSplitter` | ✅ | ✅ | ✅ | ✅ | ✅ | 57 | Custom_Widgets/QCustomSplitter.py |
 | `QCustomStatCard` | ✅ | ✅ | ✅ | ✅ | ✅ | 160 | Custom_Widgets/QCustomStatCard.py |
 | `QCustomStepper` | ✅ | ✅ | ✅ | ✅ | ✅ | 132 | Custom_Widgets/QCustomStepper.py |
-| `QCustomSwitch` | ✅ | ✅ | ✅ | ✅ | ✅ | 190 | Custom_Widgets/widgets/input/QCustomSwitch.py |
+| `QCustomSwitch` | ✅ | ✅ | ✅ | ✅ | — | 190 | Custom_Widgets/widgets/input/QCustomSwitch.py |
 | `QCustomTableToolbar` | ✅ | ✅ | ✅ | ✅ | ✅ | 541 | Custom_Widgets/QCustomTableToolbar.py |
 | `QCustomTabWidget` | ✅ | ✅ | ✅ | ✅ | ✅ | 120 | Custom_Widgets/QCustomTabWidget.py |
-| `QCustomTextArea` | ✅ | ✅ | ✅ | ✅ | ✅ | 344 | Custom_Widgets/widgets/input/QCustomTextArea.py |
+| `QCustomTextArea` | ✅ | ✅ | ✅ | ✅ | — | 344 | Custom_Widgets/widgets/input/QCustomTextArea.py |
 | `QCustomThemeDarkLightToggle` | ✅ | ✅ | — | ✅ | — | 168 | Custom_Widgets/QCustomThemeDarkLightToggle.py |
 | `QCustomTileButton` | ✅ | ✅ | ✅ | ✅ | ✅ | 257 | Custom_Widgets/QCustomTileButton.py |
 | `QCustomTimeline` | ✅ | ✅ | ✅ | ✅ | ✅ | 143 | Custom_Widgets/QCustomTimeline.py |
@@ -183,7 +184,7 @@ Pro mapping:
 | `QCustomTreeWidget` | ✅ | ✅ | ✅ | ✅ | ✅ | 102 | Custom_Widgets/QCustomTreeWidget.py |
 | `QCustomTrendChip` | ✅ | ✅ | ✅ | ✅ | ✅ | 251 | Custom_Widgets/QCustomTrendChip.py |
 | `QCustomTypingIndicator` | ✅ | — | ✅ | ✅ | ✅ | 144 | Custom_Widgets/QCustomTypingIndicator.py |
-| `QCustomVerificationCode` | ✅ | ✅ | ✅ | ✅ | ✅ | 430 | Custom_Widgets/widgets/input/QCustomVerificationCode.py |
+| `QCustomVerificationCode` | ✅ | ✅ | ✅ | ✅ | — | 430 | Custom_Widgets/widgets/input/QCustomVerificationCode.py |
 | `QCustomVerticalSeparator` | ✅ | — | — | ✅ | — | 117 | Custom_Widgets/QCustomVerticalSeparator.py |
 | `QCustomVideoPlayer` | — | — | ✅ | ✅ | ✅ | 327 | Custom_Widgets/QCustomVideoPlayer.py |
 | `QCustomVoiceMessage` | ✅ | ✅ | ✅ | ✅ | ✅ | 302 | Custom_Widgets/QCustomVoiceMessage.py |
