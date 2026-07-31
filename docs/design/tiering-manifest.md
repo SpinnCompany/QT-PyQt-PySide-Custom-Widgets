@@ -15,17 +15,17 @@ ships at once.
 > Regenerate: `python tools/scan_widgets.py`. Presence signals are objective; the
 > tier decisions above are ratified; Stable/Secure remain a human review pass.
 
-## Coverage summary (146 widget modules)
+## Coverage summary (147 widget modules)
 
 | Signal | Coverage |
 |---|---|
-| Has a test | 127/146 (87%) |
-| Has an example | 119/146 (82%) |
-| In `__catalog__` | 91/146 (62%) |
-| Designer-registered | 109/146 (75%) |
-| `.pyi` type stub | 90/146 (62%) |
+| Has a test | 128/147 (87%) |
+| Has an example | 120/147 (82%) |
+| In `__catalog__` | 92/147 (63%) |
+| Designer-registered | 110/147 (75%) |
+| `.pyi` type stub | 91/147 (62%) |
 
-Breakdown: **5** free-base-with-Pro-extension, **122** free
+Breakdown: **5** free-base-with-Pro-extension, **123** free
 standalone, **19** internal/engine (not shipped as standalone).
 
 ## Legend
@@ -56,7 +56,7 @@ Pro mapping:
 - `QCustomBarChart` -> Charts Pro (SKU-2, candidate)
 - `QCustomPieChart` -> Charts Pro (SKU-2, candidate)
 
-## Tier: free -- standalone (122)
+## Tier: free -- standalone (123)
 
 | Widget | Test | Example | Catalog | Designer | .pyi | LOC | Module |
 |---|:--:|:--:|:--:|:--:|:--:|--:|---|
@@ -73,6 +73,7 @@ Pro mapping:
 | `QCustomBreadcrumbs` | ✅ | ✅ | ✅ | ✅ | ✅ | 89 | Custom_Widgets/QCustomBreadcrumbs.py |
 | `QCustomBubbleChart` | ✅ | ✅ | ✅ | ✅ | ✅ | 634 | Custom_Widgets/QCustomBubbleChart.py |
 | `QCustomButtonGroup` | ✅ | ✅ | ✅ | — | ✅ | 160 | Custom_Widgets/QCustomButtonGroup.py |
+| `QCustomCandlestickChart` | ✅ | ✅ | ✅ | ✅ | ✅ | 501 | Custom_Widgets/QCustomCandlestickChart.py |
 | `QCustomCard` | ✅ | ✅ | ✅ | ✅ | ✅ | 118 | Custom_Widgets/QCustomCard.py |
 | `QCustomCardStack` | ✅ | ✅ | ✅ | ✅ | ✅ | 283 | Custom_Widgets/QCustomCardStack.py |
 | `QCustomCarousel` | ✅ | ✅ | ✅ | ✅ | ✅ | 224 | Custom_Widgets/QCustomCarousel.py |
