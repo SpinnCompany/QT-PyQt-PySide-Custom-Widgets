@@ -916,6 +916,7 @@ except Exception as e:
 
 
 from Custom_Widgets.QCustomCandlestickChart import QCustomCandlestickChart
+from Custom_Widgets.QCustomRadarChart import QCustomRadarChart
 
 # Registering QCustomCandlestickChart with error handling
 try:
@@ -927,6 +928,17 @@ try:
         icon=QCustomCandlestickChart.WIDGET_ICON, group="Charts")
 except Exception as e:
     logException(e, message="Error registering QCustomCandlestickChart")
+
+# Registering QCustomRadarChart with error handling
+try:
+    logInfo("Registering QCustomRadarChart")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomRadarChart, module=QCustomRadarChart.WIDGET_MODULE,
+        tool_tip=QCustomRadarChart.WIDGET_TOOLTIP,
+        xml=QCustomRadarChart.WIDGET_DOM_XML,
+        icon=QCustomRadarChart.WIDGET_ICON, group="Charts")
+except Exception as e:
+    logException(e, message="Error registering QCustomRadarChart")
 
 
 from Custom_Widgets.QCustomAgendaList import QCustomAgendaList
