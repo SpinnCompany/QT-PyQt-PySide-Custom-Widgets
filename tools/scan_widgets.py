@@ -83,10 +83,16 @@ def scan():
     register_text = _read(os.path.join(CW, "Plugins", "register.py"))
 
     mods = []
-    mods += glob.glob(os.path.join(CW, "QCustom*.py"))
-    mods += glob.glob(os.path.join(CW, "QCustomCharts", "QCustom*.py"))
+    # Recursive: widgets live under Custom_Widgets/widgets/<group>/ since the
+    # 2026-07-31 regrouping, and a non-recursive glob silently dropped every
+    # module that had moved — the manifest is the launch gate, so a widget
+    # going missing from it must not be possible.
+    mods += glob.glob(os.path.join(CW, "**", "QCustom*.py"), recursive=True)
     mods += [os.path.join(CW, "AnalogGaugeWidget.py"), os.path.join(CW, "QFlowProgressBar.py")]
-    mods = sorted({m for m in mods if os.path.isfile(m) and not m.endswith(".pyi")})
+    mods = sorted({m for m in mods
+                   if os.path.isfile(m)
+                   and not m.endswith(".pyi")
+                   and "__pycache__" not in m})
 
     rows = []
     for m in mods:

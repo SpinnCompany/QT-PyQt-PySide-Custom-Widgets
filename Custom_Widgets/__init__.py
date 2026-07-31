@@ -5,6 +5,13 @@ import os
 import sys
 import __main__
 
+# Must run before anything below imports a widget by its flat name. The widget
+# implementations now live in subpackages, but Custom_Widgets.<Module> stays
+# published API — it is baked into every Designer-authored .ui file as
+# <header>Custom_Widgets.QCustomX</header>. See _legacy_paths.py.
+from Custom_Widgets import _legacy_paths as _legacy_paths
+_legacy_paths.install()
+
 
 from qtpy.QtCore import QCoreApplication, Qt, QSettings, QPoint, QSize, Signal, QEvent
 from qtpy.QtGui import QCursor, QPaintEvent,QColor, QMouseEvent, QPainter, QIcon
