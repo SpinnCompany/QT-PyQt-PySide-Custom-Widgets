@@ -284,12 +284,14 @@ from Custom_Widgets.QCustomAlert import QCustomAlert
 from Custom_Widgets.QCustomRadioButton import QCustomRadioButton
 from Custom_Widgets.QCustomRadioGroup import QCustomRadioGroup
 from Custom_Widgets.QCustomTextArea import QCustomTextArea
+from Custom_Widgets.QCustomVerificationCode import QCustomVerificationCode
 
 for _nw, _ng in ((QCustomSwitch, "Input Widgets"),
                  (QCustomNumberInput, "Input Widgets"),
                  (QCustomRadioButton, "Input Widgets"),
                  (QCustomRadioGroup, "Input Widgets"),
                  (QCustomTextArea, "Input Widgets"),
+                 (QCustomVerificationCode, "Input Widgets"),
                  (QCustomAlert, "Display Widgets")):
     try:
         logInfo("Registering %s" % _nw.__name__)
