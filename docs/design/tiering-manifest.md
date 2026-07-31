@@ -15,17 +15,17 @@ ships at once.
 > Regenerate: `python tools/scan_widgets.py`. Presence signals are objective; the
 > tier decisions above are ratified; Stable/Secure remain a human review pass.
 
-## Coverage summary (148 widget modules)
+## Coverage summary (149 widget modules)
 
 | Signal | Coverage |
 |---|---|
-| Has a test | 129/148 (87%) |
-| Has an example | 121/148 (82%) |
-| In `__catalog__` | 93/148 (63%) |
-| Designer-registered | 111/148 (75%) |
-| `.pyi` type stub | 92/148 (62%) |
+| Has a test | 130/149 (87%) |
+| Has an example | 122/149 (82%) |
+| In `__catalog__` | 94/149 (63%) |
+| Designer-registered | 112/149 (75%) |
+| `.pyi` type stub | 93/149 (62%) |
 
-Breakdown: **5** free-base-with-Pro-extension, **124** free
+Breakdown: **5** free-base-with-Pro-extension, **125** free
 standalone, **19** internal/engine (not shipped as standalone).
 
 ## Legend
@@ -56,7 +56,7 @@ Pro mapping:
 - `QCustomBarChart` -> Charts Pro (SKU-2, candidate)
 - `QCustomPieChart` -> Charts Pro (SKU-2, candidate)
 
-## Tier: free -- standalone (124)
+## Tier: free -- standalone (125)
 
 | Widget | Test | Example | Catalog | Designer | .pyi | LOC | Module |
 |---|:--:|:--:|:--:|:--:|:--:|--:|---|
@@ -177,6 +177,7 @@ Pro mapping:
 | `QCustomTreeWidget` | ✅ | ✅ | ✅ | ✅ | ✅ | 102 | Custom_Widgets/QCustomTreeWidget.py |
 | `QCustomTrendChip` | ✅ | ✅ | ✅ | ✅ | ✅ | 251 | Custom_Widgets/QCustomTrendChip.py |
 | `QCustomTypingIndicator` | ✅ | — | ✅ | ✅ | ✅ | 144 | Custom_Widgets/QCustomTypingIndicator.py |
+| `QCustomVerificationCode` | ✅ | ✅ | ✅ | ✅ | ✅ | 430 | Custom_Widgets/QCustomVerificationCode.py |
 | `QCustomVerticalSeparator` | ✅ | — | — | ✅ | — | 117 | Custom_Widgets/QCustomVerticalSeparator.py |
 | `QCustomVideoPlayer` | — | — | ✅ | ✅ | ✅ | 327 | Custom_Widgets/QCustomVideoPlayer.py |
 | `QCustomVoiceMessage` | ✅ | ✅ | ✅ | ✅ | ✅ | 302 | Custom_Widgets/QCustomVoiceMessage.py |

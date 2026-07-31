@@ -811,6 +811,19 @@ def radio_qss(tokens):
             "}\n" % (r("outline"), r("accent"), r("accent"), r("on-surface")))
 
 
+def verificationcode_qss(tokens):
+    """Feed token colours to the painted QCustomVerificationCode boxes."""
+    r = tokens.role
+    return ("QCustomVerificationCode {\n"
+            "    qproperty-boxBackgroundColor: %s;\n"
+            "    qproperty-boxBorderColor: %s;\n"
+            "    qproperty-boxBorderActiveColor: %s;\n"
+            "    qproperty-boxBorderErrorColor: %s;\n"
+            "    qproperty-textColor: %s;\n"
+            "}\n" % (r("surface"), r("outline"), r("focus-ring"),
+                     r("destructive"), r("on-surface")))
+
+
 def textarea_qss(tokens):
     """Generate QCustomTextArea QSS (field chrome + counter colours).
 
@@ -1076,6 +1089,7 @@ def build_component_qss(tokens):
             + emptystate_qss(tokens) + dropzone_qss(tokens) + rangeslider_qss(tokens)
             + switch_qss(tokens) + radio_qss(tokens) + radiogroup_qss(tokens)
             + candlestick_qss(tokens) + textarea_qss(tokens)
+            + verificationcode_qss(tokens)
             + number_qss(tokens) + alert_qss(tokens)
             + statcard_qss(tokens) + progressring_qss(tokens) + card_qss(tokens)
             + badge_qss(tokens) + kbd_qss(tokens) + splitter_qss(tokens)
