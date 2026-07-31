@@ -1,7 +1,19 @@
 # QCustomMapView — project plan (its own track, NOT a core painted widget)
 
-**Added:** 2026-07-24. **Status:** DOCUMENTED — decided to build as its own
-project when prioritized, *not* as a painted widget in the core library.
+**Added:** 2026-07-24. **Status: BUILT 2026-08-01** as the optional `[map]`
+extra this plan prescribed — still *not* a painted widget in the core library.
+See [docs/map-view.md](../map-view.md) for usage; the notes below are why it
+is shaped this way.
+
+> **What shipped, and where it differs from the plan below.** The engine is
+> **QtLocation**, not the plan's recommended MapLibre/QWebEngine: it ships
+> with Qt, needs no Chromium and no API key to start. The facade is
+> engine-agnostic exactly as planned, so a WebEngine backend can still be
+> dropped in later. The plan's claim that a map "can't be verified by an
+> offscreen grab() pixel probe" held only for the ENGINE — splitting state
+> from rendering made 32 of the 34 tests run headlessly with no engine at all.
+> The tile/key/ToS warnings below are all still live: the default tiles carry
+> an "API Key Required" watermark.
 Reference: the Haulix operations map (vehicle markers, a highlighted route
 polyline, a focused-vehicle glow, pan/zoom, a compass + zoom/layer controls).
 This is backlog item #9's "separate track" from
