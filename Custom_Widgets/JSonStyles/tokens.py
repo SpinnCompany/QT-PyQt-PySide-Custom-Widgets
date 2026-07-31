@@ -908,6 +908,16 @@ def textarea_qss(tokens):
     return "".join(css)
 
 
+def radar_qss(tokens):
+    """Feed token colours to the painted QCustomRadarChart."""
+    r = tokens.role
+    return ("QCustomRadarChart {\n"
+            "    qproperty-gridColor: %s;\n"
+            "    qproperty-axisColor: %s;\n"
+            "    qproperty-labelColor: %s;\n"
+            "}\n" % (r("surface-muted"), r("outline"), r("on-surface")))
+
+
 def candlestick_qss(tokens):
     """Feed token colours to the painted QCustomCandlestickChart.
 
@@ -1140,7 +1150,8 @@ def build_component_qss(tokens):
             + pagination_qss(tokens) + popover_qss(tokens) + segmented_qss(tokens)
             + emptystate_qss(tokens) + dropzone_qss(tokens) + rangeslider_qss(tokens)
             + switch_qss(tokens) + radio_qss(tokens) + radiogroup_qss(tokens)
-            + candlestick_qss(tokens) + textarea_qss(tokens)
+            + candlestick_qss(tokens) + radar_qss(tokens)
+            + textarea_qss(tokens)
             + verificationcode_qss(tokens) + multiselect_qss(tokens)
             + imagepicker_qss(tokens) + gradientpicker_qss(tokens)
             + number_qss(tokens) + alert_qss(tokens)

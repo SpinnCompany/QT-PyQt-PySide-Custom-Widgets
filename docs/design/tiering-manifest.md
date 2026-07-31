@@ -15,17 +15,17 @@ ships at once.
 > Regenerate: `python tools/scan_widgets.py`. Presence signals are objective; the
 > tier decisions above are ratified; Stable/Secure remain a human review pass.
 
-## Coverage summary (159 widget modules)
+## Coverage summary (160 widget modules)
 
 | Signal | Coverage |
 |---|---|
-| Has a test | 139/159 (87%) |
-| Has an example | 131/159 (82%) |
-| In `__catalog__` | 101/159 (64%) |
-| Designer-registered | 117/159 (74%) |
-| `.pyi` type stub | 100/159 (63%) |
+| Has a test | 140/160 (88%) |
+| Has an example | 132/160 (82%) |
+| In `__catalog__` | 102/160 (64%) |
+| Designer-registered | 118/160 (74%) |
+| `.pyi` type stub | 101/160 (63%) |
 
-Breakdown: **5** free-base-with-Pro-extension, **135** free
+Breakdown: **5** free-base-with-Pro-extension, **136** free
 standalone, **19** internal/engine (not shipped as standalone).
 
 ## Legend
@@ -56,7 +56,7 @@ Pro mapping:
 - `QCustomBarChart` -> Charts Pro (SKU-2, candidate)
 - `QCustomPieChart` -> Charts Pro (SKU-2, candidate)
 
-## Tier: free -- standalone (135)
+## Tier: free -- standalone (136)
 
 | Widget | Test | Example | Catalog | Designer | .pyi | LOC | Module |
 |---|:--:|:--:|:--:|:--:|:--:|--:|---|
@@ -153,6 +153,7 @@ Pro mapping:
 | `QCustomQSlider` | ✅ | ✅ | — | — | — | 47 | Custom_Widgets/widgets/input/QCustomQSlider.py |
 | `QCustomQStackedWidget` | ✅ | ✅ | — | ✅ | — | 817 | Custom_Widgets/widgets/containers/QCustomQStackedWidget.py |
 | `QCustomQToolTip` | ✅ | ✅ | — | — | — | 662 | Custom_Widgets/widgets/display/QCustomQToolTip.py |
+| `QCustomRadarChart` | ✅ | ✅ | ✅ | ✅ | ✅ | 576 | Custom_Widgets/widgets/charts/QCustomRadarChart.py |
 | `QCustomRadialGauge` | ✅ | ✅ | ✅ | ✅ | ✅ | 1088 | Custom_Widgets/widgets/charts/QCustomRadialGauge.py |
 | `QCustomRadioButton` | ✅ | ✅ | ✅ | ✅ | ✅ | 268 | Custom_Widgets/widgets/input/QCustomRadioButton.py |
 | `QCustomRadioGroup` | ✅ | ✅ | ✅ | ✅ | ✅ | 304 | Custom_Widgets/widgets/input/QCustomRadioGroup.py |

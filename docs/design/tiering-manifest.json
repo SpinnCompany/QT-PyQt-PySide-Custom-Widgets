@@ -1078,6 +1078,17 @@
     "tier": "free"
   },
   {
+    "module": "Custom_Widgets/widgets/charts/QCustomRadarChart.py",
+    "widget": "QCustomRadarChart",
+    "loc": 576,
+    "pyi": true,
+    "catalog": true,
+    "test": true,
+    "example": true,
+    "designer": true,
+    "tier": "free"
+  },
+  {
     "module": "Custom_Widgets/widgets/charts/QCustomRadialGauge.py",
     "widget": "QCustomRadialGauge",
     "loc": 1088,
