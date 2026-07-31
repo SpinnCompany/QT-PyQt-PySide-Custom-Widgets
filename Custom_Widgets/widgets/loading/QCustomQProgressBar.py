@@ -11,12 +11,13 @@ from qtpy.QtGui import QPainter, QColor, QPalette
 from qtpy.QtWidgets import QProgressBar, QStyleOption, QStyle
 
 from Custom_Widgets.QCustomTheme import QCustomTheme
+from Custom_Widgets._resources import packageDir
 
 
 class QCustomQProgressBar(QProgressBar):
     """ Indeterminate progress bar """
 
-    script_dir = os.path.dirname(os.path.realpath(__file__))
+    script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "../components/icons/linear_scale.png")
     WIDGET_TOOLTIP = "A custom animated progress bar."
     WIDGET_DOM_XML = """

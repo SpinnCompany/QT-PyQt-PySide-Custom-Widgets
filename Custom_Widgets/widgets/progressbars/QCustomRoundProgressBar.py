@@ -3,6 +3,7 @@ from qtpy.QtGui import *
 from qtpy.QtWidgets import *
 
 import os
+from Custom_Widgets._resources import packageDir
 
 
 class ProgressBarArcLoader:
@@ -26,7 +27,7 @@ class ProgressBarArcLoader:
 
 class QCustomRoundProgressBar(QWidget):
     # Define XML for Qt Designer
-    script_dir = os.path.dirname(os.path.realpath(__file__))
+    script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "../components/icons/donut_large.png")
     WIDGET_TOOLTIP = "A custom round progress bar that shows animated progress."
     WIDGET_DOM_XML = """

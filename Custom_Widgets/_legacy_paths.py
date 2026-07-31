@@ -38,6 +38,17 @@ _ROOT = os.path.dirname(os.path.abspath(__file__))
 # genuinely internal groupings.
 GROUPS = ("widgets", "tools")
 
+# Whole packages that moved under widgets/. Unlike the flat aliases these are
+# derived from an explicit table, because the old *package* name is itself
+# published: .ui files carry headers like
+#     <header>Custom_Widgets.QCustomCharts.QCustomAreaChart</header>
+# and user code does `from Custom_Widgets.ProgressBars.X import X`, so the
+# whole prefix has to keep resolving, not just the leaf module.
+PACKAGE_ALIASES = {
+    "Custom_Widgets.ProgressBars": "Custom_Widgets.widgets.progressbars",
+    "Custom_Widgets.LoadingIndicators": "Custom_Widgets.widgets.loading",
+}
+
 
 def build_aliases():
     """Map legacy flat name -> real dotted module path.
@@ -92,11 +103,21 @@ class _AliasLoader(importlib.abc.Loader):
 class LegacyPathFinder(importlib.abc.MetaPathFinder):
     """Resolves `Custom_Widgets.<Module>` to its new home."""
 
-    def __init__(self, aliases):
+    def __init__(self, aliases, packages=None):
         self._aliases = aliases
+        self._packages = dict(packages or {})
+
+    def _packageAlias(self, fullname):
+        """Rewrite an old package prefix, keeping the rest of the path."""
+        for old, new in self._packages.items():
+            if fullname == old:
+                return new
+            if fullname.startswith(old + "."):
+                return new + fullname[len(old):]
+        return None
 
     def find_spec(self, fullname, path=None, target=None):
-        real = self._aliases.get(fullname)
+        real = self._aliases.get(fullname) or self._packageAlias(fullname)
         if real is None:
             return None
         if fullname == real:                      # nothing to alias
@@ -112,7 +133,7 @@ def install():
     global _installed
     if _installed is not None:
         return _installed
-    finder = LegacyPathFinder(build_aliases())
+    finder = LegacyPathFinder(build_aliases(), PACKAGE_ALIASES)
     # Appended, not prepended: a real module on disk must always win, so this
     # only ever fills gaps left by the move.
     sys.meta_path.append(finder)

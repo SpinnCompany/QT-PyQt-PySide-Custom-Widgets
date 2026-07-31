@@ -88,7 +88,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/LoadingIndicators/QCustom3CirclesLoader.py",
+    "module": "Custom_Widgets/widgets/loading/QCustom3CirclesLoader.py",
     "widget": "QCustom3CirclesLoader",
     "loc": 188,
     "pyi": false,
@@ -143,7 +143,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/LoadingIndicators/QCustomArcLoader.py",
+    "module": "Custom_Widgets/widgets/loading/QCustomArcLoader.py",
     "widget": "QCustomArcLoader",
     "loc": 143,
     "pyi": false,
@@ -902,7 +902,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/LoadingIndicators/QCustomPerlinLoader.py",
+    "module": "Custom_Widgets/widgets/loading/QCustomPerlinLoader.py",
     "widget": "QCustomPerlinLoader",
     "loc": 143,
     "pyi": false,
@@ -1001,7 +1001,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/LoadingIndicators/QCustomQProgressBar.py",
+    "module": "Custom_Widgets/widgets/loading/QCustomQProgressBar.py",
     "widget": "QCustomQProgressBar",
     "loc": 207,
     "pyi": false,
@@ -1155,7 +1155,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/ProgressBars/QCustomRoundProgressBar.py",
+    "module": "Custom_Widgets/widgets/progressbars/QCustomRoundProgressBar.py",
     "widget": "QCustomRoundProgressBar",
     "loc": 227,
     "pyi": false,
@@ -1265,7 +1265,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/LoadingIndicators/QCustomSpinner.py",
+    "module": "Custom_Widgets/widgets/loading/QCustomSpinner.py",
     "widget": "QCustomSpinner",
     "loc": 79,
     "pyi": false,
@@ -1553,7 +1553,7 @@
   {
     "module": "Custom_Widgets/QCustomCharts/QCustomChartBase.py",
     "widget": "QCustomChartBase",
-    "loc": 377,
+    "loc": 379,
     "pyi": false,
     "catalog": false,
     "test": false,
