@@ -1,7 +1,421 @@
 {
   "_comment": "Custom_Widgets design-lint baseline — grandfathered violations. Only NEW violations fail. Regenerate with `Custom_Widgets-lint --generate-baseline`.",
-  "count": 426,
+  "count": 495,
   "fingerprints": [
+    [
+      "camelcase-api",
+      "Custom_Widgets/AcrylicEffect.py",
+      "detect_platform",
+      "def detect_platform():"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/AnalogGaugeWidget.py",
+      "center_horizontal",
+      "def center_horizontal(self, value):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/AnalogGaugeWidget.py",
+      "center_vertical",
+      "def center_vertical(self, value):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/AnalogGaugeWidget.py",
+      "change_value_needle_style",
+      "def change_value_needle_style(self, design):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/AnalogGaugeWidget.py",
+      "create_fine_scaled_marker",
+      "def create_fine_scaled_marker(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/AnalogGaugeWidget.py",
+      "create_polygon_pie",
+      "def create_polygon_pie(self, outer_radius, inner_raduis, start, lenght, bar_graph = True):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/AnalogGaugeWidget.py",
+      "create_scale_marker_values_text",
+      "def create_scale_marker_values_text(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/AnalogGaugeWidget.py",
+      "create_units_text",
+      "def create_units_text(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/AnalogGaugeWidget.py",
+      "create_values_text",
+      "def create_values_text(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/AnalogGaugeWidget.py",
+      "draw_big_needle_center_point",
+      "def draw_big_needle_center_point(self, diameter=30):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/AnalogGaugeWidget.py",
+      "draw_big_scaled_marker",
+      "def draw_big_scaled_marker(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/AnalogGaugeWidget.py",
+      "draw_filled_polygon",
+      "def draw_filled_polygon(self, outline_pen_with=0):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/AnalogGaugeWidget.py",
+      "draw_icon_image",
+      "def draw_icon_image(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/AnalogGaugeWidget.py",
+      "draw_needle",
+      "def draw_needle(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/AnalogGaugeWidget.py",
+      "draw_outer_circle",
+      "def draw_outer_circle(self, diameter=30):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/AnalogGaugeWidget.py",
+      "rescale_method",
+      "def rescale_method(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/DevServer.py",
+      "convert_ui",
+      "def convert_ui(self, ui_file):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/DevServer.py",
+      "restart_app",
+      "def restart_app(self, reason):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/DevServer.py",
+      "start_app",
+      "def start_app(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/DevServer.py",
+      "stop_app",
+      "def stop_app(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/FileMonitor.py",
+      "monitor_files",
+      "def monitor_files(self, files_to_monitor):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/FileMonitor.py",
+      "monitor_folders",
+      "def monitor_folders(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/FileMonitor.py",
+      "on_file_change",
+      "def on_file_change(self, path):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/FileMonitor.py",
+      "on_folder_change",
+      "def on_folder_change(self, path):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/FileMonitor.py",
+      "qss_file_changed",
+      "def qss_file_changed(self, file_path, live_compile=False):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/FileMonitor.py",
+      "start_qss_file_listener",
+      "def start_qss_file_listener(self, theme_engine):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/FileMonitor.py",
+      "stop_qss_file_listener",
+      "def stop_qss_file_listener(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/FileMonitor.py",
+      "update_file_list",
+      "def update_file_list(self, fresh=False):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/LoadingIndicators/QCustomPerlinLoader.py",
+      "draw_deformed_circles",
+      "def draw_deformed_circles(self, painter: QPainter) -> None:"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/LoadingIndicators/QCustomPerlinLoader.py",
+      "draw_message",
+      "def draw_message(self, painter: QPainter) -> None:"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/LoadingIndicators/QCustomPerlinLoader.py",
+      "get_deformed_point",
+      "def get_deformed_point(self, angle: float, noise_generator: Noise) -> QPointF:"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/LoadingIndicators/QCustomPerlinLoader.py",
+      "start_animation",
+      "def start_animation(self) -> None:"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/LoadingIndicators/QCustomPerlinLoader.py",
+      "update_start_angle",
+      "def update_start_angle(self, new_value: float) -> None:"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/QCustomCarousel.py",
+      "currentIndex_",
+      "def currentIndex_(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/QCustomCheckBox.py",
+      "setup_animation",
+      "def setup_animation(self, value):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/QCustomCodeEditor.py",
+      "match_multiline",
+      "def match_multiline(self, text, delimiter, in_state, style):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/QCustomEmojiPicker.py",
+      "on_input",
+      "def on_input(self, text: str):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/QCustomForm.py",
+      "add_field",
+      "def add_field(self, field):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/QCustomForm.py",
+      "error_text",
+      "def error_text(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/QCustomForm.py",
+      "is_valid",
+      "def is_valid(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/QCustomForm.py",
+      "set_required",
+      "def set_required(self, required):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/QCustomForm.py",
+      "set_validator",
+      "def set_validator(self, validator):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/QCustomForm.py",
+      "set_value",
+      "def set_value(self, value):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/QCustomSidebar.py",
+      "convert_to_int",
+      "def convert_to_int(self, s):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/QCustomSidebarLabel.py",
+      "connect_to_parent",
+      "def connect_to_parent(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/QCustomSidebarLabel.py",
+      "on_animation_finished",
+      "def on_animation_finished(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/QCustomSidebarLabel.py",
+      "start_hide_animation",
+      "def start_hide_animation(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/QCustomSidebarLabel.py",
+      "start_show_animation",
+      "def start_show_animation(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/QCustomThemeDarkLightToggle.py",
+      "toggle_theme",
+      "def toggle_theme(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/QCustomThemeDarkLightToggle.py",
+      "update_button_icon",
+      "def update_button_icon(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/QCustomThemeDarkLightToggle.py",
+      "update_button_text",
+      "def update_button_text(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/QCustomThemeList.py",
+      "check_theme_updates",
+      "def check_theme_updates(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/QCustomThemeList.py",
+      "get_filtered_themes",
+      "def get_filtered_themes(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/QCustomThemeList.py",
+      "on_theme_changed",
+      "def on_theme_changed(self, index):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/QCustomThemeList.py",
+      "populate_themes",
+      "def populate_themes(self, new_theme_names):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/QCustomToast.py",
+      "show_toast",
+      "def show_toast(cls, parent, message, variant=\"info\", **kw):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/Utils.py",
+      "add_file_url",
+      "def add_file_url(self, file_url):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/Utils.py",
+      "clear_file_urls",
+      "def clear_file_urls(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/Utils.py",
+      "get_file_urls",
+      "def get_file_urls(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/Utils.py",
+      "url_exists",
+      "def url_exists(self, file_url):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/WidgetsWorker.py",
+      "print_output",
+      "def print_output(s):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/WidgetsWorker.py",
+      "progress_fn",
+      "def progress_fn(n):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/WidgetsWorker.py",
+      "thread_complete",
+      "def thread_complete():"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/__init__.py",
+      "restore_or_maximize_window",
+      "def restore_or_maximize_window(self):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/_legacy_paths.py",
+      "create_module",
+      "def create_module(self, spec):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/_legacy_paths.py",
+      "exec_module",
+      "def exec_module(self, module):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/_legacy_paths.py",
+      "find_spec",
+      "def find_spec(self, fullname, path=None, target=None):"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/lint/config.py",
+      "with_overrides",
+      "def with_overrides(self, **kw) -> \"Config\":"
+    ],
+    [
+      "camelcase-api",
+      "Custom_Widgets/mcp/workspace.py",
+      "default_dir",
+      "def default_dir(self):"
+    ],
     [
       "drop-shadow",
       "Custom_Widgets/JSonStyles/__init__.py",
