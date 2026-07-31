@@ -905,6 +905,20 @@ except Exception as e:
     logException(e, message="Error registering QCustomBubbleChart")
 
 
+from Custom_Widgets.QCustomCandlestickChart import QCustomCandlestickChart
+
+# Registering QCustomCandlestickChart with error handling
+try:
+    logInfo("Registering QCustomCandlestickChart")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomCandlestickChart, module=QCustomCandlestickChart.WIDGET_MODULE,
+        tool_tip=QCustomCandlestickChart.WIDGET_TOOLTIP,
+        xml=QCustomCandlestickChart.WIDGET_DOM_XML,
+        icon=QCustomCandlestickChart.WIDGET_ICON, group="Charts")
+except Exception as e:
+    logException(e, message="Error registering QCustomCandlestickChart")
+
+
 from Custom_Widgets.QCustomAgendaList import QCustomAgendaList
 
 # Registering QCustomAgendaList with error handling

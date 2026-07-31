@@ -811,6 +811,21 @@ def radio_qss(tokens):
             "}\n" % (r("outline"), r("accent"), r("accent"), r("on-surface")))
 
 
+def candlestick_qss(tokens):
+    """Feed token colours to the painted QCustomCandlestickChart.
+
+    Up/down are the success/destructive roles rather than raw green/red so a
+    palette that redefines them (or a colour-blind-safe theme) carries through.
+    """
+    r = tokens.role
+    return ("QCustomCandlestickChart {\n"
+            "    qproperty-upColor: %s; qproperty-downColor: %s;\n"
+            "    qproperty-wickColor: %s; qproperty-gridColor: %s;\n"
+            "    qproperty-axisTextColor: %s;\n"
+            "}\n" % (r("success"), r("destructive"), r("on-surface"),
+                     r("outline"), r("on-surface")))
+
+
 def radiogroup_qss(tokens):
     """Feed the token text colour to the painted QCustomRadioGroup title."""
     r = tokens.role
@@ -1028,7 +1043,7 @@ def build_component_qss(tokens):
             + pagination_qss(tokens) + popover_qss(tokens) + segmented_qss(tokens)
             + emptystate_qss(tokens) + dropzone_qss(tokens) + rangeslider_qss(tokens)
             + switch_qss(tokens) + radio_qss(tokens) + radiogroup_qss(tokens)
-            + number_qss(tokens) + alert_qss(tokens)
+            + candlestick_qss(tokens) + number_qss(tokens) + alert_qss(tokens)
             + statcard_qss(tokens) + progressring_qss(tokens) + card_qss(tokens)
             + badge_qss(tokens) + kbd_qss(tokens) + splitter_qss(tokens)
             + carousel_qss(tokens))
