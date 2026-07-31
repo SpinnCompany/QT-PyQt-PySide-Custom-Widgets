@@ -72,11 +72,19 @@ def tickValues(low, high, count=5):
 
 
 def formatTick(value, step):
-    """Render a tick with only as many decimals as the step needs."""
+    """Render a tick with only as many decimals as the step needs.
+
+    Derived from the step's actual decimal places, not from
+    ceil(-log10(step)). That shortcut is right only when the step is a power
+    of ten: a step of 0.25 needs two decimals but the log gives one, so the
+    tick rendered as "0.2" and quietly lost a digit.
+    """
     if step >= 1:
         return "%g" % round(value, 10)
-    decimals = max(0, int(math.ceil(-math.log10(step))))
-    return "%.*f" % (decimals, value)
+    for decimals in range(0, 11):
+        if abs(round(step, decimals) - step) < 1e-12:
+            return "%.*f" % (decimals, value)
+    return "%.10g" % value
 
 
 def thinLabels(labels, available, widthOf, gap=10):
@@ -91,3 +99,33 @@ def thinLabels(labels, available, widthOf, gap=10):
     widest = max((widthOf(text) for text in labels), default=1)
     stride = 1 if slot >= widest + gap else int(math.ceil((widest + gap) / max(slot, 1e-6)))
     return list(range(0, len(labels), max(1, stride)))
+
+
+########################################################################
+## Polar mapping — shared by the radial charts.
+##
+## Extracted from QCustomRadarChart when the radial charts became the second
+## and third consumers. Same reasoning as the tick maths: three copies of
+## "where does slot i sit on a circle" is three chances to disagree about
+## which way the chart winds.
+########################################################################
+def polarAngle(index, count, startAngle=90.0, clockwise=True):
+    """Radians for slot `index` of `count`, from `startAngle` degrees.
+
+    Clockwise by default: chart convention runs the other way from the
+    mathematical one, and getting it wrong mirrors the whole chart.
+    """
+    count = max(1, int(count))
+    step = 2 * math.pi / count
+    offset = index * step
+    return math.radians(startAngle) + (-offset if clockwise else offset)
+
+
+def polarPoint(centreX, centreY, radius, angle):
+    """Cartesian point at `radius`/`angle`, in screen coordinates.
+
+    Screen y grows downward, so the sine is subtracted — forgetting that
+    flips the chart vertically and is easy to miss on a symmetric dataset.
+    """
+    return (centreX + radius * math.cos(angle),
+            centreY - radius * math.sin(angle))
