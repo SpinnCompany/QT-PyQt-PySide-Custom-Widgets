@@ -15,7 +15,9 @@ from .QCustomChartView import QCustomChartView
 from .QCustomChartTooltip import QCustomChartTooltip
 from .QCustomLegendManager import QCustomLegendManager
 
-from ..QCustomTheme import QCustomTheme
+# Absolute, not relative: a parent-relative import encodes how deep the
+# module sits, so it silently retargets whenever the package moves.
+from Custom_Widgets.QCustomTheme import QCustomTheme
 
 class QCustomChartBase(QWidget, QCustomChartConstants):
     """
