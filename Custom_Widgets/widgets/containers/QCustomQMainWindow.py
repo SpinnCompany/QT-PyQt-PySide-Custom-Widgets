@@ -136,13 +136,22 @@ class QCustomQMainWindow(QMainWindow):
             self.themeEngine.setTheme(value)
 
     def isValidTheme(self, value: str):
+        """Whether `value` names one of the themes the engine knows about.
+
+        Reads the engine's list, not `self.themes`: this window has no such
+        attribute, so the original lookup raised AttributeError on every call
+        and the broad `except` below turned that into "invalid theme" — which
+        made appTheme silently unsettable. The except is kept narrow now so a
+        real failure surfaces instead of being read as a rejected theme.
+        """
         try:
-            for theme in self.themes:
-                if theme.name == value:
-                   return True
+            themes = self.themeEngine.themes
+        except AttributeError:
             return False
-        except Exception:
-            return False
+        for theme in themes or []:
+            if getattr(theme, "name", None) == value:
+                return True
+        return False
 
     @Property(str)
     def jsonStylesheetFilePath(self):

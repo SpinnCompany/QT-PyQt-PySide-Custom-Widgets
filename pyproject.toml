@@ -51,7 +51,6 @@ dev = [
     "mcp",
     "build",
     "pytest",
-    "pytest-asyncio",
 ]
 all = [
     "qrcode>=8.0", "Pillow", "numpy", "colorthief", "scipy",
