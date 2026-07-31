@@ -15,17 +15,17 @@ ships at once.
 > Regenerate: `python tools/scan_widgets.py`. Presence signals are objective; the
 > tier decisions above are ratified; Stable/Secure remain a human review pass.
 
-## Coverage summary (158 widget modules)
+## Coverage summary (159 widget modules)
 
 | Signal | Coverage |
 |---|---|
-| Has a test | 138/158 (87%) |
-| Has an example | 130/158 (82%) |
-| In `__catalog__` | 96/158 (61%) |
-| Designer-registered | 116/158 (73%) |
-| `.pyi` type stub | 95/158 (60%) |
+| Has a test | 139/159 (87%) |
+| Has an example | 131/159 (82%) |
+| In `__catalog__` | 97/159 (61%) |
+| Designer-registered | 117/159 (74%) |
+| `.pyi` type stub | 96/159 (60%) |
 
-Breakdown: **5** free-base-with-Pro-extension, **134** free
+Breakdown: **5** free-base-with-Pro-extension, **135** free
 standalone, **19** internal/engine (not shipped as standalone).
 
 ## Legend
@@ -56,7 +56,7 @@ Pro mapping:
 - `QCustomBarChart` -> Charts Pro (SKU-2, candidate)
 - `QCustomPieChart` -> Charts Pro (SKU-2, candidate)
 
-## Tier: free -- standalone (134)
+## Tier: free -- standalone (135)
 
 | Widget | Test | Example | Catalog | Designer | .pyi | LOC | Module |
 |---|:--:|:--:|:--:|:--:|:--:|--:|---|
@@ -113,6 +113,7 @@ Pro mapping:
 | `QCustomForm` | ✅ | ✅ | — | — | — | 114 | Custom_Widgets/widgets/input/QCustomForm.py |
 | `QCustomGanttChart` | ✅ | ✅ | ✅ | ✅ | ✅ | 361 | Custom_Widgets/widgets/charts/QCustomGanttChart.py |
 | `QCustomGlassFrame` | ✅ | ✅ | ✅ | ✅ | ✅ | 529 | Custom_Widgets/widgets/containers/QCustomGlassFrame.py |
+| `QCustomGradientPicker` | ✅ | ✅ | ✅ | ✅ | ✅ | 519 | Custom_Widgets/widgets/input/QCustomGradientPicker.py |
 | `QCustomHamburgerMenu` | ✅ | — | — | ✅ | — | 840 | Custom_Widgets/widgets/navigation/QCustomHamburgerMenu.py |
 | `QCustomHeatmap` | ✅ | ✅ | ✅ | ✅ | ✅ | 527 | Custom_Widgets/widgets/charts/QCustomHeatmap.py |
 | `QCustomHorizontalSeparator` | ✅ | — | — | ✅ | — | 120 | Custom_Widgets/widgets/display/QCustomHorizontalSeparator.py |

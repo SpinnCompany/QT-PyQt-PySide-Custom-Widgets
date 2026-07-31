@@ -638,6 +638,17 @@
     "tier": "free"
   },
   {
+    "module": "Custom_Widgets/widgets/input/QCustomGradientPicker.py",
+    "widget": "QCustomGradientPicker",
+    "loc": 519,
+    "pyi": true,
+    "catalog": true,
+    "test": true,
+    "example": true,
+    "designer": true,
+    "tier": "free"
+  },
+  {
     "module": "Custom_Widgets/widgets/navigation/QCustomHamburgerMenu.py",
     "widget": "QCustomHamburgerMenu",
     "loc": 840,

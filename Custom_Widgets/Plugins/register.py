@@ -287,6 +287,7 @@ from Custom_Widgets.QCustomTextArea import QCustomTextArea
 from Custom_Widgets.QCustomVerificationCode import QCustomVerificationCode
 from Custom_Widgets.QCustomMultiSelect import QCustomMultiSelect
 from Custom_Widgets.QCustomImagePicker import QCustomImagePicker
+from Custom_Widgets.QCustomGradientPicker import QCustomGradientPicker
 
 for _nw, _ng in ((QCustomSwitch, "Input Widgets"),
                  (QCustomNumberInput, "Input Widgets"),
@@ -296,6 +297,7 @@ for _nw, _ng in ((QCustomSwitch, "Input Widgets"),
                  (QCustomVerificationCode, "Input Widgets"),
                  (QCustomMultiSelect, "Input Widgets"),
                  (QCustomImagePicker, "Input Widgets"),
+                 (QCustomGradientPicker, "Input Widgets"),
                  (QCustomAlert, "Display Widgets")):
     try:
         logInfo("Registering %s" % _nw.__name__)
