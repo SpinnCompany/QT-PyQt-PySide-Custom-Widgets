@@ -1530,6 +1530,14 @@ class QCustomTheme(QObject):
             self.generateIcons(progress_callback, iconsColor, "", "icons", createQrc=True, output_width=24, output_height=24, force=force)
 
             logInfo(("DONE: Current icons color ", iconsColor))
+        else:
+            # Generating zero icons must never be silent — that hid a theme
+            # misconfiguration for months, leaving apps with no icons at all.
+            logWarning(
+                "No icons color could be resolved, so no icons were generated. "
+                "Set $ICONS_COLOR in Qss/scss/defaultStyle.scss, or give the "
+                "active theme an icons color."
+            )
 
 
     def generateAllIcons(self, progress_callback = None):
@@ -1756,14 +1764,23 @@ class Theme:
 
         self.createNewIcons = createNewIcons
 
+# NOTE: pass defaultTheme by KEYWORD. Theme.__init__ takes createNewIcons in the
+# 6th positional slot, so a positional defaultTheme lands there instead and
+# silently sets createNewIcons=False — which makes getCurrentThemeInfo() report
+# no icons-color and generateNewIcons() produce nothing at all.
 class Dark(Theme):
     def __init__(self, defaultTheme=False, other_variables={}):
-        super().__init__("Dark", "#0d1117", "white", "#238636", "white", defaultTheme, other_variables = other_variables, predefined=True)
+        super().__init__("Dark", "#0d1117", "white", "#238636", "white",
+                         defaultTheme=defaultTheme, other_variables=other_variables,
+                         predefined=True)
 
 class Light(Theme):
     def __init__(self, defaultTheme=False, other_variables={}):
-        super().__init__("Light", "white", "black", "#00bcff", "black", defaultTheme, other_variables = other_variables, predefined=True)
+        super().__init__("Light", "white", "black", "#00bcff", "black",
+                         defaultTheme=defaultTheme, other_variables=other_variables,
+                         predefined=True)
 
 class NewTheme(Theme):
     def __init__(self, name, bg_color, txt_color, accent_color, icons_color, defaultTheme=False, other_variables={}):
-        super().__init__(name, bg_color, txt_color, accent_color, icons_color, defaultTheme, other_variables)
+        super().__init__(name, bg_color, txt_color, accent_color, icons_color,
+                         defaultTheme=defaultTheme, other_variables=other_variables)
