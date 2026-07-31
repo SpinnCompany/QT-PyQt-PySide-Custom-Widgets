@@ -1,5 +1,13 @@
 # Missing widgets — gap analysis from dashboard references
 
+> **STATUS 2026-08-01 — QUEUE CLEARED.** All 17 gap widgets are built: the 7
+> form controls, 4 chrome/branding, 5 motion, and both data-viz items
+> (`QCustomRadarChart` in the core, `QCustomMapView` as the optional `[map]`
+> extra per [qcustommapview-project-plan.md](qcustommapview-project-plan.md)).
+> The separate MUI X chart gap is closed too — see
+> [mui-charts-gap.md](mui-charts-gap.md). What remains below is history plus
+> the "improve existing widgets" work, which is tracked in the tiering manifest.
+
 **Added:** 2026-07-24 — from a gap analysis of five reference dashboards
 (fitness mobile cards, two donut cards, the "Loud" finance dashboard, and a
 sentiment bubble chart) against the current catalog.

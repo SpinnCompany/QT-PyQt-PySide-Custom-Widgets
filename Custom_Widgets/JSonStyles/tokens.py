@@ -908,6 +908,46 @@ def textarea_qss(tokens):
     return "".join(css)
 
 
+def motion_qss(tokens):
+    """Token colours for the motion widgets."""
+    r = tokens.role
+    return ("QCustomNumberCounter { qproperty-textColor: %s; }\n"
+            "QCustomTypewriterText {\n"
+            "    qproperty-textColor: %s; qproperty-caretColor: %s;\n"
+            "}\n"
+            "QCustomRainbowButton {\n"
+            "    qproperty-textColor: %s; qproperty-surfaceColor: %s;\n"
+            "}\n"
+            "QCustomSparklesText { qproperty-textColor: %s; }\n"
+            % (r("on-surface"), r("on-surface"), r("accent"),
+               r("on-surface"), r("surface"), r("on-surface")))
+
+
+def chrome_qss(tokens):
+    """Token colours for the chrome/branding widgets."""
+    r = tokens.role
+    return ("QCustomFeaturedIcon {\n"
+            "    qproperty-accentColor: %s; qproperty-iconColor: %s;\n"
+            "    qproperty-surfaceColor: %s;\n"
+            "}\n"
+            "QCustomCopyButton {\n"
+            "    qproperty-accentColor: %s; qproperty-successColor: %s;\n"
+            "    qproperty-textColor: %s; qproperty-surfaceColor: %s;\n"
+            "}\n"
+            "QCustomSocialButton {\n"
+            "    qproperty-surfaceColor: %s;\n"
+            "}\n"
+            "QCustomHeaderNav {\n"
+            "    qproperty-accentColor: %s; qproperty-textColor: %s;\n"
+            "    qproperty-activeTextColor: %s; qproperty-surfaceColor: %s;\n"
+            "    qproperty-dividerColor: %s;\n"
+            "}\n" % (r("accent"), r("accent"), r("surface"),
+                     r("accent"), r("success"), r("on-surface"), r("surface"),
+                     r("surface"),
+                     r("accent"), r("outline"), r("on-surface"), r("surface"),
+                     r("surface-muted")))
+
+
 def sankey_qss(tokens):
     """Feed the token text colour to the painted QCustomSankey labels."""
     return ("QCustomSankey {\n"
@@ -1205,7 +1245,8 @@ def build_component_qss(tokens):
             + candlestick_qss(tokens) + radar_qss(tokens)
             + scatter_qss(tokens) + funnel_qss(tokens)
             + rangebar_qss(tokens) + radialbars_qss(tokens)
-            + sankey_qss(tokens)
+            + sankey_qss(tokens) + chrome_qss(tokens)
+            + motion_qss(tokens)
             + textarea_qss(tokens)
             + verificationcode_qss(tokens) + multiselect_qss(tokens)
             + imagepicker_qss(tokens) + gradientpicker_qss(tokens)

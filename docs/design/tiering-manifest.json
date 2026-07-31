@@ -440,6 +440,17 @@
     "tier": "free"
   },
   {
+    "module": "Custom_Widgets/widgets/buttons/QCustomCopyButton.py",
+    "widget": "QCustomCopyButton",
+    "loc": 306,
+    "pyi": true,
+    "catalog": true,
+    "test": true,
+    "example": true,
+    "designer": true,
+    "tier": "free"
+  },
+  {
     "module": "Custom_Widgets/widgets/display/QCustomCoverCard.py",
     "widget": "QCustomCoverCard",
     "loc": 406,
@@ -561,6 +572,17 @@
     "tier": "free"
   },
   {
+    "module": "Custom_Widgets/widgets/display/QCustomFeaturedIcon.py",
+    "widget": "QCustomFeaturedIcon",
+    "loc": 245,
+    "pyi": true,
+    "catalog": true,
+    "test": true,
+    "example": true,
+    "designer": true,
+    "tier": "free"
+  },
+  {
     "module": "Custom_Widgets/widgets/display/QCustomFileCard.py",
     "widget": "QCustomFileCard",
     "loc": 263,
@@ -660,6 +682,17 @@
     "tier": "free"
   },
   {
+    "module": "Custom_Widgets/widgets/display/QCustomGradientText.py",
+    "widget": "QCustomGradientText",
+    "loc": 297,
+    "pyi": true,
+    "catalog": true,
+    "test": true,
+    "example": true,
+    "designer": true,
+    "tier": "free"
+  },
+  {
     "module": "Custom_Widgets/widgets/navigation/QCustomHamburgerMenu.py",
     "widget": "QCustomHamburgerMenu",
     "loc": 840,
@@ -667,6 +700,17 @@
     "catalog": false,
     "test": true,
     "example": false,
+    "designer": true,
+    "tier": "free"
+  },
+  {
+    "module": "Custom_Widgets/widgets/navigation/QCustomHeaderNav.py",
+    "widget": "QCustomHeaderNav",
+    "loc": 506,
+    "pyi": true,
+    "catalog": true,
+    "test": true,
+    "example": true,
     "designer": true,
     "tier": "free"
   },
@@ -861,6 +905,17 @@
     "module": "Custom_Widgets/widgets/data/QCustomNodeGraph.py",
     "widget": "QCustomNodeGraph",
     "loc": 1031,
+    "pyi": true,
+    "catalog": true,
+    "test": true,
+    "example": true,
+    "designer": true,
+    "tier": "free"
+  },
+  {
+    "module": "Custom_Widgets/widgets/display/QCustomNumberCounter.py",
+    "widget": "QCustomNumberCounter",
+    "loc": 265,
     "pyi": true,
     "catalog": true,
     "test": true,
@@ -1155,6 +1210,17 @@
     "tier": "free"
   },
   {
+    "module": "Custom_Widgets/widgets/buttons/QCustomRainbowButton.py",
+    "widget": "QCustomRainbowButton",
+    "loc": 319,
+    "pyi": true,
+    "catalog": true,
+    "test": true,
+    "example": true,
+    "designer": true,
+    "tier": "free"
+  },
+  {
     "module": "Custom_Widgets/widgets/charts/QCustomRangeBarChart.py",
     "widget": "QCustomRangeBarChart",
     "loc": 484,
@@ -1331,6 +1397,28 @@
     "tier": "free"
   },
   {
+    "module": "Custom_Widgets/widgets/buttons/QCustomSocialButton.py",
+    "widget": "QCustomSocialButton",
+    "loc": 336,
+    "pyi": true,
+    "catalog": true,
+    "test": true,
+    "example": true,
+    "designer": true,
+    "tier": "free"
+  },
+  {
+    "module": "Custom_Widgets/widgets/display/QCustomSparklesText.py",
+    "widget": "QCustomSparklesText",
+    "loc": 303,
+    "pyi": true,
+    "catalog": true,
+    "test": true,
+    "example": true,
+    "designer": true,
+    "tier": "free"
+  },
+  {
     "module": "Custom_Widgets/widgets/charts/QCustomSparkline.py",
     "widget": "QCustomSparkline",
     "loc": 290,
@@ -1499,6 +1587,17 @@
     "module": "Custom_Widgets/widgets/display/QCustomTrendChip.py",
     "widget": "QCustomTrendChip",
     "loc": 251,
+    "pyi": true,
+    "catalog": true,
+    "test": true,
+    "example": true,
+    "designer": true,
+    "tier": "free"
+  },
+  {
+    "module": "Custom_Widgets/widgets/display/QCustomTypewriterText.py",
+    "widget": "QCustomTypewriterText",
+    "loc": 326,
     "pyi": true,
     "catalog": true,
     "test": true,

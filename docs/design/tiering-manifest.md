@@ -15,17 +15,17 @@ ships at once.
 > Regenerate: `python tools/scan_widgets.py`. Presence signals are objective; the
 > tier decisions above are ratified; Stable/Secure remain a human review pass.
 
-## Coverage summary (166 widget modules)
+## Coverage summary (175 widget modules)
 
 | Signal | Coverage |
 |---|---|
-| Has a test | 146/166 (88%) |
-| Has an example | 138/166 (83%) |
-| In `__catalog__` | 108/166 (65%) |
-| Designer-registered | 124/166 (75%) |
-| `.pyi` type stub | 107/166 (64%) |
+| Has a test | 155/175 (89%) |
+| Has an example | 147/175 (84%) |
+| In `__catalog__` | 117/175 (67%) |
+| Designer-registered | 133/175 (76%) |
+| `.pyi` type stub | 116/175 (66%) |
 
-Breakdown: **5** free-base-with-Pro-extension, **142** free
+Breakdown: **5** free-base-with-Pro-extension, **151** free
 standalone, **19** internal/engine (not shipped as standalone).
 
 ## Legend
@@ -56,7 +56,7 @@ Pro mapping:
 - `QCustomBarChart` -> Charts Pro (SKU-2, candidate)
 - `QCustomPieChart` -> Charts Pro (SKU-2, candidate)
 
-## Tier: free -- standalone (142)
+## Tier: free -- standalone (151)
 
 | Widget | Test | Example | Catalog | Designer | .pyi | LOC | Module |
 |---|:--:|:--:|:--:|:--:|:--:|--:|---|
@@ -95,6 +95,7 @@ Pro mapping:
 | `QCustomCommandPalette` | ✅ | ✅ | ✅ | — | ✅ | 247 | Custom_Widgets/widgets/navigation/QCustomCommandPalette.py |
 | `QCustomCompass` | ✅ | ✅ | ✅ | ✅ | ✅ | 374 | Custom_Widgets/widgets/charts/QCustomCompass.py |
 | `QCustomCompassDial` | ✅ | ✅ | ✅ | ✅ | ✅ | 400 | Custom_Widgets/widgets/charts/QCustomCompassDial.py |
+| `QCustomCopyButton` | ✅ | ✅ | ✅ | ✅ | ✅ | 306 | Custom_Widgets/widgets/buttons/QCustomCopyButton.py |
 | `QCustomCoverCard` | — | ✅ | ✅ | ✅ | ✅ | 406 | Custom_Widgets/widgets/display/QCustomCoverCard.py |
 | `QCustomCoverFlow` | — | ✅ | ✅ | ✅ | ✅ | 539 | Custom_Widgets/widgets/media/QCustomCoverFlow.py |
 | `QCustomDateEdit` | ✅ | ✅ | ✅ | ✅ | ✅ | 181 | Custom_Widgets/widgets/input/QCustomDateTimeEdit.py |
@@ -106,6 +107,7 @@ Pro mapping:
 | `QCustomEmbeddedWindow` | ✅ | ✅ | — | — | — | 266 | Custom_Widgets/widgets/containers/QCustomEmbeddedWindow.py |
 | `QCustomEmojiPicker` | ✅ | ✅ | — | — | — | 558 | Custom_Widgets/widgets/input/QCustomEmojiPicker.py |
 | `QCustomEmptyState` | ✅ | ✅ | ✅ | ✅ | ✅ | 90 | Custom_Widgets/widgets/display/QCustomEmptyState.py |
+| `QCustomFeaturedIcon` | ✅ | ✅ | ✅ | ✅ | ✅ | 245 | Custom_Widgets/widgets/display/QCustomFeaturedIcon.py |
 | `QCustomFileCard` | — | ✅ | ✅ | ✅ | ✅ | 263 | Custom_Widgets/widgets/display/QCustomFileCard.py |
 | `QCustomFileDropZone` | ✅ | ✅ | ✅ | ✅ | ✅ | 160 | Custom_Widgets/widgets/input/QCustomFileDropZone.py |
 | `QCustomFlowLayout` | ✅ | ✅ | — | ✅ | — | 750 | Custom_Widgets/widgets/containers/QCustomFlowLayout.py |
@@ -115,7 +117,9 @@ Pro mapping:
 | `QCustomGanttChart` | ✅ | ✅ | ✅ | ✅ | ✅ | 361 | Custom_Widgets/widgets/charts/QCustomGanttChart.py |
 | `QCustomGlassFrame` | ✅ | ✅ | ✅ | ✅ | ✅ | 529 | Custom_Widgets/widgets/containers/QCustomGlassFrame.py |
 | `QCustomGradientPicker` | ✅ | ✅ | ✅ | ✅ | ✅ | 519 | Custom_Widgets/widgets/input/QCustomGradientPicker.py |
+| `QCustomGradientText` | ✅ | ✅ | ✅ | ✅ | ✅ | 297 | Custom_Widgets/widgets/display/QCustomGradientText.py |
 | `QCustomHamburgerMenu` | ✅ | — | — | ✅ | — | 840 | Custom_Widgets/widgets/navigation/QCustomHamburgerMenu.py |
+| `QCustomHeaderNav` | ✅ | ✅ | ✅ | ✅ | ✅ | 506 | Custom_Widgets/widgets/navigation/QCustomHeaderNav.py |
 | `QCustomHeatmap` | ✅ | ✅ | ✅ | ✅ | ✅ | 527 | Custom_Widgets/widgets/charts/QCustomHeatmap.py |
 | `QCustomHorizontalSeparator` | ✅ | — | — | ✅ | — | 120 | Custom_Widgets/widgets/display/QCustomHorizontalSeparator.py |
 | `QCustomImagePicker` | ✅ | ✅ | ✅ | ✅ | ✅ | 475 | Custom_Widgets/widgets/input/QCustomImagePicker.py |
@@ -134,6 +138,7 @@ Pro mapping:
 | `QCustomModal` | ✅ | ✅ | ✅ | ✅ | ✅ | 289 | Custom_Widgets/widgets/containers/QCustomModal.py |
 | `QCustomMultiSelect` | ✅ | ✅ | ✅ | ✅ | ✅ | 534 | Custom_Widgets/widgets/input/QCustomMultiSelect.py |
 | `QCustomNodeGraph` | ✅ | ✅ | ✅ | ✅ | ✅ | 1031 | Custom_Widgets/widgets/data/QCustomNodeGraph.py |
+| `QCustomNumberCounter` | ✅ | ✅ | ✅ | ✅ | ✅ | 265 | Custom_Widgets/widgets/display/QCustomNumberCounter.py |
 | `QCustomNumberInput` | ✅ | ✅ | ✅ | ✅ | ✅ | 196 | Custom_Widgets/widgets/input/QCustomNumberInput.py |
 | `QCustomPageDots` | ✅ | ✅ | ✅ | ✅ | ✅ | 256 | Custom_Widgets/widgets/display/QCustomPageDots.py |
 | `QCustomPagination` | ✅ | ✅ | ✅ | ✅ | ✅ | 122 | Custom_Widgets/widgets/navigation/QCustomPagination.py |
@@ -160,6 +165,7 @@ Pro mapping:
 | `QCustomRadialLines` | ✅ | ✅ | ✅ | ✅ | ✅ | 531 | Custom_Widgets/widgets/charts/QCustomRadialLines.py |
 | `QCustomRadioButton` | ✅ | ✅ | ✅ | ✅ | ✅ | 268 | Custom_Widgets/widgets/input/QCustomRadioButton.py |
 | `QCustomRadioGroup` | ✅ | ✅ | ✅ | ✅ | ✅ | 304 | Custom_Widgets/widgets/input/QCustomRadioGroup.py |
+| `QCustomRainbowButton` | ✅ | ✅ | ✅ | ✅ | ✅ | 319 | Custom_Widgets/widgets/buttons/QCustomRainbowButton.py |
 | `QCustomRangeBarChart` | ✅ | ✅ | ✅ | ✅ | ✅ | 484 | Custom_Widgets/widgets/charts/QCustomRangeBarChart.py |
 | `QCustomRangeSlider` | ✅ | ✅ | ✅ | ✅ | ✅ | 220 | Custom_Widgets/widgets/input/QCustomRangeSlider.py |
 | `QCustomRating` | ✅ | ✅ | ✅ | ✅ | ✅ | 135 | Custom_Widgets/widgets/input/QCustomRating.py |
@@ -176,6 +182,8 @@ Pro mapping:
 | `QCustomSidebarLabel` | ✅ | ✅ | — | ✅ | — | 242 | Custom_Widgets/widgets/navigation/QCustomSidebarLabel.py |
 | `QCustomSkeleton` | ✅ | ✅ | ✅ | ✅ | ✅ | 134 | Custom_Widgets/widgets/display/QCustomSkeleton.py |
 | `QCustomSlideMenu` | ✅ | ✅ | — | — | — | 607 | Custom_Widgets/widgets/navigation/QCustomSlideMenu.py |
+| `QCustomSocialButton` | ✅ | ✅ | ✅ | ✅ | ✅ | 336 | Custom_Widgets/widgets/buttons/QCustomSocialButton.py |
+| `QCustomSparklesText` | ✅ | ✅ | ✅ | ✅ | ✅ | 303 | Custom_Widgets/widgets/display/QCustomSparklesText.py |
 | `QCustomSparkline` | ✅ | ✅ | ✅ | — | ✅ | 290 | Custom_Widgets/widgets/charts/QCustomSparkline.py |
 | `QCustomSpinner` | ✅ | ✅ | — | — | — | 79 | Custom_Widgets/widgets/loading/QCustomSpinner.py |
 | `QCustomSplitter` | ✅ | ✅ | ✅ | ✅ | ✅ | 57 | Custom_Widgets/widgets/containers/QCustomSplitter.py |
@@ -192,6 +200,7 @@ Pro mapping:
 | `QCustomToast` | ✅ | ✅ | ✅ | — | ✅ | 233 | Custom_Widgets/widgets/display/QCustomToast.py |
 | `QCustomTreeWidget` | ✅ | ✅ | ✅ | ✅ | ✅ | 102 | Custom_Widgets/widgets/data/QCustomTreeWidget.py |
 | `QCustomTrendChip` | ✅ | ✅ | ✅ | ✅ | ✅ | 251 | Custom_Widgets/widgets/display/QCustomTrendChip.py |
+| `QCustomTypewriterText` | ✅ | ✅ | ✅ | ✅ | ✅ | 326 | Custom_Widgets/widgets/display/QCustomTypewriterText.py |
 | `QCustomTypingIndicator` | ✅ | — | ✅ | ✅ | ✅ | 144 | Custom_Widgets/widgets/chat/QCustomTypingIndicator.py |
 | `QCustomVerificationCode` | ✅ | ✅ | ✅ | ✅ | ✅ | 430 | Custom_Widgets/widgets/input/QCustomVerificationCode.py |
 | `QCustomVerticalSeparator` | ✅ | — | — | ✅ | — | 118 | Custom_Widgets/widgets/display/QCustomVerticalSeparator.py |

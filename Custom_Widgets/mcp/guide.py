@@ -198,7 +198,7 @@ it once as a shared daemon: `Custom_Widgets-mcp --transport http --port 8765`
 and point each .mcp.json at http://127.0.0.1:8765/mcp. Plain stdio (the default)
 is one client per process and needs none of this.
 
-== ⭐ RULE #3 — ARTIFACT/CONTENT BOUNDARY (REPO VS DOCS) ==
+== RULE #3 — ARTIFACT/CONTENT BOUNDARY (REPO VS DOCS) ==
 
 **All documentation, guides, tutorials, blog posts, changelogs, API docs, and showcase screenshots** belong in:
 - `/home/p/git/Docs-QT-PyQt-PySide-Custom-Widgets/` — the canonical Docusaurus documentation site (free + pro)
@@ -211,7 +211,7 @@ is one client per process and needs none of this.
 
 Never save screenshots, documentation pages, or marketing assets into the code repos. An agent that generates a screenshot must save it to the Docs repo, not anywhere under `QT-PyQt-PySide-Custom-Widgets/`, `QT-PyQt-PySide-Custom-Widgets-Pro/`, or the pro website repo.
 
-== ⭐ RULE #4 — SHOWCASE IMAGES: 2 THEMED, POLISHED, NON-BLANK ==
+== RULE #4 — SHOWCASE IMAGES: 2 THEMED, POLISHED, NON-BLANK ==
 
 Every widget rendered for the documentation showcase **must produce 2 PNGs**
 (light theme + dark theme) that show the widget's **full visual potential**:
