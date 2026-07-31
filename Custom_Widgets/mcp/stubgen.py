@@ -213,6 +213,11 @@ def write_all():
     """Write the stubs and the py.typed marker; return the list of paths."""
     written = []
     for path, text in generate_all().items():
+        # Nested public paths (Custom_Widgets.QCustomCharts.X) need their
+        # directory created: it is a stub-only package, so nothing else makes it.
+        parent = os.path.dirname(path)
+        if parent and not os.path.isdir(parent):
+            os.makedirs(parent, exist_ok=True)
         with open(path, "w", encoding="utf-8") as fh:
             fh.write(text)
         written.append(path)

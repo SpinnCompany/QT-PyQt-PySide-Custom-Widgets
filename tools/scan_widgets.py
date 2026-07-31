@@ -119,12 +119,15 @@ def scan():
             "module": os.path.relpath(m, ROOT),
             "widget": primary,
             "loc": src.count("\n") + 1,
-            # Stubs live at the flat public path (Custom_Widgets/QCustomX.pyi),
-            # not beside a module that has moved into a subpackage — that is
-            # the path users import and the only one type checkers resolve.
-            # Check both so the signal stays honest either way.
-            "pyi": os.path.exists(m + "i") or os.path.exists(
-                os.path.join(CW, os.path.splitext(os.path.basename(m))[0] + ".pyi")),
+            # Stubs live at the PUBLIC path, not beside a module that has moved
+            # into a subpackage — that is what users import and the only thing
+            # type checkers resolve. That is usually flat
+            # (Custom_Widgets/QCustomX.pyi) but nested for the charts
+            # (Custom_Widgets/QCustomCharts/QCustomLineChart.pyi), so search
+            # rather than guess a single location.
+            "pyi": bool(glob.glob(os.path.join(CW, "**",
+                                               os.path.splitext(os.path.basename(m))[0] + ".pyi"),
+                                  recursive=True)),
             "catalog": "__catalog__" in src,
             "test": hit(tests_text),
             "example": hit(examples_text) or primary in example_dirs or stem in example_dirs,
