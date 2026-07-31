@@ -811,6 +811,32 @@ def radio_qss(tokens):
             "}\n" % (r("outline"), r("accent"), r("accent"), r("on-surface")))
 
 
+def multiselect_qss(tokens):
+    """Feed token colours to QCustomMultiSelect (painted field + its popup)."""
+    r = tokens.role
+    px = tokens.px
+    return ("QCustomMultiSelect {\n"
+            "    qproperty-fieldBackgroundColor: %s;\n"
+            "    qproperty-fieldBorderColor: %s;\n"
+            "    qproperty-fieldBorderActiveColor: %s;\n"
+            "    qproperty-fieldBorderErrorColor: %s;\n"
+            "    qproperty-chipBackgroundColor: %s;\n"
+            "    qproperty-chipTextColor: %s;\n"
+            "    qproperty-textColor: %s;\n"
+            "    qproperty-placeholderColor: %s;\n"
+            "}\n"
+            "QFrame#QCustomMultiSelectPopup {\n"
+            "    background-color: %s; border: 1px solid %s; border-radius: %s;\n"
+            "}\n"
+            "QListWidget#QCustomMultiSelectList {\n"
+            "    background-color: %s; color: %s; border: none;\n"
+            "}\n" % (r("surface"), r("outline"), r("focus-ring"),
+                     r("destructive"), r("surface-muted"), r("on-surface"),
+                     r("on-surface"), r("outline"),
+                     r("surface"), r("outline"), px("radius.md"),
+                     r("surface"), r("on-surface")))
+
+
 def verificationcode_qss(tokens):
     """Feed token colours to the painted QCustomVerificationCode boxes."""
     r = tokens.role
@@ -1089,7 +1115,7 @@ def build_component_qss(tokens):
             + emptystate_qss(tokens) + dropzone_qss(tokens) + rangeslider_qss(tokens)
             + switch_qss(tokens) + radio_qss(tokens) + radiogroup_qss(tokens)
             + candlestick_qss(tokens) + textarea_qss(tokens)
-            + verificationcode_qss(tokens)
+            + verificationcode_qss(tokens) + multiselect_qss(tokens)
             + number_qss(tokens) + alert_qss(tokens)
             + statcard_qss(tokens) + progressring_qss(tokens) + card_qss(tokens)
             + badge_qss(tokens) + kbd_qss(tokens) + splitter_qss(tokens)

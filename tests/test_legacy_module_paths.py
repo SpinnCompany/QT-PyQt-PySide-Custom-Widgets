@@ -83,6 +83,45 @@ class TestLegacyImports:
         assert mod.__name__ == "Custom_Widgets.QCustomTheme"
 
 
+class TestToolingSeesMovedWidgets:
+    """The move must not make a widget invisible to the tooling.
+
+    Every discovery path here used a top-level-only glob, so a moved widget
+    vanished silently — no error, just a shorter list.
+    """
+
+    def test_mcp_discovery_includes_moved_widgets(self, qapp):
+        from Custom_Widgets.mcp.server import _discover_widgets
+        found = _discover_widgets()
+        for name in ("QCustomMultiSelect", "QCustomRadioGroup",
+                     "QCustomTextArea", "QCustomSwitch"):
+            assert name in found, "%s dropped out of MCP discovery" % name
+
+    def test_discovered_module_is_the_public_path(self, qapp):
+        """MCP hands this to callers as an import path; it must be the stable one."""
+        from Custom_Widgets.mcp.server import _discover_widgets
+        found = _discover_widgets()
+        assert found["QCustomSwitch"]["module"] == "Custom_Widgets.QCustomSwitch"
+
+    def test_stubs_live_at_the_flat_public_path(self, qapp):
+        """Type checkers do not run our meta-path finder.
+
+        A stub at Custom_Widgets/QCustomX.pyi is what makes the path users
+        actually import resolve for mypy/pyright; a stub next to the moved
+        implementation would only type the private location.
+        """
+        for name in ("QCustomMultiSelect", "QCustomRadioButton",
+                     "QCustomSwitch", "QCustomTextArea"):
+            flat = os.path.join(REPO, "Custom_Widgets", name + ".pyi")
+            assert os.path.isfile(flat), "%s has no stub at the public path" % name
+
+    def test_scan_widgets_covers_moved_widgets(self, qapp):
+        manifest = os.path.join(REPO, "docs", "design", "tiering-manifest.md")
+        text = open(manifest, encoding="utf-8").read()
+        for name in ("QCustomRadioGroup", "QCustomTextArea", "QCustomSwitch"):
+            assert "`%s`" % name in text, "%s missing from the launch gate" % name
+
+
 class TestUiHeadersResolve:
     def test_every_ui_header_in_repo_is_importable(self, qapp):
         """Walk the .ui files and import each Custom_Widgets header they name.
