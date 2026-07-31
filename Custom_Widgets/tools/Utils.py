@@ -17,6 +17,7 @@ except Exception:
 
 # Import custom logging module
 from Custom_Widgets.Log import *
+from Custom_Widgets._resources import packageDir
 
 def get_absolute_path(relative_path):
     """Convert a relative path to an absolute path based on the script's directory."""
@@ -282,7 +283,7 @@ def download_font(url, cache_dir=None, timeout=20, force=False):
 ## theme colour prefer the QSS `theme-icons:` path; use these when a widget
 ## needs a specific colour (e.g. an ACTIVE nav item in the accent colour).
 ########################################################################
-_ICONS_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Qss", "icons")
+_ICONS_ROOT = os.path.join(packageDir(), "Qss", "icons")
 _ICON_SETS = ("feather", "material_design", "font_awesome")
 _ICON_PM_CACHE = {}
 

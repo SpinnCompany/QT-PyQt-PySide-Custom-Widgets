@@ -36,7 +36,7 @@ _ROOT = os.path.dirname(os.path.abspath(__file__))
 # Subpackages whose modules keep a flat alias at the top level. Anything not
 # listed here is reachable only at its real path, which is what we want for
 # genuinely internal groupings.
-GROUPS = ("widgets", "tools")
+GROUPS = ("widgets", "tools", "designer", "theming")
 
 # Whole packages that moved under widgets/. Unlike the flat aliases these are
 # derived from an explicit table, because the old *package* name is itself

@@ -78,9 +78,15 @@ class TestLegacyImports:
             importlib.import_module("Custom_Widgets.QCustomDefinitelyNotAWidget")
 
     def test_real_modules_win_over_aliases(self, qapp):
-        """A module still at the top level resolves to itself, not an alias."""
-        mod = importlib.import_module("Custom_Widgets.QCustomTheme")
-        assert mod.__name__ == "Custom_Widgets.QCustomTheme"
+        """A module genuinely at the top level resolves to itself.
+
+        The finder is appended to sys.meta_path rather than prepended, so it
+        only ever fills gaps. _resources is one of the three modules that stay
+        at the package root, because they are the machinery the alias layer is
+        built from and cannot be aliased by it.
+        """
+        mod = importlib.import_module("Custom_Widgets._resources")
+        assert mod.__name__ == "Custom_Widgets._resources"
 
 
 class TestToolingSeesMovedWidgets:
@@ -138,16 +144,19 @@ class TestBundledResourcePaths:
             r"dirname\(\s*__file__|"
             r"Path\(\s*__file__\s*\)\.parents?")
         offenders = []
-        base = os.path.join(REPO, "Custom_Widgets", "widgets")
-        for dirpath, dirnames, filenames in os.walk(base):
-            dirnames[:] = [d for d in dirnames if d != "__pycache__"]
-            for filename in filenames:
-                if not filename.endswith(".py"):
-                    continue
-                path = os.path.join(dirpath, filename)
-                text = open(path, encoding="utf-8", errors="ignore").read()
-                if pattern.search(text):
-                    offenders.append(os.path.relpath(path, REPO))
+        # Every grouped subpackage, not just widgets/: tools, designer and
+        # theming moved too, and they load Qss/ and components/ the same way.
+        for group in ("widgets", "tools", "designer", "theming"):
+            base = os.path.join(REPO, "Custom_Widgets", group)
+            for dirpath, dirnames, filenames in os.walk(base):
+                dirnames[:] = [d for d in dirnames if d != "__pycache__"]
+                for filename in filenames:
+                    if not filename.endswith(".py"):
+                        continue
+                    path = os.path.join(dirpath, filename)
+                    text = open(path, encoding="utf-8", errors="ignore").read()
+                    if pattern.search(text):
+                        offenders.append(os.path.relpath(path, REPO))
         assert not offenders, (
             "these resolve bundled data from their own __file__ and will break "
             "when moved — use Custom_Widgets._resources.packageDir(): %s"

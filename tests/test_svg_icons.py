@@ -242,8 +242,15 @@ class TestNoLegacyPngPipeline:
         assert re.search(r"\$PATH_RESOURCES\+'[^']+\.svg'", content)
 
     def test_cairosvg_not_imported(self):
-        source = os.path.join(PACKAGE_DIR, "QCustomTheme.py")
-        with open(source, encoding="utf-8") as f:
+        # Resolve the module rather than guessing its path: QCustomTheme moved
+        # into Custom_Widgets/theming/ with the 2026-07-31 regrouping, and a
+        # hardcoded join silently turned into a FileNotFoundError.
+        # importlib, not `import ... as`: the package re-exports the class
+        # QCustomTheme under the same name as its module, so attribute-based
+        # import binds the class and .__file__ does not exist on it.
+        import importlib
+        theme_module = importlib.import_module("Custom_Widgets.QCustomTheme")
+        with open(theme_module.__file__, encoding="utf-8") as f:
             content = f.read()
         assert "cairosvg" not in content
 

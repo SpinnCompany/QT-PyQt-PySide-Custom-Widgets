@@ -45,6 +45,7 @@ from Custom_Widgets.Project import projectRoot
 from Custom_Widgets.Log import *
 from Custom_Widgets.Utils import createQrcFile, is_in_designer
 from Custom_Widgets.JSonStyles import loadJsonStyle
+from Custom_Widgets._resources import packageDir
 
 class QCustomTheme(QObject):
     _instance = None  # Class-level variable to hold the singleton instance
@@ -1120,13 +1121,13 @@ class QCustomTheme(QObject):
 
         if not os.path.exists(main_sass_path):   
             try:
-                shutil.copy(os.path.abspath(os.path.join(os.path.dirname(__file__), 'Qss/scss/main.scss')), qcss_folder)
+                shutil.copy(os.path.abspath(os.path.join(packageDir(), 'Qss/scss/main.scss')), qcss_folder)
             except Exception as e:
                 logError(f"Failed to copy main.scss: {e}")  
 
         if not os.path.exists(styles_sass_path):   
             try:
-                shutil.copy(os.path.abspath(os.path.join(os.path.dirname(__file__), 'Qss/scss/_styles.scss')), qcss_folder)
+                shutil.copy(os.path.abspath(os.path.join(packageDir(), 'Qss/scss/_styles.scss')), qcss_folder)
             except Exception as e:
                 logError(f"Failed to copy _styles.scss: {e}")  
 
@@ -1423,7 +1424,7 @@ class QCustomTheme(QObject):
 
     def generateIcons(self, progress_callback, iconsColor, suffix, iconsFolder="", createQrc=False, output_width=None, output_height=None, force=False):
         # Base folder
-        base_folder = os.path.dirname(__file__)
+        base_folder = packageDir()
         icons_folder_base = os.path.join(base_folder, 'Qss/icons')
 
         svg_color = "#ffffff"
