@@ -15,17 +15,17 @@ ships at once.
 > Regenerate: `python tools/scan_widgets.py`. Presence signals are objective; the
 > tier decisions above are ratified; Stable/Secure remain a human review pass.
 
-## Coverage summary (160 widget modules)
+## Coverage summary (166 widget modules)
 
 | Signal | Coverage |
 |---|---|
-| Has a test | 140/160 (88%) |
-| Has an example | 132/160 (82%) |
-| In `__catalog__` | 102/160 (64%) |
-| Designer-registered | 118/160 (74%) |
-| `.pyi` type stub | 101/160 (63%) |
+| Has a test | 146/166 (88%) |
+| Has an example | 138/166 (83%) |
+| In `__catalog__` | 108/166 (65%) |
+| Designer-registered | 124/166 (75%) |
+| `.pyi` type stub | 107/166 (64%) |
 
-Breakdown: **5** free-base-with-Pro-extension, **136** free
+Breakdown: **5** free-base-with-Pro-extension, **142** free
 standalone, **19** internal/engine (not shipped as standalone).
 
 ## Legend
@@ -56,7 +56,7 @@ Pro mapping:
 - `QCustomBarChart` -> Charts Pro (SKU-2, candidate)
 - `QCustomPieChart` -> Charts Pro (SKU-2, candidate)
 
-## Tier: free -- standalone (136)
+## Tier: free -- standalone (142)
 
 | Widget | Test | Example | Catalog | Designer | .pyi | LOC | Module |
 |---|:--:|:--:|:--:|:--:|:--:|--:|---|
@@ -111,6 +111,7 @@ Pro mapping:
 | `QCustomFlowLayout` | ✅ | ✅ | — | ✅ | — | 750 | Custom_Widgets/widgets/containers/QCustomFlowLayout.py |
 | `QCustomFlowWidget` | ✅ | ✅ | — | ✅ | — | 400 | Custom_Widgets/widgets/containers/QCustomFlowWidget.py |
 | `QCustomForm` | ✅ | ✅ | — | — | — | 114 | Custom_Widgets/widgets/input/QCustomForm.py |
+| `QCustomFunnelChart` | ✅ | ✅ | ✅ | ✅ | ✅ | 458 | Custom_Widgets/widgets/charts/QCustomFunnelChart.py |
 | `QCustomGanttChart` | ✅ | ✅ | ✅ | ✅ | ✅ | 361 | Custom_Widgets/widgets/charts/QCustomGanttChart.py |
 | `QCustomGlassFrame` | ✅ | ✅ | ✅ | ✅ | ✅ | 529 | Custom_Widgets/widgets/containers/QCustomGlassFrame.py |
 | `QCustomGradientPicker` | ✅ | ✅ | ✅ | ✅ | ✅ | 519 | Custom_Widgets/widgets/input/QCustomGradientPicker.py |
@@ -154,15 +155,20 @@ Pro mapping:
 | `QCustomQStackedWidget` | ✅ | ✅ | — | ✅ | — | 817 | Custom_Widgets/widgets/containers/QCustomQStackedWidget.py |
 | `QCustomQToolTip` | ✅ | ✅ | — | — | — | 662 | Custom_Widgets/widgets/display/QCustomQToolTip.py |
 | `QCustomRadarChart` | ✅ | ✅ | ✅ | ✅ | ✅ | 576 | Custom_Widgets/widgets/charts/QCustomRadarChart.py |
+| `QCustomRadialBars` | ✅ | ✅ | ✅ | ✅ | ✅ | 423 | Custom_Widgets/widgets/charts/QCustomRadialBars.py |
 | `QCustomRadialGauge` | ✅ | ✅ | ✅ | ✅ | ✅ | 1088 | Custom_Widgets/widgets/charts/QCustomRadialGauge.py |
+| `QCustomRadialLines` | ✅ | ✅ | ✅ | ✅ | ✅ | 531 | Custom_Widgets/widgets/charts/QCustomRadialLines.py |
 | `QCustomRadioButton` | ✅ | ✅ | ✅ | ✅ | ✅ | 268 | Custom_Widgets/widgets/input/QCustomRadioButton.py |
 | `QCustomRadioGroup` | ✅ | ✅ | ✅ | ✅ | ✅ | 304 | Custom_Widgets/widgets/input/QCustomRadioGroup.py |
+| `QCustomRangeBarChart` | ✅ | ✅ | ✅ | ✅ | ✅ | 484 | Custom_Widgets/widgets/charts/QCustomRangeBarChart.py |
 | `QCustomRangeSlider` | ✅ | ✅ | ✅ | ✅ | ✅ | 220 | Custom_Widgets/widgets/input/QCustomRangeSlider.py |
 | `QCustomRating` | ✅ | ✅ | ✅ | ✅ | ✅ | 135 | Custom_Widgets/widgets/input/QCustomRating.py |
 | `QCustomReactionBar` | — | — | ✅ | ✅ | ✅ | 202 | Custom_Widgets/widgets/chat/QCustomReactionBar.py |
 | `QCustomRichTextEditor` | ✅ | ✅ | ✅ | ✅ | ✅ | 186 | Custom_Widgets/widgets/data/QCustomRichTextEditor.py |
 | `QCustomRoundProgressBar` | ✅ | ✅ | — | ✅ | — | 228 | Custom_Widgets/widgets/progressbars/QCustomRoundProgressBar.py |
 | `QCustomRulerPicker` | ✅ | ✅ | ✅ | ✅ | ✅ | 467 | Custom_Widgets/widgets/input/QCustomRulerPicker.py |
+| `QCustomSankey` | ✅ | ✅ | ✅ | ✅ | ✅ | 526 | Custom_Widgets/widgets/charts/QCustomSankey.py |
+| `QCustomScatterChart` | ✅ | ✅ | ✅ | ✅ | ✅ | 598 | Custom_Widgets/widgets/charts/QCustomScatterChart.py |
 | `QCustomSegmentedControl` | ✅ | ✅ | ✅ | ✅ | ✅ | 146 | Custom_Widgets/widgets/input/QCustomSegmentedControl.py |
 | `QCustomSidebar` | ✅ | ✅ | — | ✅ | — | 311 | Custom_Widgets/widgets/navigation/QCustomSidebar.py |
 | `QCustomSidebarButton` | ✅ | ✅ | — | ✅ | — | 544 | Custom_Widgets/widgets/navigation/QCustomSidebarButton.py |

@@ -917,6 +917,12 @@ except Exception as e:
 
 from Custom_Widgets.QCustomCandlestickChart import QCustomCandlestickChart
 from Custom_Widgets.QCustomRadarChart import QCustomRadarChart
+from Custom_Widgets.QCustomScatterChart import QCustomScatterChart
+from Custom_Widgets.QCustomFunnelChart import QCustomFunnelChart
+from Custom_Widgets.QCustomRangeBarChart import QCustomRangeBarChart
+from Custom_Widgets.QCustomRadialBars import QCustomRadialBars
+from Custom_Widgets.QCustomRadialLines import QCustomRadialLines
+from Custom_Widgets.QCustomSankey import QCustomSankey
 
 # Registering QCustomCandlestickChart with error handling
 try:
@@ -939,6 +945,72 @@ try:
         icon=QCustomRadarChart.WIDGET_ICON, group="Charts")
 except Exception as e:
     logException(e, message="Error registering QCustomRadarChart")
+
+# Registering QCustomScatterChart with error handling
+try:
+    logInfo("Registering QCustomScatterChart")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomScatterChart, module=QCustomScatterChart.WIDGET_MODULE,
+        tool_tip=QCustomScatterChart.WIDGET_TOOLTIP,
+        xml=QCustomScatterChart.WIDGET_DOM_XML,
+        icon=QCustomScatterChart.WIDGET_ICON, group="Charts")
+except Exception as e:
+    logException(e, message="Error registering QCustomScatterChart")
+
+# Registering QCustomFunnelChart with error handling
+try:
+    logInfo("Registering QCustomFunnelChart")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomFunnelChart, module=QCustomFunnelChart.WIDGET_MODULE,
+        tool_tip=QCustomFunnelChart.WIDGET_TOOLTIP,
+        xml=QCustomFunnelChart.WIDGET_DOM_XML,
+        icon=QCustomFunnelChart.WIDGET_ICON, group="Charts")
+except Exception as e:
+    logException(e, message="Error registering QCustomFunnelChart")
+
+# Registering QCustomRangeBarChart with error handling
+try:
+    logInfo("Registering QCustomRangeBarChart")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomRangeBarChart, module=QCustomRangeBarChart.WIDGET_MODULE,
+        tool_tip=QCustomRangeBarChart.WIDGET_TOOLTIP,
+        xml=QCustomRangeBarChart.WIDGET_DOM_XML,
+        icon=QCustomRangeBarChart.WIDGET_ICON, group="Charts")
+except Exception as e:
+    logException(e, message="Error registering QCustomRangeBarChart")
+
+# Registering QCustomRadialBars with error handling
+try:
+    logInfo("Registering QCustomRadialBars")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomRadialBars, module=QCustomRadialBars.WIDGET_MODULE,
+        tool_tip=QCustomRadialBars.WIDGET_TOOLTIP,
+        xml=QCustomRadialBars.WIDGET_DOM_XML,
+        icon=QCustomRadialBars.WIDGET_ICON, group="Charts")
+except Exception as e:
+    logException(e, message="Error registering QCustomRadialBars")
+
+# Registering QCustomRadialLines with error handling
+try:
+    logInfo("Registering QCustomRadialLines")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomRadialLines, module=QCustomRadialLines.WIDGET_MODULE,
+        tool_tip=QCustomRadialLines.WIDGET_TOOLTIP,
+        xml=QCustomRadialLines.WIDGET_DOM_XML,
+        icon=QCustomRadialLines.WIDGET_ICON, group="Charts")
+except Exception as e:
+    logException(e, message="Error registering QCustomRadialLines")
+
+# Registering QCustomSankey with error handling
+try:
+    logInfo("Registering QCustomSankey")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomSankey, module=QCustomSankey.WIDGET_MODULE,
+        tool_tip=QCustomSankey.WIDGET_TOOLTIP,
+        xml=QCustomSankey.WIDGET_DOM_XML,
+        icon=QCustomSankey.WIDGET_ICON, group="Charts")
+except Exception as e:
+    logException(e, message="Error registering QCustomSankey")
 
 
 from Custom_Widgets.QCustomAgendaList import QCustomAgendaList

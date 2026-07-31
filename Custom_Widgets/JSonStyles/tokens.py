@@ -908,6 +908,58 @@ def textarea_qss(tokens):
     return "".join(css)
 
 
+def sankey_qss(tokens):
+    """Feed the token text colour to the painted QCustomSankey labels."""
+    return ("QCustomSankey {\n"
+            "    qproperty-labelColor: %s;\n"
+            "}\n" % tokens.role("on-surface"))
+
+
+def radialbars_qss(tokens):
+    """Feed token colours to QCustomRadialBars and QCustomRadialLines."""
+    r = tokens.role
+    return ("QCustomRadialBars {\n"
+            "    qproperty-trackColor: %s;\n"
+            "    qproperty-labelColor: %s;\n"
+            "}\n"
+            "QCustomRadialLines {\n"
+            "    qproperty-gridColor: %s;\n"
+            "    qproperty-labelColor: %s;\n"
+            "}\n" % (r("surface-muted"), r("on-surface"),
+                     r("surface-muted"), r("on-surface")))
+
+
+def rangebar_qss(tokens):
+    """Feed token colours to the painted QCustomRangeBarChart."""
+    r = tokens.role
+    return ("QCustomRangeBarChart {\n"
+            "    qproperty-barColor: %s;\n"
+            "    qproperty-gridColor: %s;\n"
+            "    qproperty-labelColor: %s;\n"
+            "    qproperty-boundsColor: %s;\n"
+            "}\n" % (r("accent"), r("surface-muted"), r("on-surface"),
+                     r("on-surface")))
+
+
+def funnel_qss(tokens):
+    """Feed token colours to the painted QCustomFunnelChart labels."""
+    r = tokens.role
+    return ("QCustomFunnelChart {\n"
+            "    qproperty-labelColor: %s;\n"
+            "    qproperty-outsideLabelColor: %s;\n"
+            "}\n" % (r("on-primary"), r("on-surface")))
+
+
+def scatter_qss(tokens):
+    """Feed token colours to the painted QCustomScatterChart."""
+    r = tokens.role
+    return ("QCustomScatterChart {\n"
+            "    qproperty-gridColor: %s;\n"
+            "    qproperty-axisColor: %s;\n"
+            "    qproperty-labelColor: %s;\n"
+            "}\n" % (r("surface-muted"), r("outline"), r("on-surface")))
+
+
 def radar_qss(tokens):
     """Feed token colours to the painted QCustomRadarChart."""
     r = tokens.role
@@ -1151,6 +1203,9 @@ def build_component_qss(tokens):
             + emptystate_qss(tokens) + dropzone_qss(tokens) + rangeslider_qss(tokens)
             + switch_qss(tokens) + radio_qss(tokens) + radiogroup_qss(tokens)
             + candlestick_qss(tokens) + radar_qss(tokens)
+            + scatter_qss(tokens) + funnel_qss(tokens)
+            + rangebar_qss(tokens) + radialbars_qss(tokens)
+            + sankey_qss(tokens)
             + textarea_qss(tokens)
             + verificationcode_qss(tokens) + multiselect_qss(tokens)
             + imagepicker_qss(tokens) + gradientpicker_qss(tokens)
