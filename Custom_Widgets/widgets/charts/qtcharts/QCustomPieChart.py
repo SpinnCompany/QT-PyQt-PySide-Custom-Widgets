@@ -8,7 +8,7 @@ from qtpy.QtWidgets import QGraphicsLayout
 from .QCustomChartBase import QCustomChartBase # This already includes QCustomChartConstants
 from .QCustomChartProps import ChartCommonProps
 from Custom_Widgets.Utils import is_in_designer
-from Custom_Widgets.QCustomCharts.QCustomChartConstants import (
+from .QCustomChartConstants import (
     QCustomChartEnums as _CE,
     QCustomChartConstants as _CC, chart_str_to_int, chart_int_to_str,
     LABELS_POSITION_TO_INT, INT_TO_LABELS_POSITION)

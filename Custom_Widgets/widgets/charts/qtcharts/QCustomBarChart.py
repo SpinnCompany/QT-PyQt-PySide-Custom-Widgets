@@ -8,7 +8,7 @@ from .QCustomChartBase import QCustomChartBase
 from .QCustomBarChartBase import _RoundedBarOverlay
 from .QCustomChartProps import ChartCommonProps, AxisChartProps
 from Custom_Widgets.Utils import is_in_designer
-from Custom_Widgets.QCustomCharts.QCustomChartConstants import (
+from .QCustomChartConstants import (
     QCustomChartEnums as _CE,
     QCustomChartConstants as _CC, chart_str_to_int, chart_int_to_str,
     BAR_LABELS_TO_INT, INT_TO_BAR_LABELS)

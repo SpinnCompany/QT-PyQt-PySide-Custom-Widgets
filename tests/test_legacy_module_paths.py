@@ -89,6 +89,76 @@ class TestLegacyImports:
         assert mod.__name__ == "Custom_Widgets._resources"
 
 
+class TestAliasedPackages:
+    """Whole packages moved under widgets/ keep their old prefix working."""
+
+    @pytest.mark.parametrize("legacy,real", [
+        ("Custom_Widgets.ProgressBars", "Custom_Widgets.widgets.progressbars"),
+        ("Custom_Widgets.LoadingIndicators", "Custom_Widgets.widgets.loading"),
+        ("Custom_Widgets.QCustomCharts", "Custom_Widgets.widgets.charts.qtcharts"),
+    ])
+    def test_package_prefix_resolves(self, qapp, legacy, real):
+        assert importlib.import_module(legacy) is importlib.import_module(real)
+
+    def test_submodule_under_an_aliased_package(self, qapp):
+        legacy = importlib.import_module(
+            "Custom_Widgets.QCustomCharts.QCustomLineChart")
+        real = importlib.import_module(
+            "Custom_Widgets.widgets.charts.qtcharts.QCustomLineChart")
+        assert legacy is real
+
+    def test_one_class_object_per_file(self, qapp):
+        """The invariant that makes isinstance work across import paths.
+
+        Two things broke this while the move was being done, both silently:
+        importlib rewriting __name__ on the real module when the alias loader
+        returned it from create_module, and the stdlib PathFinder re-importing
+        submodules under the legacy name once the aliased package had a real
+        __path__. Either produced two classes for one file.
+        """
+        from Custom_Widgets.QCustomCharts.QCustomLineChart import QCustomLineChart as viaLegacy
+        from Custom_Widgets.widgets.charts.qtcharts.QCustomLineChart import QCustomLineChart as viaReal
+        assert viaLegacy is viaReal
+
+        from Custom_Widgets.QCustomRadioButton import QCustomRadioButton as flatLegacy
+        from Custom_Widgets.widgets.input.QCustomRadioButton import QCustomRadioButton as flatReal
+        assert flatLegacy is flatReal
+
+    def test_real_module_keeps_its_own_name(self, qapp):
+        """A rewritten __name__ silently retargets the package's own relative
+        imports, which is how `from .X import Y` starts binding the module."""
+        real = importlib.import_module(
+            "Custom_Widgets.widgets.charts.qtcharts.QCustomChartConstants")
+        assert real.__name__ == \
+            "Custom_Widgets.widgets.charts.qtcharts.QCustomChartConstants"
+
+    def test_no_internal_use_of_legacy_package_paths(self, qapp):
+        """Package code addresses other packages by their real path.
+
+        Going through the legacy alias from inside the package tree round-trips
+        the import machinery and, when the target is the package doing the
+        importing, re-enters it mid-initialisation. The aliases exist for
+        callers outside the tree, not for us.
+        """
+        base = os.path.join(REPO, "Custom_Widgets", "widgets")
+        offenders = []
+        for dirpath, dirnames, filenames in os.walk(base):
+            dirnames[:] = [d for d in dirnames if d != "__pycache__"]
+            for filename in filenames:
+                if not filename.endswith(".py"):
+                    continue
+                path = os.path.join(dirpath, filename)
+                text = open(path, encoding="utf-8", errors="ignore").read()
+                for legacy in ("Custom_Widgets.QCustomCharts.",
+                               "Custom_Widgets.ProgressBars.",
+                               "Custom_Widgets.LoadingIndicators."):
+                    if "from %s" % legacy in text or "import %s" % legacy in text:
+                        offenders.append(os.path.relpath(path, REPO))
+        assert not offenders, ("these import their own package by its legacy "
+                               "public path; use a relative import: %s"
+                               % ", ".join(sorted(set(offenders))))
+
+
 class TestToolingSeesMovedWidgets:
     """The move must not make a widget invisible to the tooling.
 

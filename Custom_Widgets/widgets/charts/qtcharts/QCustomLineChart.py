@@ -9,7 +9,7 @@ from .QCustomChartDataManager import QCustomChartDataManager
 from .QCustomChartProps import ChartCommonProps, AxisChartProps, SeriesStyleProps
 from .QCustomQLineSeries import QCustomQLineSeries
 from Custom_Widgets.Utils import is_in_designer
-from Custom_Widgets.QCustomCharts.QCustomChartConstants import (
+from .QCustomChartConstants import (
     QCustomChartEnums as _CE)
 
 

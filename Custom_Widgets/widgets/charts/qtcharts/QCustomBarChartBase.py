@@ -108,7 +108,7 @@ class _RoundedBarOverlay(QGraphicsItem):
                 painter.setBrush(QBrush(color))
                 painter.drawPath(self._top_rounded_path(rect, r, up=(val >= 0)))
 from Custom_Widgets.Utils import is_in_designer
-from Custom_Widgets.QCustomCharts.QCustomChartConstants import (
+from .QCustomChartConstants import (
     QCustomChartConstants as _CC, chart_str_to_int, chart_int_to_str,
     CHART_THEME_TO_INT, INT_TO_CHART_THEME,
     LEGEND_POSITION_TO_INT, INT_TO_LEGEND_POSITION,

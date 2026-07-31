@@ -1,1 +1,1 @@
-from Custom_Widgets.ProgressBars.QCustomRoundProgressBar import QCustomRoundProgressBar
+from Custom_Widgets.widgets.progressbars.QCustomRoundProgressBar import QCustomRoundProgressBar
