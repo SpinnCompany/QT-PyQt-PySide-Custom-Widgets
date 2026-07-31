@@ -6,11 +6,12 @@ from Custom_Widgets.QCustomSidebar import QCustomSidebar
 from Custom_Widgets.Utils import replace_url_prefix, is_in_designer, get_icon_path
 
 import os
+from Custom_Widgets._resources import packageDir
 
 class QCustomSidebarLabel(QWidget):
     visibilityChanged = Signal(bool)
 
-    script_dir = os.path.dirname(os.path.realpath(__file__))
+    script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/title.png")
     WIDGET_TOOLTIP = "A custom widget that hides when its parent sidebar is collapsed"
     WIDGET_DOM_XML = """

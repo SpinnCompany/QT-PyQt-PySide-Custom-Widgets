@@ -88,7 +88,11 @@ def scan():
     # module that had moved — the manifest is the launch gate, so a widget
     # going missing from it must not be possible.
     mods += glob.glob(os.path.join(CW, "**", "QCustom*.py"), recursive=True)
-    mods += [os.path.join(CW, "AnalogGaugeWidget.py"), os.path.join(CW, "QFlowProgressBar.py")]
+    # Two widgets that do not match the QCustom* prefix. Globbed rather than
+    # hardcoded at the package root, because they moved with the regrouping and
+    # a fixed path silently dropped them from the launch gate.
+    for _stray in ("AnalogGaugeWidget.py", "QFlowProgressBar.py"):
+        mods += glob.glob(os.path.join(CW, "**", _stray), recursive=True)
     mods = sorted({m for m in mods
                    if os.path.isfile(m)
                    and not m.endswith(".pyi")

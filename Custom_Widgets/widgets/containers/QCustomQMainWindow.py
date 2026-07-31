@@ -10,10 +10,11 @@ from Custom_Widgets.Log import *
 from Custom_Widgets import *
 
 import os
+from Custom_Widgets._resources import packageDir
 
 class QCustomQMainWindow(QMainWindow):
     # Icon path for the widget
-    script_dir = os.path.dirname(os.path.realpath(__file__))
+    script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/dashboard.png")
     
     # Tooltip for the widget

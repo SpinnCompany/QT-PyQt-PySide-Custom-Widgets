@@ -10,6 +10,7 @@ import os
 
 from Custom_Widgets.QPropertyAnimation import returnAnimationEasingCurve, returnQtDirection, easingCurveToInt
 from Custom_Widgets.Utils import is_in_designer
+from Custom_Widgets._resources import packageDir
 
 class QCustomQStackedWidget(QStackedWidget):
     """
@@ -45,7 +46,7 @@ class QCustomQStackedWidget(QStackedWidget):
     """
     
     # Define the XML metadata and icon for Qt Designer
-    script_dir = os.path.dirname(os.path.realpath(__file__))
+    script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/layers.png")
     WIDGET_TOOLTIP = "A custom QStackedWidget with transitions"
     WIDGET_DOM_XML = """

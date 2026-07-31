@@ -10,9 +10,10 @@ from qtpy.QtWidgets import QCheckBox, QApplication, QLabel, QStyleOption, QStyle
 from Custom_Widgets.QPropertyAnimation import returnAnimationEasingCurve, easingCurveToInt
 
 import os
+from Custom_Widgets._resources import packageDir
 
 class QCustomCheckBox(QCheckBox):
-    script_dir = os.path.dirname(os.path.realpath(__file__))
+    script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/check_box.png")
     WIDGET_TOOLTIP = "A custom animated checkbox widget"
     WIDGET_DOM_XML = """

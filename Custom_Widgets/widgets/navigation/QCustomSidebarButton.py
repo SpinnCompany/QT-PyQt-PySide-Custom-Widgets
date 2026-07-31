@@ -7,12 +7,13 @@ import os
 from Custom_Widgets.QCustomSidebar import QCustomSidebar
 from Custom_Widgets.Utils import replace_url_prefix, is_in_designer, get_icon_path
 from Custom_Widgets.Log import *
+from Custom_Widgets._resources import packageDir
 
 class QCustomSidebarButton(QPushButton):
     clicked = Signal()
 
     # Define XML for Qt Designer
-    script_dir = os.path.dirname(os.path.realpath(__file__))
+    script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/arrow_forward.png")
     WIDGET_TOOLTIP = "A custom button that interacts with the sidebar"
     WIDGET_DOM_XML = """
