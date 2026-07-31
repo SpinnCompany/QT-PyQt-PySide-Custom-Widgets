@@ -59,8 +59,9 @@ all = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/KhamisiKibet/QT-PyQt-PySide-Custom-Widgets"
-Documentation = "https://khamisikibet.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/"
+Homepage = "https://github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets"
+Documentation = "https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/"
+Issues = "https://github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets/issues"
 
 [project.scripts]
 Custom_Widgets = "Custom_Widgets.CMD:run_command"
@@ -72,6 +73,12 @@ include = ["Custom_Widgets*"]
 
 [tool.setuptools]
 include-package-data = true
+
+# include-package-data sweeps the whole package, which otherwise drags stale
+# __pycache__/*.pyc from the working tree into the wheel — bytecode built for
+# whichever interpreter last ran here, shipped to users on other versions.
+[tool.setuptools.exclude-package-data]
+"*" = ["__pycache__/*", "*.py[cod]"]
 
 [tool.custom_widgets_lint]
 # Design-rule linter (Custom_Widgets.lint) — enforces the *visual* rules a type
