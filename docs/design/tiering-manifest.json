@@ -1243,6 +1243,17 @@
     "tier": "free"
   },
   {
+    "module": "Custom_Widgets/QCustomTextArea.py",
+    "widget": "QCustomTextArea",
+    "loc": 344,
+    "pyi": true,
+    "catalog": true,
+    "test": true,
+    "example": true,
+    "designer": true,
+    "tier": "free"
+  },
+  {
     "module": "Custom_Widgets/QCustomThemeDarkLightToggle.py",
     "widget": "QCustomThemeDarkLightToggle",
     "loc": 168,

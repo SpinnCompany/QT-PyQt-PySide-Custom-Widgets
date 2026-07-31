@@ -15,17 +15,17 @@ ships at once.
 > Regenerate: `python tools/scan_widgets.py`. Presence signals are objective; the
 > tier decisions above are ratified; Stable/Secure remain a human review pass.
 
-## Coverage summary (147 widget modules)
+## Coverage summary (148 widget modules)
 
 | Signal | Coverage |
 |---|---|
-| Has a test | 128/147 (87%) |
-| Has an example | 120/147 (82%) |
-| In `__catalog__` | 92/147 (63%) |
-| Designer-registered | 110/147 (75%) |
-| `.pyi` type stub | 91/147 (62%) |
+| Has a test | 129/148 (87%) |
+| Has an example | 121/148 (82%) |
+| In `__catalog__` | 93/148 (63%) |
+| Designer-registered | 111/148 (75%) |
+| `.pyi` type stub | 92/148 (62%) |
 
-Breakdown: **5** free-base-with-Pro-extension, **123** free
+Breakdown: **5** free-base-with-Pro-extension, **124** free
 standalone, **19** internal/engine (not shipped as standalone).
 
 ## Legend
@@ -56,7 +56,7 @@ Pro mapping:
 - `QCustomBarChart` -> Charts Pro (SKU-2, candidate)
 - `QCustomPieChart` -> Charts Pro (SKU-2, candidate)
 
-## Tier: free -- standalone (123)
+## Tier: free -- standalone (124)
 
 | Widget | Test | Example | Catalog | Designer | .pyi | LOC | Module |
 |---|:--:|:--:|:--:|:--:|:--:|--:|---|
@@ -168,6 +168,7 @@ Pro mapping:
 | `QCustomSwitch` | ✅ | ✅ | ✅ | ✅ | ✅ | 190 | Custom_Widgets/QCustomSwitch.py |
 | `QCustomTableToolbar` | ✅ | ✅ | ✅ | ✅ | ✅ | 541 | Custom_Widgets/QCustomTableToolbar.py |
 | `QCustomTabWidget` | ✅ | ✅ | ✅ | ✅ | ✅ | 120 | Custom_Widgets/QCustomTabWidget.py |
+| `QCustomTextArea` | ✅ | ✅ | ✅ | ✅ | ✅ | 344 | Custom_Widgets/QCustomTextArea.py |
 | `QCustomThemeDarkLightToggle` | ✅ | ✅ | — | ✅ | — | 168 | Custom_Widgets/QCustomThemeDarkLightToggle.py |
 | `QCustomTileButton` | ✅ | ✅ | ✅ | ✅ | ✅ | 257 | Custom_Widgets/QCustomTileButton.py |
 | `QCustomTimeline` | ✅ | ✅ | ✅ | ✅ | ✅ | 143 | Custom_Widgets/QCustomTimeline.py |
