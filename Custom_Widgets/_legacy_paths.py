@@ -47,6 +47,7 @@ GROUPS = ("widgets", "tools", "designer", "theming")
 PACKAGE_ALIASES = {
     "Custom_Widgets.ProgressBars": "Custom_Widgets.widgets.progressbars",
     "Custom_Widgets.LoadingIndicators": "Custom_Widgets.widgets.loading",
+    "Custom_Widgets.QCustomCharts": "Custom_Widgets.widgets.charts.qtcharts",
 }
 
 
@@ -85,19 +86,30 @@ def build_aliases():
 
 
 class _AliasLoader(importlib.abc.Loader):
-    """Loads the real module and hands the same object back under the alias."""
+    """Registers the real module under the legacy name.
+
+    The obvious implementation - return the real module from create_module -
+    is subtly wrong. importlib then calls _init_module_attrs(override=True) on
+    whatever create_module hands back, which rewrites __name__, __spec__ and
+    __package__ on the *real* module object to the alias's. Any relative
+    import inside that package afterwards resolves against the wrong parent,
+    so `from .X import Y` silently binds the submodule instead of the class
+    it contains.
+
+    Returning None lets importlib build a throwaway shim, and exec_module then
+    swaps the real module into sys.modules. _load() re-reads sys.modules after
+    exec_module, so callers get the real object with its own identity intact.
+    """
 
     def __init__(self, real_name):
         self._real_name = real_name
 
     def create_module(self, spec):
-        return importlib.import_module(self._real_name)
+        return None                      # default shim; never handed to callers
 
     def exec_module(self, module):
-        # create_module returned the already-executed real module; running it
-        # again would re-run module-level code (re-registering Designer
-        # widgets, rebuilding singletons) for no reason.
-        pass
+        real = importlib.import_module(self._real_name)
+        sys.modules[module.__name__] = real
 
 
 class LegacyPathFinder(importlib.abc.MetaPathFinder):
@@ -134,8 +146,15 @@ def install():
     if _installed is not None:
         return _installed
     finder = LegacyPathFinder(build_aliases(), PACKAGE_ALIASES)
-    # Appended, not prepended: a real module on disk must always win, so this
-    # only ever fills gaps left by the move.
-    sys.meta_path.append(finder)
+    # Prepended, and it has to be. Once an aliased *package* resolves, its
+    # __path__ is a real directory, so the stdlib PathFinder can find the
+    # submodules underneath it and would import them a second time under the
+    # legacy name - giving two module objects and two distinct classes for one
+    # file, which quietly breaks isinstance across the two import paths.
+    #
+    # Prepending is safe because find_spec returns None for anything not in
+    # the alias tables, and the tables only ever contain names that no longer
+    # exist on disk at the top level.
+    sys.meta_path.insert(0, finder)
     _installed = finder
     return finder

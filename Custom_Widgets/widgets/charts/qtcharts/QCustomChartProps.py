@@ -17,7 +17,7 @@ from qtpy.QtCore import Property
 from qtpy.QtGui import QColor, QPainter
 from qtpy.QtCharts import QChart
 
-from Custom_Widgets.QCustomCharts.QCustomChartConstants import (
+from .QCustomChartConstants import (
     QCustomChartConstants as _CC, chart_str_to_int, chart_int_to_str,
     CHART_THEME_TO_INT, INT_TO_CHART_THEME,
     LEGEND_POSITION_TO_INT, INT_TO_LEGEND_POSITION,

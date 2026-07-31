@@ -1,6 +1,6 @@
 [
   {
-    "module": "Custom_Widgets/QCustomCharts/QCustomAreaChart.py",
+    "module": "Custom_Widgets/widgets/charts/qtcharts/QCustomAreaChart.py",
     "widget": "QCustomAreaChart",
     "loc": 1135,
     "pyi": false,
@@ -11,7 +11,7 @@
     "tier": "pro-ext"
   },
   {
-    "module": "Custom_Widgets/QCustomCharts/QCustomBarChart.py",
+    "module": "Custom_Widgets/widgets/charts/qtcharts/QCustomBarChart.py",
     "widget": "QCustomBarChart",
     "loc": 1044,
     "pyi": false,
@@ -33,7 +33,7 @@
     "tier": "pro-ext"
   },
   {
-    "module": "Custom_Widgets/QCustomCharts/QCustomLineChart.py",
+    "module": "Custom_Widgets/widgets/charts/qtcharts/QCustomLineChart.py",
     "widget": "QCustomLineChart",
     "loc": 735,
     "pyi": false,
@@ -44,7 +44,7 @@
     "tier": "pro-ext"
   },
   {
-    "module": "Custom_Widgets/QCustomCharts/QCustomPieChart.py",
+    "module": "Custom_Widgets/widgets/charts/qtcharts/QCustomPieChart.py",
     "widget": "QCustomPieChart",
     "loc": 1706,
     "pyi": false,
@@ -1003,7 +1003,7 @@
   {
     "module": "Custom_Widgets/widgets/loading/QCustomQProgressBar.py",
     "widget": "QCustomQProgressBar",
-    "loc": 207,
+    "loc": 208,
     "pyi": false,
     "catalog": false,
     "test": true,
@@ -1157,7 +1157,7 @@
   {
     "module": "Custom_Widgets/widgets/progressbars/QCustomRoundProgressBar.py",
     "widget": "QCustomRoundProgressBar",
-    "loc": 227,
+    "loc": 228,
     "pyi": false,
     "catalog": false,
     "test": true,
@@ -1540,7 +1540,7 @@
     "tier": "free"
   },
   {
-    "module": "Custom_Widgets/QCustomCharts/QCustomBarChartBase.py",
+    "module": "Custom_Widgets/widgets/charts/qtcharts/QCustomBarChartBase.py",
     "widget": "QCustomBarChartBase",
     "loc": 1932,
     "pyi": false,
@@ -1551,7 +1551,7 @@
     "tier": "internal"
   },
   {
-    "module": "Custom_Widgets/QCustomCharts/QCustomChartBase.py",
+    "module": "Custom_Widgets/widgets/charts/qtcharts/QCustomChartBase.py",
     "widget": "QCustomChartBase",
     "loc": 379,
     "pyi": false,
@@ -1562,7 +1562,7 @@
     "tier": "internal"
   },
   {
-    "module": "Custom_Widgets/QCustomCharts/QCustomChartConstants.py",
+    "module": "Custom_Widgets/widgets/charts/qtcharts/QCustomChartConstants.py",
     "widget": "QCustomChartConstants",
     "loc": 372,
     "pyi": false,
@@ -1573,7 +1573,7 @@
     "tier": "internal"
   },
   {
-    "module": "Custom_Widgets/QCustomCharts/QCustomChartDataManager.py",
+    "module": "Custom_Widgets/widgets/charts/qtcharts/QCustomChartDataManager.py",
     "widget": "QCustomChartDataManager",
     "loc": 605,
     "pyi": false,
@@ -1584,7 +1584,7 @@
     "tier": "internal"
   },
   {
-    "module": "Custom_Widgets/QCustomCharts/QCustomChartExporter.py",
+    "module": "Custom_Widgets/widgets/charts/qtcharts/QCustomChartExporter.py",
     "widget": "QCustomChartExporter",
     "loc": 575,
     "pyi": false,
@@ -1595,7 +1595,7 @@
     "tier": "internal"
   },
   {
-    "module": "Custom_Widgets/QCustomCharts/QCustomChartProps.py",
+    "module": "Custom_Widgets/widgets/charts/qtcharts/QCustomChartProps.py",
     "widget": "QCustomChartProps",
     "loc": 369,
     "pyi": false,
@@ -1606,7 +1606,7 @@
     "tier": "internal"
   },
   {
-    "module": "Custom_Widgets/QCustomCharts/QCustomChartThemeManager.py",
+    "module": "Custom_Widgets/widgets/charts/qtcharts/QCustomChartThemeManager.py",
     "widget": "QCustomChartThemeManager",
     "loc": 444,
     "pyi": false,
@@ -1617,7 +1617,7 @@
     "tier": "internal"
   },
   {
-    "module": "Custom_Widgets/QCustomCharts/QCustomChartToolbar.py",
+    "module": "Custom_Widgets/widgets/charts/qtcharts/QCustomChartToolbar.py",
     "widget": "QCustomChartToolbar",
     "loc": 511,
     "pyi": false,
@@ -1628,7 +1628,7 @@
     "tier": "internal"
   },
   {
-    "module": "Custom_Widgets/QCustomCharts/QCustomChartTooltip.py",
+    "module": "Custom_Widgets/widgets/charts/qtcharts/QCustomChartTooltip.py",
     "widget": "QCustomChartTooltip",
     "loc": 415,
     "pyi": false,
@@ -1639,7 +1639,7 @@
     "tier": "internal"
   },
   {
-    "module": "Custom_Widgets/QCustomCharts/QCustomChartView.py",
+    "module": "Custom_Widgets/widgets/charts/qtcharts/QCustomChartView.py",
     "widget": "QCustomChartView",
     "loc": 483,
     "pyi": false,
@@ -1683,7 +1683,7 @@
     "tier": "internal"
   },
   {
-    "module": "Custom_Widgets/QCustomCharts/QCustomHorizontalBarSeries.py",
+    "module": "Custom_Widgets/widgets/charts/qtcharts/QCustomHorizontalBarSeries.py",
     "widget": "QCustomHorizontalBarSeries",
     "loc": 271,
     "pyi": false,
@@ -1694,7 +1694,7 @@
     "tier": "internal"
   },
   {
-    "module": "Custom_Widgets/QCustomCharts/QCustomLegendManager.py",
+    "module": "Custom_Widgets/widgets/charts/qtcharts/QCustomLegendManager.py",
     "widget": "QCustomLegendManager",
     "loc": 431,
     "pyi": false,
@@ -1705,7 +1705,7 @@
     "tier": "internal"
   },
   {
-    "module": "Custom_Widgets/QCustomCharts/QCustomQLineSeries.py",
+    "module": "Custom_Widgets/widgets/charts/qtcharts/QCustomQLineSeries.py",
     "widget": "QCustomQLineSeries",
     "loc": 127,
     "pyi": false,
@@ -1716,9 +1716,9 @@
     "tier": "internal"
   },
   {
-    "module": "Custom_Widgets/QCustomTheme.py",
+    "module": "Custom_Widgets/theming/QCustomTheme.py",
     "widget": "QCustomTheme",
-    "loc": 1786,
+    "loc": 1787,
     "pyi": false,
     "catalog": false,
     "test": true,
@@ -1738,7 +1738,7 @@
     "tier": "internal"
   },
   {
-    "module": "Custom_Widgets/QCustomCharts/QCustomVerticalBarSeries.py",
+    "module": "Custom_Widgets/widgets/charts/qtcharts/QCustomVerticalBarSeries.py",
     "widget": "QCustomVerticalBarSeries",
     "loc": 272,
     "pyi": false,

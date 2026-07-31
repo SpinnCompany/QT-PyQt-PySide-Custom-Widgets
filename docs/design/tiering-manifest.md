@@ -43,11 +43,11 @@ Stay free in the core; the Pro package extends them (never bundles them).
 
 | Widget | Test | Example | Catalog | Designer | .pyi | LOC | Module |
 |---|:--:|:--:|:--:|:--:|:--:|--:|---|
-| `QCustomAreaChart` | ✅ | ✅ | — | ✅ | — | 1135 | Custom_Widgets/QCustomCharts/QCustomAreaChart.py |
-| `QCustomBarChart` | ✅ | ✅ | — | ✅ | — | 1044 | Custom_Widgets/QCustomCharts/QCustomBarChart.py |
+| `QCustomAreaChart` | ✅ | ✅ | — | ✅ | — | 1135 | Custom_Widgets/widgets/charts/qtcharts/QCustomAreaChart.py |
+| `QCustomBarChart` | ✅ | ✅ | — | ✅ | — | 1044 | Custom_Widgets/widgets/charts/qtcharts/QCustomBarChart.py |
 | `QCustomDataTable` | ✅ | ✅ | ✅ | ✅ | ✅ | 1824 | Custom_Widgets/widgets/data/QCustomDataTable.py |
-| `QCustomLineChart` | ✅ | ✅ | — | ✅ | — | 735 | Custom_Widgets/QCustomCharts/QCustomLineChart.py |
-| `QCustomPieChart` | ✅ | ✅ | — | ✅ | — | 1706 | Custom_Widgets/QCustomCharts/QCustomPieChart.py |
+| `QCustomLineChart` | ✅ | ✅ | — | ✅ | — | 735 | Custom_Widgets/widgets/charts/qtcharts/QCustomLineChart.py |
+| `QCustomPieChart` | ✅ | ✅ | — | ✅ | — | 1706 | Custom_Widgets/widgets/charts/qtcharts/QCustomPieChart.py |
 
 Pro mapping:
 - `QCustomDataTable` -> DataTable Pro (SKU-1, LOCKED - built)
@@ -146,7 +146,7 @@ Pro mapping:
 | `QCustomQDialog` | ✅ | ✅ | — | — | — | 492 | Custom_Widgets/widgets/containers/QCustomQDialog.py |
 | `QCustomQLabel` | ✅ | ✅ | ✅ | ✅ | ✅ | 186 | Custom_Widgets/widgets/display/QCustomQLabel.py |
 | `QCustomQMainWindow` | ✅ | ✅ | — | ✅ | — | 485 | Custom_Widgets/widgets/containers/QCustomQMainWindow.py |
-| `QCustomQProgressBar` | ✅ | ✅ | — | ✅ | — | 207 | Custom_Widgets/widgets/loading/QCustomQProgressBar.py |
+| `QCustomQProgressBar` | ✅ | ✅ | — | ✅ | — | 208 | Custom_Widgets/widgets/loading/QCustomQProgressBar.py |
 | `QCustomQPushButton` | ✅ | ✅ | ✅ | ✅ | ✅ | 610 | Custom_Widgets/widgets/buttons/QCustomQPushButton.py |
 | `QCustomQPushButtonGroup` | ✅ | ✅ | — | — | — | 60 | Custom_Widgets/widgets/buttons/QCustomQPushButtonGroup.py |
 | `QCustomQRGenerator` | ✅ | — | — | ✅ | — | 722 | Custom_Widgets/widgets/display/QCustomQRGenerator.py |
@@ -160,7 +160,7 @@ Pro mapping:
 | `QCustomRating` | ✅ | ✅ | ✅ | ✅ | ✅ | 135 | Custom_Widgets/widgets/input/QCustomRating.py |
 | `QCustomReactionBar` | — | — | ✅ | ✅ | ✅ | 202 | Custom_Widgets/widgets/chat/QCustomReactionBar.py |
 | `QCustomRichTextEditor` | ✅ | ✅ | ✅ | ✅ | ✅ | 186 | Custom_Widgets/widgets/data/QCustomRichTextEditor.py |
-| `QCustomRoundProgressBar` | ✅ | ✅ | — | ✅ | — | 227 | Custom_Widgets/widgets/progressbars/QCustomRoundProgressBar.py |
+| `QCustomRoundProgressBar` | ✅ | ✅ | — | ✅ | — | 228 | Custom_Widgets/widgets/progressbars/QCustomRoundProgressBar.py |
 | `QCustomRulerPicker` | ✅ | ✅ | ✅ | ✅ | ✅ | 467 | Custom_Widgets/widgets/input/QCustomRulerPicker.py |
 | `QCustomSegmentedControl` | ✅ | ✅ | ✅ | ✅ | ✅ | 146 | Custom_Widgets/widgets/input/QCustomSegmentedControl.py |
 | `QCustomSidebar` | ✅ | ✅ | — | ✅ | — | 311 | Custom_Widgets/widgets/navigation/QCustomSidebar.py |
@@ -203,25 +203,25 @@ separate tier. (Most surface through the public chart types above.)
 
 | Widget | Test | Example | Catalog | Designer | .pyi | LOC | Module |
 |---|:--:|:--:|:--:|:--:|:--:|--:|---|
-| `QCustomBarChartBase` | — | — | — | — | — | 1932 | Custom_Widgets/QCustomCharts/QCustomBarChartBase.py |
-| `QCustomChartBase` | — | — | — | — | — | 379 | Custom_Widgets/QCustomCharts/QCustomChartBase.py |
-| `QCustomChartConstants` | ✅ | — | — | — | — | 372 | Custom_Widgets/QCustomCharts/QCustomChartConstants.py |
-| `QCustomChartDataManager` | — | — | — | — | — | 605 | Custom_Widgets/QCustomCharts/QCustomChartDataManager.py |
-| `QCustomChartExporter` | — | — | — | — | — | 575 | Custom_Widgets/QCustomCharts/QCustomChartExporter.py |
-| `QCustomChartProps` | — | — | — | — | — | 369 | Custom_Widgets/QCustomCharts/QCustomChartProps.py |
-| `QCustomChartThemeManager` | — | — | — | — | — | 444 | Custom_Widgets/QCustomCharts/QCustomChartThemeManager.py |
-| `QCustomChartToolbar` | — | — | — | — | — | 511 | Custom_Widgets/QCustomCharts/QCustomChartToolbar.py |
-| `QCustomChartTooltip` | — | — | — | — | — | 415 | Custom_Widgets/QCustomCharts/QCustomChartTooltip.py |
-| `QCustomChartView` | — | — | — | — | — | 483 | Custom_Widgets/QCustomCharts/QCustomChartView.py |
+| `QCustomBarChartBase` | — | — | — | — | — | 1932 | Custom_Widgets/widgets/charts/qtcharts/QCustomBarChartBase.py |
+| `QCustomChartBase` | — | — | — | — | — | 379 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartBase.py |
+| `QCustomChartConstants` | ✅ | — | — | — | — | 372 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartConstants.py |
+| `QCustomChartDataManager` | — | — | — | — | — | 605 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartDataManager.py |
+| `QCustomChartExporter` | — | — | — | — | — | 575 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartExporter.py |
+| `QCustomChartProps` | — | — | — | — | — | 369 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartProps.py |
+| `QCustomChartThemeManager` | — | — | — | — | — | 444 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartThemeManager.py |
+| `QCustomChartToolbar` | — | — | — | — | — | 511 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartToolbar.py |
+| `QCustomChartTooltip` | — | — | — | — | — | 415 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartTooltip.py |
+| `QCustomChartView` | — | — | — | — | — | 483 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartView.py |
 | `QCustomComponent` | ✅ | ✅ | — | ✅ | — | 115 | Custom_Widgets/widgets/containers/QCustomComponent.py |
 | `QCustomComponentContainer` | ✅ | ✅ | — | ✅ | — | 189 | Custom_Widgets/widgets/containers/QCustomComponentContainer.py |
 | `QCustomComponentLoader` | ✅ | — | — | — | — | 678 | Custom_Widgets/widgets/containers/QCustomComponentLoader.py |
-| `QCustomHorizontalBarSeries` | ✅ | — | — | ✅ | — | 271 | Custom_Widgets/QCustomCharts/QCustomHorizontalBarSeries.py |
-| `QCustomLegendManager` | — | — | — | — | — | 431 | Custom_Widgets/QCustomCharts/QCustomLegendManager.py |
-| `QCustomQLineSeries` | — | — | — | — | — | 127 | Custom_Widgets/QCustomCharts/QCustomQLineSeries.py |
-| `QCustomTheme` | ✅ | ✅ | — | — | — | 1786 | Custom_Widgets/QCustomTheme.py |
+| `QCustomHorizontalBarSeries` | ✅ | — | — | ✅ | — | 271 | Custom_Widgets/widgets/charts/qtcharts/QCustomHorizontalBarSeries.py |
+| `QCustomLegendManager` | — | — | — | — | — | 431 | Custom_Widgets/widgets/charts/qtcharts/QCustomLegendManager.py |
+| `QCustomQLineSeries` | — | — | — | — | — | 127 | Custom_Widgets/widgets/charts/qtcharts/QCustomQLineSeries.py |
+| `QCustomTheme` | ✅ | ✅ | — | — | — | 1787 | Custom_Widgets/theming/QCustomTheme.py |
 | `QCustomThemeList` | ✅ | ✅ | — | ✅ | — | 140 | Custom_Widgets/widgets/input/QCustomThemeList.py |
-| `QCustomVerticalBarSeries` | ✅ | — | — | ✅ | — | 272 | Custom_Widgets/QCustomCharts/QCustomVerticalBarSeries.py |
+| `QCustomVerticalBarSeries` | ✅ | — | — | ✅ | — | 272 | Custom_Widgets/widgets/charts/qtcharts/QCustomVerticalBarSeries.py |
 
 ---
 

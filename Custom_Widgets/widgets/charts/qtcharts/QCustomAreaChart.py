@@ -7,7 +7,7 @@ from qtpy.QtCharts import QChart, QLineSeries, QAreaSeries, QValueAxis, QScatter
 from .QCustomChartBase import QCustomChartBase
 from .QCustomChartProps import ChartCommonProps, AxisChartProps, SeriesStyleProps
 from Custom_Widgets.Utils import is_in_designer
-from Custom_Widgets.QCustomCharts.QCustomChartConstants import (
+from .QCustomChartConstants import (
     QCustomChartEnums as _CE)
 
 
