@@ -380,6 +380,14 @@ def _iconPath(name):
     return os.path.join(packageDir(), "components", "icons", name)
 
 
+def _seedQSlider(w, theme):
+    from qtpy.QtCore import Qt
+    w.setOrientation(Qt.Horizontal)
+    w.setRange(0, 100)
+    w.setValue(64)
+    w.setMinimumWidth(260)
+
+
 def _seedStatCard(w, theme):
     w.setLabel("Monthly recurring revenue")
     w.setValue("$48,320")
@@ -628,6 +636,11 @@ SEEDS = {
     "QCustomRadialGauge": lambda w, t: w.setValue(64),
     "QCustomTypewriterText": lambda w, t: w.skip(),
 
+    # Legacy widgets whose defaults photograph badly: a vertical unstyled
+    # slider, and a bar sitting at zero.
+    "QCustomQSlider": _seedQSlider,
+    "QCustomQProgressBar": lambda w, t: w.setFixedWidth(260),
+
     "QCustomStatCard": _seedStatCard,
     "QCustomDataTable": _seedDataTable,
     "QTagEdit": _seedTagEdit,
@@ -758,6 +771,309 @@ SETTLE = {
 }
 
 
+# --------------------------------------------------------------------------- #
+# Popups
+#
+# A drawer, toast, tooltip, command palette, modal or embedded window renders
+# NOTHING inside a QVBoxLayout: it positions itself over a parent window and
+# animates in. Dropped into the normal harness they photographed as blank
+# rectangles, so they simply had no screenshot at all.
+#
+# These are shot differently: build a themed parent that stands in for an app
+# window, show the popup over it, let the entry animation finish in real time,
+# then grab the PARENT — except the tooltip, which is a genuine top-level
+# window (Qt.Popup|Qt.Tool) and is not inside its parent's grab at all.
+# --------------------------------------------------------------------------- #
+def _popupLabels(theme, texts):
+    """Labels styled for the popup surface.
+
+    Only the panel itself gets a token colour rule; children do not inherit it,
+    so plain QLabels come out near-invisible pale grey on white.
+    """
+    from qtpy.QtWidgets import QLabel
+    from Custom_Widgets.JSonStyles.tokens import DesignTokens
+    colour = DesignTokens(theme=theme).role("on-surface")
+    out = []
+    for text in texts:
+        label = QLabel(text)
+        label.setStyleSheet("color: %s;" % colour)
+        out.append(label)
+    return out
+
+
+def _popupDrawer(cls, parent, theme):
+    widget = cls(parent, side="left", size=260)
+    for label in _popupLabels(theme, ("Dashboard", "Projects", "Team members",
+                                      "Billing & plans", "Settings")):
+        widget.addWidget(label)
+    widget.contentLayout().addStretch(1)
+    widget.open()                      # the method is open(), not openDrawer()
+    return widget
+
+
+def _popupToast(cls, parent, theme):
+    # duration=0 disables the dismiss timer. With the default 4000 the toast is
+    # gone before the grab and the parent photographs completely empty.
+    widget = cls(parent, "Invoice #10428 was paid.", variant="success",
+                 title="Payment received", duration=0, position="top-right")
+    widget.showToast()
+    return widget
+
+
+def _popupToolTip(cls, parent, theme):
+    from qtpy.QtWidgets import QPushButton
+    button = QPushButton("Export", parent)
+    button.move(24, 24)
+    button.show()
+    # duration must be NEGATIVE: the guard is `if duration >= 0`, so 0 still
+    # arms the auto-close timer. target is required, not optional.
+    widget = cls("Exports the last 30 days as CSV", parent=parent,
+                 target=button, duration=-1, tailPosition="top-center")
+    widget.show()
+    return widget
+
+
+def _popupCommandPalette(cls, parent, theme):
+    widget = cls(parent)
+    widget.setCommands([                       # must precede open()
+        {"id": "new", "title": "New Project",
+         "subtitle": "Create an empty workspace", "shortcut": "Ctrl+N"},
+        {"id": "open", "title": "Open Recent...", "shortcut": "Ctrl+O"},
+        {"id": "theme", "title": "Toggle Dark Theme"},
+        {"id": "export", "title": "Export as PDF"},
+        {"id": "settings", "title": "Open Settings", "shortcut": "Ctrl+,"},
+    ])
+    widget.open()
+    return widget
+
+
+def _popupEmbeddedWindow(cls, parent, theme):
+    from Custom_Widgets.JSonStyles.tokens import DesignTokens
+    tokens = DesignTokens(theme=theme)
+    # pos= is mandatory: pos=None picks random.randint(0, parent.width()-285)
+    # and raises outright on a parent narrower than 285.
+    widget = cls(parent, pos=(16, 16), title="Render Queue", headerHeight=28,
+                 animationDuration=400)
+    # No token QSS exists for this widget, so untouched it paints transparent.
+    widget.setStyleSheet(
+        "QCustomEmbeddedWindow { background-color: %s; border: 1px solid %s;"
+        " border-radius: 10px; }"
+        " #header { background-color: %s; }"
+        " QLabel { color: %s; }"
+        % (tokens.role("surface"), tokens.role("outline"),
+           tokens.role("surface-muted"), tokens.role("on-surface")))
+    for label in _popupLabels(theme, ("3 jobs queued\nEstimated time 4m 12s",)):
+        widget.addWidget(label)
+    widget.show()
+    return widget
+
+
+def _popupContainerModal(cls, parent, theme):
+    """QCustomModal — a dialog hosted inside its parent, not the notification
+    namespace. Different class, different API: setTitle/addContent/showModal."""
+    widget = cls(parent)
+    widget.setTitle("Delete this project?")
+    widget.clearContent()          # else the shipped placeholder text shows too
+    for label in _popupLabels(theme, (
+            "Everything in aurora-deck will be removed.\nThis cannot be undone.",)):
+        label.setWordWrap(True)
+        widget.addContent(label)
+    widget.showModal()
+    return widget
+
+
+def _popupModal(cls, parent, theme):
+    """QCustomModal / QCustomModals — position= is mandatory.
+
+    With position=None showEvent never registers with the manager, so nothing
+    is placed and nothing animates. Duration is left unset on purpose: any
+    positive value arms the auto-close timer and the grab catches an empty
+    parent.
+    """
+    factory = getattr(cls, "SuccessModal", cls)
+    widget = factory(title="Deployment complete",
+                     description="aurora-deck v2.4.1 is live on production.",
+                     parent=parent, position="center-center", isClosable=True)
+    widget.show()
+    return widget
+
+
+def _anchorButton(parent, text="Export"):
+    from qtpy.QtWidgets import QPushButton
+    button = QPushButton(text, parent)
+    button.move(24, 24)
+    button.show()
+    return button
+
+
+def _popupTipOverlay(cls, parent, theme):
+    # duration must be NEGATIVE; the guard is `>= 0`, so 0 still auto-closes.
+    widget = cls(title="Keyboard shortcuts",
+                 description="Press Ctrl+K to open the command palette.",
+                 target=_anchorButton(parent, "Help"), parent=parent,
+                 isClosable=True, duration=-1, tailPosition="top-center")
+    widget.show()
+    return widget
+
+
+def _popupEmojiPicker(cls, parent, theme):
+    widget = cls(parent, target=_anchorButton(parent, "React"))
+    widget.show()
+    return widget
+
+
+def _popupQDialog(cls, parent, theme):
+    widget = cls(parent, title="Discard changes?",
+                 description="Your edits to aurora-deck have not been saved.",
+                 yesButtonText="Discard", cancelButtonText="Keep editing",
+                 animationDuration=200, position="center")
+    widget.show()
+    return widget
+
+
+#: name -> (build(cls, parent, theme), parentSize, settle, grabTarget)
+POPUPS = {
+    "QCustomDrawer": (_popupDrawer, (520, 360), 0.45, "parent"),
+    "QCustomToast": (_popupToast, (420, 220), 0.35, "parent"),
+    "QCustomQToolTip": (_popupToolTip, (420, 220), 0.75, "widget"),
+    "QCustomCommandPalette": (_popupCommandPalette, (700, 460), 0.40, "parent"),
+    "QCustomEmbeddedWindow": (_popupEmbeddedWindow, (360, 220), 0.65, "parent"),
+    "QCustomModal": (_popupContainerModal, (560, 360), 0.55, "parent"),
+    "QCustomModals": (_popupModal, (560, 360), 0.55, "parent"),
+    "QCustomTipOverlay": (_popupTipOverlay, (420, 220), 0.75, "widget"),
+    "QCustomEmojiPicker": (_popupEmojiPicker, (460, 460), 0.75, "widget"),
+    # Top-level like the tooltip: the parent grab catches only its blur.
+    "QCustomQDialog": (_popupQDialog, (560, 360), 0.55, "widget"),
+}
+
+
+def shootPopup(cls, slug, theme):
+    """Render an overlay widget over a stand-in app window."""
+    from qtpy.QtWidgets import QApplication, QWidget
+    from Custom_Widgets.JSonStyles.tokens import applyDesignTokens
+
+    app = QApplication.instance()
+    # Chrome FIRST: setStyleSheet replaces the whole sheet, and
+    # applyDesignTokens appends its marked block to whatever is already there.
+    app.setStyleSheet(_chromeQss(theme))
+    applyDesignTokens(app, theme=theme)
+    build, size, settle, grabTarget = POPUPS[cls.__name__]
+
+    parent = QWidget()
+    parent.setObjectName("popupHost")
+    parent.setStyleSheet("QWidget#popupHost { background: %s; }"
+                         % _backdrop(theme))
+    parent.resize(*size)
+    parent.show()
+    try:
+        widget = build(cls, parent, theme)
+    except Exception as exc:
+        print("  popup build failed for %s: %s" % (cls.__name__, exc))
+        return None
+
+    _polishDeep(parent)
+    _polishDeep(widget)
+    deadline = time.time() + settle
+    while time.time() < deadline:
+        app.processEvents()
+        time.sleep(0.01)
+
+    subject = widget if grabTarget == "widget" else parent
+    pixmap = subject.grab()
+    image = pixmap.toImage()
+    if image.isNull() or _isBlank(image):
+        return None
+    name = "%s%s.png" % (slug, "-dark" if theme == "dark" else "")
+    os.makedirs(SHOTS, exist_ok=True)
+    pixmap.save(os.path.join(SHOTS, name))
+    parent.hide()
+    return name
+
+
+#: Hand-written pages reference these older filenames. Writing the current
+#: image under both names keeps those pages current instead of leaving them
+#: pointing at a screenshot nothing regenerates.
+LEGACY_SLUGS = {"qslider": "slider", "qprogressbar": "progressbar"}
+
+
+def _saveAliases(pixmap, slug, theme):
+    alias = LEGACY_SLUGS.get(slug)
+    if not alias:
+        return
+    pixmap.save(os.path.join(
+        SHOTS, "%s%s.png" % (alias, "-dark" if theme == "dark" else "")))
+
+
+def _chromeQss(theme):
+    """Theme the STANDARD Qt controls these widgets embed.
+
+    The token QSS styles the library's own widgets. Anything built out of a
+    plain QScrollArea, QLabel, QPushButton or QLineEdit falls back to the
+    platform style, so a themed widget photographed on a themed page still had
+    raw Fusion grey inside it — and looked identical in light and dark.
+
+    Deliberately NOT a blanket `QWidget { ... }` rule: that strips native
+    styling off every input and turns a bare QLineEdit into an invisible black
+    box. Each control is named explicitly.
+    """
+    from Custom_Widgets.JSonStyles.tokens import DesignTokens
+    t = DesignTokens(theme=theme)
+    r = t.role
+    return """
+        QScrollArea, QAbstractScrollArea {
+            background: %(surface)s; border: none;
+        }
+        QScrollArea > QWidget > QWidget { background: %(surface)s; }
+        QLabel { background: transparent; color: %(on_surface)s; }
+        QPushButton {
+            background: %(secondary)s; color: %(on_secondary)s;
+            border: 1px solid %(outline)s; border-radius: 6px;
+            padding: 5px 12px;
+        }
+        QPushButton:hover { background: %(secondary_hover)s; }
+        QLineEdit, QPlainTextEdit, QTextEdit, QSpinBox, QComboBox {
+            background: %(surface)s; color: %(on_surface)s;
+            border: 1px solid %(outline)s; border-radius: 6px;
+            padding: 4px 8px;
+            selection-background-color: %(primary)s;
+            selection-color: %(on_primary)s;
+        }
+        QDialog { background: %(surface)s; color: %(on_surface)s; }
+        /* Direct children only: a QDialog's title bar and button row are plain
+           QWidgets that otherwise keep the platform window colour. Scoped to
+           `>` so it cannot reach the inputs styled by type above. */
+        QDialog > QWidget { background: %(surface)s; }
+        QHeaderView::section {
+            background: %(surface_muted)s; color: %(on_surface)s;
+            border: none; padding: 6px;
+        }
+        QScrollBar:vertical, QScrollBar:horizontal {
+            background: transparent; width: 8px; height: 8px;
+        }
+        QScrollBar::handle {
+            background: %(outline)s; border-radius: 4px; min-height: 24px;
+        }
+        QScrollBar::add-line, QScrollBar::sub-line { height: 0; width: 0; }
+        QToolTip {
+            background: %(surface)s; color: %(on_surface)s;
+            border: 1px solid %(outline)s;
+        }
+    """ % {"surface": r("surface"), "surface_muted": r("surface-muted"),
+           "on_surface": r("on-surface"), "outline": r("outline"),
+           "secondary": r("secondary"), "secondary_hover": r("secondary-hover"),
+           "on_secondary": r("on-secondary"), "primary": r("primary"),
+           "on_primary": r("on-primary")}
+
+
+def _polishDeep(widget):
+    """Polish the whole tree. ensurePolished() on the parent does not descend,
+    so children keep the platform style until they are polished themselves."""
+    from qtpy.QtWidgets import QWidget
+    widget.ensurePolished()
+    for child in widget.findChildren(QWidget):
+        child.ensurePolished()
+
+
 def _backdrop(theme):
     """Card colour behind the widget: one step off `surface`, so a widget that
     paints its own surface still reads as a card rather than dissolving."""
@@ -770,7 +1086,11 @@ def shoot(cls, slug, theme):
     from qtpy.QtWidgets import QApplication, QWidget, QVBoxLayout
     from Custom_Widgets.JSonStyles.tokens import applyDesignTokens
 
+    if cls.__name__ in POPUPS:
+        return shootPopup(cls, slug, theme)
+
     app = QApplication.instance()
+    app.setStyleSheet(_chromeQss(theme))     # before the tokens; see shootPopup
     applyDesignTokens(app, theme=theme)
     # Not everything the manifest lists is a QWidget — generated Ui_* form
     # classes turn up too, and QBoxLayout.addWidget rejects them outright.
@@ -808,8 +1128,7 @@ def shoot(cls, slug, theme):
     hint = widget.sizeHint()
     host.resize(max(180, hint.width() + 32), max(90, hint.height() + 32))
     host.show()
-    host.ensurePolished()
-    widget.ensurePolished()
+    _polishDeep(host)
     settle = SETTLE.get(cls.__name__, 0.0)
     if settle:
         deadline = time.time() + settle
@@ -836,6 +1155,7 @@ def shoot(cls, slug, theme):
     name = "%s%s.png" % (slug, "-dark" if theme == "dark" else "")
     os.makedirs(SHOTS, exist_ok=True)
     pixmap.save(os.path.join(SHOTS, name))
+    _saveAliases(pixmap, slug, theme)
     return name
 
 
