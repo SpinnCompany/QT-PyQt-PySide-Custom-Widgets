@@ -1521,12 +1521,80 @@ def renderPage(cls, row, shots, allRows=()):
     return "\n".join(out).rstrip() + "\n"
 
 
+AUGMENT_START = "<!-- generated:api-reference -->"
+AUGMENT_END = "<!-- /generated:api-reference -->"
+
+
+def apiReferenceBlock(cls, row):
+    """The properties/signals/methods tables, for appending to a HAND-WRITTEN
+    page.
+
+    Those pages are not thin — most are hundreds of lines of good prose and
+    worked examples — they simply never listed the API. Regenerating them
+    would throw that away, so the tables are appended between markers instead
+    and replaced in place on every run.
+    """
+    out = [AUGMENT_START, "", "## API reference", "",
+           "*Generated from the widget's live metaobject — do not edit by hand.*",
+           ""]
+    props = designerProperties(cls)
+    if props:
+        out += ["### Properties", "",
+                "| Property | Type | Default |", "|---|---|---|"]
+        for prop, kind, default in props:
+            shown = "`%s`" % default if default not in ("", None) else "—"
+            out.append("| `%s` | `%s` | %s |" % (prop, kind, shown))
+        out.append("")
+    sigs = signalsOf(cls)
+    if sigs:
+        out += ["### Signals", "", "| Signal |", "|---|"]
+        out += ["| `%s` |" % sig for sig in sigs]
+        out.append("")
+    methods = publicMethods(cls)
+    if methods:
+        out += ["### Methods", "", "| Method | Description |", "|---|---|"]
+        for signature, doc in methods:
+            out.append("| `%s` | %s |" % (signature, doc or ""))
+        out.append("")
+    if len(out) <= 6:
+        return None
+    out.append(AUGMENT_END)
+    return "\n".join(out)
+
+
+def augmentHandwritten(cls, row, path):
+    """Add or refresh the API tables on a hand-written page."""
+    raw = open(path, "rb").read().decode("utf-8")
+    # Generated pages already carry these tables. `writePage` is also False for
+    # a generated page on a plain run, so the caller cannot tell them apart —
+    # check the marker here or every reference page gets a duplicate.
+    if MARKER in raw:
+        return False
+    block = apiReferenceBlock(cls, row)
+    if block is None:
+        return False
+    eol = "\r\n" if "\r\n" in raw else "\n"
+    body = block.replace("\n", eol)
+    if AUGMENT_START in raw:
+        head, _, rest = raw.partition(AUGMENT_START)
+        _, _, tail = rest.partition(AUGMENT_END)
+        new = head + body + tail
+    else:
+        new = raw.rstrip() + eol + eol + body + eol
+    if new == raw:
+        return False
+    open(path, "wb").write(new.encode("utf-8"))
+    return True
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--all", action="store_true",
                         help="rewrite every generated page, not just missing ones")
     parser.add_argument("--only", nargs="*", default=None)
     parser.add_argument("--no-shots", action="store_true")
+    parser.add_argument("--augment", action="store_true",
+                        help="append the API tables to hand-written pages")
     parser.add_argument("--gifs", action="store_true",
                         help="also record animated captures where motion matters")
     parser.add_argument("--reshoot", action="store_true",
@@ -1540,7 +1608,7 @@ def main():
     app = QApplication.instance() or QApplication([])
 
     os.makedirs(WIDGET_DOCS, exist_ok=True)
-    written, skipped, failed, stale, shot, gif = [], [], [], [], 0, 0
+    written, skipped, failed, stale, augmented, shot, gif = [], [], [], [], [], 0, 0
 
     allRows = manifestRows()
     for row in allRows:
@@ -1566,7 +1634,8 @@ def main():
                 writePage = False
         if not writePage:
             skipped.append(name)
-            if not args.reshoot:
+            # --augment still needs the class, so it cannot short-circuit here.
+            if not args.reshoot and not args.augment:
                 continue
 
         try:
@@ -1624,6 +1693,10 @@ def main():
                     gif += 1
 
         if not writePage:
+            if args.augment:
+                target = path if os.path.exists(path) else path[:-3] + ".mdx"
+                if os.path.exists(target) and augmentHandwritten(cls, row, target):
+                    augmented.append(name)
             continue
         try:
             open(path, "w", encoding="utf-8").write(
@@ -1632,6 +1705,8 @@ def main():
         except Exception as exc:
             failed.append("%s (render: %s)" % (name, exc))
 
+    if augmented:
+        print("augmented %d hand-written pages with API tables" % len(augmented))
     if stale:
         print("STALE (nothing rendered, old image kept) %d:" % len(stale))
         for item in sorted(set(stale)):
