@@ -346,7 +346,9 @@ def _chartPresentation(w, theme, title, xTitle, yTitle):
     black: App Theme takes its colours from QCustomTheme, a different system
     from the design tokens, and it is dark when no theme JSON is loaded.
     """
-    w.animationEnabled = False                   # else grab() catches an empty plot
+    # Off for stills (a grab mid-animation is an empty plot), on for GIFs,
+    # where the series drawing in is the whole point.
+    w.animationEnabled = bool(globals().get("_CAPTURING_GIF"))
     w.showToolbar = False
     w.showFooter = False
     w.chartTitle = title
@@ -640,6 +642,18 @@ SEEDS = {
     # slider, and a bar sitting at zero.
     "QCustomQSlider": _seedQSlider,
     "QCustomQProgressBar": lambda w, t: w.setFixedWidth(260),
+
+    # Pro flagships that shipped with no screenshot because nothing seeded
+    # them: an empty Sankey and an empty table both photograph as nothing.
+    "QCustomSankey": lambda w, t: (
+        # Format is source>target=value, separated by ';'.
+        setattr(w, "linksCsv",
+                "Coal>Electricity=38;Gas>Electricity=22;Solar>Electricity=14;"
+                "Electricity>Homes=41;Electricity>Industry=24;"
+                "Electricity>Losses=9;Gas>Heating=17"),
+        w.setMinimumSize(520, 320)),
+    "QCustomQLabel": lambda w, t: (w.setText("Revenue is up 12.4% this quarter"),
+                                   w.setMinimumSize(320, 40)),
 
     "QCustomStatCard": _seedStatCard,
     "QCustomDataTable": _seedDataTable,
@@ -1123,6 +1137,12 @@ def _driveAccordion(w, i):
 
 #: slug -> dict(frames, interval, drive)
 GIFS = {
+    # Charts draw their series in over about a second.
+    "QCustomLineChart":          dict(frames=26, interval=0.055),
+    "QCustomAreaChart":          dict(frames=26, interval=0.055),
+    "QCustomBarChart":           dict(frames=26, interval=0.055),
+    "QCustomPieChart":           dict(frames=26, interval=0.055),
+
     # Self-animating: sample while the widget's own timer runs.
     "QCustomSpinner":            dict(frames=28, interval=0.05),
     "QCustomArcLoader":          dict(frames=28, interval=0.05),
@@ -1148,6 +1168,79 @@ GIFS = {
 }
 
 
+def _hoverIn(widget):
+    from qtpy.QtCore import QEvent, QPointF, Qt
+    from qtpy.QtGui import QEnterEvent
+    from qtpy.QtWidgets import QApplication
+    centre = QPointF(widget.rect().center())
+    try:
+        QApplication.sendEvent(widget, QEnterEvent(centre, centre, centre))
+    except TypeError:                       # older bindings take no arguments
+        QApplication.sendEvent(widget, QEvent(QEvent.Enter))
+    widget.setProperty("hovered", True)
+    widget.update()
+
+
+def _hoverOut(widget):
+    from qtpy.QtCore import QEvent
+    from qtpy.QtWidgets import QApplication
+    QApplication.sendEvent(widget, QEvent(QEvent.Leave))
+    widget.setProperty("hovered", False)
+    widget.update()
+
+
+def _autoGifSpec(cls):
+    """Work out how to animate a widget WITHOUT hand-listing it.
+
+    Hand-curating 163 widgets does not scale and goes stale the moment one is
+    added. This picks a driver from what the class can actually do, in order of
+    how much it shows: a toggle beats a value sweep beats paging beats hover.
+    Anything whose capture turns out not to move is dropped by the blank guard,
+    so a static widget silently keeps its still.
+    """
+    has = lambda n: hasattr(cls, n)
+
+    if has("setChecked") and has("isChecked"):
+        def drive(w, i):
+            if i % 8 == 0:
+                w.setChecked(not w.isChecked())
+        return dict(frames=24, interval=0.07, drive=drive)
+
+    if has("setValue") and has("minimum") and has("maximum"):
+        def drive(w, i):
+            try:
+                low, high = w.minimum(), w.maximum()
+            except Exception:
+                low, high = 0, 100
+            if high <= low:
+                return
+            w.setValue(low + (high - low) * (i % 20) / 19.0)
+        return dict(frames=22, interval=0.06, drive=drive)
+
+    if has("setCurrentIndex") and (has("count") or has("currentIndex")):
+        def drive(w, i):
+            if i and i % 7 == 0:
+                try:
+                    total = w.count() if has("count") else 3
+                except Exception:
+                    total = 3
+                if total > 1:
+                    w.setCurrentIndex((w.currentIndex() + 1) % total)
+        return dict(frames=24, interval=0.08, drive=drive)
+
+    if has("setCurrentStep"):
+        def drive(w, i):
+            if i and i % 7 == 0:
+                w.setCurrentStep((i // 7) % 4)
+        return dict(frames=24, interval=0.08, drive=drive)
+
+    # Universal fallback: almost every themed widget has a hover state.
+    def drive(w, i):
+        phase = (i // 6) % 2
+        (_hoverIn if phase else _hoverOut)(w)
+    return dict(frames=20, interval=0.07, drive=drive)
+
+
 def _qtImageToPil(image):
     from qtpy.QtGui import QImage
     from PIL import Image
@@ -1161,9 +1254,92 @@ def _qtImageToPil(image):
     return Image.frombytes("RGB", (width, height), b"".join(rows))
 
 
+#: Charts whose series animate in. The still capture disables that on purpose
+#: — a grab taken mid-animation is an empty plot — but for a GIF the draw-in
+#: is the most attractive thing the widget does.
+ANIMATED_CHARTS = {"QCustomLineChart", "QCustomAreaChart",
+                   "QCustomBarChart", "QCustomPieChart"}
+
+
+def shootPopupGif(cls, slug, theme):
+    """Record a popup ARRIVING.
+
+    The still is taken after the entry animation settles, which is the one
+    moment that shows least about the widget. Here the frames start at show()
+    so the drawer slides, the toast fades and the modal scales in.
+    """
+    from qtpy.QtWidgets import QApplication, QWidget
+    from Custom_Widgets.JSonStyles.tokens import applyDesignTokens
+
+    app = QApplication.instance()
+    app.setStyleSheet(_chromeQss(theme))
+    applyDesignTokens(app, theme=theme)
+    build, size, settle, grabTarget = POPUPS[cls.__name__]
+
+    parent = QWidget()
+    parent.setObjectName("popupHost")
+    parent.setStyleSheet("QWidget#popupHost { background: %s; }" % _backdrop(theme))
+    parent.resize(*size)
+    parent.show()
+    _polishDeep(parent)
+    app.processEvents()
+
+    captured = []
+    try:
+        widget = build(cls, parent, theme)
+    except Exception as exc:
+        print("  popup gif build failed for %s: %s" % (cls.__name__, exc))
+        return None
+    subject = widget if grabTarget == "widget" else parent
+
+    # Two idle frames first, so the loop reads as "nothing, then it appears".
+    interval = 0.05
+    for index in range(26):
+        deadline = time.time() + interval
+        while time.time() < deadline:
+            app.processEvents()
+            time.sleep(0.004)
+        try:
+            captured.append(_qtImageToPil(subject.grab().toImage()))
+        except Exception:
+            break
+
+    if len(captured) < 4 or all(f.tobytes() == captured[0].tobytes()
+                                for f in captured[1:]):
+        return None
+    return _writeGif(captured, slug, theme, interval)
+
+
+def _writeGif(captured, slug, theme, interval):
+    MAX_EDGE = 420
+    if max(captured[0].size) > MAX_EDGE:
+        scale = MAX_EDGE / float(max(captured[0].size))
+        size = (int(captured[0].width * scale), int(captured[0].height * scale))
+        captured = [f.resize(size) for f in captured]
+    name = "%s%s.gif" % (slug, "-dark" if theme == "dark" else "")
+    os.makedirs(SHOTS, exist_ok=True)
+    captured[0].save(os.path.join(SHOTS, name), save_all=True,
+                     append_images=captured[1:],
+                     duration=int(interval * 1000), loop=0, optimize=True)
+    return name
+
+
 def shootGif(cls, slug, theme):
     """Record a short loop of the widget in motion. Returns the filename."""
-    spec = GIFS[cls.__name__]
+    if cls.__name__ in POPUPS:
+        return shootPopupGif(cls, slug, theme)
+
+    globals()["_CAPTURING_GIF"] = True
+    try:
+        return _shootWidgetGif(cls, slug, theme)
+    finally:
+        globals()["_CAPTURING_GIF"] = False
+
+
+def _shootWidgetGif(cls, slug, theme):
+    spec = GIFS.get(cls.__name__) or _autoGifSpec(cls)
+    if spec is None:
+        return None
     frames, interval = spec["frames"], spec["interval"]
     drive = spec.get("drive")
 
@@ -1676,7 +1852,7 @@ def main():
                     stale.append(existingShot)
                     shots[key] = existingShot
 
-        if args.gifs and name in GIFS:
+        if args.gifs:
             for theme in ("light", "dark"):
                 gifName = "%s%s.gif" % (slugFor(name),
                                         "-dark" if theme == "dark" else "")
