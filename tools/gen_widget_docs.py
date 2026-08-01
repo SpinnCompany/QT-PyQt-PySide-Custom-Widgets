@@ -1414,8 +1414,12 @@ def renderPage(cls, row, shots, allRows=()):
     out = ["---",
            "title: %s" % name,
            "description: %s." % description.replace(":", " -"),
-           "mdx:", "  format: md",
-           "---", "", MARKER, "# %s" % name, ""]
+           "mdx:", "  format: md"]
+    if tier == "pro-ext":
+        # Puts a PRO pill next to the entry in the sidebar, so a reader
+        # browsing the free reference can see what Pro adds in place.
+        out.append("sidebar_class_name: sidebar-pro")
+    out += ["---", "", MARKER, "# %s" % name, ""]
 
     badge = _tierBadge(row)
     if badge:
