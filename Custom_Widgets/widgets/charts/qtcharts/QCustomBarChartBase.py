@@ -114,7 +114,7 @@ from .QCustomChartConstants import (
     LEGEND_POSITION_TO_INT, INT_TO_LEGEND_POSITION,
     BAR_PATTERN_TO_INT, INT_TO_BAR_PATTERN,
     BAR_SELECTION_TO_INT, INT_TO_BAR_SELECTION,
-    BAR_LABELS_TO_INT, INT_TO_BAR_LABELS)
+    BAR_LABELS_TO_INT, INT_TO_BAR_LABELS, barLabelFormat)
 
 
 class QCustomBarChartBase(QCustomChartBase):
@@ -639,7 +639,10 @@ class QCustomBarChartBase(QCustomChartBase):
             
             # Configure value labels if enabled
             bar_series.setLabelsVisible(self._show_value_labels)
-            bar_series.setLabelsFormat(self._value_labels_format)
+            labelFormat, labelPrecision = barLabelFormat(
+                self._value_labels_format)
+            bar_series.setLabelsFormat(labelFormat)
+            bar_series.setLabelsPrecision(labelPrecision)
             bar_series.setLabelsPosition(self._labels_position)
             bar_series.setLabelsAngle(self._labels_angle)
             

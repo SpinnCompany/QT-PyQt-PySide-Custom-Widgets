@@ -369,3 +369,57 @@ def chart_int_to_str(mapping, value, default):
     if isinstance(value, str):
         return value
     return mapping.get(int(value), default)
+
+
+########################################################################
+## Bar value labels
+##
+## Qt does not speak Python format strings. QAbstractBarSeries takes its own
+## template where the token "@value" is substituted, and anything else is
+## printed verbatim — so handing it "{:.1f}" paints the literal characters
+## "{:.1f}" on every bar. Precision is a separate call, setLabelsPrecision().
+##
+## The public property keeps accepting Python-style templates, because that is
+## what it has always documented and what is already saved in users' .ui files.
+## This translates them on the way to Qt, and passes Qt-native templates
+## through untouched.
+########################################################################
+import re as _re
+
+#: "{}", "{:.2f}", "{value}", "{0:,.1f}" — the value placeholder in a template.
+_PY_FIELD = _re.compile(r"\{[^{}]*\}")
+#: Only 'g' is comparable to Qt's precision. See the note in barLabelFormat.
+_SIGNIFICANT = _re.compile(r"\.(\d+)g")
+
+
+def barLabelFormat(template, defaultPrecision=6):
+    """Translate a value-label template to (qtFormat, precision).
+
+    Qt's `setLabelsPrecision` is SIGNIFICANT DIGITS — it formats with '%g',
+    not '%f'. So a Python decimal-places spec cannot be carried across:
+    reading "{:.1f}" as precision 1 turns 12.4 into "2e+01". Decimal places
+    are therefore ignored, and Qt's default of 6 significant digits is kept,
+    which renders 12.4 as "12.4" and 19.0 as "19" — what a reader wants. An
+    explicit '%g'-style spec IS honoured, because that one means the same
+    thing in both languages.
+
+    >>> barLabelFormat("{:.1f}")             # decimal places: not portable
+    ('@value', 6)
+    >>> barLabelFormat("${:,.0f}")
+    ('$@value', 6)
+    >>> barLabelFormat("{:.3g}")             # significant digits: portable
+    ('@value', 3)
+    >>> barLabelFormat("@value kg")          # already Qt syntax
+    ('@value kg', 6)
+    """
+    text = "" if template is None else str(template)
+    if "@value" in text:
+        return text, defaultPrecision
+    match = _PY_FIELD.search(text)
+    if not match:
+        # No placeholder at all: a literal label is almost never what the
+        # caller meant, so show the value rather than repeating one string.
+        return "@value", defaultPrecision
+    significant = _SIGNIFICANT.search(match.group(0))
+    return (_PY_FIELD.sub("@value", text, count=1),
+            int(significant.group(1)) if significant else defaultPrecision)

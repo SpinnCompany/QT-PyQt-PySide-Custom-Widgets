@@ -758,10 +758,29 @@ def emptystate_qss(tokens):
     r = tokens.role
     px = tokens.px
     css = []
+    # markColor drives the PAINTED default mark; the #emptyIcon colour still
+    # applies when a caller passes a string icon of their own.
+    css.append("QCustomEmptyState { qproperty-markColor: %s; }\n" % r("outline"))
     css.append("QCustomEmptyState #emptyIcon { color: %s; font-size: 44px; }\n" % r("outline"))
     css.append("QCustomEmptyState #emptyTitle { color: %s; font-weight: %d; font-size: %s; }\n"
                % (r("on-surface"), int(r("font.weight.semibold")), px("font.size.lg")))
     css.append("QCustomEmptyState #emptyDesc { color: %s; }\n" % r("outline"))
+    return "".join(css)
+
+
+def tagedit_qss(tokens):
+    """Generate QTagEdit QSS (surface + themed tag pills)."""
+    r = tokens.role
+    px = tokens.px
+    css = []
+    css.append("QTagEdit {\n"
+               "    background-color: %s; border: 1px solid %s;\n"
+               "    border-radius: %s;\n"
+               "    qproperty-tagColor: %s; qproperty-tagTextColor: %s;\n"
+               "}\n" % (r("surface"), r("outline"), px("radius.md"),
+                        r("secondary"), r("on-secondary")))
+    css.append("QTagEdit QLineEdit { background: transparent; color: %s; }\n"
+               % r("on-surface"))
     return "".join(css)
 
 
@@ -1240,7 +1259,8 @@ def build_component_qss(tokens):
             + breadcrumbs_qss(tokens) + rating_qss(tokens) + chip_qss(tokens)
             + skeleton_qss(tokens) + avatargroup_qss(tokens) + timeline_qss(tokens)
             + pagination_qss(tokens) + popover_qss(tokens) + segmented_qss(tokens)
-            + emptystate_qss(tokens) + dropzone_qss(tokens) + rangeslider_qss(tokens)
+            + emptystate_qss(tokens) + dropzone_qss(tokens) + tagedit_qss(tokens)
+            + rangeslider_qss(tokens)
             + switch_qss(tokens) + radio_qss(tokens) + radiogroup_qss(tokens)
             + candlestick_qss(tokens) + radar_qss(tokens)
             + scatter_qss(tokens) + funnel_qss(tokens)
@@ -1398,6 +1418,24 @@ def scss_tokens_partial(tokens):
     return "\n".join(lines) + "\n"
 
 
+#: The token set most recently handed to applyDesignTokens, or None if the
+#: application does not use the token system at all. Widgets that cannot style
+#: themselves through QSS — anything painting into a QGraphicsScene, such as
+#: the QtCharts family — need to read the roles directly, and otherwise have no
+#: way to find out which theme is live.
+_activeTokens = None
+
+
+def activeDesignTokens():
+    """The DesignTokens currently applied, or None if none ever were.
+
+    Prefer QSS and the semantic roles. This exists for the cases QSS cannot
+    reach; treat None as "the app is not token-themed" and fall back rather
+    than assuming a default, or you will force light onto a dark app.
+    """
+    return _activeTokens
+
+
 def applyDesignTokens(target, tokens=None, theme="light"):
     """Generate token QSS and apply it to a QApplication or widget.
 
@@ -1405,6 +1443,7 @@ def applyDesignTokens(target, tokens=None, theme="light"):
     so calling this again (e.g. on a light/dark switch) never accumulates.
     Returns the DesignTokens used.
     """
+    global _activeTokens
     if tokens is None:
         tokens = DesignTokens(theme=theme)
     block = _MARK_START + "\n" + build_component_qss(tokens) + "\n" + _MARK_END
@@ -1414,4 +1453,5 @@ def applyDesignTokens(target, tokens=None, theme="light"):
     else:
         new = (existing + "\n" + block) if existing else block
     target.setStyleSheet(new)
+    _activeTokens = tokens
     return tokens

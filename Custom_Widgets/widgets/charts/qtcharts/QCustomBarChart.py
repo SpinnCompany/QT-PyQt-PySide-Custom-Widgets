@@ -11,7 +11,7 @@ from Custom_Widgets.Utils import is_in_designer
 from .QCustomChartConstants import (
     QCustomChartEnums as _CE,
     QCustomChartConstants as _CC, chart_str_to_int, chart_int_to_str,
-    BAR_LABELS_TO_INT, INT_TO_BAR_LABELS)
+    BAR_LABELS_TO_INT, INT_TO_BAR_LABELS, barLabelFormat)
 
 class QCustomBarChart(QCustomChartBase, AxisChartProps, ChartCommonProps,
                       ChartDataProps):
@@ -523,7 +523,10 @@ class QCustomBarChart(QCustomChartBase, AxisChartProps, ChartCommonProps,
             # Configure value labels if enabled
             if self._show_value_labels:
                 bar_series.setLabelsVisible(True)
-                bar_series.setLabelsFormat(self._value_labels_format)
+                labelFormat, labelPrecision = barLabelFormat(
+                    self._value_labels_format)
+                bar_series.setLabelsFormat(labelFormat)
+                bar_series.setLabelsPrecision(labelPrecision)
                 bar_series.setLabelsPosition(
                     getattr(QBarSeries, f"Labels{self._labels_position}", QBarSeries.LabelsCenter)
                 )
