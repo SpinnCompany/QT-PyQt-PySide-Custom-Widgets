@@ -1081,6 +1081,180 @@ def _backdrop(theme):
     return DesignTokens(theme=theme).role("surface-muted")
 
 
+# --------------------------------------------------------------------------- #
+# Animated captures
+#
+# A still cannot show what a spinner, a typewriter or a drawer actually does —
+# the whole point of those widgets is the motion. These record a short loop
+# instead.
+#
+# Two kinds. Self-animating widgets (loaders, shimmer, rainbow border) just
+# need frames sampled while their own timer runs. Interactive ones need
+# driving, so `drive(widget, frameIndex)` advances the state per frame.
+# --------------------------------------------------------------------------- #
+def _driveTypewriter(w, i):
+    w._step()
+
+
+def _driveCounter(w, i):
+    if i == 2:
+        w.setValue(48320)
+
+
+def _driveSwitch(w, i):
+    if i % 12 == 0:
+        w.setChecked(not w.isChecked())
+
+
+def _driveCarousel(w, i):
+    if i and i % 10 == 0:
+        w.next()
+
+
+def _driveStepper(w, i):
+    if i and i % 8 == 0:
+        w.setCurrentStep((w.currentStep() + 1) % 4)
+
+
+def _driveAccordion(w, i):
+    if i and i % 14 == 0:
+        w.setExpanded((i // 14) % 3, True)
+
+
+#: slug -> dict(frames, interval, drive)
+GIFS = {
+    # Self-animating: sample while the widget's own timer runs.
+    "QCustomSpinner":            dict(frames=28, interval=0.05),
+    "QCustomArcLoader":          dict(frames=28, interval=0.05),
+    "QCustomPerlinLoader":       dict(frames=28, interval=0.06),
+    "QCustom3CirclesLoader":     dict(frames=28, interval=0.05),
+    "QCustomProgressIndicator":  dict(frames=28, interval=0.06),
+    "QCustomQProgressBar":       dict(frames=32, interval=0.05),
+    "QCustomSkeleton":           dict(frames=24, interval=0.06),
+    "QCustomRainbowButton":      dict(frames=28, interval=0.05),
+    "QCustomSparklesText":       dict(frames=28, interval=0.06),
+    "QCustomGradientText":       dict(frames=24, interval=0.06),
+    "QCustomTypingIndicator":    dict(frames=24, interval=0.06),
+    "QCustomWaveform":           dict(frames=24, interval=0.06),
+    "QCustomLiquidGauge":        dict(frames=24, interval=0.06),
+
+    # Driven: the interaction is the story.
+    "QCustomTypewriterText":     dict(frames=34, interval=0.08, drive=_driveTypewriter),
+    "QCustomNumberCounter":      dict(frames=26, interval=0.05, drive=_driveCounter),
+    "QCustomSwitch":             dict(frames=26, interval=0.06, drive=_driveSwitch),
+    "QCustomCarousel":           dict(frames=30, interval=0.07, drive=_driveCarousel),
+    "QCustomStepper":            dict(frames=26, interval=0.07, drive=_driveStepper),
+    "QCustomAccordion":          dict(frames=34, interval=0.07, drive=_driveAccordion),
+}
+
+
+def _qtImageToPil(image):
+    from qtpy.QtGui import QImage
+    from PIL import Image
+    image = image.convertToFormat(QImage.Format_RGB888)
+    width, height = image.width(), image.height()
+    ptr = image.constBits()
+    raw = bytes(ptr)[: image.bytesPerLine() * height]
+    # bytesPerLine is padded to a 4-byte boundary; crop each row back to width.
+    stride = image.bytesPerLine()
+    rows = [raw[y * stride: y * stride + width * 3] for y in range(height)]
+    return Image.frombytes("RGB", (width, height), b"".join(rows))
+
+
+def shootGif(cls, slug, theme):
+    """Record a short loop of the widget in motion. Returns the filename."""
+    spec = GIFS[cls.__name__]
+    frames, interval = spec["frames"], spec["interval"]
+    drive = spec.get("drive")
+
+    widget, host, app = _buildForShot(cls, theme)
+    if widget is None:
+        return None
+
+    captured = []
+    for index in range(frames):
+        if drive is not None:
+            try:
+                drive(widget, index)
+            except Exception as exc:
+                print("  gif drive failed for %s: %s" % (cls.__name__, exc))
+                break
+        deadline = time.time() + interval
+        while time.time() < deadline:
+            app.processEvents()
+            time.sleep(0.005)
+        captured.append(_qtImageToPil(host.grab().toImage()))
+
+    if len(captured) < 4:
+        return None
+    # A loop where nothing moves is just a heavier PNG.
+    if all(f.tobytes() == captured[0].tobytes() for f in captured[1:]):
+        print("  no motion captured for %s — skipping gif" % cls.__name__)
+        return None
+
+    # Cap the frame size. A loader that hints at 632px turns into a 280KB GIF
+    # for a thumbnail nobody views at full size.
+    MAX_EDGE = 420
+    if max(captured[0].size) > MAX_EDGE:
+        scale = MAX_EDGE / float(max(captured[0].size))
+        size = (int(captured[0].width * scale), int(captured[0].height * scale))
+        captured = [f.resize(size) for f in captured]
+
+    name = "%s%s.gif" % (slug, "-dark" if theme == "dark" else "")
+    os.makedirs(SHOTS, exist_ok=True)
+    captured[0].save(os.path.join(SHOTS, name), save_all=True,
+                     append_images=captured[1:],
+                     duration=int(interval * 1000), loop=0, optimize=True)
+    host.hide()
+    return name
+
+
+def _buildForShot(cls, theme):
+    """Construct, seed and host a widget ready to be grabbed.
+
+    Shared by the still and the animated capture so a GIF can never drift from
+    the PNG it sits next to. Returns (widget, host, app) or (None, None, app).
+    """
+    from qtpy.QtWidgets import QApplication, QWidget, QVBoxLayout
+    from Custom_Widgets.JSonStyles.tokens import applyDesignTokens
+
+    app = QApplication.instance()
+    app.setStyleSheet(_chromeQss(theme))
+    applyDesignTokens(app, theme=theme)
+    if not (isinstance(cls, type) and issubclass(cls, QWidget)):
+        return None, None, app
+    build = CONSTRUCTORS.get(cls.__name__)
+    try:
+        widget = build(cls) if build else cls()
+    except Exception as exc:
+        print("  cannot construct %s: %s" % (cls.__name__, exc))
+        return None, None, app
+    for name, value in _domDefaults(cls).items():
+        try:
+            widget.setProperty(name, value)
+        except Exception:
+            pass
+    seed = SEEDS.get(cls.__name__)
+    if seed is not None:
+        try:
+            seed(widget, theme)
+        except Exception as exc:
+            print("  seed failed for %s: %s" % (cls.__name__, exc))
+
+    host = QWidget()
+    host.setObjectName("shotHost")
+    host.setStyleSheet("QWidget#shotHost { background: %s; }" % _backdrop(theme))
+    box = QVBoxLayout(host)
+    box.setContentsMargins(16, 16, 16, 16)
+    box.addWidget(widget)
+    hint = widget.sizeHint()
+    host.resize(max(180, hint.width() + 32), max(90, hint.height() + 32))
+    host.show()
+    _polishDeep(host)
+    app.processEvents()
+    return widget, host, app
+
+
 def shoot(cls, slug, theme):
     """Render one widget to static/img/showcase/. Returns the filename or None."""
     from qtpy.QtWidgets import QApplication, QWidget, QVBoxLayout
@@ -1166,41 +1340,131 @@ def slugFor(name):
     return re.sub(r"^QCustom|^Q", "", name).lower()
 
 
-def renderPage(cls, row, shots):
+def _tierBadge(row):
+    tier = (row or {}).get("tier", "free")
+    if tier == "pro-ext":
+        return (":::info Pro widget\n\n"
+                "`%s` ships in **Custom Widgets Pro**. The free package under "
+                "GPLv3 does not include it.\n\n"
+                "[See plans](https://customwidgets.spinncode.com/pricing/)\n\n"
+                ":::")
+    return None
+
+
+def _exampleFromSeed(cls):
+    """A runnable snippet derived from the SAME code that produced the
+    screenshot, so the example and the picture cannot drift apart."""
+    seed = SEEDS.get(cls.__name__)
+    if seed is None or not inspect.isfunction(seed) or seed.__name__ == "<lambda>":
+        return []
+    try:
+        src = inspect.getsource(seed)
+    except (OSError, TypeError):
+        return []
+    body = []
+    for line in inspect.cleandoc(src).splitlines():
+        if line.startswith("def ") or line.strip().startswith(('"""', "#")):
+            continue
+        if line.strip().startswith(("from ", "import ")):
+            continue
+        stripped = line.strip()
+        if not stripped or "theme ==" in stripped or "_popupLabels" in stripped:
+            continue
+        body.append(re.sub(r"^\s{4}", "", line).replace("w.", "widget."))
+    # Drop docstring remnants and sizing calls that only matter for capture.
+    body = [l for l in body
+            if '"""' not in l and "setMinimumSize" not in l and "resize(" not in l]
+    return [l for l in body if l.strip()]
+
+
+def _relatedWidgets(cls, row, allRows):
+    """Siblings from the same folder — the neighbours a reader wants next."""
+    module = (row or {}).get("module", "").replace("\\", "/")
+    match = re.search(r"Custom_Widgets/widgets/([^/]+)/", module)
+    if not match:
+        return []
+    group = match.group(1)
+    out = []
+    for other in allRows:
+        if other["widget"] == cls.__name__:
+            continue
+        if ("/widgets/%s/" % group) in other.get("module", "").replace("\\", "/"):
+            out.append(other["widget"])
+    return sorted(out)[:8]
+
+
+def renderPage(cls, row, shots, allRows=()):
     name = cls.__name__
     summary, detail = prose(cls, row["module"])
     catalog = getattr(cls, "__catalog__", {})
     tooltip = getattr(cls, "WIDGET_TOOLTIP", "")
     module = getattr(cls, "WIDGET_MODULE", "Custom_Widgets." + name)
-
-    # `format: md` parses the page as CommonMark instead of MDX. Docstrings are
-    # prose written for Python, and prose like "setItems([{label, value}])"
-    # is a JSX expression to MDX — it fails the build rather than rendering.
-    out = ["---", "mdx:", "  format: md", "---", "", MARKER, "# %s" % name, ""]
-    if shots.get("light"):
-        out += ["![%s screenshot](/img/showcase/%s)" % (name, shots["light"]), ""]
+    tier = (row or {}).get("tier", "free")
 
     intro = summary
     if intro.lower().startswith(name.lower()):
         intro = intro[len(name):].lstrip(" -–—")
-    out += ["`%s` — %s" % (name, intro or tooltip or "a Custom Widget."), ""]
+    intro = intro or tooltip or "A Custom Widgets component."
+    intro = intro[:1].upper() + intro[1:]          # docstrings often start lower
+
+    # `format: md` parses the page as CommonMark instead of MDX. Docstrings are
+    # prose written for Python, and prose like "setItems([{label, value}])"
+    # is a JSX expression to MDX — it fails the build rather than rendering.
+    description = re.sub(r"\s+", " ", intro)[:155].strip().rstrip(".")
+    out = ["---",
+           "title: %s" % name,
+           "description: %s." % description.replace(":", " -"),
+           "mdx:", "  format: md",
+           "---", "", MARKER, "# %s" % name, ""]
+
+    badge = _tierBadge(row)
+    if badge:
+        out += [badge % name, ""]
+
+    # Prefer the animation: for a spinner or a typewriter the motion IS the
+    # widget, and a still of one is close to meaningless.
+    for theme, key in (("light", "gif"), ("dark", "gifDark")):
+        if key not in shots:
+            candidate = "%s%s.gif" % (slugFor(name), "-dark" if theme == "dark" else "")
+            if os.path.isfile(os.path.join(SHOTS, candidate)):
+                shots[key] = candidate
+    hero = shots.get("gif") or shots.get("light")
+    if hero:
+        out += ["![%s](/img/showcase/%s)" % (name, hero), ""]
+
+    out += ["%s" % intro, ""]
     if detail:
         out += [detail, ""]
-    out += ["---", ""]
 
-    out += ["## Import", "", "```python", "from %s import %s" % (module, name),
-            "```", ""]
+    out += ["## At a glance", "",
+            "| | |", "|---|---|",
+            "| **Tier** | %s |" % ("Pro" if tier == "pro-ext" else "Free (GPLv3)"),
+            "| **Import** | `from %s import %s` |" % (module, name),
+            "| **Qt Designer** | %s |" % ("Yes — drag it from the palette"
+                                          if getattr(cls, "WIDGET_DOM_XML", None)
+                                          else "Code only"),
+            ""]
 
-    if getattr(cls, "WIDGET_DOM_XML", None):
-        out += ["Also available from the **Qt Designer** palette — every property "
-                "below is settable in Designer and saved into the `.ui` file.", ""]
+    example = _exampleFromSeed(cls)
+    out += ["## Quick start", "", "```python",
+            "from %s import %s" % (module, name), "",
+            "widget = %s()" % name]
+    out += example
+    out += ["```", ""]
+    if example:
+        out += ["That is the exact code behind the screenshot above.", ""]
 
-    out += ["## Constructor", "", "```python", constructorSignature(cls),
-            "```", ""]
+    dark = shots.get("gifDark") or shots.get("dark")
+    if dark:
+        out += ["## Dark theme", "",
+                "Colours come from the design tokens, so the widget follows the "
+                "app theme with no extra work.", "",
+                "![%s in dark theme](/img/showcase/%s)" % (name, dark), ""]
 
     props = designerProperties(cls)
     if props:
         out += ["## Properties", "",
+                "Every property below is settable in code and in Qt Designer.", "",
                 "| Property | Type | Default |", "|---|---|---|"]
         for prop, kind, default in props:
             shown = "`%s`" % default if default not in ("", None) else "—"
@@ -1210,20 +1474,18 @@ def renderPage(cls, row, shots):
             out.append("| `%s` | `%s` | %s |" % (prop, kind, shown))
         out.append("")
 
+    sigs = signalsOf(cls)
+    if sigs:
+        out += ["## Signals", "", "| Signal |", "|---|"]
+        for signature in sigs:
+            out.append("| `%s` |" % signature)
+        out.append("")
+
     methods = publicMethods(cls)
     if methods:
         out += ["## Methods", "", "| Method | Description |", "|---|---|"]
         for signature, doc in methods:
             out.append("| `%s` | %s |" % (signature, doc or ""))
-        out.append("")
-
-    sigs = signalsOf(cls)
-    if sigs:
-        out += ["## Signals", "", "| Signal | Description |", "|---|---|"]
-        described = {s.split("(")[0]: "" for s in sigs}
-        for signature in sigs:
-            out.append("| `%s` | %s |" % (signature,
-                                          described.get(signature.split("(")[0], "")))
         out.append("")
 
     tokens = catalog.get("tokens_used") or []
@@ -1233,31 +1495,36 @@ def renderPage(cls, row, shots):
                 "theme. Roles used: " + ", ".join("`%s`" % t for t in tokens) + ".",
                 "", "See [Design tokens](../02-Theming/DesignTokens.md).", ""]
 
-    if shots.get("dark"):
-        out += ["### Dark theme", "",
-                "![%s dark](/img/showcase/%s)" % (name, shots["dark"]), ""]
+    sample = exampleFor(name)
+    if sample:
+        out += ["## Runnable example", "",
+                "A complete app using this widget lives at `%s`." % sample, ""]
 
-    example = exampleFor(name)
-    if example:
-        out += ["## Example", "",
-                "A runnable demo ships with the library:", "",
-                "```bash", "python %s" % example, "```", ""]
+    related = _relatedWidgets(cls, row, allRows)
+    if related:
+        # Link to the file that actually exists — a few pages are .mdx, and a
+        # hard-coded .md turns every sibling link into a broken one.
+        links = []
+        for other in related:
+            ext = ".mdx" if os.path.isfile(
+                os.path.join(WIDGET_DOCS, other + ".mdx")) else ".md"
+            if not os.path.isfile(os.path.join(WIDGET_DOCS, other + ext)):
+                continue
+            links.append("[%s](%s%s)" % (other, other, ext))
+        if links:
+            out += ["## Related", "", " · ".join(links), ""]
 
-    out += ["---", "",
-            "<!-- Generated by tools/gen_widget_docs.py from the widget's "
-            "__catalog__, metaObject and module docstring. Edit the widget, "
-            "then regenerate — hand edits here are overwritten. Remove the "
-            "marker at the top of this file to take it over by hand. -->", ""]
-    return "\n".join(out)
+    return "\n".join(out).rstrip() + "\n"
 
 
-# --------------------------------------------------------------------------- #
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--all", action="store_true",
                         help="rewrite every generated page, not just missing ones")
     parser.add_argument("--only", nargs="*", default=None)
     parser.add_argument("--no-shots", action="store_true")
+    parser.add_argument("--gifs", action="store_true",
+                        help="also record animated captures where motion matters")
     parser.add_argument("--reshoot", action="store_true",
                         help="re-capture screenshots that already exist")
     parser.add_argument("--force", action="store_true",
@@ -1269,9 +1536,10 @@ def main():
     app = QApplication.instance() or QApplication([])
 
     os.makedirs(WIDGET_DOCS, exist_ok=True)
-    written, skipped, failed, stale, shot = [], [], [], [], 0
+    written, skipped, failed, stale, shot, gif = [], [], [], [], 0, 0
 
-    for row in manifestRows():
+    allRows = manifestRows()
+    for row in allRows:
         name = row["widget"]
         if args.only and name not in args.only:
             continue
@@ -1335,10 +1603,27 @@ def main():
                     stale.append(existingShot)
                     shots[key] = existingShot
 
+        if args.gifs and name in GIFS:
+            for theme in ("light", "dark"):
+                gifName = "%s%s.gif" % (slugFor(name),
+                                        "-dark" if theme == "dark" else "")
+                if not args.reshoot and os.path.isfile(os.path.join(SHOTS, gifName)):
+                    shots["gif" if theme == "light" else "gifDark"] = gifName
+                    continue
+                try:
+                    made = shootGif(cls, slugFor(name), theme)
+                except Exception as exc:
+                    failed.append("%s (gif %s: %s)" % (name, theme, exc))
+                    made = None
+                if made:
+                    shots["gif" if theme == "light" else "gifDark"] = made
+                    gif += 1
+
         if not writePage:
             continue
         try:
-            open(path, "w", encoding="utf-8").write(renderPage(cls, row, shots))
+            open(path, "w", encoding="utf-8").write(
+                renderPage(cls, row, shots, allRows))
             written.append(name)
         except Exception as exc:
             failed.append("%s (render: %s)" % (name, exc))
@@ -1347,8 +1632,8 @@ def main():
         print("STALE (nothing rendered, old image kept) %d:" % len(stale))
         for item in sorted(set(stale)):
             print("    %s" % item)
-    print("written %d, skipped %d (hand-written or current), screenshots %d"
-          % (len(written), len(skipped), shot))
+    print("written %d, skipped %d (hand-written or current), screenshots %d, gifs %d"
+          % (len(written), len(skipped), shot, gif))
     if failed:
         print("FAILED %d:" % len(failed))
         for item in failed:
