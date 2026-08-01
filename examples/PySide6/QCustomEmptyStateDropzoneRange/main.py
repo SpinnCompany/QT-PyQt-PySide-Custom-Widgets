@@ -22,7 +22,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(central)
         layout = QtWidgets.QVBoxLayout(central)
 
-        empty = QCustomEmptyState(icon="📭", title="No files yet",
+        empty = QCustomEmptyState(title="No files yet",
                                   description="Drop some below to get started.")
         empty.setActionText("Learn more")
         empty.actionClicked.connect(lambda: self.status.setText("Action clicked"))
