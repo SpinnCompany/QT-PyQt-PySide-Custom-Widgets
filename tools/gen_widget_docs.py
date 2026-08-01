@@ -354,11 +354,8 @@ def _chartPresentation(w, theme, title, xTitle, yTitle):
         w.xAxisTitle = xTitle
     if yTitle:
         w.yAxisTitle = yTitle
-    # theme goes ABSOLUTELY LAST. Setting a title re-runs the theme manager,
-    # which resets to "App Theme" — so a theme set any earlier is discarded.
-    # This is invisible in dark (App Theme is dark anyway) and is exactly why
-    # the light shots stayed black while the dark ones looked right.
-    w.theme = 2 if theme == "dark" else 1        # 0 = App Theme, 1 = Light
+    # Left on App Theme (0) deliberately: it now reads the design tokens, so
+    # this shoots the charts exactly as a token-themed app renders them.
 
 
 def _seedQtChart(w, theme):
@@ -376,6 +373,226 @@ def _seedPieChart(w, theme):
     w.seriesCsv = "Sessions=42,28,18,12"
     _chartPresentation(w, theme, "Traffic by source", None, None)
     w.setMinimumSize(460, 320)
+
+
+def _iconPath(name):
+    from Custom_Widgets._resources import packageDir
+    return os.path.join(packageDir(), "components", "icons", name)
+
+
+def _seedStatCard(w, theme):
+    w.setLabel("Monthly recurring revenue")
+    w.setValue("$48,320")
+    w.setDelta("12.4%", "up")
+    w.setCaption("vs last month")
+    w.setMinimumSize(220, 110)
+
+
+def _seedDataTable(w, theme):
+    w.setColumns([
+        {"key": "name", "title": "Customer", "renderer": "twoline",
+         "subtitleKey": "email"},
+        {"key": "plan", "title": "Plan"},
+        {"key": "status", "title": "Status", "renderer": "status",
+         "colorMap": {"Active": "#22c55e", "Trialing": "#f59e0b",
+                      "Churned": "#ef4444"}},
+        {"key": "mrr", "title": "MRR", "type": "number", "renderer": "currency"},
+    ])
+    w.setData([
+        {"name": "Acme Corp", "email": "billing@acme.io", "plan": "Enterprise",
+         "status": "Active", "mrr": 1290},
+        {"name": "Globex", "email": "ops@globex.com", "plan": "Pro",
+         "status": "Trialing", "mrr": 240},
+        {"name": "Initech", "email": "admin@initech.co", "plan": "Starter",
+         "status": "Churned", "mrr": 0},
+        {"name": "Umbrella Ltd", "email": "ap@umbrella.co.uk", "plan": "Pro",
+         "status": "Active", "mrr": 480},
+    ])
+    w.setSelectable(True)
+    w.setMinimumSize(640, 260)
+
+
+def _seedChipGroup(w, theme):
+    w.setChips(["Design", "Engineering", "Marketing", "Support"])
+    w.setMinimumSize(360, 40)
+
+
+def _seedTagEdit(w, theme):
+    w.setTagSuggestions(["python", "qt", "pyside6", "pyqt5", "widgets"])
+    w.setTags(["python", "qt", "pyside6", "widgets"])
+    w.setMinimumSize(320, 60)
+
+
+def _seedTrendChip(w, theme):
+    w.setVariant("soft")
+    # setValue LAST: it derives the direction from the sign of the number and
+    # overwrites anything setDirection() did.
+    w.setValue(12.4, "+12.4%")
+    w.setMinimumSize(96, 30)
+
+
+def _seedFeaturedIcon(w, theme):
+    from qtpy.QtGui import QIcon
+    w.setIcon(QIcon(_iconPath("rocket.png")))
+    w.variant = "tinted"
+    w.shape = "rounded"
+    w.sizeVariant = "lg"
+
+
+def _seedActionButton(w, theme):
+    from qtpy.QtGui import QIcon
+    w.icon = QIcon(_iconPath("paid.png"))
+    w.caption = "Transfer"
+
+
+def _seedListRow(w, theme):
+    w.setIconText("AM")
+    w.setTitle("Amara Mensah")
+    w.setSubtitle("Product designer")
+    w.setValue("$1,290")
+    w.setMeta("2 min ago")
+    w.setMinimumSize(380, 56)
+
+
+def _seedTabWidget(w, theme):
+    from qtpy.QtWidgets import QLabel
+    w.addTab(QLabel("  Revenue is up 12.4% this quarter."), "Overview")
+    w.addTab(QLabel("  4,182 weekly active users."), "Analytics")
+    w.addTab(QLabel("  Workspace preferences."), "Settings")
+    w.tabStyle = "underline"
+    w.setMinimumSize(420, 220)
+
+
+def _seedTreeWidget(w, theme):
+    w.setItems([
+        {"text": "src", "expanded": True, "children": [
+            {"text": "main.py"},
+            {"text": "widgets", "expanded": True, "children": [
+                {"text": "button.py"}, {"text": "card.py"}]}]},
+        {"text": "tests", "children": [{"text": "test_button.py"}]},
+        {"text": "README.md"},
+    ])
+    w.setMinimumSize(300, 220)
+
+
+def _seedNodeGraph(w, theme):
+    # `rows` entries must be dicts — a tuple crashes inside paintEvent.
+    w.setGraph({"nodes": [
+        {"nid": "load", "title": "Load CSV", "x": 30, "y": 40, "w": 190,
+         "h": 110, "accent": "#38bdf8", "outputs": ["data"],
+         "rows": [{"label": "rows", "value": "12,480"},
+                  {"label": "columns", "value": "9"}]},
+        {"nid": "clean", "title": "Clean", "x": 290, "y": 40, "w": 190,
+         "h": 110, "accent": "#f2a63b", "inputs": ["in"], "outputs": ["out"],
+         "rows": [{"label": "dropped", "value": "126"},
+                  {"label": "nulls", "value": "0"}]},
+        {"nid": "train", "title": "Train model", "x": 550, "y": 40, "w": 190,
+         "h": 110, "accent": "#a78bfa", "inputs": ["x"],
+         "rows": [{"label": "accuracy", "value": "0.94", "dot": "#22c55e"}]},
+    ], "edges": [
+        {"src": "load", "srcPort": 0, "dst": "clean", "dstPort": 0},
+        {"src": "clean", "srcPort": 0, "dst": "train", "dstPort": 0},
+    ]})
+    w.setMinimumSize(780, 220)
+
+
+def _seedBreadcrumbs(w, theme):
+    w.setItems([("Home", "/"), ("Projects", "/projects"),
+                ("Atlas", "/projects/atlas"),
+                ("Settings", "/projects/atlas/settings")])
+    w.setMinimumSize(360, 28)
+
+
+def _seedAccordion(w, theme):
+    from qtpy.QtWidgets import QLabel
+    w.addSection("Shipping address", QLabel("221B Baker Street, London NW1 6XE"))
+    w.addSection("Payment method", QLabel("Visa ending 4242, expires 08/28"))
+    w.addSection("Delivery notes", QLabel("Leave with the concierge."))
+    w.setExpanded(0, True, animate=False)   # no-op unless the section exists
+    w.setMinimumSize(380, 180)
+
+
+def _seedAvatarGroup(w, theme):
+    w.setAvatars(["Amara Mensah", "Ben Ortiz", "Chidi Okafor", "Dana Levy",
+                  "Eli Novak", "Farah Aziz"])
+    w.setMinimumSize(190, 40)
+
+
+def _seedButtonGroup(w, theme):
+    w.setButtons([("Day", 0), ("Week", 1), ("Month", 2)])
+    # setButtons rebuilds the internal QButtonGroup, so a selection set before
+    # it is silently discarded.
+    w.setSelectedId(1)
+    w.setMinimumSize(140, 120)
+
+
+def _seedSplitter(w, theme):
+    from qtpy.QtWidgets import QLabel
+    w.addWidget(QLabel("  Navigator"))
+    w.addWidget(QLabel("  Editor"))
+    w.setSizes([130, 210])
+    w.setMinimumSize(340, 160)
+
+
+def _seedReactionBar(w, theme):
+    w.setReactions([("\U0001f44d", 12), ("\U0001f525", 4), ("\U0001f389", 2)])
+    w.setMinimumSize(220, 34)
+
+
+def _seedHeatmap(w, theme):
+    w.setMode("grid")
+    w.setValues([[2, 5, 9, 7, 4, 1, 0], [3, 8, 6, 9, 5, 2, 1],
+                 [1, 4, 7, 8, 9, 3, 2], [0, 2, 5, 6, 7, 4, 1],
+                 [4, 6, 9, 9, 8, 5, 2], [1, 3, 4, 6, 5, 2, 0]])
+    w.setLabels(row_labels=["9am", "11am", "1pm", "3pm", "5pm", "7pm"],
+                col_labels=["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"])
+    # The heatmap paints its own palette rather than reading the tokens, so the
+    # theme has to be pushed in by hand or the dark shot duplicates the light.
+    if theme == "dark":
+        w.setColors("#1e3a8a", "#60a5fa", "#1e293b")
+    else:
+        w.setColors("#dbeafe", "#1d4ed8", "#f1f5f9")
+    w.setMinimumSize(360, 220)
+
+
+def _seedRulerPicker(w, theme):
+    w.setRange(40.0, 120.0)
+    w.setUnit("kg")
+    w.setValue(72.5)                      # clamps to the range, so set it after
+    w.setMinimumSize(360, 120)
+
+
+def _seedRadialLines(w, theme):
+    w.setLabels(["Speed", "Power", "Range", "Comfort", "Safety", "Price"])
+    w.setSeries([("Model A", [8, 6, 7, 9, 5, 6]),
+                 ("Model B", [5, 9, 6, 4, 8, 7])])
+    w.setMinimumSize(320, 300)
+
+
+def _seedCodeEditor(w, theme):
+    w.setLang("python")
+    # Its own theme set, independent of the design tokens.
+    w.setTheme("one-dark" if theme == "dark" else "one-light")
+    w.editor.setPlainText(
+        'def greet(name):\n'
+        '    # a friendly hello\n'
+        '    return f"Hello, {name}!"\n\n\n'
+        'print(greet("World"))')
+    w.setMinimumSize(440, 200)
+
+
+def _seedChatBubble(w, theme):
+    w.setSender("Amara Mensah")
+    w.setText("Shipped the new dashboard - can you review the charts "
+              "before standup?")
+    w.setTime("09:41")
+    w.setMinimumSize(340, 90)
+
+
+def _seedChatInput(w, theme):
+    w.placeholder = "Write a message..."
+    w.setText("Sounds good - shipping it today")
+    w.setMinimumSize(520, 64)
 
 
 #: seed(widget, theme) -> None. Theme matters wherever a widget has its own
@@ -410,6 +627,39 @@ SEEDS = {
     "QCustomNumberCounter": lambda w, t: w.reset(1250),
     "QCustomRadialGauge": lambda w, t: w.setValue(64),
     "QCustomTypewriterText": lambda w, t: w.skip(),
+
+    "QCustomStatCard": _seedStatCard,
+    "QCustomDataTable": _seedDataTable,
+    "QTagEdit": _seedTagEdit,
+    "QCustomTrendChip": _seedTrendChip,
+    "QCustomFeaturedIcon": _seedFeaturedIcon,
+    "QCustomActionButton": _seedActionButton,
+    "QCustomListRow": _seedListRow,
+    "QCustomTabWidget": _seedTabWidget,
+    "QCustomTreeWidget": _seedTreeWidget,
+    "QCustomNodeGraph": _seedNodeGraph,
+    "QCustomSkeleton": lambda w, t: (setattr(w, "shape", "rect"),
+                                     w.setMinimumSize(240, 64)),
+    "QCustomBreadcrumbs": _seedBreadcrumbs,
+    "QCustomAccordion": _seedAccordion,
+    "QCustomAvatarGroup": _seedAvatarGroup,
+    "QCustomButtonGroup": _seedButtonGroup,
+    "QCustomSegmentedControl": lambda w, t: (
+        w.setSegments(["Day", "Week", "Month", "Year"]),
+        w.setCurrentIndex(1), w.setMinimumSize(320, 34)),
+    "QCustomSplitter": _seedSplitter,
+    "QCustomChatDivider": lambda w, t: (setattr(w, "variant", "pill"),
+                                        setattr(w, "text", "YESTERDAY"),
+                                        w.setMinimumSize(420, 28)),
+    "QCustomPageDots": lambda w, t: (w.setCount(5), w.setActiveIndex(2),
+                                     w.setMinimumSize(120, 20)),
+    "QCustomReactionBar": _seedReactionBar,
+    "QCustomHeatmap": _seedHeatmap,
+    "QCustomRulerPicker": _seedRulerPicker,
+    "QCustomRadialLines": _seedRadialLines,
+    "QCustomCodeEditor": _seedCodeEditor,
+    "QCustomChatBubble": _seedChatBubble,
+    "QCustomChatInput": _seedChatInput,
 }
 
 def _reassertChartTheme(w, theme):
@@ -459,11 +709,37 @@ def _reassertChartTheme(w, theme):
 #: to theme broadcasts from OTHER widgets alive in the same process — which is
 #: why a chart shot in isolation came out light and the same chart in a full
 #: run came out black. Re-asserting last is the only thing that survives.
-POST_SEEDS = {
-    "QCustomLineChart": _reassertChartTheme,
-    "QCustomAreaChart": _reassertChartTheme,
-    "QCustomBarChart": _reassertChartTheme,
-    "QCustomPieChart": _reassertChartTheme,
+POST_SEEDS = {}
+
+#: Widgets whose __init__ takes required arguments. Without an entry here the
+#: bare `cls()` raises, shoot() returns None and the widget silently has no
+#: screenshot at all — which is how QCustomChip went undocumented.
+def _hostedParent(width=420, height=260):
+    """A shown parent for widgets that position themselves against one.
+
+    Kept alive on the function so the C++ object outlives the call; several of
+    these dereference parent().mapToGlobal() during construction or showEvent.
+    """
+    from qtpy.QtWidgets import QWidget
+    parent = QWidget()
+    parent.resize(width, height)
+    parent.show()
+    _hostedParent.keep = getattr(_hostedParent, "keep", [])
+    _hostedParent.keep.append(parent)
+    return parent
+
+
+CONSTRUCTORS = {
+    "QCustomChip": lambda cls: cls("Design", closable=True, selectable=True),
+    "QCustomCommandPalette": lambda cls: cls(_hostedParent()),
+    "QCustomDrawer": lambda cls: cls(_hostedParent()),
+    "QCustomEmbeddedWindow": lambda cls: cls(_hostedParent()),
+    # Both take a `target` they anchor to, and dereference it during
+    # construction — parent alone is not enough.
+    "QCustomEmojiPicker": lambda cls: (lambda p: cls(p, target=p))(_hostedParent()),
+    "QCustomQToolTip": lambda cls: (lambda p: cls("Saved to your workspace",
+                                                  parent=p, target=p))(_hostedParent()),
+    "QCustomToast": lambda cls: cls(_hostedParent(), "Invoice #10428 was paid"),
 }
 
 #: Widgets that need wall-clock time before they have anything to show.
@@ -473,6 +749,12 @@ SETTLE = {
     "QCustomPieChart": 1.2, "QCustomSpinner": 0.35, "QCustomArcLoader": 0.35,
     "QCustomPerlinLoader": 0.35, "QCustom3CirclesLoader": 0.35,
     "QCustomProgressIndicator": 0.35, "QCustomQProgressBar": 0.30,
+    # QCustomFlowLayout debounces its reflow on a 10ms timer, so without real
+    # time passing every child keeps its default 640x480 geometry and paints
+    # on top of everything else.
+    # The reflow is also ANIMATED, so it needs long enough to land, not
+    # just long enough to start.
+    "QTagEdit": 0.70, "QCustomChip": 0.70, "QCustomChipGroup": 0.70,
 }
 
 
@@ -494,9 +776,11 @@ def shoot(cls, slug, theme):
     # classes turn up too, and QBoxLayout.addWidget rejects them outright.
     if not (isinstance(cls, type) and issubclass(cls, QWidget)):
         return None
+    build = CONSTRUCTORS.get(cls.__name__)
     try:
-        widget = cls()
-    except Exception:
+        widget = build(cls) if build else cls()
+    except Exception as exc:
+        print("  cannot construct %s: %s" % (cls.__name__, exc))
         return None
     for name, value in _domDefaults(cls).items():
         try:
