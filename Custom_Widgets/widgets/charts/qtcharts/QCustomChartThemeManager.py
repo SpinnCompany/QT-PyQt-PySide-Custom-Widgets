@@ -128,37 +128,64 @@ class QCustomChartThemeManager(QObject, QCustomChartConstants):
             if chart:
                 chart.setTheme(QChart.ChartThemeLight)
     
+    def _designTokenColors(self):
+        """(isDark, background, plotArea, text, accent) from the design tokens.
+
+        Returns None when the app is not token-themed, so the caller falls back
+        to QCustomTheme rather than forcing light onto a dark app.
+
+        This exists because a QChart paints into a QGraphicsScene and cannot be
+        reached by the token QSS the way every other widget in the library is.
+        Without it, an app that calls applyDesignTokens(app, theme="light")
+        gets a black chart on a white page — QCustomTheme is a separate system
+        and reports dark whenever no theme JSON has been loaded.
+        """
+        try:
+            from Custom_Widgets.JSonStyles.tokens import activeDesignTokens
+        except Exception:
+            return None
+        tokens = activeDesignTokens()
+        if tokens is None:
+            return None
+        return (tokens.theme == "dark",
+                QColor(tokens.role("surface")),
+                QColor(tokens.role("surface")),
+                QColor(tokens.role("on-surface")),
+                QColor(tokens.role("accent")))
+
     def _applyAppTheme(self, chart: QChart):
-        """Apply App Theme based on QCustomTheme theme variables"""
+        """Apply App Theme from the design tokens, else QCustomTheme."""
         if not chart:
             return
-        
-        # Clear any existing theme
-        chart.setTheme(QChart.ChartThemeLight)  # Start with a clean slate
-        
-        # Use theme variables directly from QCustomTheme
-        if self._appTheme.isThemeDark:
-            chart.setTheme(QChart.ChartThemeDark)
-        else:
-            chart.setTheme(QChart.ChartThemeLight)
 
-        # Get theme variable values directly
-        try:
-            # Background colors - use COLOR_BACKGROUND_1
-            bg_color_1 = QColor(self._appTheme.COLOR_BACKGROUND_1)
-            bg_color_3 = QColor(self._appTheme.COLOR_BACKGROUND_3)
-            text_color_1 = QColor(self._appTheme.COLOR_TEXT_1)
-            accent_color_1 = QColor(self._appTheme.COLOR_ACCENT_1)
-            
-        except Exception as e:
-            logError(f"Error accessing theme variables: {e}")
-            # Fallback to palette if theme variables not available
-            palette = self._appTheme.getPalette()
-            bg_color_1 = palette.color(QPalette.Window)
-            bg_color_3 = palette.color(QPalette.Base)
-            text_color_1 = palette.color(QPalette.Text)
-            accent_color_1 = palette.color(QPalette.Highlight)
-        
+        tokenColors = self._designTokenColors()
+
+        if tokenColors is not None:
+            isDark, bg_color_1, bg_color_3, text_color_1, accent_color_1 = tokenColors
+        else:
+            isDark = self._appTheme.isThemeDark
+            # Get theme variable values directly
+            try:
+                # Background colors - use COLOR_BACKGROUND_1
+                bg_color_1 = QColor(self._appTheme.COLOR_BACKGROUND_1)
+                bg_color_3 = QColor(self._appTheme.COLOR_BACKGROUND_3)
+                text_color_1 = QColor(self._appTheme.COLOR_TEXT_1)
+                accent_color_1 = QColor(self._appTheme.COLOR_ACCENT_1)
+
+            except Exception as e:
+                logError(f"Error accessing theme variables: {e}")
+                # Fallback to palette if theme variables not available
+                palette = self._appTheme.getPalette()
+                bg_color_1 = palette.color(QPalette.Window)
+                bg_color_3 = palette.color(QPalette.Base)
+                text_color_1 = palette.color(QPalette.Text)
+                accent_color_1 = palette.color(QPalette.Highlight)
+
+        # The built-in theme seeds the SERIES palette; the explicit brushes
+        # below then override the chrome. Both are needed — Qt picks series
+        # colours from the theme and nothing else sets them.
+        chart.setTheme(QChart.ChartThemeDark if isDark else QChart.ChartThemeLight)
+
         # Set background to COLOR_BACKGROUND_1
         chart.setBackgroundBrush(QBrush(bg_color_1))
         
@@ -253,6 +280,9 @@ class QCustomChartThemeManager(QObject, QCustomChartConstants):
             theme_name = self._currentTheme
         
         if theme_name == self.THEME_APP_THEME:
+            tokenColors = self._designTokenColors()
+            if tokenColors is not None:
+                return tokenColors[3]
             # Use COLOR_TEXT_1 directly from theme
             try:
                 return QColor(self._appTheme.COLOR_TEXT_1)
@@ -270,6 +300,9 @@ class QCustomChartThemeManager(QObject, QCustomChartConstants):
             theme_name = self._currentTheme
         
         if theme_name == self.THEME_APP_THEME:
+            tokenColors = self._designTokenColors()
+            if tokenColors is not None:
+                return tokenColors[1]
             # Use COLOR_BACKGROUND_1 directly from theme
             try:
                 return QColor(self._appTheme.COLOR_BACKGROUND_1)
@@ -324,6 +357,9 @@ class QCustomChartThemeManager(QObject, QCustomChartConstants):
             theme_name = self._currentTheme
         
         if theme_name == self.THEME_APP_THEME:
+            tokenColors = self._designTokenColors()
+            if tokenColors is not None:
+                return tokenColors[0]
             # Use _isThemeDark from QCustomTheme
             try:
                 return self._appTheme._isThemeDark
