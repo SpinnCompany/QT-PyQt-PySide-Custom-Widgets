@@ -25,9 +25,13 @@ class QTagEdit(QtWidgets.QScrollArea):
 
         self._layout.addWidget(self._tag_input)
 
-        self._tag_input.palette().color(QtGui.QPalette.Window)
-        tag_input_color = self._tag_input.palette().color(QtGui.QPalette.Window)
-        self.setStyleSheet(f'background-color: rgb({tag_input_color.red()}, {tag_input_color.green()}, {tag_input_color.blue()})')
+        # No baked-in background. This used to snapshot the platform palette's
+        # window colour into a stylesheet at construction, pinning the widget
+        # to the OS theme: under a dark desktop it painted a dark slab whatever
+        # the app's own theme said, and being a stylesheet it beat anything the
+        # token QSS tried to set. Colours come from the properties below now.
+        self._tagColor = QtGui.QColor("#e2e8f0")        # secondary
+        self._tagTextColor = QtGui.QColor("#0f172a")    # on-secondary
 
         self.setWidget(self._main_widget)
 
@@ -240,23 +244,30 @@ class QTagEdit(QtWidgets.QScrollArea):
             self.__parent._tag_input.setFocus()
 
         def paintEvent(self, a0: QtGui.QPaintEvent) -> None:
-            """Styles the tag"""
-            dark_color = self.palette().color(QtGui.QPalette.Window).darker()
-            light_color = self.palette().color(QtGui.QPalette.Window).lighter()
+            """Styles the tag from the parent's themed colours."""
+            fill = self.__parent.tagColor
+            text = self.__parent.tagTextColor
 
             painter = QtGui.QPainter(self)
             painter.setRenderHint(QtGui.QPainter.Antialiasing)
-            painter.setPen(QtGui.QPen(dark_color, 1, QtCore.Qt.SolidLine))
-            painter.setBrush(QtGui.QBrush(dark_color, QtCore.Qt.SolidPattern))
+            painter.setPen(QtCore.Qt.NoPen)
+            painter.setBrush(QtGui.QBrush(fill, QtCore.Qt.SolidPattern))
 
             # draws the tag 'filling'
             painter.drawRoundedRect(0, 0, self.width() - 5, self.height(), self.height() / 2, self.height() / 2)
-            painter.setPen(QtGui.QPen(dark_color, 1, QtCore.Qt.SolidLine))
-            painter.setBrush(QtGui.QBrush(light_color, QtCore.Qt.SolidPattern))
-            painter.drawEllipse(QtCore.QPointF(self.width() - 25, self.height() / 2), 8, 8)
-            painter.drawText(QtCore.QRectF(self.width() - 35, 0, 20, 30),
-                             QtCore.Qt.AlignCenter,
-                             '✕')
+
+            # The delete affordance is DRAWN. It used to be the '✕' glyph,
+            # which the design lint bans: it does not tint, does not scale and
+            # is a different picture on every platform.
+            centre = QtCore.QPointF(self.width() - 25, self.height() / 2)
+            arm = 3.5
+            pen = QtGui.QPen(text, 1.6)
+            pen.setCapStyle(QtCore.Qt.RoundCap)
+            painter.setPen(pen)
+            painter.drawLine(QtCore.QPointF(centre.x() - arm, centre.y() - arm),
+                             QtCore.QPointF(centre.x() + arm, centre.y() + arm))
+            painter.drawLine(QtCore.QPointF(centre.x() - arm, centre.y() + arm),
+                             QtCore.QPointF(centre.x() + arm, centre.y() - arm))
 
         def text(self) -> str:
             """
@@ -267,3 +278,29 @@ class QTagEdit(QtWidgets.QScrollArea):
 
             """
             return self._text
+    # ---------------------------------------------------------------- #
+    ## Designer properties
+    #
+    # Driven by the token QSS so the tags flip with the app theme instead
+    # of following whatever the desktop palette happens to be.
+    # ---------------------------------------------------------------- #
+    @QtCore.Property(QtGui.QColor)
+    def tagColor(self):
+        return self._tagColor
+
+    @tagColor.setter
+    def tagColor(self, value):
+        self._tagColor = QtGui.QColor(value)
+        self.update()
+
+    @QtCore.Property(QtGui.QColor)
+    def tagTextColor(self):
+        return self._tagTextColor
+
+    @tagTextColor.setter
+    def tagTextColor(self, value):
+        self._tagTextColor = QtGui.QColor(value)
+        for tag in self.__dict__.get('_QTagEdit__tags', {}).values():
+            tag._name.setStyleSheet(
+                'background: transparent; color: %s' % self._tagTextColor.name())
+        self.update()
