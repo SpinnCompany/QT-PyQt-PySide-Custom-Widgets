@@ -768,6 +768,44 @@ def emptystate_qss(tokens):
     return "".join(css)
 
 
+def chat_qss(tokens):
+    """Generate QCustomChatList / QCustomChatThread QSS.
+
+    Both paint from qproperties rather than QSS, and nothing was driving those
+    properties — so the two widgets rendered byte-identically in light and dark
+    and simply ignored the app theme.
+    """
+    r = tokens.role
+    css = []
+    css.append("QCustomChatList {\n"
+               "    qproperty-surfaceColor: %s;\n"
+               "    qproperty-nameColor: %s;\n"
+               "    qproperty-previewColor: %s;\n"
+               "    qproperty-timeColor: %s;\n"
+               "    qproperty-activeColor: %s;\n"
+               "    qproperty-activeNameColor: %s;\n"
+               "    qproperty-activeTimeColor: %s;\n"
+               "    qproperty-accentColor: %s;\n"
+               "    qproperty-onlineColor: %s;\n"
+               "}\n" % (r("surface"), r("on-surface"), r("outline"), r("outline"),
+                        r("primary"), r("on-primary"), r("on-primary"),
+                        r("accent"), r("success")))
+    css.append("QCustomChatThread {\n"
+               "    qproperty-incomingBubbleColor: %s;\n"
+               "    qproperty-incomingTextColor: %s;\n"
+               "    qproperty-outgoingBubbleColor: %s;\n"
+               "    qproperty-outgoingTextColor: %s;\n"
+               "    qproperty-metaColor: %s;\n"
+               "    qproperty-dateBgColor: %s;\n"
+               "    qproperty-dateTextColor: %s;\n"
+               "    qproperty-accentColor: %s;\n"
+               "    qproperty-waveUnplayedColor: %s;\n"
+               "}\n" % (r("secondary"), r("on-secondary"), r("primary"),
+                        r("on-primary"), r("outline"), r("surface-muted"),
+                        r("on-surface"), r("accent"), r("outline")))
+    return "".join(css)
+
+
 def tagedit_qss(tokens):
     """Generate QTagEdit QSS (surface + themed tag pills)."""
     r = tokens.role
@@ -1260,6 +1298,7 @@ def build_component_qss(tokens):
             + skeleton_qss(tokens) + avatargroup_qss(tokens) + timeline_qss(tokens)
             + pagination_qss(tokens) + popover_qss(tokens) + segmented_qss(tokens)
             + emptystate_qss(tokens) + dropzone_qss(tokens) + tagedit_qss(tokens)
+            + chat_qss(tokens)
             + rangeslider_qss(tokens)
             + switch_qss(tokens) + radio_qss(tokens) + radiogroup_qss(tokens)
             + candlestick_qss(tokens) + radar_qss(tokens)
