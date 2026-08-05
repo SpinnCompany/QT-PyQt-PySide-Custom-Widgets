@@ -27,7 +27,7 @@ CATEGORIES = [
     ("Gauges & meters", "ProgressRing RoundProgressBar LiquidGauge RadialGauge AnalogGaugeWidget Compass CompassDial FlowProgressBar QProgressBar ProgressIndicator"),
     ("Feedback & status", "Alert Toast Modal Modals QToolTip TipOverlay QDialog Spinner ArcLoader PerlinLoader 3CirclesLoader TypingIndicator MessageStatus Popover"),
     ("Chat & messaging", "ChatBubble ChatDivider ChatInput ChatList ChatListItem ChatThread ReactionBar VoiceMessage EmojiPicker"),
-    ("Media", "VideoPlayer ImageViewer MediaGrid MediaTimeline PlayerBar Waveform Wallpaper QRGenerator Carousel"),
+    ("Media", "VideoPlayer ImageViewer MapView MediaGrid MediaTimeline PlayerBar Waveform Wallpaper QRGenerator Carousel"),
     ("Text & motion", "GradientText TypewriterText SparklesText NumberCounter ClockLabel QLabel HorizontalSeparator VerticalSeparator"),
     ("Theming", "ThemeDarkLightToggle"),
 ]
