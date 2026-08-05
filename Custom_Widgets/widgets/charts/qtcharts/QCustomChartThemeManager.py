@@ -1,4 +1,6 @@
 # file name: QCustomChartThemeManager.py
+import weakref
+
 from typing import List, Optional, Dict, Any
 from qtpy.QtCore import Qt, Signal, QObject, QTimer
 from qtpy.QtWidgets import QApplication
@@ -10,6 +12,56 @@ from Custom_Widgets.QCustomTheme import QCustomTheme
 from Custom_Widgets.Log import logInfo, logWarning, logError
 
 from .QCustomChartConstants import QCustomChartConstants
+
+try:
+    from shiboken6 import isValid as _wrapperIsValid
+except ImportError:  # non-PySide binding: no wrapper-validity probe
+    def _wrapperIsValid(obj):
+        return True
+
+########################################################################
+## THEME BROADCAST DISPATCH
+##
+## Every chart owns a theme manager, and every manager used to connect its
+## bound methods straight to the process-wide QCustomTheme singleton. That
+## wiring is a lifetime trap: when a chart's Python wrapper has been
+## garbage-collected while its C++ half is still being torn down, a theme
+## broadcast forces the binding to resurrect a dying wrapper — a segfault
+## whose timing depends on the CPython version's GC (3.10 and 3.13 both hit
+## it in CI; 3.14 masked it locally).
+##
+## Instead, the singleton connects ONCE to this module-level dispatcher,
+## which fans out to a WeakSet of managers: collected managers drop out of
+## the set on their own, and the validity probe skips wrappers whose C++
+## half is already gone. No per-chart connection to the singleton exists,
+## so there is nothing to fire into a corpse.
+########################################################################
+_themeListeners = weakref.WeakSet()
+_broadcastWired = False
+
+
+def _registerThemeListener(manager):
+    global _broadcastWired
+    _themeListeners.add(manager)
+    if not _broadcastWired:
+        appTheme = QCustomTheme()
+        appTheme.onThemeChanged.connect(_broadcastThemeChanged)
+        appTheme.onThemeChangeComplete.connect(_broadcastThemeChangeComplete)
+        _broadcastWired = True
+
+
+def _liveListeners():
+    return [m for m in list(_themeListeners) if _wrapperIsValid(m)]
+
+
+def _broadcastThemeChanged():
+    for manager in _liveListeners():
+        manager._onAppThemeChanged()
+
+
+def _broadcastThemeChangeComplete():
+    for manager in _liveListeners():
+        manager._onAppThemeChangeComplete()
 
 class QCustomChartThemeManager(QObject, QCustomChartConstants):
     """
@@ -43,10 +95,12 @@ class QCustomChartThemeManager(QObject, QCustomChartConstants):
             self.THEME_QT_BROWN_SAND: QChart.ChartThemeBrownSand
         }
         
-        # Initialize theme system
+        # Initialize theme system. Broadcasts arrive via the module-level
+        # dispatcher (weak references), never a direct connection from the
+        # QCustomTheme singleton to this instance — see the block at the top
+        # of this file for why that distinction is load-bearing.
         self._appTheme = QCustomTheme()
-        self._appTheme.onThemeChanged.connect(self._onAppThemeChanged)
-        self._appTheme.onThemeChangeComplete.connect(self._onAppThemeChangeComplete)
+        _registerThemeListener(self)
         
         # Initialize with default settings
         # self._setupDefaultThemes()
