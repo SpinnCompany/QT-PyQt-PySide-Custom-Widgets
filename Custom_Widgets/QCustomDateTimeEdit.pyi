@@ -1,6 +1,5 @@
 # Auto-generated type stub — DO NOT EDIT.
 # Regenerate with:  python -m Custom_Widgets.mcp.stubgen --write
-from Custom_Widgets.widgets.input.QCustomDateTimeEdit import _VariantMixin
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QDateEdit, QTimeEdit, QWidget
 from typing import Any, ClassVar
