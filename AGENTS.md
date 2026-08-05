@@ -93,7 +93,8 @@ Every widget rendered for the documentation showcase **must produce 2 PNGs**
 - **Both themes**: produce a `<name>.png` (light) and
   `<name>-dark.png` (dark) pair. The canonical Docs path is
   `static/img/showcase/<name>[-dark].png`.
-- **Meta present**: the associated doc `.md` page references **both** images
+- **Meta present**: the associated doc page (`.mdx` — generated pages are
+  MDX for richer formatting; escape `{`/`<` in prose) references **both** images
   (e.g. a light/dark toggle or side-by-side), along with the widget name and
   a sentence on what it does.
 
