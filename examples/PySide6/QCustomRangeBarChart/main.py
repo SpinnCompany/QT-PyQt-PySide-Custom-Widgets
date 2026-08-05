@@ -3,84 +3,96 @@
 ##
 ## Daily temperature ranges as floating bars: each bar spans a low to a
 ## high rather than sitting on a baseline.
-## Rendered with QPainter only - no QtCharts.
+## Rendered with QPainter only - no QtCharts. Themed through the
+## Custom_Widgets pipeline (ui/ + Qss scss + json-styles).
 ## Run:
 ##     python main.py
 ########################################################################
-import sys
+import os, sys
 
-from PySide6 import QtCore, QtWidgets
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
 
-from Custom_Widgets.QCustomRangeBarChart import QCustomRangeBarChart
-from Custom_Widgets.JSonStyles.tokens import applyDesignTokens
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
+
+from Custom_Widgets import *
+from qtpy.QtCore import QCoreApplication, QSettings
+from qtpy.QtWidgets import QApplication
 
 
-class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("QCustomRangeBarChart")
-        central = QtWidgets.QWidget()
-        self.setCentralWidget(central)
-        layout = QtWidgets.QVBoxLayout(central)
-        layout.setContentsMargins(20, 20, 20, 20)
-        layout.setSpacing(14)
-        self._theme = "light"
+class MainWindow(QCustomMainWindow):
+    def __init__(self, parent=None):
+        QCustomMainWindow.__init__(self)
+        from src.ui_MainWindow import Ui_MainWindow
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
 
-        self.chart = QCustomRangeBarChart(ranges=[
-            ("Mon", 4, 12), ("Tue", 6, 15), ("Wed", 3, 9),
-            ("Thu", 8, 17), ("Fri", 5, 11), ("Sat", 7, 14), ("Sun", 2, 8)])
-        self.chart.showBounds = True
-        self.chart.setMinimumHeight(320)
-        self.chart.barHovered.connect(self._onHover)
-        layout.addWidget(self.chart, 1)
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
 
-        row = QtWidgets.QHBoxLayout()
-        orient = QtWidgets.QComboBox()
-        orient.addItems(["vertical", "horizontal"])
-        orient.currentTextChanged.connect(
-            lambda v: setattr(self.chart, "orientation", v))
-        row.addWidget(QtWidgets.QLabel("Orientation"))
-        row.addWidget(orient)
+        self.show()
+        themeEngine = self.themeEngine
+        org = getattr(themeEngine, "organizationName", "")
+        if org:
+            QCoreApplication.setOrganizationName(str(org))
+        appn = getattr(themeEngine, "applicationName", "")
+        if appn:
+            QCoreApplication.setApplicationName(str(appn))
+        orgd = getattr(themeEngine, "organizationDomain", "")
+        if orgd:
+            QCoreApplication.setOrganizationDomain(str(orgd))
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            for t in themeEngine.themes:
+                if getattr(t, "defaultTheme", False) and (init_set is None or not init_set):
+                    s.setValue("THEME", t.name)
+                    s.setValue("INIT-THEME-SET", True)
+            # Default-Theme is ignored by the json parser when ANY QSettings
+            # file already holds a THEME, so pin this app's default explicitly.
+            if not s.value("INIT-THEME-SET"):
+                s.setValue("THEME", "RangeBar-Dark")
+                s.setValue("INIT-THEME-SET", True)
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
 
-        width = QtWidgets.QSlider(QtCore.Qt.Horizontal)
-        width.setRange(10, 100)
-        width.setValue(int(self.chart.barWidthRatio * 100))
-        width.valueChanged.connect(
-            lambda v: setattr(self.chart, "barWidthRatio", v / 100.0))
-        row.addWidget(QtWidgets.QLabel("Bar width"))
-        row.addWidget(width, 1)
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
 
-        bounds = QtWidgets.QPushButton("Bounds")
-        bounds.clicked.connect(
-            lambda: setattr(self.chart, "showBounds", not self.chart.showBounds))
-        row.addWidget(bounds)
+        self._wireDemo()
 
-        theme = QtWidgets.QPushButton("Light / dark")
-        theme.clicked.connect(self._toggleTheme)
-        row.addWidget(theme)
-        row.addStretch(1)
-        layout.addLayout(row)
-
-        self.status = QtWidgets.QLabel("Hover a bar for its range")
-        layout.addWidget(self.status)
-        self.resize(640, 520)
+    def _wireDemo(self):
+        ui = self.ui
+        ui.chart.barHovered.connect(self._onHover)
+        ui.orientationCombo.currentTextChanged.connect(
+            lambda v: setattr(ui.chart, "orientation", v))
+        ui.widthSlider.valueChanged.connect(
+            lambda v: setattr(ui.chart, "barWidthRatio", v / 100.0))
+        ui.boundsButton.clicked.connect(
+            lambda: setattr(ui.chart, "showBounds", not ui.chart.showBounds))
+        ui.themeButton.clicked.connect(self._toggleTheme)
 
     def _onHover(self, index):
         if index < 0:
-            self.status.setText("Hover a bar for its range")
+            self.ui.statusLabel.setText("Hover a bar for its range")
             return
-        label, low, high = self.chart.ranges()[index]
-        self.status.setText("%s — %g to %g (span %g)" % (label, low, high, high - low))
-
+        label, low, high = self.ui.chart.ranges()[index]
+        self.ui.statusLabel.setText(
+            "%s — %g to %g (span %g)" % (label, low, high, high - low))
 
     def _toggleTheme(self):
-        self._theme = "dark" if self._theme == "light" else "light"
-        applyDesignTokens(QtWidgets.QApplication.instance(), theme=self._theme)
+        themeEngine = self.themeEngine
+        target = ("RangeBar-Light" if themeEngine.theme == "RangeBar-Dark"
+                  else "RangeBar-Dark")
+        QSettings().setValue("THEME", target)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
 
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    applyDesignTokens(app, theme="light")
+    app = QApplication(sys.argv)
     window = MainWindow()
-    window.show()
     sys.exit(app.exec())

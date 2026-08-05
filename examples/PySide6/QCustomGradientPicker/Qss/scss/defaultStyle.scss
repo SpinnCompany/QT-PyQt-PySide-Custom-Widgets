@@ -1,0 +1,85 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#headingLabel {
+  color: $COLOR_TEXT_1;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* Picker chrome colours follow the theme via typed properties. */
+#gradientPicker {
+  qproperty-borderColor: $OUTLINE;
+  qproperty-borderActiveColor: $COLOR_ACCENT_1;
+  qproperty-handleColor: $HANDLE_FILL;
+  qproperty-handleBorderColor: $COLOR_ACCENT_1;
+}
+
+#typeCaption,
+#angleCaption {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+#statusLabel {
+  color: $MUTED;
+  font-size: 12px;
+}
+
+#typeBox {
+  background: $SURFACE;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $OUTLINE;
+  border-radius: 6px;
+  padding: 4px 10px;
+  min-width: 72px;
+}
+
+#typeBox QAbstractItemView {
+  background: $SURFACE;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $OUTLINE;
+  selection-background-color: $COLOR_ACCENT_1;
+  selection-color: $ON_ACCENT;
+}
+
+#editStopBtn,
+#themeBtn,
+#presetSunset,
+#presetOcean,
+#presetFade {
+  background: $SURFACE;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $OUTLINE;
+  border-radius: 6px;
+  padding: 5px 14px;
+}
+
+#editStopBtn:hover,
+#themeBtn:hover,
+#presetSunset:hover,
+#presetOcean:hover,
+#presetFade:hover {
+  border-color: $COLOR_ACCENT_1;
+  color: $COLOR_ACCENT_1;
+}
+
+#angleSlider::groove:horizontal {
+  height: 4px;
+  background: $OUTLINE;
+  border-radius: 2px;
+}
+
+#angleSlider::handle:horizontal {
+  width: 14px;
+  height: 14px;
+  margin: -5px 0;
+  border-radius: 7px;
+  background: $COLOR_ACCENT_1;
+}
+
+#angleSlider::sub-page:horizontal {
+  background: $COLOR_ACCENT_1;
+  border-radius: 2px;
+}

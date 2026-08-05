@@ -1,151 +1,94 @@
-########################################################################
-## SPINN DESIGN CODE
-# YOUTUBE: (SPINN TV) https://www.youtube.com/spinnTv
-# WEBSITE: spinncode.com
-########################################################################
+"""QCustomSlideMenu showcase — an animated expanding / collapsing container.
 
-########################################################################
-## IMPORTS
-########################################################################
-import sys
+The menu geometry ("auto" sizes), the toggle button and the slide animations
+are declared in json-styles/style.json. The expanded/collapsed look (border,
+button colour and arrow icon) is driven by a dynamic "menuState" property
+styled entirely from Qss/scss/defaultStyle.scss — nothing is styled in code.
+"""
 
-########################################################################
-# IMPORT GUI FILE
-from ui_interface import *
-########################################################################
+import os, sys
+
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
+
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
 
 from Custom_Widgets import *
+from Custom_Widgets.QAppSettings import QAppSettings
+from qtpy.QtCore import QCoreApplication, QDir, QSettings
+from qtpy.QtWidgets import QApplication
 
-from PySide6 import QtCore
+# Register the themed-icon search path BEFORE any QIcon("theme-icons:...") is
+# created (a QIcon made before the search path exists stays null forever).
+QDir.addSearchPath("theme-icons",
+                   os.path.join(os.path.dirname(os.path.abspath(__file__)), "Qss", "icons"))
 
-########################################################################
-## MAIN WINDOW CLASS
-########################################################################
+
 class MainWindow(QCustomMainWindow):
     def __init__(self, parent=None):
         QCustomMainWindow.__init__(self)
+        from src.ui_MainWindow import Ui_MainWindow
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        # ########################################################################
-        # # CUSTOMIZE YOUR "MENU" / CONTAINER WIDGET
-        # ########################################################################
-        self.ui.widget.customizeQCustomSlideMenu(
-            ########################################################################
-            # THESE VALUES ARE OPTIONAL
-            # ONLY PASS THE VALUES YOU WANT TO CHANGE
-            ########################################################################
-            # CHANGE THE DEFAULT WIDGET SIZE ON APP STARTUP
-            defaultWidth = 500,
-            defaultHeight = 500,
-            # CHANGE THE WIDGET SIZE WHEN CALLAPSED/MINIMIZED
-            collapsedWidth = 0,
-            collapsedHeight = 0,
-            # CHANGE THE WIDGET SIZE WHEN EXPANDED/MAXIMIZED
-            expandedWidth = 500,
-            expandedHeight = 'auto', #or any numeric value
-            # CHANGE THE DEFAULT ANIMATION DURATION AND EASING CURVE
-            # BY DEFAULT IT WILL BE APPLIED THE WIDGET IS EXPANDED OR COLLAPSED
-            animationDuration = 500,
-            animationEasingCurve = QtCore.QEasingCurve.Linear,
-            # CHANGE ANIMATION DURATION AND EASING CURVE WHEN THE WIDGET IS COLLAPSING
-            collapsingAnimationDuration = 500,
-            collapsingAnimationEasingCurve = QtCore.QEasingCurve.Linear,
-            # CHANGE ANIMATION DURATION AND EASING CURVE WHEN THE WIDGET IS EXPANDING
-            expandingAnimationDuration = 500,
-            expandingAnimationEasingCurve = QtCore.QEasingCurve.Linear,
-            # PASS THE STYLESHEET THAT WILL BE APPLIED TO THE WIDGET WHEN EXPANDED OR COLLAPSED
-            collapsedStyle = "",
-            expandedStyle = ""
-        )
+        # Set the QSettings identity BEFORE loadJsonStyle: while the json is
+        # parsed the engine consults QSettings(), and without these names it
+        # falls back to "Unknown Organization/main.py.conf" whose stale THEME
+        # key strips the Default-Theme flag from the json themes.
+        QCoreApplication.setOrganizationName("CustomWidgets")
+        QCoreApplication.setApplicationName("QCustomSlideMenu Showcase")
 
-        # NOTE: if the widget size keeps on growing on "expansion" then you can avoid using "auto" size 
-        # or set the minimum and maximum "parent" widget size from QT Designer
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
 
-        # ADD TOGGLE BUTTON
-        self.ui.widget.toggleButton(
-            # Toggle button name
-            buttonName = self.ui.my_toggle_button,
-            # OPTIONAL VALUES
-            # Ions
-            iconWhenMenuIsCollapsed = ":/icons/icons/arrow-up.svg",
-            iconWhenMenuIsExpanded = ":/icons/icons/arrow-down.svg",
-            # Style
-            styleWhenMenuIsCollapsed = "background-color: rgb(255, 255, 255);",
-            styleWhenMenuIsExpanded = "background-color: rgb(85, 255, 255);"
-        )
-
-
-        # ########################################################################
-        # # CHANGE SINGLE VALUES OF YOUR "MENU" / CONTAINER WIDGET
-        # ########################################################################
-        # # CHANGE THE WIDGET SIZE WHEN CALLAPSED/MINIMIZED
-        # self.ui.widget.defaultWidth = 500
-        # self.ui.widget.defaultHeight = 500
-
-        # # CHANGE THE WIDGET SIZE WHEN CALLAPSED/MINIMIZED
-        # self.ui.widget.collapsedWidth = 0
-        # self.ui.widget.collapsedHeight = 0
-
-        # # CHANGE THE WIDGET SIZE WHEN EXPANDED/MAXIMIZED
-        # self.ui.widget.expandedWidth = 500
-        # self.ui.widget.expandedHeight = 500
-
-        # # CHANGE THE DEFAULT ANIMATION DURATION AND EASING CURVE
-        # # BY DEFAULT IT WILL BE APPLIED THE WIDGET IS EXPANDED OR COLLAPSED
-        # self.ui.widget.animationDuration = 500
-        # self.ui.widget.animationEasingCurve = QtCore.QEasingCurve.Linear
-
-        # # CHANGE ANIMATION DURATION AND EASING CURVE WHEN THE WIDGET IS COLLAPSING
-        # self.ui.widget.collapsingAnimationDuration = 1000
-        # self.ui.widget.collapsingAnimationEasingCurve = QtCore.QEasingCurve.OutBack
-
-        # # CHANGE ANIMATION DURATION AND EASING CURVE WHEN THE WIDGET IS EXPANDING
-        # self.ui.widget.expandingAnimationDuration = 2000
-        # self.ui.widget.expandingAnimationEasingCurve = QtCore.QEasingCurve.OutQuad
-
-        # # PASS THE STYLESHEET THAT WILL BE APPLIED TO THE WIDGET WHEN EXPANDED OR COLLAPSED
-        # self.ui.widget.collapsedStyle = ""
-        # self.ui.widget.expandedStyle = ""
-
-        # # REFRESH WIDGET STYLESHEET
-        # self.ui.widget.refresh()
-
-        # ########################################################################
-        # # ANIMATE YOUR "MENU" / CONTAINER WIDGET
-        # ########################################################################
-        # # TOGGLE WIDGET SIZE
-        # # EXPAND THE WIDGET IF IT IS CURRENTLY COLLAPSED 
-        # # OR
-        # # COLLAPSE THE WIDGET IF IT IS CURRENTLY EXPANDED
-        # # self.ui.widget.slideMenu()
-
-        # # COLLAPSE WIDGET SIZE
-        # # self.ui.widget.collapseMenu()
-
-        # # EXPAND WIDGET SIZE
-        # # self.ui.widget.expandMenu()
-
-        #######################################################################
-        # SHOW WINDOW
-        #######################################################################
         self.show()
-        ########################################################################
+        themeEngine = self.themeEngine
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            default = None
+            for t in themeEngine.themes:
+                if getattr(t, "defaultTheme", False):
+                    default = t.name
+                    break
+            if default is None:
+                # Fall back to the first custom (non-predefined) theme
+                for t in themeEngine.themes:
+                    if not getattr(t, "predefined", False):
+                        default = t.name
+                        break
+            if default:
+                s.setValue("THEME", default)
+                s.setValue("INIT-THEME-SET", True)
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
+
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
+
+        self._wireMenuState()
+
+    def _wireMenuState(self):
+        """Flip a dynamic 'menuState' property when the menu finishes
+        expanding / collapsing so the scss [menuState=...] rules (border,
+        button colour, arrow icon) follow the animation."""
+        menu = self.ui.slideMenu
+        menu.onExpanded.connect(lambda: self._setMenuState("expanded"))
+        menu.onCollapsed.connect(lambda: self._setMenuState("collapsed"))
+        self._setMenuState("expanded")  # the menu starts expanded ("auto")
+
+    def _setMenuState(self, state):
+        for w in (self.ui.slideMenu, self.ui.menuToggleButton):
+            w.setProperty("menuState", state)
+            w.style().unpolish(w)
+            w.style().polish(w)
 
 
-
-
-########################################################################
-## EXECUTE APP
-########################################################################
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    ########################################################################
-    ## 
-    ########################################################################
     window = MainWindow()
-    window.show()
-    sys.exit(app.exec_())
-########################################################################
-## END===>
-########################################################################  
+    sys.exit(app.exec())

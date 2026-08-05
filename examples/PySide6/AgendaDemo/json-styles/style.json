@@ -1,0 +1,71 @@
+{
+    "QtBinding": "PySide6",
+    "QMainWindow": {
+        "title": "QCustomAgendaList — preview"
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "AgendaDemo"
+        },
+        "ThemeSettings": {
+            "CustomThemes": [
+                {
+                    "Theme-name": "Agenda Dark",
+                    "Default-Theme": true,
+                    "Create-icons": false,
+                    "Background-color": "#0e1016",
+                    "Text-color": "#e7e9ef",
+                    "Accent-color": "#3aa0ff",
+                    "Icons-color": "#9aa1b2",
+                    "Other-variables": {
+                        "CARD_BG": "#171a22",
+                        "CARD_BORDER": "#232833",
+                        "CARD_TITLE": "#f4f6fb",
+                        "CARD_SUB": "#6b7280",
+                        "AGENDA_RAIL": "#2b3040",
+                        "AGENDA_SUBTITLE": "#8b90a0",
+                        "AGENDA_TIME": "#aab2bd",
+                        "AGENDA_ACTIVE_BG": "#1e2330"
+                    }
+                },
+                {
+                    "Theme-name": "Agenda Light",
+                    "Default-Theme": false,
+                    "Create-icons": false,
+                    "Background-color": "#eef1f5",
+                    "Text-color": "#1c2430",
+                    "Accent-color": "#2f6bff",
+                    "Icons-color": "#6b7280",
+                    "Other-variables": {
+                        "CARD_BG": "#ffffff",
+                        "CARD_BORDER": "#dfe3ea",
+                        "CARD_TITLE": "#10151d",
+                        "CARD_SUB": "#7b8494",
+                        "AGENDA_RAIL": "#d7dce4",
+                        "AGENDA_SUBTITLE": "#7b8494",
+                        "AGENDA_TIME": "#4c5563",
+                        "AGENDA_ACTIVE_BG": "#eef2f9"
+                    }
+                }
+            ]
+        }
+    },
+    "_comment_ChartPalette": "Per-item hues read in code via themeEngine.themeColor() — they live with the theme so a switch re-hues the demo data.",
+    "ChartPalette": {
+        "Agenda Dark": {
+            "green": "#22c07e",
+            "purple": "#8b5cf6",
+            "blue": "#3aa0ff",
+            "amber": "#f59e0b",
+            "red": "#ef4444"
+        },
+        "Agenda Light": {
+            "green": "#189a63",
+            "purple": "#7c4dea",
+            "blue": "#2b7fd4",
+            "amber": "#d9820a",
+            "red": "#d43a3a"
+        }
+    }
+}

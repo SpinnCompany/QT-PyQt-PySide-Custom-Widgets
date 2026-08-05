@@ -26,6 +26,7 @@ from qtpy.QtWidgets import QApplication
 
 target, shotDir, name = sys.argv[1], sys.argv[2], sys.argv[3]
 os.chdir(os.path.dirname(target))
+sys.path.insert(0, os.path.dirname(target))  # match `python main.py` from the app dir
 sys.argv = [target]
 
 def capture():
@@ -41,13 +42,24 @@ def capture():
     print("SURVEY:OK %dx%d %s" % (best.width(), best.height(), ok))
     os._exit(0)
 
-QTimer.singleShot(6000, capture)
+# The capture timer can only be scheduled once the app's own QApplication
+# exists and its event loop is about to run: wrap exec so the timer starts
+# at that moment (a timer scheduled before QApplication is created never
+# fires, which used to classify every working app as a hang).
+_real_exec = QApplication.exec
+def _survey_exec(*_a, **_k):
+    QTimer.singleShot(6000, capture)
+    return _real_exec()
+QApplication.exec = _survey_exec
+QApplication.exec_ = _survey_exec
+
 try:
     runpy.run_path(target, run_name="__main__")
 except SystemExit:
     pass
 except Exception as exc:
     print("SURVEY:CRASH %s: %s" % (type(exc).__name__, exc)); os._exit(2)
+capture()  # app never entered exec (or quit early): report what is there
 '''
 
 
@@ -60,6 +72,7 @@ def main():
                    if os.path.isfile(os.path.join(EXAMPLES, d, "main.py")))
     env = dict(os.environ, QT_API="pyside6", PYTHONPATH=ROOT,
                PYTHONUNBUFFERED="1")
+    env.setdefault("QT_QPA_PLATFORM", "offscreen")  # actually headless
     results = []
     for index, name in enumerate(names, 1):
         target = os.path.join(EXAMPLES, name, "main.py")

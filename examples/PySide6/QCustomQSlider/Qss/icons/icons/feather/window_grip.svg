@@ -23,8 +23,8 @@
      id="defs4" />
   <sodipodi:namedview
      id="base"
-     pagecolor="black"
-     bordercolor="black"
+     pagecolor="#9ca3af"
+     bordercolor="#9ca3af"
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
@@ -74,17 +74,17 @@
      id="layer1"
      transform="translate(0,-1020.3622)">
     <path
-       style="fill:#ff0000;stroke:black;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ff0000;stroke:#9ca3af;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 22.964191,1049.3977 29,1043.3622"
        id="path817"
        inkscape:connector-curvature="0" />
     <path
-       style="fill:#ff0000;stroke:black;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ff0000;stroke:#9ca3af;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 12.964191,1049.3973 16.03591,-16.0351"
        id="path817-2"
        inkscape:connector-curvature="0" />
     <path
-       style="fill:#ff0000;stroke:black;stroke-width:1.9960537;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ff0000;stroke:#9ca3af;stroke-width:1.9960537;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 2.962198,1049.3993 25.983785,-25.9838"
        id="path817-2-6"
        inkscape:connector-curvature="0" />

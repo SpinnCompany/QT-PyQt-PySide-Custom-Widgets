@@ -1,0 +1,39 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#avatarHeading, #coverHeading {
+  color: $COLOR_TEXT_1;
+  font-size: 14px;
+}
+
+/* ---- picker colours come from the widget's typed colour properties ---- */
+QCustomImagePicker {
+  qproperty-borderColor: $COLOR_BACKGROUND_4;
+  qproperty-borderActiveColor: $COLOR_ACCENT_1;
+  qproperty-borderErrorColor: $PICKER_ERROR;
+  qproperty-backgroundColor: $COLOR_BACKGROUND_2;
+  qproperty-textColor: $COLOR_TEXT_2;
+}
+
+#statusLabel {
+  color: $COLOR_TEXT_3;
+  font-size: 13px;
+}
+
+#browseButton, #clearButton, #themeButton {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 6px;
+  padding: 5px 14px;
+}
+
+#browseButton:hover, #clearButton:hover, #themeButton:hover {
+  background: $COLOR_BACKGROUND_3;
+}
+
+#browseButton:pressed, #clearButton:pressed, #themeButton:pressed {
+  background: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+}

@@ -1785,3 +1785,100 @@ QCustomSidebarLabel {
 #sidebarToggle:hover, #themeToggle:hover {
   background-color: #7b6cf6;
   color: #ffffff; }
+
+QLabel[role="dot"] {
+  border-radius: 4px; }
+
+QLabel[role="dot"][chartKey="online"] {
+  background-color: #7b6cf6; }
+
+QLabel[role="dot"][chartKey="offline"] {
+  background-color: #f2794b; }
+
+QLabel[role="dot"][chartKey="returns"] {
+  background-color: #f4c44e; }
+
+QLabel[role="dot"][chartKey="loyal"] {
+  background-color: #7b6cf6; }
+
+QLabel[role="dot"][chartKey="new"] {
+  background-color: #f2794b; }
+
+QLabel[role="dot"][chartKey="up"] {
+  background-color: #3ddc97; }
+
+QLabel[role="dot"][chartKey="down"] {
+  background-color: #f5678a; }
+
+QLabel[role="avatar"] {
+  color: #ffffff;
+  /* on-colour contrast text */
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 12px; }
+
+QLabel[role="avatar"][avatarKey="0"] {
+  background-color: #f2794b; }
+
+QLabel[role="avatar"][avatarKey="1"] {
+  background-color: #7b6cf6; }
+
+QLabel[role="avatar"][avatarKey="2"] {
+  background-color: #f4c44e; }
+
+QLabel[role="avatar"][avatarKey="3"] {
+  background-color: #3ddc97; }
+
+QLabel[role="avatar"][avatarKey="4"] {
+  background-color: #f5678a; }
+
+#headerAvatar {
+  background-color: #7b6cf6;
+  color: #ffffff;
+  border-radius: 20px;
+  font-weight: 700; }
+
+QLabel[role="delta"] {
+  border-radius: 8px;
+  padding: 3px 9px;
+  font-weight: 700;
+  font-size: 11px; }
+
+QLabel[role="delta"][trend="up"] {
+  color: #3ddc97;
+  background-color: rgba(120, 120, 120, 14%); }
+
+QLabel[role="delta"][trend="down"] {
+  color: #f5678a;
+  background-color: rgba(120, 120, 120, 14%); }
+
+QLabel[role="delta"][trend="onAccent"] {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 22%); }
+
+QCustomBadge {
+  border-radius: 9px;
+  padding: 2px 10px;
+  font-weight: 700;
+  font-size: 11px;
+  color: #8b909e;
+  background-color: rgba(139, 144, 158, 16%); }
+
+QCustomBadge[variant="success"] {
+  color: #3ddc97;
+  background-color: rgba(61, 220, 151, 16%); }
+
+QCustomBadge[variant="warning"] {
+  color: #e0a020;
+  background-color: rgba(240, 170, 40, 16%); }
+
+QCustomBadge[variant="destructive"] {
+  color: #f5678a;
+  background-color: rgba(245, 103, 138, 16%); }
+
+#salesChart, #customersChart {
+  background: transparent; }
+
+#salesChart QGraphicsView, #customersChart QGraphicsView {
+  background: transparent;
+  border: 0; }

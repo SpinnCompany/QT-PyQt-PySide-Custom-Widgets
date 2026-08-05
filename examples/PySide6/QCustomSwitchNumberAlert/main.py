@@ -1,85 +1,93 @@
-########################################################################
-## QCustomSwitch + QCustomNumberInput + QCustomAlert example
-##
-## A settings-style panel: toggle switches, a quantity stepper, and inline
-## alerts of every variant. Styled from design tokens. Run:
-##     python main.py
-########################################################################
+"""Switch / Number / Alert showcase — a settings-style panel.
+
+Toggle switches, quantity / price steppers, and inline alerts of every
+variant (info / success / warning / destructive).
+"""
+
+import os
 import sys
-from PySide6 import QtWidgets
 
-from Custom_Widgets.QCustomSwitch import QCustomSwitch
-from Custom_Widgets.QCustomNumberInput import QCustomNumberInput
-from Custom_Widgets.QCustomAlert import QCustomAlert
-from Custom_Widgets.JSonStyles.tokens import DesignTokens, applyDesignTokens
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
+
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
+
+from Custom_Widgets import *
+from qtpy.QtCore import QCoreApplication, QSettings
+from qtpy.QtWidgets import QApplication
 
 
-class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Switch / Number / Alert")
-        central = QtWidgets.QWidget()
-        self.setCentralWidget(central)
-        layout = QtWidgets.QVBoxLayout(central)
-        layout.setSpacing(12)
+class MainWindow(QCustomMainWindow):
+    def __init__(self, parent=None):
+        QCustomMainWindow.__init__(self)
+        from src.ui_MainWindow import Ui_MainWindow
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
 
-        # switches
-        for label, checked in (("Enable notifications", True),
-                               ("Dark mode", False)):
-            row = QtWidgets.QHBoxLayout()
-            row.addWidget(QtWidgets.QLabel(label))
-            row.addStretch(1)
-            sw = QCustomSwitch(checked=checked)
-            sw.toggled.connect(lambda on, l=label: self.status.setText(
-                "%s: %s" % (l, "on" if on else "off")))
-            row.addWidget(sw)
-            layout.addLayout(row)
+        # Set the app identity BEFORE loadJsonStyle: the theme loader consults
+        # QSettings while parsing CustomThemes, and without these names it
+        # reads the shared unnamed settings file (polluted by other example
+        # apps), which silently cancels this app's Default-Theme flag.
+        QCoreApplication.setOrganizationName("CustomWidgets")
+        QCoreApplication.setApplicationName("QCustomSwitchNumberAlert Showcase")
 
-        # number stepper
-        qrow = QtWidgets.QHBoxLayout()
-        qrow.addWidget(QtWidgets.QLabel("Quantity"))
-        qrow.addStretch(1)
-        qty = QCustomNumberInput(minimum=1, maximum=99, value=3, step=1)
-        qty.setMaximumWidth(140)
-        qty.valueChanged.connect(lambda v: self.status.setText("Quantity: %s" % v))
-        qrow.addWidget(qty)
-        layout.addLayout(qrow)
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
 
-        # price stepper (float)
-        prow = QtWidgets.QHBoxLayout()
-        prow.addWidget(QtWidgets.QLabel("Unit price"))
-        prow.addStretch(1)
-        price = QCustomNumberInput(minimum=0, maximum=1000, value=9.99,
-                                   step=0.5, decimals=2)
-        price.setMaximumWidth(140)
-        prow.addWidget(price)
-        layout.addLayout(prow)
+        self.show()
+        themeEngine = self.themeEngine
+        org = getattr(themeEngine, "organizationName", "")
+        if org:
+            QCoreApplication.setOrganizationName(str(org))
+        appn = getattr(themeEngine, "applicationName", "")
+        if appn:
+            QCoreApplication.setApplicationName(str(appn))
+        orgd = getattr(themeEngine, "organizationDomain", "")
+        if orgd:
+            QCoreApplication.setOrganizationDomain(str(orgd))
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            for t in themeEngine.themes:
+                if getattr(t, "defaultTheme", False) and (init_set is None or not init_set):
+                    s.setValue("THEME", t.name)
+                    s.setValue("INIT-THEME-SET", True)
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
 
-        # alerts
-        layout.addWidget(QCustomAlert(
-            title="Heads up", text="Your trial ends in 3 days.", variant="info"))
-        layout.addWidget(QCustomAlert(
-            title="Saved", text="Settings updated successfully.", variant="success"))
-        layout.addWidget(QCustomAlert(
-            title="Careful", text="This action can't be undone.",
-            variant="warning", dismissible=True))
-        layout.addWidget(QCustomAlert(
-            title="Error", text="Payment failed. Try another card.",
-            variant="destructive", dismissible=True))
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
 
-        layout.addStretch(1)
-        self.status = QtWidgets.QLabel("-")
-        layout.addWidget(self.status)
+        self._seedData()
+        self._wire()
+
+    def _seedData(self):
+        # Stepper values / ranges are data, so they are seeded here.
+        self.ui.qtyInput.setRange(1, 99)
+        self.ui.qtyInput.setSingleStep(1)
+        self.ui.qtyInput.setValue(3)
+
+        self.ui.priceInput.setRange(0, 1000)
+        self.ui.priceInput.setDecimals(2)
+        self.ui.priceInput.setSingleStep(0.5)
+        self.ui.priceInput.setValue(9.99)
+
+    def _wire(self):
+        self.ui.notifSwitch.toggled.connect(
+            lambda on: self.ui.statusLabel.setText(
+                "Enable notifications: %s" % ("on" if on else "off")))
+        self.ui.darkSwitch.toggled.connect(
+            lambda on: self.ui.statusLabel.setText(
+                "Dark mode: %s" % ("on" if on else "off")))
+        self.ui.qtyInput.valueChanged.connect(
+            lambda v: self.ui.statusLabel.setText("Quantity: %s" % v))
 
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    tokens = DesignTokens(theme="light")
-    app.setStyleSheet("QMainWindow, QWidget { background-color: %s; color: %s; }"
-                      % (tokens.role("surface"), tokens.role("on-surface")))
-    applyDesignTokens(app, tokens=tokens)
-
+    app = QApplication(sys.argv)
     window = MainWindow()
-    window.resize(460, 560)
-    window.show()
     sys.exit(app.exec())

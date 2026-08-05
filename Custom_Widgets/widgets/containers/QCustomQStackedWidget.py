@@ -300,11 +300,15 @@ class QCustomQStackedWidget(QStackedWidget):
     # =========================================================================
     
     def _initializeAllWidgetsOpacity(self):
-        """Initialize opacity for all widgets to 0 when fade transitions are enabled."""
+        """Initialize opacity for all widgets when fade transitions are enabled.
+
+        Hidden widgets start at 0 so they can fade in; the CURRENT widget must
+        stay fully opaque, otherwise enabling fadeTransition blanks the page
+        that is already on screen."""
         for i in range(self.count()):
             widget = self.widget(i)
             if widget:
-                self._setWidgetOpacity(widget, 0.0)
+                self._setWidgetOpacity(widget, 1.0 if i == self.currentIndex() else 0.0)
     
     def _setWidgetOpacity(self, widget, opacity):
         """
@@ -381,7 +385,27 @@ class QCustomQStackedWidget(QStackedWidget):
     # =========================================================================
     # PUBLIC METHODS
     # =========================================================================
-    
+
+    def setSlideTransition(self, slideState=True):
+        """
+        Enable or disable slide transitions (setter for the
+        ``slideTransition`` property, kept for backward compatibility).
+
+        Args:
+            slideState (bool): True to enable slide transitions.
+        """
+        self.slideTransition = slideState  # Use the property setter
+
+    def setFadeTransition(self, fadeState=True):
+        """
+        Enable or disable fade transitions (setter for the
+        ``fadeTransition`` property, kept for backward compatibility).
+
+        Args:
+            fadeState (bool): True to enable fade transitions.
+        """
+        self.fadeTransition = fadeState  # Use the property setter
+
     def setTransitionDirection(self, direction):
         """
         Set the transition direction.

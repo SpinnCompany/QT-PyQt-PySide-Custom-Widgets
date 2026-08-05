@@ -1,0 +1,30 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomProgressIndicator Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Progress-Dark",
+          "Default-Theme": true,
+          "Background-color": "#091b1b",
+          "Text-color": "#e6f2f2",
+          "Accent-color": "#55ffff",
+          "Icons-color": "#8fb3b3",
+          "Create-icons": false
+        },
+        {
+          "Theme-name": "Progress-Light",
+          "Default-Theme": false,
+          "Background-color": "#f2f7f7",
+          "Text-color": "#122929",
+          "Accent-color": "#0aa5a5",
+          "Icons-color": "#527a7a",
+          "Create-icons": false
+        }
+      ]
+    }
+  }
+}

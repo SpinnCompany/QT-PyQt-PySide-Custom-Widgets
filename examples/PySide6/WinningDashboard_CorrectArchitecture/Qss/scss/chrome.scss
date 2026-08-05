@@ -81,3 +81,68 @@ QCustomSidebarLabel {
     padding-left: 10px;
 }
 #sidebarToggle:hover, #themeToggle:hover { background-color: $COLOR_ACCENT_1; color: #ffffff; }
+
+// -- data-driven colour roles ---------------------------------------------- //
+// Hues come from each theme's Other-variables in json-styles/style.json (the
+// $CHART_* / $AVATAR_* / $DELTA_* variables), so they flip on theme switch.
+// Python only sets ENUMERABLE dynamic props (chartKey / avatarKey / trend);
+// it never calls setStyleSheet.
+
+// legend + distribution dots (9px squares rounded to circles)
+QLabel[role="dot"] { border-radius: 4px; }
+QLabel[role="dot"][chartKey="online"]  { background-color: $CHART_ONLINE; }
+QLabel[role="dot"][chartKey="offline"] { background-color: $CHART_OFFLINE; }
+QLabel[role="dot"][chartKey="returns"] { background-color: $CHART_RETURNS; }
+QLabel[role="dot"][chartKey="loyal"]   { background-color: $CHART_LOYAL; }
+QLabel[role="dot"][chartKey="new"]     { background-color: $CHART_NEW; }
+QLabel[role="dot"][chartKey="up"]      { background-color: $CHART_UP; }
+QLabel[role="dot"][chartKey="down"]    { background-color: $CHART_DOWN; }
+
+// order-row initials avatars (32px; avatarKey cycles through 5 palette slots)
+QLabel[role="avatar"] {
+    color: #ffffff;             /* on-colour contrast text */
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 12px;
+}
+QLabel[role="avatar"][avatarKey="0"] { background-color: $AVATAR_0; }
+QLabel[role="avatar"][avatarKey="1"] { background-color: $AVATAR_1; }
+QLabel[role="avatar"][avatarKey="2"] { background-color: $AVATAR_2; }
+QLabel[role="avatar"][avatarKey="3"] { background-color: $AVATAR_3; }
+QLabel[role="avatar"][avatarKey="4"] { background-color: $AVATAR_4; }
+
+// header avatar (40px, accent fill)
+#headerAvatar {
+    background-color: $COLOR_ACCENT_1;
+    color: #ffffff;
+    border-radius: 20px;
+    font-weight: 700;
+}
+
+// KPI delta pills (trend is enumerable: up / down / onAccent)
+QLabel[role="delta"] {
+    border-radius: 8px;
+    padding: 3px 9px;
+    font-weight: 700;
+    font-size: 11px;
+}
+QLabel[role="delta"][trend="up"]       { color: $CHART_UP;   background-color: $DELTA_SOFT; }
+QLabel[role="delta"][trend="down"]     { color: $CHART_DOWN; background-color: $DELTA_SOFT; }
+QLabel[role="delta"][trend="onAccent"] { color: #ffffff;     background-color: $DELTA_ON_ACCENT; }
+
+// order-status badges (QCustomBadge variant is a Qt property — enumerable)
+QCustomBadge {
+    border-radius: 9px;
+    padding: 2px 10px;
+    font-weight: 700;
+    font-size: 11px;
+    color: $CHART_NEUTRAL;
+    background-color: $CHART_NEUTRAL_SOFT;
+}
+QCustomBadge[variant="success"]     { color: $CHART_UP;   background-color: $CHART_UP_SOFT; }
+QCustomBadge[variant="warning"]     { color: $CHART_WARN; background-color: $CHART_WARN_SOFT; }
+QCustomBadge[variant="destructive"] { color: $CHART_DOWN; background-color: $CHART_DOWN_SOFT; }
+
+// transparent QtCharts viewports (paired with WA_TranslucentBackground in code)
+#salesChart, #customersChart { background: transparent; }
+#salesChart QGraphicsView, #customersChart QGraphicsView { background: transparent; border: 0; }

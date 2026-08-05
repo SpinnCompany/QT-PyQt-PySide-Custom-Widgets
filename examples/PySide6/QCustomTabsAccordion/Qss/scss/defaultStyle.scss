@@ -1,0 +1,116 @@
+/* QCustomTabsAccordion demo — all chrome lives here ($TOKENS only). */
+
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#styleLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 14px;
+}
+
+/* ── Tab-style switcher combo ── */
+QCustomComboBox {
+  background-color: $CARD;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER;
+  border-radius: 8px;
+  padding: 6px 12px;
+  min-width: 110px;
+}
+QCustomComboBox:focus {
+  border: 1px solid $COLOR_ACCENT_1;
+}
+QCustomComboBox::drop-down {
+  border: none;
+  width: 22px;
+  subcontrol-origin: padding;
+  subcontrol-position: center right;
+}
+#comboDropdown, #comboCompleterPopup {
+  background-color: $CARD;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER;
+  outline: 0;
+  selection-background-color: $COLOR_ACCENT_1;
+  selection-color: $ON_ACCENT;
+}
+#comboDropdown::item, #comboCompleterPopup::item {
+  padding: 4px 8px;
+}
+
+/* ── Tabbed container (three switchable tab styles) ── */
+QCustomTabWidget::pane {
+  border: 1px solid $BORDER;
+  border-radius: 8px;
+  background-color: $CARD;
+  top: -1px;
+}
+QCustomTabWidget QTabBar::tab {
+  background-color: transparent;
+  color: $COLOR_TEXT_2;
+  padding: 8px 14px;
+  border: none;
+  margin-right: 2px;
+}
+QCustomTabWidget QTabBar::tab:hover {
+  color: $COLOR_ACCENT_1;
+}
+QCustomTabWidget[tabStyle="underline"] QTabBar::tab:selected {
+  color: $COLOR_ACCENT_1;
+  border-bottom: 2px solid $COLOR_ACCENT_1;
+}
+QCustomTabWidget[tabStyle="pills"] QTabBar::tab {
+  border-radius: 8px;
+}
+QCustomTabWidget[tabStyle="pills"] QTabBar::tab:selected {
+  background-color: $COLOR_ACCENT_1;
+  color: $ON_ACCENT;
+}
+QCustomTabWidget[tabStyle="enclosed"] QTabBar::tab {
+  border: 1px solid $BORDER;
+  border-bottom: none;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+QCustomTabWidget[tabStyle="enclosed"] QTabBar::tab:selected {
+  background-color: $CARD;
+  color: $COLOR_ACCENT_1;
+}
+
+#profilePage, #accountPage, #notificationsPage {
+  background: transparent;
+}
+#profileLabel, #accountLabel, #notificationsLabel {
+  color: $COLOR_TEXT_1;
+  font-size: 14px;
+}
+
+/* ── Accordion (headers + collapsible content) ── */
+QCustomAccordion #accordionHeader {
+  text-align: left;
+  background-color: $MUTED;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-weight: 600;
+}
+QCustomAccordion #accordionHeader:hover {
+  border-color: $COLOR_ACCENT_1;
+}
+QCustomAccordion #accordionHeader:checked {
+  color: $COLOR_ACCENT_1;
+  border-color: $COLOR_ACCENT_1;
+}
+QCustomAccordion #accordionContent {
+  background-color: $CARD;
+  border: 1px solid $BORDER;
+  border-top: none;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+QCustomAccordion #accordionContent QLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}

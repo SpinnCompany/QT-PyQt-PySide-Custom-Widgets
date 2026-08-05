@@ -1,0 +1,36 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomStatCardProgressRingCard Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Metrics Night",
+          "Default-Theme": true,
+          "Background-color": "#141a24",
+          "Text-color": "#e8edf5",
+          "Accent-color": "#58a6ff",
+          "Icons-color": "#97a1b2",
+          "Other-variables": {
+            "TREND_UP": "#3fb950",
+            "TREND_DOWN": "#f85149"
+          }
+        },
+        {
+          "Theme-name": "Metrics Day",
+          "Default-Theme": false,
+          "Background-color": "#f2f5f9",
+          "Text-color": "#1b2230",
+          "Accent-color": "#2a6bd0",
+          "Icons-color": "#5a6371",
+          "Other-variables": {
+            "TREND_UP": "#1a7f37",
+            "TREND_DOWN": "#cf222e"
+          }
+        }
+      ]
+    }
+  }
+}

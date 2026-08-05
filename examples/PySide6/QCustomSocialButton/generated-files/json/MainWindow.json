@@ -1,0 +1,32 @@
+{
+  "QComboBox": [
+    {
+      "name": "variantCombo",
+      "items": [
+        {
+          "name": "solid"
+        },
+        {
+          "name": "outline"
+        },
+        {
+          "name": "soft"
+        }
+      ]
+    },
+    {
+      "name": "shapeCombo",
+      "items": [
+        {
+          "name": "rounded"
+        },
+        {
+          "name": "pill"
+        },
+        {
+          "name": "square"
+        }
+      ]
+    }
+  ]
+}

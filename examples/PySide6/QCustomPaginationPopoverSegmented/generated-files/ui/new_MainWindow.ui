@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>520</width>
+    <height>380</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Pagination / Popover / Segmented</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">12</property>
+    <property name="leftMargin">24</property>
+    <property name="topMargin">24</property>
+    <property name="rightMargin">24</property>
+    <property name="bottomMargin">24</property>
+    <item>
+     <widget class="QLabel" name="viewCaption">
+      <property name="text">
+       <string>View:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="segRow">
+      <item>
+       <widget class="QCustomSegmentedControl" name="segmentedControl" native="true" />
+      </item>
+      <item>
+       <spacer name="segSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="popoverCaption">
+      <property name="text">
+       <string>Popover:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="popRow">
+      <item>
+       <widget class="QCustomQPushButton" name="popoverTrigger">
+        <property name="text">
+         <string>Show details</string>
+        </property>
+        <property name="variant" stdset="0">
+         <string>outline</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="popSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <spacer name="bodySpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QCustomPagination" name="pager" native="true" />
+    </item>
+    <item>
+     <widget class="QLabel" name="statusLabel">
+      <property name="text">
+       <string>-</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomSegmentedControl</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomSegmentedControl.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomPagination</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomPagination.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomQPushButton</class>
+   <extends>QPushButton</extends>
+   <header location="global">Custom_Widgets.QCustomQPushButton.h</header>
+  </customwidget>
+ <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>

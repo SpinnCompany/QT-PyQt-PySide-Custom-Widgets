@@ -1,0 +1,62 @@
+{
+    "ShowLogs": false,
+    "QtBinding": "PySide6",
+    "CheckForMissingicons": false,
+    "QMainWindow": {
+        "title": "QCustomHeatmap — Demo"
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "HeatmapDemo",
+            "OrganizationDomain": "spinncode.com"
+        },
+        "ThemeSettings": {
+            "CustomThemes": [
+                {
+                    "Theme-name": "Heatmap Dark",
+                    "Default-Theme": true,
+                    "Create-icons": true,
+                    "Background-color": "#171a22",
+                    "Text-color": "#e7e9ef",
+                    "Accent-color": "#b3a4ff",
+                    "Icons-color": "#9aa1b2"
+                },
+                {
+                    "Theme-name": "Heatmap Light",
+                    "Default-Theme": false,
+                    "Create-icons": true,
+                    "Background-color": "#ffffff",
+                    "Text-color": "#1c2430",
+                    "Accent-color": "#7c5cff",
+                    "Icons-color": "#6b7280"
+                }
+            ]
+        }
+    },
+    "_comment_ChartPalette": "Read in code by main.py — heatmap ramp hues live with the theme so they flip on theme switch (token-driven).",
+    "ChartPalette": {
+        "Heatmap Dark": {
+            "activityLow": "#1e1b3a",
+            "activityHigh": "#b3a4ff",
+            "activityEmpty": "#17152b",
+            "calLow": "#161b22",
+            "calHigh": "#39d353",
+            "calEmpty": "#161b22",
+            "loadLow": "#0f2230",
+            "loadHigh": "#28d1c4",
+            "loadEmpty": "#0e1a22"
+        },
+        "Heatmap Light": {
+            "activityLow": "#ece8ff",
+            "activityHigh": "#6d4aff",
+            "activityEmpty": "#f4f2fb",
+            "calLow": "#e8f5ec",
+            "calHigh": "#1f9d45",
+            "calEmpty": "#eef4ef",
+            "loadLow": "#e2f2f5",
+            "loadHigh": "#0e9d92",
+            "loadEmpty": "#edf5f6"
+        }
+    }
+}

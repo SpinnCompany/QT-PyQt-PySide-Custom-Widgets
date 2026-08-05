@@ -75,7 +75,7 @@ class QCustomButtonGroup(QWidget):
         btn.setProperty("sizeVariant", self._sizeVariant)
         btn.setCheckable(True)
         if button_id is None:
-            button_id = self._group.count()
+            button_id = len(self._group.buttons())
         self._group.addButton(btn, button_id)
         self._layout.addWidget(btn)
         return btn
@@ -155,5 +155,29 @@ class QCustomButtonGroup(QWidget):
 
     @orientation.setter
     def orientation(self, value):
-        self._orientation = str(value)
-        # Layout switching would require recreating the layout, skipped for now
+        value = "horizontal" if str(value).lower() == "horizontal" else "vertical"
+        if value == self._orientation:
+            return
+        self._orientation = value
+        self._rebuildLayout()
+
+    def _rebuildLayout(self):
+        """Swap the container layout to match the orientation, keeping the
+        buttons (in order), margins, spacing and the current selection."""
+        wanted = QHBoxLayout if self._orientation == "horizontal" else QVBoxLayout
+        old = self._layout
+        if type(old) is wanted:
+            return
+        new = wanted()
+        new.setContentsMargins(old.contentsMargins())
+        new.setSpacing(old.spacing())
+        while old.count():
+            item = old.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                new.addWidget(widget)
+        # A widget refuses a second layout while the old one is installed:
+        # hand the empty husk to a throwaway parent, then install the new one.
+        QWidget().setLayout(old)
+        self._layout = new
+        self.setLayout(new)

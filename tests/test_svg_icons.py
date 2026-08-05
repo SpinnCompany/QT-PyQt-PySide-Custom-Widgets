@@ -23,6 +23,31 @@ THEME_COLOR = "#ff5722"
 THEME_FOLDER = THEME_COLOR.replace("#", "")
 
 
+@pytest.fixture(autouse=True)
+def _pinned_active_theme(theme):
+    """Pin the active theme to the predefined "Light" for every test here.
+
+    Icon generation resolves colours from the engine's current theme; these
+    tests used to inherit whatever THEME an earlier suite test left behind
+    (e.g. a task-menu test's colourless "Emerald"), which makes
+    generateNewIcons resolve an empty icons colour and silently skip —
+    an order-dependence that broke the whole class when unrelated tests
+    stopped accidentally repairing the state."""
+    from qtpy.QtCore import QSettings
+
+    settings = QSettings()
+    previous_stored = settings.value("THEME")
+    previous_cached = getattr(theme, "_theme", None)
+    settings.setValue("THEME", "Light")
+    theme._theme = "Light"
+    yield
+    if previous_stored is None:
+        settings.remove("THEME")
+    else:
+        settings.setValue("THEME", previous_stored)
+    theme._theme = previous_cached
+
+
 def master_icon_count():
     count = 0
     for root, dirs, files in os.walk(MASTER_ICONS_DIR):

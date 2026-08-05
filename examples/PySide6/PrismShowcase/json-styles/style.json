@@ -1,0 +1,30 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "PrismShowcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Prism-Night",
+          "Default-Theme": true,
+          "Background-color": "#0f1220",
+          "Text-color": "#eceff8",
+          "Accent-color": "#a855f7",
+          "Icons-color": "#9ca3af",
+          "Create-icons": false
+        },
+        {
+          "Theme-name": "Prism-Day",
+          "Default-Theme": false,
+          "Background-color": "#f7f7fc",
+          "Text-color": "#1d1d33",
+          "Accent-color": "#7c3aed",
+          "Icons-color": "#6b7280",
+          "Create-icons": false
+        }
+      ]
+    }
+  }
+}

@@ -75,7 +75,8 @@ class QCustomSlideMenu(QWidget):
     
     def setMinSize(self):
         try:
-            self.setMinimumSize(QSize(self._defaultWidth, self._defaultHeight))
+            # getDefault*() resolves the legacy "auto"/"parent" string values
+            self.setMinimumSize(QSize(self.getDefaultWidth(), self.getDefaultHeight()))
         except:
             pass
 
@@ -355,13 +356,20 @@ class QCustomSlideMenu(QWidget):
 
     # Slide menu function
     def slideMenu(self):
-        # self.refresh()
-        if self._collapsed:
-            self.expandMenu()
-        else:
+        # Toggle on the LOGICAL open state, not the size-derived flags:
+        # refresh() recomputes _collapsed/_expanded from the current size,
+        # which is ambiguous while animating and whenever an "auto" size
+        # hint changes after styles are applied.
+        menu_open = getattr(self, "_menuOpen", None)
+        if menu_open is None:
+            menu_open = not self.isCollapsed()
+        if menu_open:
             self.collapseMenu()
+        else:
+            self.expandMenu()
 
     def expandMenu(self):
+        self._menuOpen = True
         self._collapsed = True
         self._expanded = False
 
@@ -371,6 +379,7 @@ class QCustomSlideMenu(QWidget):
         self._expanded = True
 
     def collapseMenu(self):
+        self._menuOpen = False
         self._collapsed = False
         self._expanded = True
         self.animateMenu()
@@ -379,13 +388,24 @@ class QCustomSlideMenu(QWidget):
 
 
     def emitStatusSignal(self):
-        if self._expanded:
+        # Use the direction recorded at animation start: the _expanded /
+        # _collapsed flags are rewritten by refresh() while the animation's
+        # own resize events are processed, so they are unreliable here.
+        direction = getattr(self, "_animatingExpand", None)
+        if direction is True:
             self.onExpanded.emit()
-
+        elif direction is False:
+            self.onCollapsed.emit()
+        elif self._expanded:
+            self.onExpanded.emit()
         elif self._collapsed:
-            self.onCollapsed.emit() 
-            
+            self.onCollapsed.emit()
+
     def animateMenu(self):
+        # Remember which way THIS animation goes (True = expanding). At entry
+        # _collapsed is True when expandMenu() started the animation.
+        self._animatingExpand = bool(self._collapsed)
+
         self.setMinimumSize(QSize(0, 0))
         startHeight = self.height()
         startWidth = self.width()
@@ -454,23 +474,46 @@ class QCustomSlideMenu(QWidget):
 
         return minHeight, maxHeight
 
-    def calculateEndWidth(self, width):                    
+    def calculateEndWidth(self, width):
         if width == "parent":
             return 0, self.parent().width()
 
+        if width == "auto":
+            # "auto" (legacy/Designer value): size to the widget's content hint
+            autoWidth = self.autoContentSize().width()
+            return autoWidth, autoWidth
+
         return int(width), int(width)
 
-    def calculateEndHeight(self, height):       
+    def calculateEndHeight(self, height):
         if height == "parent":
             return 0, self.parent().height()
-        
+
+        if height == "auto":
+            # "auto" (legacy/Designer value): size to the widget's content hint
+            autoHeight = self.autoContentSize().height()
+            return autoHeight, autoHeight
+
         return int(height), int(height)
 
+    def autoContentSize(self):
+        """Size used for the legacy "auto" width/height value: the widget's
+        own content size hint (falls back to minimumSizeHint)."""
+        hint = self.sizeHint()
+        if not hint.isValid() or (hint.width() <= 0 and hint.height() <= 0):
+            hint = self.minimumSizeHint()
+        return QSize(max(hint.width(), 0), max(hint.height(), 0))
+
     def adjustMaximumSize(self, property_name):
-        if self._expandedWidth == "parent":
+        if not getattr(self, "_animatingExpand", False):
+            # Only release the size constraints after an EXPAND animation:
+            # doing it after a collapse would let the layout re-open the menu.
+            return
+
+        if self._expandedWidth in ("parent", "auto"):
                 self.setMaximumWidth(16777215)  # Reset to max after expanding
 
-        if self._expandedHeight == "parent":
+        if self._expandedHeight in ("parent", "auto"):
             self.setMaximumHeight(16777215)  # Reset to max after expanding
 
     def refresh(self):
@@ -484,27 +527,44 @@ class QCustomSlideMenu(QWidget):
     def isExpanded(self):
         """
         Determines if the widget is in an expanded state by comparing its
-        current width and height to the expanded dimensions.
+        current width and height to the expanded dimensions. A dimension is
+        only meaningful when it actually CHANGES between the collapsed and
+        expanded configurations (e.g. with both widths "auto" the width never
+        moves, so it must not report the menu as expanded).
         """
-        if self.width() >= self.getExpandedWidth() and self._expandedWidth != "parent": 
+        if (self._collapsedWidth != self._expandedWidth
+                and self._expandedWidth != "parent"
+                and self.width() >= self.getExpandedWidth()):
             return True
-        elif self.height() >= self.getExpandedHeight() and self._expandedHeight != "parent":
+        if (self._collapsedHeight != self._expandedHeight
+                and self._expandedHeight != "parent"
+                and self.height() >= self.getExpandedHeight()):
             return True
-        
+
         return False
 
     def isCollapsed(self):
         """
         Determines if the widget is in a collapsed state by comparing its
-        current width and height to the collapsed dimensions.
+        current width and height to the collapsed dimensions. Dimensions that
+        do not change between the two configurations are ignored.
         """
-        return (self.width() <= self.getCollapsedWidth() and
-                self.height() <= self.getCollapsedHeight())
+        checks = []
+        if self._collapsedWidth != self._expandedWidth:
+            checks.append(self.width() <= self.getCollapsedWidth())
+        if self._collapsedHeight != self._expandedHeight:
+            checks.append(self.height() <= self.getCollapsedHeight())
+        if not checks:
+            return (self.width() <= self.getCollapsedWidth() and
+                    self.height() <= self.getCollapsedHeight())
+        return all(checks)
 
 
     def getDefaultWidth(self):
         if isinstance(self._defaultWidth, int):
             return self._defaultWidth
+        if self._defaultWidth == "auto":
+            return self.autoContentSize().width()
         if self._defaultWidth == "parent":
             parent = self.parentWidget()
             if parent:
@@ -515,7 +575,10 @@ class QCustomSlideMenu(QWidget):
     def getDefaultHeight(self):
         if isinstance(self._defaultHeight, int):
             return self._defaultHeight
-  
+
+        if self._defaultHeight == "auto":
+            return self.autoContentSize().height()
+
         if self._defaultHeight == "parent":
             parent = self.parentWidget()
             if parent:
@@ -526,6 +589,8 @@ class QCustomSlideMenu(QWidget):
     def getCollapsedWidth(self):
         if isinstance(self._collapsedWidth, int):
             return self._collapsedWidth
+        if self._collapsedWidth == "auto":
+            return self.autoContentSize().width()
         if self._collapsedWidth == "parent":
             parent = self.parentWidget()
             if parent:
@@ -536,6 +601,8 @@ class QCustomSlideMenu(QWidget):
     def getCollapsedHeight(self):
         if isinstance(self._collapsedHeight, int):
             return self._collapsedHeight
+        if self._collapsedHeight == "auto":
+            return self.autoContentSize().height()
         if self._collapsedHeight == "parent":
             parent = self.parentWidget()
             if parent:
@@ -547,6 +614,9 @@ class QCustomSlideMenu(QWidget):
         if isinstance(self._expandedWidth, int):
             return self._expandedWidth
 
+        if self._expandedWidth == "auto":
+            return self.autoContentSize().width()
+
         if self._expandedWidth == "parent":
             parent = self.parentWidget()
             if parent:
@@ -557,6 +627,8 @@ class QCustomSlideMenu(QWidget):
     def getExpandedHeight(self):
         if isinstance(self._expandedHeight, int):
             return self._expandedHeight
+        if self._expandedHeight == "auto":
+            return self.autoContentSize().height()
         if self._expandedHeight == "parent":
             parent = self.parentWidget()
             if parent:

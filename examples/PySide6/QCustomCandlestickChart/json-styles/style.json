@@ -1,0 +1,42 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomCandlestickChart Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Candle Night",
+          "Default-Theme": true,
+          "Background-color": "#11141b",
+          "Text-color": "#e8ebf2",
+          "Accent-color": "#5b8def",
+          "Icons-color": "#9aa0b0",
+          "Other-variables": {
+            "BORDER_COLOR": "#3a4054",
+            "UP_COLOR": "#22a06b",
+            "DOWN_COLOR": "#dc4646",
+            "WICK_COLOR": "#c6ccda",
+            "GRID_COLOR": "#2a2f3e"
+          }
+        },
+        {
+          "Theme-name": "Candle Day",
+          "Default-Theme": false,
+          "Background-color": "#f4f5f8",
+          "Text-color": "#1e222b",
+          "Accent-color": "#2f6bd6",
+          "Icons-color": "#5b6270",
+          "Other-variables": {
+            "BORDER_COLOR": "#c9cfdc",
+            "UP_COLOR": "#16a34a",
+            "DOWN_COLOR": "#dc2626",
+            "WICK_COLOR": "#3c4352",
+            "GRID_COLOR": "#dde1ea"
+          }
+        }
+      ]
+    }
+  }
+}

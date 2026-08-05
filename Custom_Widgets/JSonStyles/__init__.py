@@ -5,7 +5,7 @@ import re
 import sys
 import warnings
 
-from qtpy.QtCore import QThreadPool, QSettings, Qt
+from qtpy.QtCore import QCoreApplication, QThreadPool, QSettings, Qt
 from qtpy.QtGui import QColor, QFontDatabase, QIcon, QFont
 from qtpy.QtWidgets import QGraphicsDropShadowEffect, QPushButton, QSizeGrip, QApplication
 
@@ -141,6 +141,19 @@ def configure_settings(self, data, update: bool = False):
             else:
                 self.themeEngine.organizationDomain = ""
 
+            # Apply the app identity NOW, before any QSettings() below.
+            # Without this, the reads resolve to the shared pre-identity
+            # store (~/.config/Unknown Organization/main.py.conf — every app
+            # whose entry file is main.py shares it), and one app's stale
+            # THEME key neutralized Default-Theme for every other app's
+            # first run on the machine.
+            if self.themeEngine.organizationName:
+                QCoreApplication.setOrganizationName(self.themeEngine.organizationName)
+            if self.themeEngine.applicationName:
+                QCoreApplication.setApplicationName(self.themeEngine.applicationName)
+            if self.themeEngine.organizationDomain:
+                QCoreApplication.setOrganizationDomain(self.themeEngine.organizationDomain)
+
         if "ThemeSettings" in settings:
             setngs = QSettings()
             
@@ -151,6 +164,13 @@ def configure_settings(self, data, update: bool = False):
 
             if "CustomThemes" in settings['ThemeSettings']: #NOTE: Updated from "CustomTheme" to "CustomThemes"
                 customThemes = settings['ThemeSettings']['CustomThemes']
+                # A persisted THEME only outranks Default-Theme when it names
+                # a theme this file actually defines — a foreign or renamed
+                # value must not strip the default flag.
+                storedTheme = setngs.value("THEME")
+                knownThemeNames = {str(t.get("Theme-name", ""))
+                                   for t in customThemes if isinstance(t, dict)}
+                respectStoredTheme = bool(storedTheme) and str(storedTheme) in knownThemeNames
                 for customTheme in customThemes:
                     if "Theme-name" in customTheme and len(str(customTheme['Theme-name'])) > 0:
                         theme_name = str(customTheme['Theme-name'])
@@ -163,7 +183,7 @@ def configure_settings(self, data, update: bool = False):
 
                         # Determine if this is the default theme
                         is_default_theme = customTheme.get("Default-Theme", False)
-                        if is_default_theme and setngs.contains("THEME") and setngs.contains("THEME") is not None:
+                        if is_default_theme and respectStoredTheme:
                             default_theme = False
                         else:
                             default_theme = is_default_theme
@@ -1244,7 +1264,7 @@ def configure_custom_check_box(self, data, update: bool = False):
                             containerWidget.customizeQCustomCheckBox(activeColor=containerWidget.activeColor)
 
                         if "animationEasingCurve" in QCustomCheckBox:
-                            containerWidget.animationEasingCurve = self.returnAnimationEasingCurve(str(QCustomCheckBox["animationEasingCurve"]))
+                            containerWidget.animationEasingCurve = returnAnimationEasingCurve(str(QCustomCheckBox["animationEasingCurve"]))
                             containerWidget.customizeQCustomCheckBox(animationEasingCurve=containerWidget.animationEasingCurve)
 
                         if "animationDuration" in QCustomCheckBox:

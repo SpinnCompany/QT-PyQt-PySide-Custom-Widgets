@@ -1,0 +1,55 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#coloursHeading, #languagesHeading, #cappedHeading, #collapsedHeading {
+  color: $COLOR_TEXT_1;
+  font-size: 14px;
+}
+
+/* ---- field colours come from the widget's typed colour properties ---- */
+QCustomMultiSelect {
+  qproperty-fieldBackgroundColor: $COLOR_BACKGROUND_2;
+  qproperty-fieldBorderColor: $COLOR_BACKGROUND_4;
+  qproperty-fieldBorderActiveColor: $COLOR_ACCENT_1;
+  qproperty-fieldBorderErrorColor: $FIELD_ERROR;
+  qproperty-chipBackgroundColor: $COLOR_BACKGROUND_3;
+  qproperty-chipTextColor: $COLOR_TEXT_1;
+  qproperty-textColor: $COLOR_TEXT_1;
+  qproperty-placeholderColor: $COLOR_TEXT_4;
+}
+
+/* the option popup (a top-level frame, still app-styled) */
+QFrame#QCustomMultiSelectPopup {
+  background: $COLOR_BACKGROUND_2;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 6px;
+}
+
+QListWidget#QCustomMultiSelectList {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: none;
+}
+
+#statusLabel {
+  color: $COLOR_TEXT_3;
+  font-size: 13px;
+}
+
+#clearButton, #selectAllButton, #themeButton {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 6px;
+  padding: 5px 14px;
+}
+
+#clearButton:hover, #selectAllButton:hover, #themeButton:hover {
+  background: $COLOR_BACKGROUND_3;
+}
+
+#clearButton:pressed, #selectAllButton:pressed, #themeButton:pressed {
+  background: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+}

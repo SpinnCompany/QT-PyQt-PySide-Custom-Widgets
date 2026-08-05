@@ -116,6 +116,14 @@ class QCustomHeatmap(QWidget):
         self._values = self._coerce(values)
         self.update()
 
+    def setData(self, values):
+        """Backward-compatible alias for setValues().
+
+        Early releases shipped setData(); keep it so existing demos and user
+        code keep working after the rename.
+        """
+        self.setValues(values)
+
     def setRange(self, minimum, maximum):
         self._auto = False
         self._min, self._max = float(minimum), float(maximum)

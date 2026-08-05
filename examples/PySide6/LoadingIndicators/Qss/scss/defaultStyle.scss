@@ -1,0 +1,45 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#titleLabel {
+  color: $COLOR_TEXT_1;
+  font-size: 20px;
+  font-weight: bold;
+  padding-bottom: 4px;
+}
+
+#arcCard, #circlesCard, #spinnerCard, #perlinCard, #progressCard {
+  background: $COLOR_BACKGROUND_2;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+#arcLabel, #circlesLabel, #spinnerLabel, #perlinLabel, #progressLabel {
+  color: $COLOR_TEXT_3;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+#inProgressBar {
+  qproperty-customBarColor: $COLOR_ACCENT_1;
+  min-height: 6px;
+}
+
+#pauseButton {
+  background: $COLOR_BACKGROUND_3;
+  color: $COLOR_TEXT_2;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 6px;
+  padding: 6px 18px;
+}
+
+#pauseButton:hover {
+  background: $COLOR_BACKGROUND_4;
+  color: $COLOR_TEXT_1;
+}
+
+#pauseButton:pressed {
+  background: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+}

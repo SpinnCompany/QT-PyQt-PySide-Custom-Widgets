@@ -23,8 +23,8 @@
      id="defs4" />
   <sodipodi:namedview
      id="base"
-     pagecolor="black"
-     bordercolor="black"
+     pagecolor="#9ca3af"
+     bordercolor="#9ca3af"
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
@@ -75,13 +75,13 @@
      id="layer1"
      transform="translate(0,-1020.3622)">
     <circle
-       style="opacity:1;fill:#000000;fill-opacity:0;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:#000000;fill-opacity:0;stroke:#9ca3af;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path4138"
        cx="16.051258"
        cy="1036.3707"
        r="12.973589" />
     <ellipse
-       style="opacity:1;fill:black;fill-opacity:1;stroke:black;stroke-width:2.164536;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:#9ca3af;fill-opacity:1;stroke:#9ca3af;stroke-width:2.164536;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path4178"
        cx="15.974993"
        cy="1036.403"

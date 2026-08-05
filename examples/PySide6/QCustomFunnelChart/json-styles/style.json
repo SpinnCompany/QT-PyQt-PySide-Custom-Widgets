@@ -1,0 +1,57 @@
+{
+    "QtBinding": "PySide6",
+    "QMainWindow": {
+        "title": "QCustomFunnelChart"
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "QCustomFunnelChartDemo"
+        },
+        "ThemeSettings": {
+            "CustomThemes": [
+                {
+                    "Theme-name": "Funnel Dark",
+                    "Default-Theme": true,
+                    "Create-icons": false,
+                    "Background-color": "#101522",
+                    "Text-color": "#e8ecf5",
+                    "Accent-color": "#5b8def",
+                    "Icons-color": "#96a0b5",
+                    "Other-variables": {
+                        "SURFACE": "#1a2030",
+                        "OUTLINE": "#2b3346",
+                        "MUTED": "#8b94a8",
+                        "ON_ACCENT": "#f4f7ff",
+                        "BAND_LABEL": "#f5f8ff"
+                    }
+                },
+                {
+                    "Theme-name": "Funnel Light",
+                    "Default-Theme": false,
+                    "Create-icons": false,
+                    "Background-color": "#f4f6fb",
+                    "Text-color": "#1b2334",
+                    "Accent-color": "#2f6bff",
+                    "Icons-color": "#6b7280",
+                    "Other-variables": {
+                        "SURFACE": "#ffffff",
+                        "OUTLINE": "#d6dbe8",
+                        "MUTED": "#7b8497",
+                        "ON_ACCENT": "#ffffff",
+                        "BAND_LABEL": "#ffffff"
+                    }
+                }
+            ]
+        }
+    },
+    "_comment_ChartPalette": "Stage hues read in code via json.load — they live with the theme so a switch re-hues the funnel.",
+    "ChartPalette": {
+        "Funnel Dark": {
+            "stages": ["#5b8def", "#7c5cf0", "#b04ee0", "#e0508f"]
+        },
+        "Funnel Light": {
+            "stages": ["#2f6bff", "#6a3ff0", "#a32ed4", "#d43a7c"]
+        }
+    }
+}

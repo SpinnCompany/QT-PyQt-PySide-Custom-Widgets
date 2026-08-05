@@ -1,0 +1,51 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#titleLabel {
+  color: $COLOR_TEXT_1;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 2px 0;
+}
+
+#lineEdit {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+#lineEdit:focus {
+  border: 1px solid $COLOR_ACCENT_1;
+}
+
+#textEdit {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 6px;
+  padding: 6px;
+  font-size: 14px;
+}
+
+#textEdit:focus {
+  border: 1px solid $COLOR_ACCENT_1;
+}
+
+/* The emoji-picker triggers: a real themed SVG icon, not a unicode glyph */
+#lineEditBtn, #textEditBtn {
+  qproperty-icon: url($PATH_RESOURCES+'feather/smile.svg');
+  background: $COLOR_ACCENT_1;
+  border: none;
+  border-radius: 6px;
+  padding: 6px;
+  min-width: 22px;
+  min-height: 22px;
+}
+
+#lineEditBtn:hover, #textEditBtn:hover {
+  background: $COLOR_ACCENT_2;
+}

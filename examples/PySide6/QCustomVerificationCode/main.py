@@ -1,100 +1,100 @@
-########################################################################
-## QCustomVerificationCode example
-##
-## A confirm-your-email screen: a 6-digit numeric code that validates on
-## completion, plus a masked alphanumeric variant and a grouped 3+3 layout.
-## Try pasting "123 456" into any of them - the formatting is ignored.
-## Run:
-##     python main.py
-########################################################################
-import sys
-from PySide6 import QtWidgets
+"""QCustomVerificationCode demo — confirm-your-email screen with three variants.
 
-from Custom_Widgets.QCustomVerificationCode import QCustomVerificationCode
-from Custom_Widgets.JSonStyles.tokens import applyDesignTokens
+Try pasting "123 456" into any of them - the formatting is ignored.
+"""
+
+import os, sys
+
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
+
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
+
+from Custom_Widgets import *
+from qtpy.QtCore import QCoreApplication, QSettings
+from qtpy.QtWidgets import QApplication
 
 EXPECTED = "123456"
 
 
-class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("QCustomVerificationCode")
-        central = QtWidgets.QWidget()
-        self.setCentralWidget(central)
-        layout = QtWidgets.QVBoxLayout(central)
-        layout.setContentsMargins(28, 28, 28, 28)
-        layout.setSpacing(18)
-        self._theme = "light"
+class MainWindow(QCustomMainWindow):
+    def __init__(self, parent=None):
+        QCustomMainWindow.__init__(self)
+        # Set BEFORE loadJsonStyle: the theme engine reads QSettings() while
+        # parsing the json — without these names it reads the interpreter-wide
+        # settings file and the app's own THEME/default theme never resolve.
+        QCoreApplication.setOrganizationName("CustomWidgets")
+        QCoreApplication.setApplicationName("QCustomVerificationCode Demo")
 
-        layout.addWidget(self._heading("Enter the 6-digit code we emailed you"))
-        hint = QtWidgets.QLabel("(the demo accepts %s)" % EXPECTED)
-        layout.addWidget(hint)
+        from src.ui_MainWindow import Ui_MainWindow
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
 
-        self.code = QCustomVerificationCode(digits=6)
-        self.code.completed.connect(self._onCompleted)
-        self.code.codeChanged.connect(self._onChanged)
-        layout.addWidget(self.code)
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
 
-        layout.addWidget(self._heading("Grouped 3 + 3"))
-        grouped = QCustomVerificationCode(digits=6)
-        grouped.separatorAfter = 3
-        layout.addWidget(grouped)
+        self.show()
+        themeEngine = self.themeEngine
+        org = getattr(themeEngine, "organizationName", "")
+        if org:
+            QCoreApplication.setOrganizationName(str(org))
+        appn = getattr(themeEngine, "applicationName", "")
+        if appn:
+            QCoreApplication.setApplicationName(str(appn))
+        orgd = getattr(themeEngine, "organizationDomain", "")
+        if orgd:
+            QCoreApplication.setOrganizationDomain(str(orgd))
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            for t in themeEngine.themes:
+                if getattr(t, "defaultTheme", False) and (init_set is None or not init_set):
+                    s.setValue("THEME", t.name)
+                    s.setValue("INIT-THEME-SET", True)
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
 
-        layout.addWidget(self._heading("Masked, alphanumeric, 8 characters"))
-        masked = QCustomVerificationCode(digits=8, inputMode="alphanumeric")
-        masked.masked = True
-        masked.boxWidth = 34
-        layout.addWidget(masked)
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
 
-        row = QtWidgets.QHBoxLayout()
-        for text, slot in (("Clear", lambda: self.code.clear()),
-                           ("Paste '123 456'", self._pasteFormatted),
-                           ("Light / dark", self._toggleTheme)):
-            btn = QtWidgets.QPushButton(text)
-            btn.clicked.connect(slot)
-            row.addWidget(btn)
-        row.addStretch(1)
-        layout.addLayout(row)
+        self._wireDemo()
 
-        self.status = QtWidgets.QLabel("Waiting for a code...")
-        layout.addWidget(self.status)
-        layout.addStretch(1)
-        self.resize(460, 480)
-
-    @staticmethod
-    def _heading(text):
-        label = QtWidgets.QLabel(text)
-        font = label.font()
-        font.setBold(True)
-        label.setFont(font)
-        return label
+    def _wireDemo(self):
+        ui = self.ui
+        ui.codeInput.completed.connect(self._onCompleted)
+        ui.codeInput.codeChanged.connect(self._onChanged)
+        ui.clearButton.clicked.connect(lambda: ui.codeInput.clear())
+        ui.pasteButton.clicked.connect(self._pasteFormatted)
+        ui.themeButton.clicked.connect(self._toggleTheme)
 
     def _onChanged(self, code):
-        if self.code.state == "error" and len(code) < 6:
-            self.code.state = "default"
-        self.status.setText("Entered %d/6" % len(code))
+        if self.ui.codeInput.state == "error" and len(code) < 6:
+            self.ui.codeInput.state = "default"
+        self.ui.statusLabel.setText("Entered %d/6" % len(code))
 
     def _onCompleted(self, code):
         if code == EXPECTED:
-            self.code.state = "default"
-            self.status.setText("Code accepted")
+            self.ui.codeInput.state = "default"
+            self.ui.statusLabel.setText("Code accepted")
         else:
-            self.code.state = "error"
-            self.status.setText("That code is not correct")
+            self.ui.codeInput.state = "error"
+            self.ui.statusLabel.setText("That code is not correct")
 
     def _pasteFormatted(self):
         # Demonstrates that separators and spaces are stripped on the way in.
-        self.code.setCodeText("123 456")
+        self.ui.codeInput.setCodeText("123 456")
 
     def _toggleTheme(self):
-        self._theme = "dark" if self._theme == "light" else "light"
-        applyDesignTokens(QtWidgets.QApplication.instance(), theme=self._theme)
+        current = str(getattr(self.themeEngine, "theme", "") or "")
+        target = "Verify-Day" if current == "Verify-Night" else "Verify-Night"
+        self.themeEngine.setTheme(target)
 
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    applyDesignTokens(app, theme="light")
+    app = QApplication(sys.argv)
     window = MainWindow()
-    window.show()
     sys.exit(app.exec())

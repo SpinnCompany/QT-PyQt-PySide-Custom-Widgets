@@ -1,0 +1,48 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomBadge Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Badge Night",
+          "Default-Theme": true,
+          "Background-color": "#12141a",
+          "Text-color": "#e8eaf0",
+          "Accent-color": "#4f8cff",
+          "Icons-color": "#9aa0b0",
+          "Other-variables": {
+            "SURFACE_MUTED": "#242836",
+            "SURFACE_SECONDARY": "#31364a",
+            "BORDER_COLOR": "#3a4054",
+            "SUCCESS": "#22a06b",
+            "WARNING": "#d97706",
+            "DESTRUCTIVE": "#dc4646",
+            "INFO": "#2f9edb",
+            "ON_FILL": "#ffffff"
+          }
+        },
+        {
+          "Theme-name": "Badge Day",
+          "Default-Theme": false,
+          "Background-color": "#f6f7fa",
+          "Text-color": "#1c1f26",
+          "Accent-color": "#2f6bff",
+          "Icons-color": "#5b6270",
+          "Other-variables": {
+            "SURFACE_MUTED": "#e6e9f0",
+            "SURFACE_SECONDARY": "#d8dce6",
+            "BORDER_COLOR": "#c6ccda",
+            "SUCCESS": "#16a34a",
+            "WARNING": "#d97706",
+            "DESTRUCTIVE": "#dc2626",
+            "INFO": "#2563eb",
+            "ON_FILL": "#ffffff"
+          }
+        }
+      ]
+    }
+  }
+}

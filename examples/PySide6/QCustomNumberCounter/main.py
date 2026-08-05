@@ -1,73 +1,84 @@
-########################################################################
-## QCustomNumberCounter example
-##
-## Animated count-ups with formatting: separators, decimals, affixes.
-## Run:
-##     python main.py
-########################################################################
-import sys
+"""QCustomNumberCounter showcase — animated count-ups with formatting:
+separators, decimals, affixes."""
 
-from PySide6 import QtCore, QtWidgets
+import os, sys
 
-from Custom_Widgets.QCustomNumberCounter import QCustomNumberCounter
-from Custom_Widgets.JSonStyles.tokens import applyDesignTokens
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
+
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
+
+from Custom_Widgets import *
+from qtpy.QtCore import QCoreApplication, QSettings
+from qtpy.QtWidgets import QApplication
 
 
-class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("QCustomNumberCounter")
-        central = QtWidgets.QWidget()
-        self.setCentralWidget(central)
-        layout = QtWidgets.QVBoxLayout(central)
-        layout.setContentsMargins(24, 24, 24, 24)
-        layout.setSpacing(16)
-        self._theme = "light"
+class MainWindow(QCustomMainWindow):
+    def __init__(self, parent=None):
+        QCustomMainWindow.__init__(self)
+        from src.ui_MainWindow import Ui_MainWindow
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
 
-        self.counters = []
-        for label, kwargs in (("Users", dict(suffix="+")),
-                              ("Revenue", dict(prefix="$")),
-                              ("Uptime", dict(suffix="%"))):
-            heading = QtWidgets.QLabel(label)
-            font = heading.font(); font.setBold(True); heading.setFont(font)
-            layout.addWidget(heading)
-            counter = QCustomNumberCounter(**kwargs)
-            counter.fontScale = 1.8
-            counter.alignment = "left"
-            layout.addWidget(counter)
-            self.counters.append(counter)
-        self.counters[1].decimals = 2
-        self.counters[2].decimals = 1
+        # Name the app BEFORE loadJsonStyle: theme parsing checks QSettings for
+        # an existing THEME, and without these names QSettings resolves to the
+        # shared "Unknown Organization/main.py.conf" — whose stale THEME would
+        # cancel this app's Default-Theme flag on every first run.
+        QCoreApplication.setOrganizationName("CustomWidgets")
+        QCoreApplication.setApplicationName("QCustomNumberCounter Example")
 
-        row = QtWidgets.QHBoxLayout()
-        for text, values in (("Count up", (12480, 98432.5, 99.9)),
-                             ("Different", (3120, 45210.25, 87.4)),
-                             ("Reset", (0, 0, 0))):
-            btn = QtWidgets.QPushButton(text)
-            btn.clicked.connect(lambda _=False, v=values: self._apply(v))
-            row.addWidget(btn)
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
 
-        theme = QtWidgets.QPushButton("Light / dark")
-        theme.clicked.connect(self._toggleTheme)
-        row.addWidget(theme)
-        row.addStretch(1)
-        layout.addLayout(row)
-        layout.addStretch(1)
-        self.resize(560, 300)
+        self.show()
+        themeEngine = self.themeEngine
+        org = getattr(themeEngine, "organizationName", "")
+        if org:
+            QCoreApplication.setOrganizationName(str(org))
+        appn = getattr(themeEngine, "applicationName", "")
+        if appn:
+            QCoreApplication.setApplicationName(str(appn))
+        orgd = getattr(themeEngine, "organizationDomain", "")
+        if orgd:
+            QCoreApplication.setOrganizationDomain(str(orgd))
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            for t in themeEngine.themes:
+                if getattr(t, "defaultTheme", False) and (init_set is None or not init_set):
+                    s.setValue("THEME", t.name)
+                    s.setValue("INIT-THEME-SET", True)
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
+
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
+
+        self._wireControls()
+
+    def _wireControls(self):
+        self.counters = [self.ui.usersCounter, self.ui.revenueCounter,
+                         self.ui.uptimeCounter]
+        for button, values in ((self.ui.countUpButton, (12480, 98432.5, 99.9)),
+                               (self.ui.differentButton, (3120, 45210.25, 87.4)),
+                               (self.ui.resetButton, (0, 0, 0))):
+            button.clicked.connect(lambda _=False, v=values: self._apply(v))
+        self.ui.themeButton.clicked.connect(
+            lambda: self.themeEngine.toggleTheme(dark="CounterDark",
+                                                 light="CounterLight"))
+        # seed the demo so the counters animate on launch
+        self._apply((12480, 98432.5, 99.9))
 
     def _apply(self, values):
         for counter, value in zip(self.counters, values):
             counter.setValue(value)
 
 
-    def _toggleTheme(self):
-        self._theme = "dark" if self._theme == "light" else "light"
-        applyDesignTokens(QtWidgets.QApplication.instance(), theme=self._theme)
-
-
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    applyDesignTokens(app, theme="light")
+    app = QApplication(sys.argv)
     window = MainWindow()
-    window.show()
     sys.exit(app.exec())

@@ -1,0 +1,38 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomRadialLines Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Polar-Dark",
+          "Default-Theme": true,
+          "Background-color": "#0f1521",
+          "Text-color": "#e8edf6",
+          "Accent-color": "#60a5fa",
+          "Icons-color": "#94a3b8",
+          "Create-icons": false,
+          "Other-variables": {
+            "SERIES_1": "#60a5fa",
+            "SERIES_2": "#4ade80"
+          }
+        },
+        {
+          "Theme-name": "Polar-Light",
+          "Default-Theme": false,
+          "Background-color": "#f5f7fb",
+          "Text-color": "#182130",
+          "Accent-color": "#2563eb",
+          "Icons-color": "#5b6b83",
+          "Create-icons": false,
+          "Other-variables": {
+            "SERIES_1": "#2563eb",
+            "SERIES_2": "#16a34a"
+          }
+        }
+      ]
+    }
+  }
+}

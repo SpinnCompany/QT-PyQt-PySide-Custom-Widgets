@@ -1,0 +1,62 @@
+{
+    "ShowLogs": false,
+    "QtBinding": "PySide6",
+    "CheckForMissingicons": false,
+    "QMainWindow": {
+        "title": "QCustomRadialGauge — Demo"
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "RadialGaugeDemo",
+            "OrganizationDomain": "spinncode.com"
+        },
+        "ThemeSettings": {
+            "CustomThemes": [
+                {
+                    "Theme-name": "Gauge Dark",
+                    "Default-Theme": true,
+                    "Create-icons": true,
+                    "Background-color": "#171a22",
+                    "Text-color": "#e7e9ef",
+                    "Accent-color": "#7c5cff",
+                    "Icons-color": "#9aa1b2"
+                },
+                {
+                    "Theme-name": "Gauge Light",
+                    "Default-Theme": false,
+                    "Create-icons": true,
+                    "Background-color": "#ffffff",
+                    "Text-color": "#1c2430",
+                    "Accent-color": "#6b4be0",
+                    "Icons-color": "#6b7280"
+                }
+            ]
+        }
+    },
+    "_comment_ChartPalette": "Read in code by main.py — zone / gradient hues live with the theme so they flip on theme switch (token-driven).",
+    "ChartPalette": {
+        "Gauge Dark": {
+            "zoneLow": "#33d17a",
+            "zoneMid": "#f4c44e",
+            "zoneHigh": "#f2704e",
+            "speedStart": "#33d17a",
+            "speedEnd": "#f2704e",
+            "usageStart": "#5b8cff",
+            "usageEnd": "#33d17a",
+            "timerStart": "#7c5cff",
+            "timerEnd": "#ff5c8a"
+        },
+        "Gauge Light": {
+            "zoneLow": "#1fae62",
+            "zoneMid": "#d9a021",
+            "zoneHigh": "#e05a3a",
+            "speedStart": "#1fae62",
+            "speedEnd": "#e05a3a",
+            "usageStart": "#3f6fe0",
+            "usageEnd": "#1fae62",
+            "timerStart": "#6b4be0",
+            "timerEnd": "#e04a76"
+        }
+    }
+}

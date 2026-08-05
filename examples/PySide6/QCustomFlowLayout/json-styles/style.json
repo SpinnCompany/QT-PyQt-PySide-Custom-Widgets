@@ -1,0 +1,44 @@
+{
+    "QtBinding": "PySide6",
+    "QMainWindow": {
+        "title": "QCustomFlowLayout Example"
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "QCustomFlowLayoutDemo"
+        },
+        "ThemeSettings": {
+            "CustomThemes": [
+                {
+                    "Theme-name": "Flow Dark",
+                    "Default-Theme": true,
+                    "Create-icons": false,
+                    "Background-color": "#12161d",
+                    "Text-color": "#e6ebe7",
+                    "Accent-color": "#4CAF50",
+                    "Icons-color": "#94a19a",
+                    "Other-variables": {
+                        "ON_ACCENT": "#f2fff4",
+                        "ACCENT_HOVER": "#45a049",
+                        "ACCENT_PRESSED": "#3e8e41"
+                    }
+                },
+                {
+                    "Theme-name": "Flow Light",
+                    "Default-Theme": false,
+                    "Create-icons": false,
+                    "Background-color": "#f0f0f0",
+                    "Text-color": "#1d251f",
+                    "Accent-color": "#4CAF50",
+                    "Icons-color": "#6b7280",
+                    "Other-variables": {
+                        "ON_ACCENT": "#ffffff",
+                        "ACCENT_HOVER": "#45a049",
+                        "ACCENT_PRESSED": "#3e8e41"
+                    }
+                }
+            ]
+        }
+    }
+}

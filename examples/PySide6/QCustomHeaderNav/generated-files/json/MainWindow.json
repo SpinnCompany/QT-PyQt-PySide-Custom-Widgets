@@ -1,0 +1,32 @@
+{
+  "QComboBox": [
+    {
+      "name": "indicatorCombo",
+      "items": [
+        {
+          "name": "underline"
+        },
+        {
+          "name": "pill"
+        },
+        {
+          "name": "none"
+        }
+      ]
+    },
+    {
+      "name": "alignCombo",
+      "items": [
+        {
+          "name": "left"
+        },
+        {
+          "name": "center"
+        },
+        {
+          "name": "right"
+        }
+      ]
+    }
+  ]
+}

@@ -9,6 +9,13 @@ interactions live here (and in background workers), never in the .ui.
 Theme switching goes through the icon pipeline BY NAME (Winning Dark / Light),
 so the custom themes' icon sets recolour correctly. Chart hues come from the
 token-driven ChartPalette in style.json, so they flip with the theme too.
+
+ZERO inline stylesheets: data-coloured chrome (legend dots, initials avatars,
+status badges, delta pills) is styled ONLY in Qss/scss/chrome.scss via enumerable
+dynamic props ([chartKey=...], [avatarKey=...], [trend=...], [variant=...])
+whose hues are each theme's Other-variables from json-styles/style.json.
+Painted colours (chart series, sparklines) use typed Qt properties/APIs fed
+from the ChartPalette section of the same file.
 """
 
 import os
@@ -113,35 +120,37 @@ class PageManager(QObject):
 
 
 # --------------------------------------------------------------------------- #
-# Small builders
+# Small builders — no inline stylesheets. Colour comes from Qss/scss/chrome.scss:
+# enumerable dynamic props (avatarKey / chartKey / trend) select rules whose
+# hues are the theme's Other-variables, so everything flips on theme switch.
 # --------------------------------------------------------------------------- #
-def _round_avatar(text, color, size=34):
+def _round_avatar(text, idx, size=32):
     a = QLabel(text)
     a.setFixedSize(size, size)
     a.setAlignment(Qt.AlignCenter)
-    a.setStyleSheet("background:%s; color:#ffffff; border-radius:%dpx; "
-                    "font-weight:700; font-size:12px;" % (color, size // 2))
+    a.setProperty("role", "avatar")
+    a.setProperty("avatarKey", str(idx % 5))    # -> scss [avatarKey="0..4"]
     return a
 
 
-def _dot(color, d=9):
+def _dot(key, d=9):
     lbl = QLabel()
     lbl.setFixedSize(d, d)
-    lbl.setStyleSheet("background:%s; border-radius:%dpx;" % (color, d // 2))
+    lbl.setProperty("role", "dot")
+    lbl.setProperty("chartKey", key)            # -> scss [chartKey="online"...]
     return lbl
 
 
-def _legend(color, text):
+def _legend(key, text):
     w = QWidget()
     lay = QHBoxLayout(w)
     lay.setContentsMargins(0, 0, 0, 0)
     lay.setSpacing(7)
-    dot = _dot(color)
-    lay.addWidget(dot)
+    lay.addWidget(_dot(key))
     lab = QLabel(text)
     lab.setProperty("role", "legend")
     lay.addWidget(lab)
-    return w, dot
+    return w
 
 
 # --------------------------------------------------------------------------- #
@@ -151,9 +160,6 @@ class DashboardManager(PageManager):
     def setup(self, comp):
         self.comp = comp
         self._kpi = {}          # key -> {value,spark,active,delta,trend}
-        self._dots = []         # (dot QLabel, palette-key)
-        self._avatars = []      # (avatar QLabel, index)
-        self._badges = []       # (QCustomBadge, variant)
         pal = self._palette()
 
         self._build_header(comp)
@@ -197,7 +203,8 @@ class DashboardManager(PageManager):
         except Exception:
             pass
         v = cw.getChartView()
-        v.setStyleSheet("background: transparent; border: 0;")
+        # transparent native holder: attribute + scss rule, no inline stylesheet
+        v.setAttribute(Qt.WA_TranslucentBackground, True)
         v.setBackgroundBrush(QBrush(Qt.transparent))
         axis = QColor(pal.get("axis", "#888888"))
         grid = QColor(pal.get("grid", "#ffffff22"))
@@ -227,13 +234,12 @@ class DashboardManager(PageManager):
                     pass
 
     # -- header ------------------------------------------------------------ #
+    # headerAvatar chrome lives in scss (#headerAvatar, accent token) — only
+    # the painted feather pixmaps are (re)tinted here.
     def _build_header(self, comp):
         col = T.icon_color(self._theme_name())
         comp.searchIcon.setPixmap(feather_pixmap("search", col, 18))
         comp.bellIcon.setPixmap(feather_pixmap("bell", col, 18))
-        comp.headerAvatar.setStyleSheet(
-            "background:%s; color:#ffffff; border-radius:20px; font-weight:700;"
-            % self._accent_hex())
 
     # -- KPI cards --------------------------------------------------------- #
     def _build_kpis(self, comp, pal):
@@ -256,6 +262,10 @@ class DashboardManager(PageManager):
             left.addWidget(val)
             left.addStretch(1)
             delta = QLabel("")
+            delta.setProperty("role", "delta")
+            # enumerable trend prop -> scss [trend="up"/"down"/"onAccent"]
+            delta.setProperty("trend", "onAccent" if active else
+                              ("down" if ckey == "down" else "up"))
             drow = QHBoxLayout()
             drow.addWidget(delta)
             drow.addStretch(1)
@@ -272,20 +282,14 @@ class DashboardManager(PageManager):
                               "delta": delta, "trend": trend, "ckey": ckey}
         self._style_kpis(pal)
 
+    # Pill styling is pure scss ([role="delta"][trend=...]); Python only feeds
+    # the sparkline's TYPED lineColor property from the theme's ChartPalette.
     def _style_kpis(self, pal):
         for key, ref in self._kpi.items():
-            up = ref["trend"] == "up"
             if ref["active"]:
                 ref["spark"].lineColor = QColor("#ffffff")
-                ref["delta"].setStyleSheet(
-                    "color:#ffffff; background:rgba(255,255,255,0.22);"
-                    " border-radius:8px; padding:3px 9px; font-weight:700; font-size:11px;")
             else:
-                ref["spark"].lineColor = QColor(pal.get(ref["ckey"], "#7b6cf6"))
-                c = pal.get("up" if up else "down", "#3ddc97")
-                ref["delta"].setStyleSheet(
-                    "color:%s; background:rgba(120,120,120,0.14); border-radius:8px;"
-                    " padding:3px 9px; font-weight:700; font-size:11px;" % c)
+                ref["spark"].lineColor = QColor(pal[ref["ckey"]])
             ref["delta"].setText(("↗  +5%" if key == "orders" else
                                   "↗  +3%" if key == "sales" else
                                   "↗  +2%" if key == "sessions" else "↘  -1%"))
@@ -307,9 +311,7 @@ class DashboardManager(PageManager):
         c.setGridLineColor(QColor(pal["grid"]))
         self._strip(c, pal)
         for key, label in (("online", "Online sales"), ("offline", "Offline sales")):
-            w, dot = _legend(pal[key], label)
-            comp.salesLegend.layout().addWidget(w)
-            self._dots.append((dot, key))
+            comp.salesLegend.layout().addWidget(_legend(key, label))
 
     # -- distribution donut ------------------------------------------------ #
     def _build_dist(self, comp, pal):
@@ -317,14 +319,13 @@ class DashboardManager(PageManager):
         vals = [v for _n, v, _k in D.DISTRIBUTION]
         cols = [pal[k] for _n, _v, k in D.DISTRIBUTION]
         c.setData(vals, cols)
-        c.setTrackColor(QColor(pal.get("donutTrack", "#26ffffff")))
+        c.setTrackColor(QColor(pal["donutTrack"]))    # QColor hex is #AARRGGBB
         for n, v, k in D.DISTRIBUTION:
             roww = QWidget()
             rl = QHBoxLayout(roww)
             rl.setContentsMargins(0, 0, 0, 0)
             rl.setSpacing(9)
-            dot = _dot(pal[k])
-            rl.addWidget(dot)
+            rl.addWidget(_dot(k))
             nm = QLabel(n)
             nm.setProperty("role", "legend")
             rl.addWidget(nm)
@@ -333,11 +334,9 @@ class DashboardManager(PageManager):
             pv.setProperty("role", "legendVal")
             rl.addWidget(pv)
             comp.distLegend.layout().addWidget(roww)
-            self._dots.append((dot, k))
 
     # -- orders feed ------------------------------------------------------- #
     def _build_orders(self, comp, pal):
-        avatars = pal.get("avatar", ["#888888"] * 5)
         for i, (ini, name, date, price, status, variant) in enumerate(D.ORDERS):
             row = QFrame()
             row.setProperty("role", "orderRow")
@@ -349,9 +348,7 @@ class DashboardManager(PageManager):
             ncl = QHBoxLayout(namecell)
             ncl.setContentsMargins(0, 0, 0, 0)
             ncl.setSpacing(11)
-            av = _round_avatar(ini, avatars[i % len(avatars)], 32)
-            ncl.addWidget(av)
-            self._avatars.append((av, i))
+            ncl.addWidget(_round_avatar(ini, i))
             nm = QLabel(name)
             nm.setProperty("role", "orderName")
             ncl.addWidget(nm)
@@ -365,10 +362,9 @@ class DashboardManager(PageManager):
             pr.setProperty("role", "orderPrice")
             rl.addWidget(pr, 1)
 
+            # variant is a typed Qt property -> scss QCustomBadge[variant=...]
             badge = QCustomBadge(status, variant=variant)
             badge.sizeVariant = "sm"
-            self._badges.append((badge, variant))
-            self._style_badge(badge, variant, pal)
             bw = QWidget()
             bl = QHBoxLayout(bw)
             bl.setContentsMargins(0, 0, 0, 0)
@@ -377,18 +373,6 @@ class DashboardManager(PageManager):
             rl.addWidget(bw, 1)
 
             comp.ordersBody.layout().addWidget(row)
-
-    # -- status badges (no applyDesignTokens here, so style inline) --------- #
-    def _style_badge(self, badge, variant, pal):
-        table = {
-            "warning": ("#e0a020", "rgba(240,170,40,0.16)"),
-            "success": (pal.get("up", "#17b26a"), "rgba(23,178,106,0.16)"),
-            "destructive": (pal.get("down", "#e14d6e"), "rgba(225,77,110,0.16)"),
-        }
-        fg, bg = table.get(variant, ("#8b909e", "rgba(139,144,158,0.16)"))
-        badge.setStyleSheet(
-            "QCustomBadge{background:%s; color:%s; border-radius:9px; "
-            "padding:2px 10px; font-weight:700; font-size:11px;}" % (bg, fg))
 
     # -- customers area chart ---------------------------------------------- #
     def _build_customers(self, comp, pal):
@@ -407,9 +391,7 @@ class DashboardManager(PageManager):
         c.setXAxisRange(0, len(D.MONTHS) - 1)
         self._strip(c, pal, hide_axes=False, xlabels=False)
         for key, label in (("loyal", "Loyal customers"), ("new", "New customers")):
-            w, dot = _legend(pal[key], label)
-            comp.custLegend.layout().addWidget(w)
-            self._dots.append((dot, key))
+            comp.custLegend.layout().addWidget(_legend(key, label))
         for m in ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]:
             ml = QLabel(m)
             ml.setProperty("role", "axis")
@@ -441,7 +423,7 @@ class DashboardManager(PageManager):
             pass
         try:
             comp.distChart.setColors([pal[k] for _n, _v, k in D.DISTRIBUTION])
-            comp.distChart.setTrackColor(QColor(pal.get("donutTrack", "#26ffffff")))
+            comp.distChart.setTrackColor(QColor(pal["donutTrack"]))
         except Exception:
             pass
         try:
@@ -450,15 +432,10 @@ class DashboardManager(PageManager):
             self._strip(comp.customersChart, pal, hide_axes=False, xlabels=False)
         except Exception:
             pass
-        # legend dots + avatars + kpi sparklines + header
-        for dot, key in self._dots:
-            dot.setStyleSheet("background:%s; border-radius:4px;" % pal.get(key, "#888"))
-        avatars = pal.get("avatar", ["#888"] * 5)
-        for av, i in self._avatars:
-            av.setStyleSheet("background:%s; color:#ffffff; border-radius:16px; "
-                             "font-weight:700; font-size:12px;" % avatars[i % len(avatars)])
-        for badge, variant in self._badges:
-            self._style_badge(badge, variant, pal)
+        # Dots / avatars / badges / delta pills need NOTHING here: their scss
+        # rules reference the theme's Other-variables, so the theme engine's
+        # recompiled stylesheet restyles them on its own. Only painted things
+        # (sparkline lines, feather pixmaps) are re-fed.
         self._style_kpis(pal)
         self._build_header(comp)
 

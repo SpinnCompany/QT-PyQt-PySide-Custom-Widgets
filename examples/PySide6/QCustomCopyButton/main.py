@@ -1,75 +1,86 @@
-########################################################################
-## QCustomCopyButton example
-##
-## Copy-to-clipboard with confirmation, in all three variants.
-## Run:
-##     python main.py
-########################################################################
-import sys
+"""QCustomCopyButton example — copy-to-clipboard with confirmation, in all
+three variants plus icon-only, with a reset-delay control and a live
+light/dark theme toggle."""
 
-from PySide6 import QtCore, QtWidgets
+import os, sys
 
-from Custom_Widgets.QCustomCopyButton import QCustomCopyButton
-from Custom_Widgets.JSonStyles.tokens import applyDesignTokens
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
+
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
+
+from Custom_Widgets import *
+from qtpy.QtCore import QCoreApplication, QSettings
+from qtpy.QtWidgets import QApplication
 
 
-class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("QCustomCopyButton")
-        central = QtWidgets.QWidget()
-        self.setCentralWidget(central)
-        layout = QtWidgets.QVBoxLayout(central)
-        layout.setContentsMargins(24, 24, 24, 24)
-        layout.setSpacing(16)
-        self._theme = "light"
+class MainWindow(QCustomMainWindow):
+    def __init__(self, parent=None):
+        QCustomMainWindow.__init__(self)
+        from src.ui_MainWindow import Ui_MainWindow
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
 
-        self.buttons = []
-        for variant in ("outline", "ghost", "solid"):
-            widget = QCustomCopyButton(payload="sk-live-%s-abc123" % variant,
-                                       text="Copy %s key" % variant)
-            widget.variant = variant
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
+
+        self.show()
+        themeEngine = self.themeEngine
+        org = getattr(themeEngine, "organizationName", "")
+        if org:
+            QCoreApplication.setOrganizationName(str(org))
+        appn = getattr(themeEngine, "applicationName", "")
+        if appn:
+            QCoreApplication.setApplicationName(str(appn))
+        orgd = getattr(themeEngine, "organizationDomain", "")
+        if orgd:
+            QCoreApplication.setOrganizationDomain(str(orgd))
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            for t in themeEngine.themes:
+                if getattr(t, "defaultTheme", False) and (init_set is None or not init_set):
+                    s.setValue("THEME", t.name)
+                    s.setValue("INIT-THEME-SET", True)
+        if s.value("THEME") is None:
+            # A stray QSettings file (written before QApplication got its real
+            # names) strips every theme's default flag — seed explicitly.
+            s.setValue("THEME", "Slate")
+            s.setValue("INIT-THEME-SET", True)
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
+
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
+
+        self._wire()
+
+    def _wire(self):
+        ui = self.ui
+        self.copyButtons = [ui.copyOutline, ui.copyGhost, ui.copySolid,
+                            ui.copyIconOnly]
+        for widget in self.copyButtons:
             widget.copied.connect(
-                lambda text: self.status.setText("copied %d characters" % len(text)))
-            layout.addWidget(widget)
-            self.buttons.append(widget)
-        iconOnly = QCustomCopyButton(payload="short")
-        iconOnly.iconOnly = True
-        layout.addWidget(iconOnly)
-        self.buttons.append(iconOnly)
-        self.status = QtWidgets.QLabel("Press a button, then paste somewhere")
-        layout.addWidget(self.status)
-
-        row = QtWidgets.QHBoxLayout()
-        delay = QtWidgets.QSpinBox()
-        delay.setRange(0, 6000)
-        delay.setSingleStep(200)
-        delay.setValue(1600)
-        delay.valueChanged.connect(self._setDelay)
-        row.addWidget(QtWidgets.QLabel("Reset ms"))
-        row.addWidget(delay)
-
-        theme = QtWidgets.QPushButton("Light / dark")
-        theme.clicked.connect(self._toggleTheme)
-        row.addWidget(theme)
-        row.addStretch(1)
-        layout.addLayout(row)
-        layout.addStretch(1)
-        self.resize(560, 260)
+                lambda text: ui.statusLabel.setText("copied %d characters" % len(text)))
+        ui.delaySpin.valueChanged.connect(self._setDelay)
+        ui.themeButton.clicked.connect(self._toggleTheme)
 
     def _setDelay(self, value):
-        for widget in self.buttons:
+        for widget in self.copyButtons:
             widget.resetDelay = value
 
-
     def _toggleTheme(self):
-        self._theme = "dark" if self._theme == "light" else "light"
-        applyDesignTokens(QtWidgets.QApplication.instance(), theme=self._theme)
+        s = QSettings()
+        new = "Ivory" if s.value("THEME") == "Slate" else "Slate"
+        s.setValue("THEME", new)
+        self.themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
 
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    applyDesignTokens(app, theme="light")
+    app = QApplication(sys.argv)
     window = MainWindow()
-    window.show()
     sys.exit(app.exec())

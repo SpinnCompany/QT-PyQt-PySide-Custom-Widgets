@@ -1,0 +1,56 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+/* ---- nav colours come from the widget's typed colour properties ---- */
+QCustomHeaderNav {
+  qproperty-accentColor: $COLOR_ACCENT_1;
+  qproperty-textColor: $COLOR_TEXT_3;
+  qproperty-activeTextColor: $COLOR_TEXT_1;
+  qproperty-surfaceColor: $COLOR_BACKGROUND_2;
+  qproperty-dividerColor: $COLOR_BACKGROUND_4;
+}
+
+#statusLabel {
+  color: $COLOR_TEXT_3;
+  font-size: 14px;
+}
+
+#indicatorLabel, #alignLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 14px;
+}
+
+#indicatorCombo, #alignCombo {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 6px;
+  padding: 4px 10px;
+  min-width: 90px;
+}
+
+#indicatorCombo QAbstractItemView, #alignCombo QAbstractItemView {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  selection-background-color: $COLOR_ACCENT_1;
+  selection-color: $COLOR_BACKGROUND_1;
+}
+
+#themeButton {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 6px;
+  padding: 5px 14px;
+}
+
+#themeButton:hover {
+  background: $COLOR_BACKGROUND_3;
+}
+
+#themeButton:pressed {
+  background: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+}

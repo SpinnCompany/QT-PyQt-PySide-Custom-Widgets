@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>560</width>
+    <height>320</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QCustomCopyButton</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>16</number>
+    </property>
+    <property name="leftMargin">
+     <number>24</number>
+    </property>
+    <property name="topMargin">
+     <number>24</number>
+    </property>
+    <property name="rightMargin">
+     <number>24</number>
+    </property>
+    <property name="bottomMargin">
+     <number>24</number>
+    </property>
+    <item>
+     <widget class="QLabel" name="titleLabel">
+      <property name="text">
+       <string>Copy to clipboard — all three variants</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCustomCopyButton" name="copyOutline">
+      <property name="payload" stdset="0">
+       <string>sk-live-outline-abc123</string>
+      </property>
+      <property name="text" stdset="0">
+       <string>Copy outline key</string>
+      </property>
+      <property name="variant" stdset="0">
+       <string>outline</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCustomCopyButton" name="copyGhost">
+      <property name="payload" stdset="0">
+       <string>sk-live-ghost-abc123</string>
+      </property>
+      <property name="text" stdset="0">
+       <string>Copy ghost key</string>
+      </property>
+      <property name="variant" stdset="0">
+       <string>ghost</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCustomCopyButton" name="copySolid">
+      <property name="payload" stdset="0">
+       <string>sk-live-solid-abc123</string>
+      </property>
+      <property name="text" stdset="0">
+       <string>Copy solid key</string>
+      </property>
+      <property name="variant" stdset="0">
+       <string>solid</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCustomCopyButton" name="copyIconOnly">
+      <property name="payload" stdset="0">
+       <string>short</string>
+      </property>
+      <property name="iconOnly" stdset="0">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="statusLabel">
+      <property name="text">
+       <string>Press a button, then paste somewhere</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="controlsRow">
+      <item>
+       <widget class="QLabel" name="delayLabel">
+        <property name="text">
+         <string>Reset ms</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="delaySpin">
+        <property name="minimum">
+         <number>0</number>
+        </property>
+        <property name="maximum">
+         <number>6000</number>
+        </property>
+        <property name="singleStep">
+         <number>200</number>
+        </property>
+        <property name="value">
+         <number>1600</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="themeButton">
+        <property name="text">
+         <string>Light / dark</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="controlsSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomCopyButton</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomCopyButton.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

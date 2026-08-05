@@ -70,10 +70,17 @@ def main():
     animated = sum(1 for v in groups.values() for n in v
                    if os.path.isfile(os.path.join(SHOTS, "%s.gif" % slugFor(n))))
 
+    # The gallery grid is raw JSX, not markdown constructs, so Docusaurus does
+    # NOT rewrite its src/href with the site baseUrl the way it does for
+    # markdown images. Root-absolute paths ("/img/…", "/Widgets/…") therefore
+    # 404 on any project-page deployment (baseUrl "/Docs-…/"). Emitting .mdx
+    # and routing every path through useBaseUrl() is the supported fix — which
+    # is also why this file must NOT declare `mdx: format: md`.
     out = ["---", "title: Widget gallery", "sidebar_label: Gallery",
            "sidebar_position: 2",
            "description: Every Custom Widgets component, grouped by what you are building.",
-           "mdx:", "  format: md", "---", "",
+           "---", "",
+           "import useBaseUrl from '@docusaurus/useBaseUrl';", "",
            "# Widget gallery", "",
            "%d widgets, grouped by the job you are doing rather than by where "
            "they live in the source tree. %d of them animate here, showing the "
@@ -84,18 +91,22 @@ def main():
         names = groups.get(category) or []
         if not names:
             continue
-        out += ["## %s" % category, "", '<div class="widget-gallery">', ""]
+        out += ["## %s" % category, "", '<div className="widget-gallery">', ""]
         for name in names:
             source = thumbnail(name)
-            badge = '<span class="wg-pro">PRO</span>' if tier.get(name) == "pro-ext" else ""
-            media = ('<img src="%s" alt="%s" loading="lazy" />' % (source, name)
-                     if source else '<div class="wg-noshot">No preview</div>')
-            out.append('<a class="wg-card" href="/Widgets/%s">%s'
-                       '<span class="wg-name">%s%s</span></a>' % (name, media, name, badge))
+            badge = '<span className="wg-pro">PRO</span>' if tier.get(name) == "pro-ext" else ""
+            media = ("<img src={useBaseUrl('%s')} alt=\"%s\" loading=\"lazy\" />" % (source, name)
+                     if source else '<div className="wg-noshot">No preview</div>')
+            out.append("<a className=\"wg-card\" href={useBaseUrl('/Widgets/%s')}>%s"
+                       '<span className="wg-name">%s%s</span></a>' % (name, media, name, badge))
         out += ["", "</div>", ""]
 
-    path = os.path.join(DOCS, "docs", "gallery.md")
+    path = os.path.join(DOCS, "docs", "gallery.mdx")
     open(path, "w", encoding="utf-8").write("\n".join(out))
+    stale = os.path.join(DOCS, "docs", "gallery.md")
+    if os.path.isfile(stale):
+        # a generated .md beside the .mdx is a doc-id collision, fatal at build
+        os.remove(stale)
     print("gallery: %d widgets, %d animated, %d Pro" % (total, animated, pro))
     if orphans:
         print("NOT CATEGORISED (%d): %s" % (len(orphans), ", ".join(sorted(orphans))))

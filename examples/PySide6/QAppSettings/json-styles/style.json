@@ -1,0 +1,99 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "QT Settings Session",
+      "ApplicationName": "QT Settings Session Company",
+      "OrganizationDomain": "qtsettingssession.org"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Default-Light",
+          "Default-Theme": true,
+          "Background-color": "#f5f7fa",
+          "Text-color": "#182234",
+          "Accent-color": "#40a6e2",
+          "Icons-color": "#8393a3",
+          "Create-icons": false
+        },
+        {
+          "Theme-name": "Default-Dark",
+          "Default-Theme": false,
+          "Background-color": "#283a4d",
+          "Text-color": "#eef3f8",
+          "Accent-color": "#40a6e2",
+          "Icons-color": "#8393a3",
+          "Create-icons": false
+        }
+      ]
+    }
+  },
+  "QMainWindow": {
+    "title": "QAppSettings — Theme & Session Persistence",
+    "navigation": {
+      "close": "exit"
+    }
+  },
+  "QCustomSlideMenu": {
+    "userAccount": {
+      "defaultSize": {
+        "width": 0,
+        "height": "auto"
+      },
+      "collapsedSize": {
+        "width": 0,
+        "height": "auto"
+      },
+      "expandedSize": {
+        "width": 280,
+        "height": "auto"
+      },
+      "toggleButton": {
+        "buttonName": "show_hide_user_account"
+      },
+      "menuTransitionAnimation": {
+        "animationDuration": 500,
+        "animationEasingCurve": "Linear"
+      }
+    },
+    "exitPrompt": {
+      "defaultSize": {
+        "width": "auto",
+        "height": 0
+      },
+      "collapsedSize": {
+        "width": "parent",
+        "height": 0
+      },
+      "expandedSize": {
+        "width": "parent",
+        "height": 70
+      },
+      "toggleButton": {
+        "buttonName": "show_hide_exit_prompt"
+      },
+      "menuTransitionAnimation": {
+        "animationDuration": 500,
+        "animationEasingCurve": "Linear"
+      }
+    }
+  },
+  "QCustomQStackedWidget": [
+    {
+      "name": "mainPages",
+      "transitionAnimation": {
+        "fade": {
+          "active": true,
+          "duration": 400,
+          "easingCurve": "OutQuad"
+        }
+      },
+      "navigation": {
+        "navigationButtons": {
+          "loginBtn": "loginPage",
+          "signUpBtn": "signUpPage"
+        }
+      }
+    }
+  ]
+}

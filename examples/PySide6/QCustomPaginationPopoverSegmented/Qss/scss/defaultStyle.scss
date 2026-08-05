@@ -1,0 +1,110 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#viewCaption, #popoverCaption {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#statusLabel {
+  color: $COLOR_TEXT_3;
+  font-size: 12px;
+}
+
+/* --- QCustomSegmentedControl internals ------------------------------- */
+#segmentButton {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_2;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  padding: 6px 18px;
+  font-size: 13px;
+}
+
+#segmentButton[seg="first"] {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+#segmentButton[seg="last"] {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+#segmentButton[seg="only"] {
+  border-radius: 8px;
+}
+
+#segmentButton:hover {
+  color: $COLOR_TEXT_1;
+}
+
+#segmentButton:checked {
+  background: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+  border-color: $COLOR_ACCENT_1;
+  font-weight: 600;
+}
+
+/* --- QCustomQPushButton (outline variant) ---------------------------- */
+QCustomQPushButton[variant="outline"] {
+  background: transparent;
+  color: $COLOR_ACCENT_1;
+  border: 1px solid $COLOR_ACCENT_1;
+  border-radius: 8px;
+  padding: 7px 18px;
+  font-size: 13px;
+}
+
+QCustomQPushButton[variant="outline"]:hover {
+  background: $COLOR_BACKGROUND_2;
+}
+
+QCustomQPushButton[variant="outline"]:pressed {
+  background: $COLOR_BACKGROUND_3;
+}
+
+/* --- QCustomPopover --------------------------------------------------- */
+QCustomPopover {
+  qproperty-panelColor: $COLOR_BACKGROUND_2;
+  qproperty-borderColor: $COLOR_BACKGROUND_4;
+}
+
+QCustomPopover QLabel {
+  color: $COLOR_TEXT_1;
+  font-size: 13px;
+}
+
+/* --- QCustomPagination internals -------------------------------------- */
+#pageBtn, #pageNav {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_2;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 6px;
+  min-width: 30px;
+  padding: 5px 8px;
+  font-size: 13px;
+}
+
+#pageBtn:hover, #pageNav:hover {
+  color: $COLOR_TEXT_1;
+  border-color: $COLOR_ACCENT_1;
+}
+
+#pageNav:disabled {
+  color: $COLOR_TEXT_4;
+  border-color: $COLOR_BACKGROUND_3;
+}
+
+#pageBtn[current="true"] {
+  background: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+  border-color: $COLOR_ACCENT_1;
+  font-weight: 600;
+}
+
+#pageEllipsis {
+  color: $COLOR_TEXT_3;
+  padding: 0 4px;
+}

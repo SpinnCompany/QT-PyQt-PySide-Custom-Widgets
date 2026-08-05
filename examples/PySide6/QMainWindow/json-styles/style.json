@@ -1,0 +1,66 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomQMainWindow Starter"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Frameless Night",
+          "Default-Theme": true,
+          "Create-icons": true,
+          "Background-color": "#181824",
+          "Text-color": "#eef0f6",
+          "Accent-color": "#e60540",
+          "Icons-color": "#eef0f6",
+          "Other-variables": {
+            "HEADER_BG": "#09050d",
+            "TITLEBAR_TEXT": "#c9cdd8",
+            "WINBTN_BG": "#3a4157",
+            "WINBTN_BG_HOVER": "#4a5270"
+          }
+        },
+        {
+          "Theme-name": "Frameless Day",
+          "Default-Theme": false,
+          "Create-icons": true,
+          "Background-color": "#f2f3f8",
+          "Text-color": "#1a1c28",
+          "Accent-color": "#c2033a",
+          "Icons-color": "#343a4e",
+          "Other-variables": {
+            "HEADER_BG": "#e2e5ef",
+            "TITLEBAR_TEXT": "#4a5068",
+            "WINBTN_BG": "#cdd3e2",
+            "WINBTN_BG_HOVER": "#b9c1d6"
+          }
+        }
+      ]
+    }
+  },
+  "QMainWindow": {
+    "title": "QCustomQMainWindow Starter",
+    "icon": "theme-icons:icons/feather/github.svg",
+    "frameless": true,
+    "translucentBg": true,
+    "sizeGrip": "sizeGrip",
+    "shadow": {
+      "color": "#000000",
+      "blurRadius": 20,
+      "xOffset": 0,
+      "yOffset": 0
+    },
+    "navigation": {
+      "minimize": "minimizeWindowButton",
+      "close": "closeWindowButton",
+      "restore": {
+        "buttonName": "restoreWindowButton",
+        "normalIcon": "theme-icons:icons/feather/maximize-2.svg",
+        "maximizedIcon": "theme-icons:icons/feather/minimize-2.svg"
+      },
+      "moveWindow": "headerWidget",
+      "titleBar": "headerWidget"
+    }
+  }
+}

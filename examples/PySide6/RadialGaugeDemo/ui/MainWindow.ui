@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1000</width>
+    <height>620</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QCustomRadialGauge — Demo</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="mainGrid">
+    <property name="leftMargin">
+     <number>24</number>
+    </property>
+    <property name="topMargin">
+     <number>24</number>
+    </property>
+    <property name="rightMargin">
+     <number>24</number>
+    </property>
+    <property name="bottomMargin">
+     <number>24</number>
+    </property>
+    <property name="horizontalSpacing">
+     <number>20</number>
+    </property>
+    <property name="verticalSpacing">
+     <number>20</number>
+    </property>
+    <item row="0" column="0">
+     <widget class="QFrame" name="threatCard1">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <layout class="QVBoxLayout" name="threatCard1Layout" stretch="0,0,1">
+       <property name="leftMargin">
+        <number>18</number>
+       </property>
+       <property name="topMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
+        <number>18</number>
+       </property>
+       <property name="bottomMargin">
+        <number>16</number>
+       </property>
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="threatCard1Title">
+         <property name="text">
+          <string>Threat Level</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="threatCard1Sub">
+         <property name="text">
+          <string>Last updated on 15th January, 2024</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomRadialGauge" name="threatGauge1" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="value" stdset="0">
+          <double>0.0</double>
+         </property>
+         <property name="centerSuffix" stdset="0">
+          <string>%</string>
+         </property>
+         <property name="statusText" stdset="0">
+          <string>Very Low</string>
+         </property>
+         <property name="animated" stdset="0">
+          <bool>true</bool>
+         </property>
+         <property name="animationDuration" stdset="0">
+          <number>900</number>
+         </property>
+         <property name="glow" stdset="0">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QFrame" name="threatCard2">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <layout class="QVBoxLayout" name="threatCard2Layout" stretch="0,0,1">
+       <property name="leftMargin">
+        <number>18</number>
+       </property>
+       <property name="topMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
+        <number>18</number>
+       </property>
+       <property name="bottomMargin">
+        <number>16</number>
+       </property>
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="threatCard2Title">
+         <property name="text">
+          <string>Threat Level</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="threatCard2Sub">
+         <property name="text">
+          <string>Last updated on 15th January, 2024</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomRadialGauge" name="threatGauge2" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="value" stdset="0">
+          <double>0.0</double>
+         </property>
+         <property name="centerSuffix" stdset="0">
+          <string>%</string>
+         </property>
+         <property name="statusText" stdset="0">
+          <string>Medium</string>
+         </property>
+         <property name="animated" stdset="0">
+          <bool>true</bool>
+         </property>
+         <property name="animationDuration" stdset="0">
+          <number>900</number>
+         </property>
+         <property name="glow" stdset="0">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QFrame" name="threatCard3">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <layout class="QVBoxLayout" name="threatCard3Layout" stretch="0,0,1">
+       <property name="leftMargin">
+        <number>18</number>
+       </property>
+       <property name="topMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
+        <number>18</number>
+       </property>
+       <property name="bottomMargin">
+        <number>16</number>
+       </property>
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="threatCard3Title">
+         <property name="text">
+          <string>Threat Level</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="threatCard3Sub">
+         <property name="text">
+          <string>Last updated on 15th January, 2024</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomRadialGauge" name="threatGauge3" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="value" stdset="0">
+          <double>0.0</double>
+         </property>
+         <property name="centerSuffix" stdset="0">
+          <string>%</string>
+         </property>
+         <property name="statusText" stdset="0">
+          <string>High</string>
+         </property>
+         <property name="animated" stdset="0">
+          <bool>true</bool>
+         </property>
+         <property name="animationDuration" stdset="0">
+          <number>900</number>
+         </property>
+         <property name="glow" stdset="0">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QFrame" name="speedCard">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <layout class="QVBoxLayout" name="speedCardLayout" stretch="0,0,1">
+       <property name="leftMargin">
+        <number>18</number>
+       </property>
+       <property name="topMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
+        <number>18</number>
+       </property>
+       <property name="bottomMargin">
+        <number>16</number>
+       </property>
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="speedCardTitle">
+         <property name="text">
+          <string>Speed</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="speedCardSub">
+         <property name="text">
+          <string>Last updated on 15th January, 2024</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomRadialGauge" name="speedGauge" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="value" stdset="0">
+          <double>0.0</double>
+         </property>
+         <property name="minimum" stdset="0">
+          <double>0.0</double>
+         </property>
+         <property name="maximum" stdset="0">
+          <double>150.0</double>
+         </property>
+         <property name="startAngle" stdset="0">
+          <double>210.0</double>
+         </property>
+         <property name="spanAngle" stdset="0">
+          <double>-240.0</double>
+         </property>
+         <property name="arcWidth" stdset="0">
+          <number>18</number>
+         </property>
+         <property name="centerSuffix" stdset="0">
+          <string>mph</string>
+         </property>
+         <property name="scaleLabelEvery" stdset="0">
+          <double>30.0</double>
+         </property>
+         <property name="glow" stdset="0">
+          <bool>true</bool>
+         </property>
+         <property name="animated" stdset="0">
+          <bool>true</bool>
+         </property>
+         <property name="animationDuration" stdset="0">
+          <number>1100</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QFrame" name="usageCard">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <layout class="QVBoxLayout" name="usageCardLayout" stretch="0,0,1">
+       <property name="leftMargin">
+        <number>18</number>
+       </property>
+       <property name="topMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
+        <number>18</number>
+       </property>
+       <property name="bottomMargin">
+        <number>16</number>
+       </property>
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="usageCardTitle">
+         <property name="text">
+          <string>Usage</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="usageCardSub">
+         <property name="text">
+          <string>Last updated on 15th January, 2024</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomRadialGauge" name="usageGauge" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="value" stdset="0">
+          <double>0.0</double>
+         </property>
+         <property name="minimum" stdset="0">
+          <double>0.0</double>
+         </property>
+         <property name="maximum" stdset="0">
+          <double>100.0</double>
+         </property>
+         <property name="startAngle" stdset="0">
+          <double>90.0</double>
+         </property>
+         <property name="spanAngle" stdset="0">
+          <double>-360.0</double>
+         </property>
+         <property name="centerSuffix" stdset="0">
+          <string>%</string>
+         </property>
+         <property name="showNeedle" stdset="0">
+          <bool>false</bool>
+         </property>
+         <property name="scaleLabelEvery" stdset="0">
+          <double>25.0</double>
+         </property>
+         <property name="glow" stdset="0">
+          <bool>true</bool>
+         </property>
+         <property name="animated" stdset="0">
+          <bool>true</bool>
+         </property>
+         <property name="animationDuration" stdset="0">
+          <number>1100</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QFrame" name="timerCard">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <layout class="QVBoxLayout" name="timerCardLayout" stretch="0,0,1">
+       <property name="leftMargin">
+        <number>18</number>
+       </property>
+       <property name="topMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
+        <number>18</number>
+       </property>
+       <property name="bottomMargin">
+        <number>16</number>
+       </property>
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="timerCardTitle">
+         <property name="text">
+          <string>Timer</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="timerCardSub">
+         <property name="text">
+          <string>Last updated on 15th January, 2024</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomRadialGauge" name="timerGauge" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="value" stdset="0">
+          <double>17.0</double>
+         </property>
+         <property name="minimum" stdset="0">
+          <double>0.0</double>
+         </property>
+         <property name="maximum" stdset="0">
+          <double>20.0</double>
+         </property>
+         <property name="gaugeStyle" stdset="0">
+          <string>tick</string>
+         </property>
+         <property name="startAngle" stdset="0">
+          <double>90.0</double>
+         </property>
+         <property name="spanAngle" stdset="0">
+          <double>-360.0</double>
+         </property>
+         <property name="tickCount" stdset="0">
+          <number>60</number>
+         </property>
+         <property name="centerText" stdset="0">
+          <string>17</string>
+         </property>
+         <property name="centerSuffix" stdset="0">
+          <string>Sec</string>
+         </property>
+         <property name="showGuide" stdset="0">
+          <bool>true</bool>
+         </property>
+         <property name="scaleLabelEvery" stdset="0">
+          <double>5.0</double>
+         </property>
+         <property name="activeTickExtend" stdset="0">
+          <string>outward</string>
+         </property>
+         <property name="glow" stdset="0">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomRadialGauge</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomRadialGauge</header>
+   <container>0</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

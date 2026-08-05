@@ -1,82 +1,99 @@
-########################################################################
-## QCustomSparklesText example
-##
-## Text with a deterministic sparkle field: same seed, same render, so\n## a screenshot is reproducible.
-## Run:
-##     python main.py
-########################################################################
+"""QCustomSparklesText showcase — text with a deterministic sparkle field.
+
+Same seed, same render, so a screenshot is reproducible. The second banner's
+sparkle hues come from the theme (Other-variables → SPARKLE_COLORS).
+"""
+
+import os
 import sys
 
-from PySide6 import QtCore, QtWidgets
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
 
-from Custom_Widgets.QCustomSparklesText import QCustomSparklesText
-from Custom_Widgets.JSonStyles.tokens import applyDesignTokens
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
+
+from Custom_Widgets import *
+from qtpy.QtCore import QCoreApplication, QSettings
+from qtpy.QtWidgets import QApplication
 
 
-class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("QCustomSparklesText")
-        central = QtWidgets.QWidget()
-        self.setCentralWidget(central)
-        layout = QtWidgets.QVBoxLayout(central)
-        layout.setContentsMargins(24, 24, 24, 24)
-        layout.setSpacing(16)
-        self._theme = "light"
+class MainWindow(QCustomMainWindow):
+    def __init__(self, parent=None):
+        QCustomMainWindow.__init__(self)
+        from src.ui_MainWindow import Ui_MainWindow
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
 
-        self.sparkles = QCustomSparklesText(text="Powered by AI")
-        self.sparkles.setMinimumHeight(90)
-        layout.addWidget(self.sparkles)
-        self.second = QCustomSparklesText(text="Magic inside")
-        self.second.seed = 42
-        self.second.colorsCsv = "#16a34a,#0ea5e9"
-        self.second.setMinimumHeight(90)
-        layout.addWidget(self.second)
+        # Set the app identity BEFORE loadJsonStyle: the theme loader consults
+        # QSettings while parsing CustomThemes, and without these names it
+        # reads the shared unnamed settings file (polluted by other example
+        # apps), which silently cancels this app's Default-Theme flag.
+        QCoreApplication.setOrganizationName("CustomWidgets")
+        QCoreApplication.setApplicationName("QCustomSparklesText Showcase")
 
-        row = QtWidgets.QHBoxLayout()
-        count = QtWidgets.QSpinBox()
-        count.setRange(0, 60)
-        count.setValue(14)
-        count.valueChanged.connect(self._setCount)
-        row.addWidget(QtWidgets.QLabel("Sparkles"))
-        row.addWidget(count)
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
 
-        seed = QtWidgets.QSpinBox()
-        seed.setRange(0, 999)
-        seed.setValue(7)
-        seed.valueChanged.connect(lambda v: setattr(self.sparkles, "seed", v))
-        row.addWidget(QtWidgets.QLabel("Seed"))
-        row.addWidget(seed)
+        self.show()
+        themeEngine = self.themeEngine
+        org = getattr(themeEngine, "organizationName", "")
+        if org:
+            QCoreApplication.setOrganizationName(str(org))
+        appn = getattr(themeEngine, "applicationName", "")
+        if appn:
+            QCoreApplication.setApplicationName(str(appn))
+        orgd = getattr(themeEngine, "organizationDomain", "")
+        if orgd:
+            QCoreApplication.setOrganizationDomain(str(orgd))
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            for t in themeEngine.themes:
+                if getattr(t, "defaultTheme", False) and (init_set is None or not init_set):
+                    s.setValue("THEME", t.name)
+                    s.setValue("INIT-THEME-SET", True)
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
 
-        animate = QtWidgets.QPushButton("Animate")
-        animate.clicked.connect(self._toggle)
-        row.addWidget(animate)
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
 
-        theme = QtWidgets.QPushButton("Light / dark")
-        theme.clicked.connect(self._toggleTheme)
-        row.addWidget(theme)
-        row.addStretch(1)
-        layout.addLayout(row)
-        layout.addStretch(1)
-        self.resize(560, 300)
+        self._applyThemeColors()
+        self._wire()
+
+    def _applyThemeColors(self):
+        # The second banner's sparkle hues are theme data (Other-variables),
+        # applied through the widget's colorsCsv property so they flip with
+        # the theme.
+        colors = self.themeEngine.themeColor("SPARKLE_COLORS", "")
+        if colors:
+            self.ui.sparklesSecond.colorsCsv = colors
+
+    def _wire(self):
+        self.ui.countSpin.valueChanged.connect(self._setCount)
+        self.ui.seedSpin.valueChanged.connect(
+            lambda v: setattr(self.ui.sparklesMain, "seed", v))
+        self.ui.animateBtn.clicked.connect(self._toggleAnimation)
+        self.ui.themeBtn.clicked.connect(self._toggleTheme)
+        self.themeEngine.onThemeChanged.connect(self._applyThemeColors)
 
     def _setCount(self, value):
-        self.sparkles.sparkleCount = value
-        self.second.sparkleCount = value
+        self.ui.sparklesMain.sparkleCount = value
+        self.ui.sparklesSecond.sparkleCount = value
 
-    def _toggle(self):
-        for widget in (self.sparkles, self.second):
+    def _toggleAnimation(self):
+        for widget in (self.ui.sparklesMain, self.ui.sparklesSecond):
             widget.animated = not widget.animated
 
-
     def _toggleTheme(self):
-        self._theme = "dark" if self._theme == "light" else "light"
-        applyDesignTokens(QtWidgets.QApplication.instance(), theme=self._theme)
+        self.themeEngine.toggleTheme(dark="Sparkle Night", light="Sparkle Day")
 
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    applyDesignTokens(app, theme="light")
+    app = QApplication(sys.argv)
     window = MainWindow()
-    window.show()
     sys.exit(app.exec())

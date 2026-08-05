@@ -1,0 +1,15 @@
+{
+  "QComboBox": [
+    {
+      "name": "orientationCombo",
+      "items": [
+        {
+          "name": "vertical"
+        },
+        {
+          "name": "horizontal"
+        }
+      ]
+    }
+  ]
+}

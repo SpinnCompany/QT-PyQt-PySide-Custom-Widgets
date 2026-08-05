@@ -1,0 +1,182 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>520</width>
+    <height>640</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QCustomTextArea</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="rootLayout">
+    <property name="spacing">
+     <number>16</number>
+    </property>
+    <property name="leftMargin">
+     <number>24</number>
+    </property>
+    <property name="topMargin">
+     <number>24</number>
+    </property>
+    <property name="rightMargin">
+     <number>24</number>
+    </property>
+    <property name="bottomMargin">
+     <number>24</number>
+    </property>
+    <item>
+     <widget class="QLabel" name="bioHeading">
+      <property name="text">
+       <string>Bio (limited to 140 characters)</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCustomTextArea" name="bio">
+      <property name="placeholderText">
+       <string>Tell people about yourself...</string>
+      </property>
+      <property name="maxLength" stdset="0">
+       <number>140</number>
+      </property>
+      <property name="showCounter" stdset="0">
+       <bool>true</bool>
+      </property>
+      <property name="minRows" stdset="0">
+       <number>3</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="messageHeading">
+      <property name="text">
+       <string>Message (grows from 2 to 6 rows)</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCustomTextArea" name="message">
+      <property name="placeholderText">
+       <string>Type several lines...</string>
+      </property>
+      <property name="minRows" stdset="0">
+       <number>2</number>
+      </property>
+      <property name="maxRows" stdset="0">
+       <number>6</number>
+      </property>
+      <property name="autoGrow" stdset="0">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="notesHeading">
+      <property name="text">
+       <string>Notes (validated on demand)</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCustomTextArea" name="notes">
+      <property name="placeholderText">
+       <string>At least 10 characters</string>
+      </property>
+      <property name="minRows" stdset="0">
+       <number>2</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="actionsRow">
+      <property name="spacing">
+       <number>8</number>
+      </property>
+      <item>
+       <widget class="QPushButton" name="validateBtn">
+        <property name="text">
+         <string>Validate notes</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="sizeSmBtn">
+        <property name="text">
+         <string>size sm</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="sizeMdBtn">
+        <property name="text">
+         <string>size md</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="sizeLgBtn">
+        <property name="text">
+         <string>size lg</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="themeBtn">
+        <property name="text">
+         <string>Light / dark</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="actionsSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="status">
+      <property name="text">
+       <string>Bio: 0/140</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="bottomSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomTextArea</class>
+   <extends>QPlainTextEdit</extends>
+   <header>Custom_Widgets.QCustomTextArea</header>
+  </customwidget>
+ <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>480</width>
+    <height>520</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QCustomVerificationCode</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="mainLayout">
+    <property name="spacing">
+     <number>18</number>
+    </property>
+    <property name="leftMargin">
+     <number>28</number>
+    </property>
+    <property name="topMargin">
+     <number>28</number>
+    </property>
+    <property name="rightMargin">
+     <number>28</number>
+    </property>
+    <property name="bottomMargin">
+     <number>28</number>
+    </property>
+    <item>
+     <widget class="QLabel" name="mainHeading">
+      <property name="text">
+       <string>Enter the 6-digit code we emailed you</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="hintLabel">
+      <property name="text">
+       <string>(the demo accepts 123456)</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCustomVerificationCode" name="codeInput">
+      <property name="digits" stdset="0">
+       <number>6</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="groupedHeading">
+      <property name="text">
+       <string>Grouped 3 + 3</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCustomVerificationCode" name="groupedInput">
+      <property name="digits" stdset="0">
+       <number>6</number>
+      </property>
+      <property name="separatorAfter" stdset="0">
+       <number>3</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="maskedHeading">
+      <property name="text">
+       <string>Masked, alphanumeric, 8 characters</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCustomVerificationCode" name="maskedInput">
+      <property name="digits" stdset="0">
+       <number>8</number>
+      </property>
+      <property name="inputMode" stdset="0">
+       <string>alphanumeric</string>
+      </property>
+      <property name="masked" stdset="0">
+       <bool>true</bool>
+      </property>
+      <property name="boxWidth" stdset="0">
+       <number>34</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="buttonRow">
+      <property name="spacing">
+       <number>8</number>
+      </property>
+      <item>
+       <widget class="QPushButton" name="clearButton">
+        <property name="text">
+         <string>Clear</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pasteButton">
+        <property name="text">
+         <string>Paste '123 456'</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="themeButton">
+        <property name="text">
+         <string>Light / dark</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="buttonSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>10</width>
+          <height>10</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="statusLabel">
+      <property name="text">
+       <string>Waiting for a code...</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="bottomSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>10</width>
+        <height>10</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomVerificationCode</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomVerificationCode.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,0 +1,52 @@
+{
+    "ShowLogs": false,
+    "QtBinding": "PySide6",
+    "CheckForMissingicons": false,
+    "QMainWindow": {
+        "title": "QCustomRulerPicker — Demo"
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "RulerPickerDemo",
+            "OrganizationDomain": "spinncode.com"
+        },
+        "ThemeSettings": {
+            "CustomThemes": [
+                {
+                    "Theme-name": "Ruler Dark",
+                    "Default-Theme": true,
+                    "Create-icons": true,
+                    "Background-color": "#171a22",
+                    "Text-color": "#e7e9ef",
+                    "Accent-color": "#7c5cff",
+                    "Icons-color": "#9aa1b2"
+                },
+                {
+                    "Theme-name": "Ruler Light",
+                    "Default-Theme": false,
+                    "Create-icons": true,
+                    "Background-color": "#ffffff",
+                    "Text-color": "#1c2430",
+                    "Accent-color": "#6b4be0",
+                    "Icons-color": "#6b7280"
+                }
+            ]
+        }
+    },
+    "_comment_ChartPalette": "Read in code by main.py — ruler indicator hues live with the theme so they flip on theme switch (token-driven).",
+    "ChartPalette": {
+        "Ruler Dark": {
+            "weightIndicator": "#7c5cff",
+            "heightIndicator": "#2fd27a",
+            "bodyFatIndicator": "#f4a63b",
+            "thermoIndicator": "#3aa0ff"
+        },
+        "Ruler Light": {
+            "weightIndicator": "#6b4be0",
+            "heightIndicator": "#1fae62",
+            "bodyFatIndicator": "#d98a1f",
+            "thermoIndicator": "#2b8ae6"
+        }
+    }
+}

@@ -1,0 +1,38 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomTipOverlay Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Forest",
+          "Default-Theme": true,
+          "Background-color": "#141917",
+          "Text-color": "#e6efe9",
+          "Accent-color": "#4CAF50",
+          "Icons-color": "#9ca3af",
+          "Other-variables": {
+            "CARD": "#1c2320",
+            "BORDER": "#2b3530",
+            "ON_ACCENT": "#ffffff"
+          }
+        },
+        {
+          "Theme-name": "Meadow",
+          "Default-Theme": false,
+          "Background-color": "#f0f0f0",
+          "Text-color": "#1a1d27",
+          "Accent-color": "#43A047",
+          "Icons-color": "#6b7280",
+          "Other-variables": {
+            "CARD": "#ffffff",
+            "BORDER": "#d8dee7",
+            "ON_ACCENT": "#ffffff"
+          }
+        }
+      ]
+    }
+  }
+}

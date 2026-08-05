@@ -1,2 +1,68 @@
-// Project default styles (override theme styles)
+// DonutEnhanceDemo chrome — everything themed via $TOKENS + theme
+// Other-variables. The DONUT_* hues are the same values the code feeds the
+// donuts (themeEngine.themeColor), so legend dots always match the slices.
 // New style files are @import-ed here automatically.
+
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#centralwidget {
+  font-family: 'Segoe UI', 'Inter', sans-serif;
+  color: $COLOR_TEXT_1;
+}
+
+#transferCard, #storageCard, #classicCard {
+  background: $CARD_BG;
+  border: 1px solid $CARD_BORDER;
+  border-radius: 18px;
+}
+
+#transferTitle, #storageTitle, #classicTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: $CARD_TITLE;
+  background: transparent;
+}
+
+#transferSub, #storageSub, #classicSub {
+  font-size: 11px;
+  color: $CARD_SUB;
+  background: transparent;
+}
+
+#transferDonut, #storageDonut, #classicDonut {
+  background: transparent;
+}
+
+// The storage donut floats its % pills on the window background hue
+#storageDonut {
+  qproperty-percentPillColor: $COLOR_BACKGROUND_1;
+}
+
+// Legend text
+#transferName1, #transferName2, #transferName3, #transferName4, #transferName5,
+#storageName1, #storageName2, #storageName3, #storageName4 {
+  font-size: 12px;
+  color: $LEG_NAME;
+  background: transparent;
+}
+
+#transferVal1, #transferVal2, #transferVal3, #transferVal4, #transferVal5,
+#storageVal1, #storageVal2, #storageVal3, #storageVal4 {
+  font-size: 12px;
+  font-weight: 600;
+  color: $CARD_TITLE;
+  background: transparent;
+}
+
+// Legend dots — same DONUT_* hues the donuts get in code
+#transferDot1 { background: $DONUT_T1; border-radius: 5px; }
+#transferDot2 { background: $DONUT_T2; border-radius: 5px; }
+#transferDot3 { background: $DONUT_T3; border-radius: 5px; }
+#transferDot4 { background: $DONUT_T4; border-radius: 5px; }
+#transferDot5 { background: $DONUT_T5; border-radius: 5px; }
+#storageDot1 { background: $DONUT_S1; border-radius: 5px; }
+#storageDot2 { background: $DONUT_S2; border-radius: 5px; }
+#storageDot3 { background: $DONUT_S3; border-radius: 5px; }
+#storageDot4 { background: $DONUT_S4; border-radius: 5px; }

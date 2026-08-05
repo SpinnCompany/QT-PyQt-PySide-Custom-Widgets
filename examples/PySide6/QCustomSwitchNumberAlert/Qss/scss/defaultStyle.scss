@@ -1,0 +1,148 @@
+/* Switch / Number / Alert showcase — all chrome from theme tokens. The
+   semantic alert colours (info / success / warning / destructive) are theme
+   Other-variables so they flip with the theme. */
+
+#MainWindow,
+#centralwidget {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#notifLabel,
+#darkLabel,
+#qtyLabel,
+#priceLabel {
+  background: transparent;
+  color: $COLOR_TEXT_1;
+  font-size: 13px;
+}
+
+#statusLabel {
+  background: transparent;
+  color: $COLOR_TEXT_3;
+  font-size: 12px;
+}
+
+/* --- Switches (painted; colours via qproperty) --------------------------- */
+QCustomSwitch {
+  background: transparent;
+  qproperty-trackOnColor: $COLOR_ACCENT_1;
+  qproperty-trackOffColor: $COLOR_BACKGROUND_5;
+  qproperty-thumbColor: $COLOR_TEXT_1;
+}
+
+/* --- Number steppers ----------------------------------------------------- */
+QCustomNumberInput {
+  background: transparent;
+}
+
+QCustomNumberInput #numberField {
+  background-color: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_5;
+  border-left: none;
+  border-right: none;
+  padding: 3px 6px;
+}
+
+QCustomNumberInput #numberDown,
+QCustomNumberInput #numberUp {
+  background-color: $COLOR_BACKGROUND_3;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_5;
+  min-width: 26px;
+  font-weight: 600;
+  padding: 3px;
+}
+
+QCustomNumberInput #numberDown {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+QCustomNumberInput #numberUp {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+QCustomNumberInput #numberDown:hover,
+QCustomNumberInput #numberUp:hover {
+  background-color: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+}
+
+QCustomNumberInput #numberDown:disabled,
+QCustomNumberInput #numberUp:disabled {
+  color: $COLOR_TEXT_4;
+}
+
+/* --- Alerts -------------------------------------------------------------- */
+QCustomAlert {
+  background-color: $COLOR_BACKGROUND_2;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 10px;
+}
+
+QCustomAlert #alertTitle {
+  background: transparent;
+  font-weight: 600;
+}
+
+QCustomAlert #alertText {
+  background: transparent;
+  color: $COLOR_TEXT_2;
+}
+
+QCustomAlert #alertIcon {
+  background: transparent;
+  font-size: 16px;
+}
+
+QCustomAlert #alertClose {
+  background: transparent;
+  border: none;
+  color: $COLOR_TEXT_3;
+}
+
+QCustomAlert #alertClose:hover {
+  color: $COLOR_TEXT_1;
+}
+
+QCustomAlert[variant="info"] {
+  border-color: $SEMANTIC_INFO;
+  border-left: 4px solid $SEMANTIC_INFO;
+}
+
+QCustomAlert[variant="info"] #alertIcon,
+QCustomAlert[variant="info"] #alertTitle {
+  color: $SEMANTIC_INFO;
+}
+
+QCustomAlert[variant="success"] {
+  border-color: $SEMANTIC_SUCCESS;
+  border-left: 4px solid $SEMANTIC_SUCCESS;
+}
+
+QCustomAlert[variant="success"] #alertIcon,
+QCustomAlert[variant="success"] #alertTitle {
+  color: $SEMANTIC_SUCCESS;
+}
+
+QCustomAlert[variant="warning"] {
+  border-color: $SEMANTIC_WARNING;
+  border-left: 4px solid $SEMANTIC_WARNING;
+}
+
+QCustomAlert[variant="warning"] #alertIcon,
+QCustomAlert[variant="warning"] #alertTitle {
+  color: $SEMANTIC_WARNING;
+}
+
+QCustomAlert[variant="destructive"] {
+  border-color: $SEMANTIC_DESTRUCTIVE;
+  border-left: 4px solid $SEMANTIC_DESTRUCTIVE;
+}
+
+QCustomAlert[variant="destructive"] #alertIcon,
+QCustomAlert[variant="destructive"] #alertTitle {
+  color: $SEMANTIC_DESTRUCTIVE;
+}

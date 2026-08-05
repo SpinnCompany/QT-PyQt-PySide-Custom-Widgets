@@ -3,95 +3,104 @@
 ##
 ## An acquisition flow: traffic sources into signups, then on to trial,
 ## paid and churn. Hover a node to light up everything it touches.
-## Rendered with QPainter only - no QtCharts.
+## Rendered with QPainter only - no QtCharts. Themed through the
+## Custom_Widgets pipeline (ui/ + Qss scss + json-styles).
 ## Run:
 ##     python main.py
 ########################################################################
-import sys
+import os, sys
 
-from PySide6 import QtCore, QtWidgets
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
 
-from Custom_Widgets.QCustomSankey import QCustomSankey
-from Custom_Widgets.JSonStyles.tokens import applyDesignTokens
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
+
+from Custom_Widgets import *
+from qtpy.QtCore import QCoreApplication, QSettings
+from qtpy.QtWidgets import QApplication
 
 
-class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("QCustomSankey")
-        central = QtWidgets.QWidget()
-        self.setCentralWidget(central)
-        layout = QtWidgets.QVBoxLayout(central)
-        layout.setContentsMargins(20, 20, 20, 20)
-        layout.setSpacing(14)
-        self._theme = "light"
+class MainWindow(QCustomMainWindow):
+    def __init__(self, parent=None):
+        QCustomMainWindow.__init__(self)
+        from src.ui_MainWindow import Ui_MainWindow
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
 
-        self.chart = QCustomSankey(links=[
-            ("Search", "Signup", 120), ("Social", "Signup", 80),
-            ("Referral", "Signup", 45), ("Signup", "Trial", 150),
-            ("Signup", "Bounce", 95), ("Trial", "Paid", 70),
-            ("Trial", "Churn", 80)])
-        self.chart.setMinimumHeight(360)
-        self.chart.nodeHovered.connect(self._onNode)
-        self.chart.linkHovered.connect(self._onLink)
-        self.chart.nodeClicked.connect(
-            lambda name: self.status.setText("clicked %s" % name))
-        layout.addWidget(self.chart, 1)
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
 
-        row = QtWidgets.QHBoxLayout()
-        curve = QtWidgets.QSlider(QtCore.Qt.Horizontal)
-        curve.setRange(0, 100)
-        curve.setValue(int(self.chart.curvature * 100))
-        curve.valueChanged.connect(
-            lambda v: setattr(self.chart, "curvature", v / 100.0))
-        row.addWidget(QtWidgets.QLabel("Curve"))
-        row.addWidget(curve, 1)
+        self.show()
+        themeEngine = self.themeEngine
+        org = getattr(themeEngine, "organizationName", "")
+        if org:
+            QCoreApplication.setOrganizationName(str(org))
+        appn = getattr(themeEngine, "applicationName", "")
+        if appn:
+            QCoreApplication.setApplicationName(str(appn))
+        orgd = getattr(themeEngine, "organizationDomain", "")
+        if orgd:
+            QCoreApplication.setOrganizationDomain(str(orgd))
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            for t in themeEngine.themes:
+                if getattr(t, "defaultTheme", False) and (init_set is None or not init_set):
+                    s.setValue("THEME", t.name)
+                    s.setValue("INIT-THEME-SET", True)
+            # Default-Theme is ignored by the json parser when ANY QSettings
+            # file already holds a THEME, so pin this app's default explicitly.
+            if not s.value("INIT-THEME-SET"):
+                s.setValue("THEME", "Sankey-Dark")
+                s.setValue("INIT-THEME-SET", True)
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
 
-        opacity = QtWidgets.QSlider(QtCore.Qt.Horizontal)
-        opacity.setRange(5, 100)
-        opacity.setValue(int(self.chart.linkOpacity * 100))
-        opacity.valueChanged.connect(
-            lambda v: setattr(self.chart, "linkOpacity", v / 100.0))
-        row.addWidget(QtWidgets.QLabel("Ribbon"))
-        row.addWidget(opacity, 1)
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
 
-        values = QtWidgets.QPushButton("Values")
-        values.clicked.connect(
-            lambda: setattr(self.chart, "showValues", not self.chart.showValues))
-        row.addWidget(values)
+        self._wireDemo()
 
-        theme = QtWidgets.QPushButton("Light / dark")
-        theme.clicked.connect(self._toggleTheme)
-        row.addWidget(theme)
-        row.addStretch(1)
-        layout.addLayout(row)
-
-        self.status = QtWidgets.QLabel("Hover a node or a ribbon")
-        layout.addWidget(self.status)
-        self.resize(720, 560)
+    def _wireDemo(self):
+        ui = self.ui
+        ui.chart.nodeHovered.connect(self._onNode)
+        ui.chart.linkHovered.connect(self._onLink)
+        ui.chart.nodeClicked.connect(
+            lambda name: ui.statusLabel.setText("clicked %s" % name))
+        ui.curveSlider.valueChanged.connect(
+            lambda v: setattr(ui.chart, "curvature", v / 100.0))
+        ui.ribbonSlider.valueChanged.connect(
+            lambda v: setattr(ui.chart, "linkOpacity", v / 100.0))
+        ui.valuesButton.clicked.connect(
+            lambda: setattr(ui.chart, "showValues", not ui.chart.showValues))
+        ui.themeButton.clicked.connect(self._toggleTheme)
 
     def _onNode(self, name):
         if not name:
-            self.status.setText("Hover a node or a ribbon")
+            self.ui.statusLabel.setText("Hover a node or a ribbon")
             return
-        self.status.setText("%s — throughput %g"
-                            % (name, self.chart.nodeValue(name)))
+        self.ui.statusLabel.setText(
+            "%s — throughput %g" % (name, self.ui.chart.nodeValue(name)))
 
     def _onLink(self, index):
         if index < 0:
             return
-        source, target, value = self.chart.links()[index]
-        self.status.setText("%s to %s — %g" % (source, target, value))
-
+        source, target, value = self.ui.chart.links()[index]
+        self.ui.statusLabel.setText("%s to %s — %g" % (source, target, value))
 
     def _toggleTheme(self):
-        self._theme = "dark" if self._theme == "light" else "light"
-        applyDesignTokens(QtWidgets.QApplication.instance(), theme=self._theme)
+        themeEngine = self.themeEngine
+        target = ("Sankey-Light" if themeEngine.theme == "Sankey-Dark"
+                  else "Sankey-Dark")
+        QSettings().setValue("THEME", target)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
 
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    applyDesignTokens(app, theme="light")
+    app = QApplication(sys.argv)
     window = MainWindow()
-    window.show()
     sys.exit(app.exec())

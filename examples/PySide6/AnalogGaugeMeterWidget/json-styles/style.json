@@ -1,0 +1,48 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "AnalogGaugeWidget Showcase"
+    },
+    "ThemeSettings": {
+      "Fonts": {
+        "LoadFonts": [
+          {
+            "name": "DS-Digital",
+            "path": "fonts/ds_digital/DS-DIGIB.TTF"
+          }
+        ]
+      },
+      "CustomThemes": [
+        {
+          "Theme-name": "Gauge-Dark",
+          "Default-Theme": true,
+          "Background-color": "#101318",
+          "Text-color": "#e8ecf1",
+          "Accent-color": "#00d9c0",
+          "Icons-color": "#9ca3af",
+          "Other-variables": {
+            "GAUGE_1": "#00231f",
+            "GAUGE_2": "#007a6c",
+            "GAUGE_3": "#00f6e9",
+            "GAUGE_SCALE": "#7fd8cd"
+          }
+        },
+        {
+          "Theme-name": "Gauge-Light",
+          "Default-Theme": false,
+          "Background-color": "#f4f6f8",
+          "Text-color": "#16202a",
+          "Accent-color": "#0a8f80",
+          "Icons-color": "#6b7280",
+          "Other-variables": {
+            "GAUGE_1": "#d7f4f0",
+            "GAUGE_2": "#38b2a3",
+            "GAUGE_3": "#067264",
+            "GAUGE_SCALE": "#0a5a50"
+          }
+        }
+      ]
+    }
+  }
+}

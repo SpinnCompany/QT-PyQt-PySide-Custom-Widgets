@@ -1,0 +1,30 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomRangeBarChart Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "RangeBar-Dark",
+          "Default-Theme": true,
+          "Create-icons": false,
+          "Background-color": "#0f141a",
+          "Text-color": "#e7ecf2",
+          "Accent-color": "#38bdf8",
+          "Icons-color": "#9ca3af"
+        },
+        {
+          "Theme-name": "RangeBar-Light",
+          "Default-Theme": false,
+          "Create-icons": false,
+          "Background-color": "#f5f8fb",
+          "Text-color": "#16202b",
+          "Accent-color": "#0284c7",
+          "Icons-color": "#6b7280"
+        }
+      ]
+    }
+  }
+}

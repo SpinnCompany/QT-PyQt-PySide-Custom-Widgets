@@ -1,0 +1,68 @@
+/* QCustomTextArea demo — all chrome lives here ($TOKENS only). */
+
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#bioHeading, #messageHeading, #notesHeading {
+  color: $COLOR_TEXT_1;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+#status {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+/* ── Text areas: field chrome + counter colours + states ── */
+QCustomTextArea {
+  background-color: $CARD;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER;
+  border-radius: 8px;
+  padding: 4px;
+  qproperty-counterColor: $COLOR_TEXT_3;
+  qproperty-counterOverColor: $DANGER;
+}
+QCustomTextArea[state="focused"] {
+  border: 1px solid $COLOR_ACCENT_1;
+}
+QCustomTextArea[state="error"] {
+  border: 1px solid $DANGER;
+}
+QCustomTextArea[state="disabled"], QCustomTextArea:disabled {
+  background-color: $MUTED;
+  color: $COLOR_TEXT_3;
+}
+QCustomTextArea[sizeVariant="sm"] {
+  font-size: 12px;
+}
+QCustomTextArea[sizeVariant="md"] {
+  font-size: 14px;
+}
+QCustomTextArea[sizeVariant="lg"] {
+  font-size: 16px;
+}
+
+/* ── Action buttons ── */
+#validateBtn, #sizeSmBtn, #sizeMdBtn, #sizeLgBtn, #themeBtn {
+  background-color: $MUTED;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER;
+  border-radius: 8px;
+  padding: 6px 14px;
+}
+#validateBtn:hover, #sizeSmBtn:hover, #sizeMdBtn:hover, #sizeLgBtn:hover, #themeBtn:hover {
+  border-color: $COLOR_ACCENT_1;
+  color: $COLOR_ACCENT_1;
+}
+#validateBtn {
+  background-color: $COLOR_ACCENT_1;
+  color: $ON_ACCENT;
+  border: none;
+}
+#validateBtn:hover {
+  background-color: $COLOR_ACCENT_2;
+  color: $ON_ACCENT;
+}

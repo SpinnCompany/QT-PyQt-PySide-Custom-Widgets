@@ -1,0 +1,56 @@
+/* Skeleton / Avatars / Timeline showcase — all chrome from theme tokens. */
+
+#MainWindow,
+#centralwidget {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#loadingLabel,
+#teamLabel,
+#activityLabel {
+  background: transparent;
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#loadingCard {
+  background: $COLOR_BACKGROUND_2;
+  border-radius: 12px;
+}
+
+/* Painted widgets pick their colours up from the theme via qproperty. */
+QCustomSkeleton {
+  qproperty-baseColor: $COLOR_BACKGROUND_4;
+  qproperty-highlightColor: $COLOR_BACKGROUND_2;
+}
+
+QCustomAvatarGroup {
+  background: transparent;
+  qproperty-ringColor: $COLOR_BACKGROUND_1;
+  qproperty-overflowBg: $COLOR_BACKGROUND_3;
+  qproperty-overflowText: $COLOR_TEXT_1;
+}
+
+QCustomTimeline {
+  background: transparent;
+  qproperty-lineColor: $COLOR_BACKGROUND_4;
+  qproperty-dotColor: $COLOR_ACCENT_1;
+}
+
+QCustomTimeline #timelineTitle {
+  background: transparent;
+  color: $COLOR_TEXT_1;
+  font-weight: 600;
+}
+
+QCustomTimeline #timelineTime {
+  background: transparent;
+  color: $COLOR_ACCENT_1;
+  font-size: 12px;
+}
+
+QCustomTimeline #timelineDesc {
+  background: transparent;
+  color: $COLOR_TEXT_3;
+}

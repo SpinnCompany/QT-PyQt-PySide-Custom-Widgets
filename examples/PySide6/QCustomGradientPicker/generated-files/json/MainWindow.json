@@ -1,0 +1,15 @@
+{
+  "QComboBox": [
+    {
+      "name": "typeBox",
+      "items": [
+        {
+          "name": "linear"
+        },
+        {
+          "name": "radial"
+        }
+      ]
+    }
+  ]
+}

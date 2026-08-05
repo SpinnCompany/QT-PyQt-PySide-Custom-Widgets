@@ -1,0 +1,358 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>560</width>
+    <height>380</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QCustomBadge</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="rootLayout">
+    <property name="spacing">
+     <number>16</number>
+    </property>
+    <property name="leftMargin">
+     <number>16</number>
+    </property>
+    <property name="topMargin">
+     <number>16</number>
+    </property>
+    <property name="rightMargin">
+     <number>16</number>
+    </property>
+    <property name="bottomMargin">
+     <number>16</number>
+    </property>
+    <item>
+     <widget class="QLabel" name="sectionVariants">
+      <property name="text">
+       <string>Variants</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="variantRow">
+      <property name="spacing">
+       <number>8</number>
+      </property>
+      <item>
+       <widget class="QCustomBadge" name="badgeDefault">
+        <property name="text">
+         <string>Default</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomBadge" name="badgePrimary">
+        <property name="text">
+         <string>Primary</string>
+        </property>
+        <property name="variant" stdset="0">
+         <string>primary</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomBadge" name="badgeSecondary">
+        <property name="text">
+         <string>Secondary</string>
+        </property>
+        <property name="variant" stdset="0">
+         <string>secondary</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomBadge" name="badgeSuccess">
+        <property name="text">
+         <string>Success</string>
+        </property>
+        <property name="variant" stdset="0">
+         <string>success</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomBadge" name="badgeWarning">
+        <property name="text">
+         <string>Warning</string>
+        </property>
+        <property name="variant" stdset="0">
+         <string>warning</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomBadge" name="badgeDestructive">
+        <property name="text">
+         <string>Destructive</string>
+        </property>
+        <property name="variant" stdset="0">
+         <string>destructive</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomBadge" name="badgeInfo">
+        <property name="text">
+         <string>Info</string>
+        </property>
+        <property name="variant" stdset="0">
+         <string>info</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomBadge" name="badgeOutline">
+        <property name="text">
+         <string>Outline</string>
+        </property>
+        <property name="variant" stdset="0">
+         <string>outline</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="variantSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="sectionSizes">
+      <property name="text">
+       <string>Sizes &amp; dot</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="sizeRow">
+      <property name="spacing">
+       <number>8</number>
+      </property>
+      <item>
+       <widget class="QCustomBadge" name="badgeSizeSm">
+        <property name="text">
+         <string>sm</string>
+        </property>
+        <property name="variant" stdset="0">
+         <string>primary</string>
+        </property>
+        <property name="sizeVariant" stdset="0">
+         <string>sm</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomBadge" name="badgeSizeMd">
+        <property name="text">
+         <string>md</string>
+        </property>
+        <property name="variant" stdset="0">
+         <string>primary</string>
+        </property>
+        <property name="sizeVariant" stdset="0">
+         <string>md</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomBadge" name="badgeSizeLg">
+        <property name="text">
+         <string>lg</string>
+        </property>
+        <property name="variant" stdset="0">
+         <string>primary</string>
+        </property>
+        <property name="sizeVariant" stdset="0">
+         <string>lg</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomBadge" name="dotSm">
+        <property name="variant" stdset="0">
+         <string>success</string>
+        </property>
+        <property name="sizeVariant" stdset="0">
+         <string>sm</string>
+        </property>
+        <property name="dot" stdset="0">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomBadge" name="dotMd">
+        <property name="variant" stdset="0">
+         <string>success</string>
+        </property>
+        <property name="sizeVariant" stdset="0">
+         <string>md</string>
+        </property>
+        <property name="dot" stdset="0">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomBadge" name="dotLg">
+        <property name="variant" stdset="0">
+         <string>success</string>
+        </property>
+        <property name="sizeVariant" stdset="0">
+         <string>lg</string>
+        </property>
+        <property name="dot" stdset="0">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="sizeSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="sectionCount">
+      <property name="text">
+       <string>Count (click +/- )</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="countRow">
+      <property name="spacing">
+       <number>8</number>
+      </property>
+      <item>
+       <widget class="QPushButton" name="minusButton">
+        <property name="text">
+         <string>-</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomBadge" name="countBadge">
+        <property name="variant" stdset="0">
+         <string>destructive</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="plusButton">
+        <property name="text">
+         <string>+</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="countSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="sectionOverlay">
+      <property name="text">
+       <string>Attached overlay</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="overlayRow">
+      <item>
+       <widget class="QPushButton" name="inboxButton">
+        <property name="text">
+         <string>  Inbox  </string>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>40</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomBadge" name="overlayBadge">
+        <property name="variant" stdset="0">
+         <string>primary</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="overlaySpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <spacer name="bottomSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomBadge</class>
+   <extends>QLabel</extends>
+   <header location="global">Custom_Widgets.QCustomBadge.h</header>
+  </customwidget>
+ <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>

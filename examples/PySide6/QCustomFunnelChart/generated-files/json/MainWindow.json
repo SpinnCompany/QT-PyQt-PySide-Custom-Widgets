@@ -1,0 +1,37 @@
+{
+  "QComboBox": [
+    {
+      "name": "shapeCombo",
+      "items": [
+        {
+          "name": "funnel"
+        },
+        {
+          "name": "pyramid"
+        }
+      ]
+    },
+    {
+      "name": "orientCombo",
+      "items": [
+        {
+          "name": "vertical"
+        },
+        {
+          "name": "horizontal"
+        }
+      ]
+    },
+    {
+      "name": "basisCombo",
+      "items": [
+        {
+          "name": "first"
+        },
+        {
+          "name": "previous"
+        }
+      ]
+    }
+  ]
+}

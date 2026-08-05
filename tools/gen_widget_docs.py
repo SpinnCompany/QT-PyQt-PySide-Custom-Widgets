@@ -605,9 +605,170 @@ def _seedChatInput(w, theme):
     w.setMinimumSize(520, 64)
 
 
+def _intoLayout(w):
+    """The widget's own layout if it made one, else a fresh QVBoxLayout.
+    Containers like QCustomComponentLoader build a layout in __init__;
+    handing them a second one raises and the seed dies half-applied."""
+    from qtpy.QtWidgets import QVBoxLayout
+    return w.layout() or QVBoxLayout(w)
+
+
+def _seedComponentCard(w, theme):
+    from qtpy.QtWidgets import QLabel, QPushButton
+    lay = _intoLayout(w)
+    title = QLabel("Team activity")
+    title.setStyleSheet("font-size: 15px; font-weight: 600;")
+    body = QLabel("4 deployments today - all healthy.")
+    body.setWordWrap(True)
+    lay.addWidget(title)
+    lay.addWidget(body)
+    lay.addWidget(QPushButton("View details"))
+    lay.addStretch(1)
+    w.setMinimumSize(320, 170)
+
+
+def _seedStackedPages(w, theme):
+    from qtpy.QtWidgets import QLabel, QVBoxLayout, QWidget
+    for title, body in (("Overview", "Revenue is up 14% this week."),
+                        ("Activity", "38 new signups today."),
+                        ("Reports", "The Q3 export is ready to download.")):
+        page = QWidget()
+        lay = QVBoxLayout(page)
+        head = QLabel(title)
+        head.setStyleSheet("font-size: 15px; font-weight: 600;")
+        text = QLabel(body)
+        text.setWordWrap(True)
+        lay.addWidget(head)
+        lay.addWidget(text)
+        lay.addStretch(1)
+        w.addWidget(page)
+    w.slideTransition = True
+    w.transitionTime = 400
+    w.setCurrentIndex(0)
+    w.setMinimumSize(380, 200)
+
+
+def _seedSlideMenu(w, theme):
+    from qtpy.QtWidgets import QLabel, QPushButton
+    lay = _intoLayout(w)
+    title = QLabel("Workspace")
+    title.setStyleSheet("font-size: 14px; font-weight: 600;")
+    lay.addWidget(title)
+    for text in ("Dashboard", "Projects", "Messages", "Settings"):
+        lay.addWidget(QPushButton(text))
+    lay.addStretch(1)
+    # Pin the size through the widget's own API — its show-time configuration
+    # re-imposes defaults over any external minimum/maximum, so external caps
+    # leave it floating in a half-empty canvas.
+    # expandedWidth/Height must be set explicitly: they are captured from
+    # defaultWidth at __init__, so setting defaults afterwards leaves the
+    # show-time expansion animating to the stale "auto" (640x480).
+    w.customizeQCustomSlideMenu(defaultWidth=210, defaultHeight=250,
+                                collapsedWidth=64, collapsedHeight=250,
+                                expandedWidth=210, expandedHeight=250)
+    from qtpy.QtCore import QSize
+    w.sizeHint = lambda: QSize(210, 250)
+
+
+def _seedSidebarContainer(w, theme):
+    from qtpy.QtWidgets import QLabel, QPushButton
+    lay = _intoLayout(w)
+    title = QLabel("Filters")
+    title.setStyleSheet("font-size: 14px; font-weight: 600;")
+    lay.addWidget(title)
+    for text in ("Status: Active", "Owner: Me", "Due this week"):
+        lay.addWidget(QPushButton(text))
+    lay.addStretch(1)
+    w.setMinimumSize(220, 230)
+
+
+def _seedMainWindow(w, theme):
+    from qtpy.QtWidgets import QLabel, QVBoxLayout, QWidget
+    w.setWindowTitle("Dashboard")
+    central = QWidget()
+    lay = QVBoxLayout(central)
+    head = QLabel("Good morning, Alex")
+    head.setStyleSheet("font-size: 16px; font-weight: 600;")
+    sub = QLabel("3 tasks due today - next standup at 11:00.")
+    sub.setWordWrap(True)
+    lay.addWidget(head)
+    lay.addWidget(sub)
+    lay.addStretch(1)
+    w.setCentralWidget(central)
+    # Offscreen there is no window manager, so no native frame — without its
+    # own chrome the shot reads as a bare label, not a main window.
+    bar = w.menuBar()
+    for menuTitle, items in (("File", ("New", "Open", "Save")),
+                             ("Edit", ("Undo", "Copy", "Paste")),
+                             ("View", ("Zoom in", "Zoom out"))):
+        menu = bar.addMenu(menuTitle)
+        for item in items:
+            menu.addAction(item)
+    w.statusBar().showMessage("Ready")
+    w.setMinimumSize(420, 250)
+
+
+def _flowChips():
+    from Custom_Widgets.QCustomChip import QCustomChip
+    return [QCustomChip(text) for text in
+            ("Design", "Engineering", "Marketing", "Research", "Support", "Ops")]
+
+
+def _seedFlowWidget(w, theme):
+    for chip in _flowChips():
+        w.addWidget(chip)
+    w.setMinimumSize(360, 150)
+
+
+def _flowLayoutHost(cls):
+    """QCustomFlowLayout is a layout, not a widget — photograph it doing its
+    job on a plain host instead."""
+    from qtpy.QtWidgets import QWidget
+    host = QWidget()
+    layout = cls(host, margin=12, spacing=8)
+    for chip in _flowChips():
+        layout.addWidget(chip)
+    host.setMinimumSize(360, 150)
+    return host
+
+
+def _seedHamburger(w, theme):
+    from qtpy.QtWidgets import QLabel, QPushButton
+    w.menuWidth = 230
+    w.menuHeight = 290
+    lay = _intoLayout(w)
+    title = QLabel("Menu")
+    title.setStyleSheet("font-size: 14px; font-weight: 600;")
+    lay.addWidget(title)
+    for text in ("Home", "Browse", "Library", "Settings"):
+        lay.addWidget(QPushButton(text))
+    lay.addStretch(1)
+
+
+def _pump(seconds):
+    """Run the event loop for real wall-clock time. POST_SEEDS that trigger an
+    animated open (menu slide-in, container fade) finish after shoot()'s four
+    processEvents calls — without this the grab lands on frame zero."""
+    from qtpy.QtWidgets import QApplication
+    app = QApplication.instance()
+    deadline = time.time() + seconds
+    while time.time() < deadline:
+        app.processEvents()
+        time.sleep(0.01)
+
+
 #: seed(widget, theme) -> None. Theme matters wherever a widget has its own
 #: notion of light/dark that the design tokens do not drive.
 SEEDS = {
+    "QCustomComponent": _seedComponentCard,
+    "QCustomComponentContainer": _seedComponentCard,
+    "QCustomComponentLoader": _seedComponentCard,
+    "QCustomQStackedWidget": _seedStackedPages,
+    "QCustomSlideMenu": _seedSlideMenu,
+    "QCustomSidebarContainer": _seedSidebarContainer,
+    "QCustomQMainWindow": _seedMainWindow,
+    "QCustomFlowWidget": _seedFlowWidget,
+    "QCustomHamburgerMenu": _seedHamburger,
     "QCustomChatList": lambda w, t: _seedChatList(w),
     "QCustomChatThread": lambda w, t: _seedChatThread(w),
     "QCustomImageViewer": lambda w, t: _seedImageViewer(w),
@@ -736,7 +897,14 @@ def _reassertChartTheme(w, theme):
 #: to theme broadcasts from OTHER widgets alive in the same process — which is
 #: why a chart shot in isolation came out light and the same chart in a full
 #: run came out black. Re-asserting last is the only thing that survives.
-POST_SEEDS = {}
+POST_SEEDS = {
+    # Both position an animated child against their CURRENT parent, and the
+    # harness reparents the widget into the shot host after seeding — opened
+    # any earlier, the menu/panel would hang off a parent that is no longer
+    # in the frame.
+    "QCustomHamburgerMenu": lambda w, t: (w.showMenu(), _pump(0.7)),
+    "QCustomSidebarContainer": lambda w, t: (w.showContainerForce(), _pump(0.7)),
+}
 
 #: Widgets whose __init__ takes required arguments. Without an entry here the
 #: bare `cls()` raises, shoot() returns None and the widget silently has no
@@ -757,6 +925,8 @@ def _hostedParent(width=420, height=260):
 
 
 CONSTRUCTORS = {
+    "QCustomFlowLayout": _flowLayoutHost,
+    "QCustomHamburgerMenu": lambda cls: cls(_hostedParent(380, 420)),
     "QCustomChip": lambda cls: cls("Design", closable=True, selectable=True),
     "QCustomCommandPalette": lambda cls: cls(_hostedParent()),
     "QCustomDrawer": lambda cls: cls(_hostedParent()),
@@ -782,6 +952,11 @@ SETTLE = {
     # The reflow is also ANIMATED, so it needs long enough to land, not
     # just long enough to start.
     "QTagEdit": 0.70, "QCustomChip": 0.70, "QCustomChipGroup": 0.70,
+    "QCustomFlowWidget": 0.85, "QCustomFlowLayout": 0.85,
+    "QCustomSlideMenu": 0.6, "QCustomHamburgerMenu": 0.6,
+    "QCustomSidebarContainer": 0.6, "QCustomQStackedWidget": 0.4,
+    "QCustomComponent": 0.4, "QCustomComponentContainer": 0.4,
+    "QCustomComponentLoader": 0.4,
 }
 
 
@@ -1165,6 +1340,10 @@ GIFS = {
     "QCustomCarousel":           dict(frames=30, interval=0.07, drive=_driveCarousel),
     "QCustomStepper":            dict(frames=26, interval=0.07, drive=_driveStepper),
     "QCustomAccordion":          dict(frames=34, interval=0.07, drive=_driveAccordion),
+    "QCustomSlideMenu":          dict(frames=32, interval=0.07,
+                                      drive=lambda w, i: w.toggleMenu() if i and i % 14 == 0 else None),
+    "QCustomHamburgerMenu":      dict(frames=32, interval=0.07,
+                                      drive=lambda w, i: w.toggleMenu() if i and i % 14 == 0 else None),
 }
 
 
@@ -1397,13 +1576,15 @@ def _buildForShot(cls, theme):
     app = QApplication.instance()
     app.setStyleSheet(_chromeQss(theme))
     applyDesignTokens(app, theme=theme)
-    if not (isinstance(cls, type) and issubclass(cls, QWidget)):
-        return None, None, app
     build = CONSTRUCTORS.get(cls.__name__)
+    if build is None and not (isinstance(cls, type) and issubclass(cls, QWidget)):
+        return None, None, app
     try:
         widget = build(cls) if build else cls()
     except Exception as exc:
         print("  cannot construct %s: %s" % (cls.__name__, exc))
+        return None, None, app
+    if not isinstance(widget, QWidget):
         return None, None, app
     for name, value in _domDefaults(cls).items():
         try:
@@ -1444,13 +1625,17 @@ def shoot(cls, slug, theme):
     applyDesignTokens(app, theme=theme)
     # Not everything the manifest lists is a QWidget — generated Ui_* form
     # classes turn up too, and QBoxLayout.addWidget rejects them outright.
-    if not (isinstance(cls, type) and issubclass(cls, QWidget)):
-        return None
+    # A CONSTRUCTORS entry overrides the class check: it may wrap a
+    # non-widget (QCustomFlowLayout) in a host QWidget of its own.
     build = CONSTRUCTORS.get(cls.__name__)
+    if build is None and not (isinstance(cls, type) and issubclass(cls, QWidget)):
+        return None
     try:
         widget = build(cls) if build else cls()
     except Exception as exc:
         print("  cannot construct %s: %s" % (cls.__name__, exc))
+        return None
+    if not isinstance(widget, QWidget):
         return None
     for name, value in _domDefaults(cls).items():
         try:
@@ -1780,6 +1965,11 @@ def main():
     args = parser.parse_args()
 
     os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+    # qtpy prefers PyQt5 when several bindings are installed. The library
+    # targets PySide6, and under PyQt5 the capture pipeline breaks in two
+    # ways: QImage.bits() returns a sip.voidptr PIL cannot size (every GIF
+    # fails), and a broken PyQt5 Qt5Charts import takes the chart pages down.
+    os.environ.setdefault("QT_API", "pyside6")
     from qtpy.QtWidgets import QApplication
     app = QApplication.instance() or QApplication([])
 
@@ -1824,7 +2014,8 @@ def main():
             continue
 
         from qtpy.QtWidgets import QWidget
-        if not (isinstance(cls, type) and issubclass(cls, QWidget)):
+        if (cls.__name__ not in CONSTRUCTORS
+                and not (isinstance(cls, type) and issubclass(cls, QWidget))):
             failed.append("%s (not a QWidget)" % name)
             continue
 

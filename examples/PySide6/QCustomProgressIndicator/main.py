@@ -1,248 +1,188 @@
 ########################################################################
-## SPINN DESIGN CODE
+## QCustomProgressIndicator example — SPINN DESIGN CODE
 # YOUTUBE: (SPINN TV) https://www.youtube.com/spinnTv
 # WEBSITE: spinncode.com
+##
+## Three form-progress indicators: a self-restyling download simulation,
+## a 10-step form and a 5-step form, each driven from the buttons below
+## it. Chrome comes from Qss/scss/defaultStyle.scss + json-styles.
+## Run:
+##     python main.py
 ########################################################################
-
-########################################################################
-## IMPORTS
-########################################################################
+import os
+import random
 import sys
 
-from PySide6 import QtCore
-from PySide6.QtCore import *
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
 
-import random
-########################################################################
-# IMPORT GUI FILE
-from ui_interface import *
-########################################################################
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
 
-########################################################################
-# IMPORT CUSTOM BUTTONS, FORM PROGRESS INDICATOR AND QSTACKEDWIDGET FILE
-# We will only use form progress indicator
 from Custom_Widgets import *
-########################################################################
+from Custom_Widgets.QAppSettings import QAppSettings
+from qtpy.QtCore import QCoreApplication, QSettings, QTimer
+from qtpy.QtWidgets import QApplication
 
-########################################################################
-## MAIN WINDOW CLASS
-########################################################################
+
 class MainWindow(QCustomMainWindow):
     def __init__(self, parent=None):
         QCustomMainWindow.__init__(self)
+        from src.ui_MainWindow import Ui_MainWindow
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+        # Name the QSettings scope BEFORE loadJsonStyle: the theme loader
+        # checks QSettings("THEME") while registering CustomThemes, and an
+        # unnamed app reads a shared fallback file whose stale THEME key
+        # strips the Default-Theme flag.
+        QCoreApplication.setOrganizationName("CustomWidgets")
+        QCoreApplication.setApplicationName("QCustomProgressIndicator Showcase")
 
-        # CUSTOMIZE FORM PROGRESS INDICATOR
-        self.ui.widget.updateFormProgressIndicator(
-            # Set font color
-            # color = "#000", 
-            # Set fill color
-            # fillColor = "white", 
-            # Set fill color for warnings
-            # warningFillColor = "purple",
-            # Set fill color for errors
-            # errorFillColor = "red",
-            # Set fill color for success
-            # successFillColor = "pink",
-            # Set number of progress steps(default is 5)
-            # formProgressCount = 5,
-            # Set progress animation duration
-            # formProgressAnimationDuration = 200,
-            # Set progress animation easing curve
-            formProgressAnimationEasingCurve = "InOutQuint",
-            # Set progress container height
-            height = 80,
-            # Set progress container width
-            width = 500,
-            # Set default progress percentage
-            # startPercentage = 50 #half
-            )
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
 
-        # WIDGET 2
-        self.ui.widget_2.updateFormProgressIndicator(
-            # Set font color
-            # color = "#000", 
-            # Set fill color
-            # fillColor = "white", 
-            # Set fill color for warnings
-            # warningFillColor = "purple",
-            # Set fill color for errors
-            # errorFillColor = "red",
-            # Set fill color for success
-            # successFillColor = "pink",
-            # Set number of progress steps(default is 5)
-            formProgressCount = 10,
-            # Set progress animation duration
-            formProgressAnimationDuration = 2000, #2seconds
-            # Set progress animation easing curve
-            # formProgressAnimationEasingCurve = "InOutQuint",
-            # Set progress container height
-            height = 80,
-            # Set progress container width
-            # width = 1000,
-            # Set default progress percentage
-            # startPercentage = 50 #half
-            )
+        self.show()
+        themeEngine = self.themeEngine
+        org = getattr(themeEngine, "organizationName", "")
+        if org:
+            QCoreApplication.setOrganizationName(str(org))
+        appn = getattr(themeEngine, "applicationName", "")
+        if appn:
+            QCoreApplication.setApplicationName(str(appn))
+        orgd = getattr(themeEngine, "organizationDomain", "")
+        if orgd:
+            QCoreApplication.setOrganizationDomain(str(orgd))
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            for t in themeEngine.themes:
+                if getattr(t, "defaultTheme", False) and (init_set is None or not init_set):
+                    s.setValue("THEME", t.name)
+                    s.setValue("INIT-THEME-SET", True)
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
 
-        self.ui.widget.selectFormProgressIndicatorTheme(4)
-        self.ui.widget_2.selectFormProgressIndicatorTheme(2)
-        self.ui.widget_2.animateFormProgress(60) #60 percent 
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
 
-        # WIDGET 3
-        self.ui.widget_3.updateFormProgressIndicator(
-            # Set font color
-            # color = "#000", 
-            # Set fill color
-            # fillColor = "white", 
-            # Set fill color for warnings
-            # warningFillColor = "purple",
-            # Set fill color for errors
-            # errorFillColor = "red",
-            # Set fill color for success
-            # successFillColor = "pink",
-            # Set number of progress steps(default is 5)
-            formProgressCount = 10,
-            # Set progress animation duration
-            formProgressAnimationDuration = 2000, #2seconds
-            # Set progress animation easing curve
-            # formProgressAnimationEasingCurve = "InOutQuint",
-            # Set progress container height
-            height = 80,
-            # Set progress container width
-            width = 500,
-            # Set default progress percentage
-            # startPercentage = 50 #half
-            )
+        self._wireIndicators()
 
-        self.ui.widget_3.selectFormProgressIndicatorTheme(3)
-        self.ui.widget_3.animateFormProgress(60)
+    # ------------------------------------------------------------------ #
+    ## Wiring + data seeding (no styling here — see Qss/scss)
+    # ------------------------------------------------------------------ #
+    def _wireIndicators(self):
+        ui = self.ui
 
-        # NAVIGATE THROUGH FORM STEPS
-        # 20 percent
-        self.ui.step_6.clicked.connect(lambda: self.ui.widget_2.animateFormProgress(20))
-        # 40 percent
-        self.ui.step_7.clicked.connect(lambda: self.ui.widget_2.animateFormProgress(40))
-        # 60 percent
-        self.ui.step_8.clicked.connect(lambda: self.ui.widget_2.animateFormProgress(60))
-        # 80 percent
-        self.ui.step_9.clicked.connect(lambda: self.ui.widget_2.animateFormProgress(80))
-        # 100 percent
-        self.ui.step_10.clicked.connect(lambda: self.ui.widget_2.animateFormProgress(100))
+        # 5-STEP FORM INDICATOR
+        ui.formIndicator5.updateFormProgressIndicator(
+            formProgressAnimationEasingCurve="InOutQuint",
+            height=80,
+            width=500,
+        )
 
-        # UPDATE THE PROGRESS STEP STATUS
-        self.ui.widget_2.setStepStatus(
-            # Step 5
-            step_5_error = True,
-            # Step 2
-            step_3_warning = True,
-            # Step 3
-            step_8_success = True
-            )
+        # 10-STEP FORM INDICATOR
+        ui.formIndicator10.updateFormProgressIndicator(
+            formProgressCount=10,
+            formProgressAnimationDuration=2000,  # 2 seconds
+            height=80,
+        )
 
-        # UPDATE THE PROGRESS STEP STATUS
-        self.ui.widget.setStepStatus(
-            # Step 5
-            step_5_error = True,
-            # Step 2
-            step_2_warning = True,
-            # Step 3
-            step_3_success = True
-            )
+        ui.formIndicator5.selectFormProgressIndicatorTheme(4)
+        ui.formIndicator10.selectFormProgressIndicatorTheme(2)
+        ui.formIndicator10.animateFormProgress(60)  # 60 percent
 
-        # NAVIGATE THROUGH FORM STEPS
-        # 20 percent
-        self.ui.step_1.clicked.connect(lambda: self.ui.widget.animateFormProgress(20))
-        # 40 percent
-        self.ui.step_2.clicked.connect(lambda: self.ui.widget.animateFormProgress(40))
-        # 60 percent
-        self.ui.step_3.clicked.connect(lambda: self.ui.widget.animateFormProgress(60))
-        # 80 percent
-        self.ui.step_4.clicked.connect(lambda: self.ui.widget.animateFormProgress(80))
-        # 100 percent
-        self.ui.step_5.clicked.connect(lambda: self.ui.widget.animateFormProgress(100))
+        # DOWNLOAD SIMULATION INDICATOR
+        ui.downloadIndicator.updateFormProgressIndicator(
+            formProgressCount=10,
+            formProgressAnimationDuration=2000,
+            height=80,
+            width=500,
+        )
+        ui.downloadIndicator.selectFormProgressIndicatorTheme(3)
+        ui.downloadIndicator.animateFormProgress(60)
 
-        # ANIMATE THE PROGRESS
-        # LETS ADD TIMER TO CHANGE PROGRESSES
+        # NAVIGATE THROUGH THE 10-STEP FORM
+        ui.btnPct20.clicked.connect(lambda: ui.formIndicator10.animateFormProgress(20))
+        ui.btnPct40.clicked.connect(lambda: ui.formIndicator10.animateFormProgress(40))
+        ui.btnPct60.clicked.connect(lambda: ui.formIndicator10.animateFormProgress(60))
+        ui.btnPct80.clicked.connect(lambda: ui.formIndicator10.animateFormProgress(80))
+        ui.btnPct100.clicked.connect(lambda: ui.formIndicator10.animateFormProgress(100))
+
+        # PROGRESS STEP STATUSES
+        ui.formIndicator10.setStepStatus(
+            step_5_error=True,
+            step_3_warning=True,
+            step_8_success=True,
+        )
+        ui.formIndicator5.setStepStatus(
+            step_5_error=True,
+            step_2_warning=True,
+            step_3_success=True,
+        )
+
+        # NAVIGATE THROUGH THE 5-STEP FORM
+        ui.btnStep1.clicked.connect(lambda: ui.formIndicator5.animateFormProgress(20))
+        ui.btnStep2.clicked.connect(lambda: ui.formIndicator5.animateFormProgress(40))
+        ui.btnStep3.clicked.connect(lambda: ui.formIndicator5.animateFormProgress(60))
+        ui.btnStep4.clicked.connect(lambda: ui.formIndicator5.animateFormProgress(80))
+        ui.btnStep5.clicked.connect(lambda: ui.formIndicator5.animateFormProgress(100))
+
+        # ANIMATE THE DOWNLOAD SIMULATION
         self.download = 0
-        self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.downloadProgress) #progress function
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.downloadProgress)
         self.timer.start(100)
-
-        # Change all progresses to zero on start
-        # QtCore.QTimer.singleShot(0, lambda: self.ui.progressBar.rpb_setValue(0))
 
     # Simulate download process
     def downloadProgress(self):
-
+        ui = self.ui
         statuses = ["warning", "error", "success"]
         if self.download < 101:
             self.download += 1
-            
         else:
             self.download = 0
             # Reset step statuses
             for x in range(1, 11):
-
                 for y in statuses:
-                    self.ui.widget_3.setStepStatus(
-                        step = int(x),
-                        # Step 5
-                        status = y,
-                        # Step 2
-                        value = False,
+                    ui.downloadIndicator.setStepStatus(
+                        step=int(x),
+                        status=y,
+                        value=False,
                     )
 
-            # Apply new style
-            formProgressCount = random.choice ([10, 5, 3, 7, 15])
-            height = random.choice ([20, 40, 50, 60])
-            theme = random.choice ([1, 2, 3, 4, 5])
-            # WIDGET 3
-            self.ui.widget_3.updateFormProgressIndicator(
-                # Set number of progress steps(default is 5)
-                formProgressCount = formProgressCount,
-                # Set progress animation duration
-                height = height
+            # Apply a new random style
+            formProgressCount = random.choice([10, 5, 3, 7, 15])
+            height = random.choice([20, 40, 50, 60])
+            theme = random.choice([1, 2, 3, 4, 5])
+            ui.downloadIndicator.updateFormProgressIndicator(
+                formProgressCount=formProgressCount,
+                height=height,
             )
-            # Apply theme
-            self.ui.widget_3.selectFormProgressIndicatorTheme(theme)
+            ui.downloadIndicator.selectFormProgressIndicatorTheme(theme)
 
             # Update UI labels
-            self.ui.theme.setText(str(theme))
-            self.ui.height.setText(str(height))
-            self.ui.steps.setText(str(formProgressCount))
-
+            ui.themeValue.setText(str(theme))
+            ui.heightValue.setText(str(height))
+            ui.stepsValue.setText(str(formProgressCount))
 
         # Animate progress
-        self.ui.widget_3.animateFormProgress(self.download)
+        ui.downloadIndicator.animateFormProgress(self.download)
 
-        # Apply random progress step status
-        randStatus = random.choice (statuses)
-        if self.download % self.ui.widget_3.formProgressCount == 0:            
-            self.ui.widget_3.setStepStatus(
-                step = int(self.download / self.ui.widget_3.formProgressCount),
-                # Step 5
-                status = randStatus,
-                # Step 2
-                value = True,
-                )
-        # print(self.ui.widget_3.step_3_error)
+        # Apply a random progress step status
+        randStatus = random.choice(statuses)
+        if self.download % ui.downloadIndicator.formProgressCount == 0:
+            ui.downloadIndicator.setStepStatus(
+                step=int(self.download / ui.downloadIndicator.formProgressCount),
+                status=randStatus,
+                value=True,
+            )
 
 
-########################################################################
-## EXECUTE APP
-########################################################################
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    ########################################################################
-    ## 
-    ########################################################################
     window = MainWindow()
-    window.show()
-    sys.exit(app.exec_())
-
-# main()
-########################################################################
-## END===>
-######################################################################## 
+    sys.exit(app.exec())

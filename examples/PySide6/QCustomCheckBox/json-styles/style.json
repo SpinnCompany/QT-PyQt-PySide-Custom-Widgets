@@ -1,0 +1,28 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomCheckBox Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Toggle-Dark",
+          "Default-Theme": true,
+          "Background-color": "#171b21",
+          "Text-color": "#e8ecf1",
+          "Accent-color": "#1dbf73",
+          "Icons-color": "#9ca3af"
+        },
+        {
+          "Theme-name": "Toggle-Light",
+          "Default-Theme": false,
+          "Background-color": "#f4f6f8",
+          "Text-color": "#1c2430",
+          "Accent-color": "#149a5b",
+          "Icons-color": "#6b7280"
+        }
+      ]
+    }
+  }
+}

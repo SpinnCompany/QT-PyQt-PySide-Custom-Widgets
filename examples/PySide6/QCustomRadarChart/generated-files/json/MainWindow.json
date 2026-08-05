@@ -1,0 +1,15 @@
+{
+  "QComboBox": [
+    {
+      "name": "gridBox",
+      "items": [
+        {
+          "name": "polygon"
+        },
+        {
+          "name": "circle"
+        }
+      ]
+    }
+  ]
+}

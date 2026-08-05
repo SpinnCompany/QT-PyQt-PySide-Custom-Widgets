@@ -1,0 +1,53 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "LoadingIndicators Demo"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Loaders-Night",
+          "Default-Theme": true,
+          "Background-color": "#10131b",
+          "Text-color": "#e8ecf1",
+          "Accent-color": "#39b3ff",
+          "Icons-color": "#9ca3af",
+          "Create-icons": false
+        },
+        {
+          "Theme-name": "Loaders-Day",
+          "Default-Theme": false,
+          "Background-color": "#f5f7fa",
+          "Text-color": "#1a1a2e",
+          "Accent-color": "#0088fe",
+          "Icons-color": "#6b7280",
+          "Create-icons": false
+        }
+      ]
+    }
+  },
+  "_comment_ChartPalette": "Loader colours keyed by theme name. The loaders only accept colours in their constructors, so main.py json.loads this section and builds them with the active theme's hues.",
+  "ChartPalette": {
+    "Loaders-Night": {
+      "arc": "#e8ecf1",
+      "circles": "#7ab3f0",
+      "spinnerBounce": "#ff5252",
+      "spinnerSmooth": "#e8ecf1",
+      "perlinMessage": "#e8ecf1",
+      "perlinCircle1": "#ff2e63",
+      "perlinCircle2": "#4a6db3",
+      "perlinCircle3": "#643973ab"
+    },
+    "Loaders-Day": {
+      "arc": "#000000",
+      "circles": "#333333",
+      "spinnerBounce": "#ff0000",
+      "spinnerSmooth": "#000000",
+      "perlinMessage": "#1a1a2e",
+      "perlinCircle1": "#ff2e63",
+      "perlinCircle2": "#082e63",
+      "perlinCircle3": "#643973ab"
+    }
+  }
+}

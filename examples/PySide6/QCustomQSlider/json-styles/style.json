@@ -7,44 +7,20 @@
     "ThemeSettings": {
       "CustomThemes": [
         {
-          "name": "Light",
-          "defaultTheme": true,
-          "Background": "#f5f7fa",
-          "Text": "#1a1a2e",
-          "Accent": "#4A90D9",
-          "Icons": "#6b7280",
-          "Other-variables": {
-            "BACKGROUND_2": "#e8ecf1",
-            "BACKGROUND_3": "#ffffff",
-            "TEXT_2": "#374151",
-            "TEXT_3": "#9ca3af",
-            "ACCENT_2": "#7AB3F0",
-            "BORDER": "#d1d5db",
-            "CARD_BG": "#ffffff",
-            "SLIDER_HANDLE": "#4A90D9",
-            "SLIDER_GROOVE": "#d1d5db",
-            "SLIDER_FILL": "#4A90D9"
-          }
+          "Theme-name": "Dark",
+          "Default-Theme": true,
+          "Background-color": "#0f1117",
+          "Text-color": "#e8ecf1",
+          "Accent-color": "#7AB3F0",
+          "Icons-color": "#9ca3af"
         },
         {
-          "name": "Dark",
-          "defaultTheme": false,
-          "Background": "#0f1117",
-          "Text": "#e8ecf1",
-          "Accent": "#7AB3F0",
-          "Icons": "#9ca3af",
-          "Other-variables": {
-            "BACKGROUND_2": "#1a1d27",
-            "BACKGROUND_3": "#242736",
-            "TEXT_2": "#c9cdd4",
-            "TEXT_3": "#6b7280",
-            "ACCENT_2": "#4A90D9",
-            "BORDER": "#2d3142",
-            "CARD_BG": "#1a1d27",
-            "SLIDER_HANDLE": "#7AB3F0",
-            "SLIDER_GROOVE": "#2d3142",
-            "SLIDER_FILL": "#7AB3F0"
-          }
+          "Theme-name": "Light",
+          "Default-Theme": false,
+          "Background-color": "#f5f7fa",
+          "Text-color": "#1a1a2e",
+          "Accent-color": "#4A90D9",
+          "Icons-color": "#6b7280"
         }
       ]
     }
