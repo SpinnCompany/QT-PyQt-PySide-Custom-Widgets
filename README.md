@@ -16,11 +16,18 @@ straight from the code.
 ## Installation
 
 ```bash
-pip install QT-PyQt-PySide-Custom-Widgets          # first install
+pip install QT-PyQt-PySide-Custom-Widgets[pyside6]   # first install, with Qt
 pip install --upgrade QT-PyQt-PySide-Custom-Widgets
 ```
 
 Requires Python **3.10+** (PySide6's own floor).
+
+**You need a Qt binding.** The library reaches Qt through `qtpy` and does not
+bundle a binding — that is what lets you use PySide6 *or* PyQt6, instead of
+forcing a second ~200 MB Qt download on anyone who already has one. The
+`[pyside6]` extra above installs it for you. Prefer PyQt6? `pip install PyQt6`
+and set `QT_API=pyqt6`. Install without a binding and the first import tells
+you exactly this, rather than raising a bare `QtBindingsNotFoundError`.
 
 **Optional extras** (niche widgets pull their heavier stacks on demand):
 
