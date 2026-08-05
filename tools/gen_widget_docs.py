@@ -132,6 +132,61 @@ def signalsOf(cls):
     return sorted(set(out))
 
 
+#: verb prefix -> sentence template for _describeMethod's name-derived tier.
+_VERB_SENTENCES = [
+    ("set", "Set the {rest}."), ("get", "Return the {rest}."),
+    ("is", "Return whether the widget is {rest}."),
+    ("has", "Return whether it has {rest}."),
+    ("add", "Add {a_rest}."), ("remove", "Remove {a_rest}."),
+    ("insert", "Insert {a_rest}."), ("clear", "Clear the {rest}."),
+    ("toggle", "Toggle the {rest}."), ("show", "Show the {rest}."),
+    ("hide", "Hide the {rest}."), ("open", "Open the {rest}."),
+    ("close", "Close the {rest}."), ("start", "Start the {rest}."),
+    ("stop", "Stop the {rest}."), ("load", "Load the {rest}."),
+    ("save", "Save the {rest}."), ("apply", "Apply the {rest}."),
+    ("update", "Update the {rest}."), ("refresh", "Refresh the {rest}."),
+    ("reset", "Reset the {rest}."), ("create", "Create {a_rest}."),
+    ("build", "Build the {rest}."), ("fit", "Fit the {rest}."),
+    ("select", "Select {a_rest}."), ("expand", "Expand the {rest}."),
+    ("collapse", "Collapse the {rest}."), ("enable", "Enable the {rest}."),
+    ("disable", "Disable the {rest}."), ("on", "Handle {rest}."),
+]
+
+
+def _splitCamel(name):
+    """'setTileProvider' -> 'tile provider' (acronym runs stay together)."""
+    words = re.findall(r"[A-Z]{2,}(?=[A-Z][a-z]|\b)|[A-Z]?[a-z0-9]+|[A-Z]", name)
+    return " ".join(w if w.isupper() else w.lower() for w in words)
+
+
+def _describeMethod(cls, name, func):
+    """A description for the Methods table that is NEVER blank.
+
+    Tier 1: the method's own docstring. Tier 2: an inherited docstring from a
+    base class (skipping PySide's signature-echo docs, which describe nothing).
+    Tier 3: a sentence derived from the camelCase name — 'setTileProvider' ->
+    'Set the tile provider.' Honest, and far more useful than an empty cell.
+    """
+    doc = (inspect.getdoc(func) or "").split("\n")[0].strip()
+    if doc:
+        return doc
+    for base in cls.__mro__[1:]:
+        inherited = getattr(base, name, None)
+        if inherited is None:
+            continue
+        doc = (inspect.getdoc(inherited) or "").split("\n")[0].strip()
+        if doc and not doc.startswith(name + "("):
+            return doc
+    words = _splitCamel(name)
+    for prefix, template in _VERB_SENTENCES:
+        if name.startswith(prefix) and len(name) > len(prefix) \
+                and name[len(prefix)].isupper():
+            rest = _splitCamel(name[len(prefix):])
+            article = "an" if rest[:1] in "aeiou" else "a"
+            return template.format(rest=rest, a_rest="%s %s" % (article, rest))
+    return words[:1].upper() + words[1:] + "."
+
+
 def publicMethods(cls):
     """Methods defined on the class itself, skipping Qt overrides."""
     overrides = {"paintEvent", "resizeEvent", "mousePressEvent", "showEvent",
@@ -150,8 +205,7 @@ def publicMethods(cls):
             signature = signature.replace("(self)", "()")
         except (TypeError, ValueError):
             signature = "(...)"
-        doc = (inspect.getdoc(value) or "").split("\n")[0].strip()
-        out.append((name + signature, doc))
+        out.append((name + signature, _describeMethod(cls, name, value)))
     return sorted(out)
 
 
@@ -732,6 +786,17 @@ def _flowLayoutHost(cls):
     return host
 
 
+def _seedMapView(w, theme):
+    # The offline itemsoverlay provider is the deterministic default; the QML
+    # engine must be loaded explicitly and given real time to spin up. Never
+    # reassign a live map's plugin (write-once QML — segfault).
+    w.setMinimumSize(520, 320)
+    w.loadDefaultEngine()
+    w.setCenter(-1.286389, 36.817223)      # Nairobi
+    w.setZoom(13)
+    _pump(2.5)
+
+
 def _seedHamburger(w, theme):
     from qtpy.QtWidgets import QLabel, QPushButton
     w.menuWidth = 230
@@ -760,6 +825,7 @@ def _pump(seconds):
 #: seed(widget, theme) -> None. Theme matters wherever a widget has its own
 #: notion of light/dark that the design tokens do not drive.
 SEEDS = {
+    "QCustomMapView": _seedMapView,
     "QCustomComponent": _seedComponentCard,
     "QCustomComponentContainer": _seedComponentCard,
     "QCustomComponentLoader": _seedComponentCard,
@@ -956,7 +1022,7 @@ SETTLE = {
     "QCustomSlideMenu": 0.6, "QCustomHamburgerMenu": 0.6,
     "QCustomSidebarContainer": 0.6, "QCustomQStackedWidget": 0.4,
     "QCustomComponent": 0.4, "QCustomComponentContainer": 0.4,
-    "QCustomComponentLoader": 0.4,
+    "QCustomComponentLoader": 0.4, "QCustomMapView": 2.0,
 }
 
 

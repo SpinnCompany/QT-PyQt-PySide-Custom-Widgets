@@ -1923,5 +1923,16 @@
   "example": false,
   "designer": true,
   "tier": "internal"
+ },
+ {
+  "module": "Custom_Widgets/map/facade.py",
+  "widget": "QCustomMapView",
+  "loc": 458,
+  "pyi": false,
+  "catalog": false,
+  "test": true,
+  "example": true,
+  "designer": false,
+  "tier": "free"
  }
 ]
