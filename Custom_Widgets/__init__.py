@@ -13,9 +13,29 @@ from Custom_Widgets import _legacy_paths as _legacy_paths
 _legacy_paths.install()
 
 
-from qtpy.QtCore import QCoreApplication, Qt, QSettings, QPoint, QSize, Signal, QEvent
-from qtpy.QtGui import QCursor, QPaintEvent,QColor, QMouseEvent, QPainter, QIcon
-from qtpy.QtWidgets import QPushButton, QLabel, QTabWidget, QCheckBox, QMainWindow, QWidget, QVBoxLayout, QStyle, QStyleOption, QGraphicsDropShadowEffect, QToolBox
+# A Qt binding is deliberately NOT a hard dependency: qtpy exists so you can
+# pick PySide6 or PyQt6, and pinning one would force a ~200 MB download on
+# people who already have the other. The cost is that a bare
+# `pip install QT-PyQt-PySide-Custom-Widgets` leaves you one step short, and
+# qtpy's own failure is a bare QtBindingsNotFoundError traceback that never
+# says what to do about it. Translate it into an instruction.
+try:
+    from qtpy.QtCore import QCoreApplication, Qt, QSettings, QPoint, QSize, Signal, QEvent
+    from qtpy.QtGui import QCursor, QPaintEvent,QColor, QMouseEvent, QPainter, QIcon
+    from qtpy.QtWidgets import QPushButton, QLabel, QTabWidget, QCheckBox, QMainWindow, QWidget, QVBoxLayout, QStyle, QStyleOption, QGraphicsDropShadowEffect, QToolBox
+except ImportError as _exc:  # QtBindingsNotFoundError subclasses ImportError
+    if type(_exc).__name__ != "QtBindingsNotFoundError":
+        raise
+    raise ImportError(
+        "Custom_Widgets needs a Qt binding, and none is installed.\n"
+        "\n"
+        "    pip install PySide6\n"
+        "\n"
+        "Or install PyQt6 instead and set QT_API=pyqt6. The binding is not\n"
+        "bundled so you can choose one; everything else this library needs is\n"
+        "already installed.\n"
+        "Docs: https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/"
+    ) from None
 
 import re
 

@@ -37,6 +37,13 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# A Qt binding is deliberately NOT a hard dependency -- qtpy exists so you can
+# choose PySide6 or PyQt6, and pinning one would force a ~200 MB download on
+# anyone who already has the other. This extra is the one-step path for people
+# with no preference: `pip install QT-PyQt-PySide-Custom-Widgets[pyside6]`.
+# Without any binding, importing Custom_Widgets now fails with an instruction
+# instead of qtpy's bare QtBindingsNotFoundError.
+pyside6 = ["PySide6"]
 # Niche widgets pull their heavy stacks on demand:
 qr = ["qrcode>=8.0", "Pillow"]              # QCustomQRGenerator
 acrylic = ["numpy", "colorthief", "Pillow"] # AcrylicEffect blur (scipy optional upgrade)
