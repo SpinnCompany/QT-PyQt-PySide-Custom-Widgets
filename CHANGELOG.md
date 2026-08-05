@@ -1,5 +1,31 @@
 # Changelog
 
+## 2.3.2 — 2026-08-06
+
+**A missing Qt binding now tells you what to do.** `pip install
+QT-PyQt-PySide-Custom-Widgets` followed by `import Custom_Widgets` used to
+raise qtpy's bare `QtBindingsNotFoundError: No Qt bindings could be found`,
+which never says how to fix it — and that is the first thing a new user does.
+The import now explains itself:
+
+```
+Custom_Widgets needs a Qt binding, and none is installed.
+
+    pip install PySide6
+
+Or install PyQt6 instead and set QT_API=pyqt6.
+```
+
+### Added
+- **`[pyside6]` extra** — `pip install QT-PyQt-PySide-Custom-Widgets[pyside6]`
+  installs the binding in one step, for anyone with no preference.
+
+### Notes
+- A Qt binding is still **not** a hard dependency, deliberately. qtpy exists so
+  you can choose PySide6 or PyQt6; pinning one would force a second ~200 MB Qt
+  download on anyone who already has the other. Base dependencies unchanged.
+- No widget or behaviour changes. Full suite green (1316 tests).
+
 ## 2.3.1 — 2026-08-05
 
 Metadata-only patch: **the Python floor is declared honestly as 3.10**.
