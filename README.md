@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/github/license/SpinnCompany/QT-PyQt-PySide-Custom-Widgets?logo=github)](https://github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets/blob/main/LICENSE)
 [![Docs](https://img.shields.io/badge/docs-customwidgets-blue)](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/)
 
-**163 documented widgets for PySide6** — charts, data tables, gauges,
+**164 documented widgets for PySide6** — charts, data tables, gauges,
 animated menus, window chrome, loaders and more. Every widget is
 authorable in **Qt Designer**, themed through **design tokens** with
 light/dark palettes, and documented with live screenshots generated
@@ -66,7 +66,7 @@ keeps Designer files, generated code and themes separate. The
 ## Documentation
 
 - **Docs & widget reference**: [spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/)
-- **Widget gallery**: [163 widgets with screenshots](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/Widgets/QCustomQMainWindow)
+- **Widget gallery**: [164 widgets with screenshots](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/Widgets/QCustomQMainWindow)
 - **App showcase**: [92 real apps](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/gallery)
 - **Video tutorials**: [YouTube — SpinnTV](https://www.youtube.com/@SpinnTV)
 

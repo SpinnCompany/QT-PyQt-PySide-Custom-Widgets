@@ -11,7 +11,7 @@ graduates to Production/Stable. No code changes.
 
 ## 2.3.0 — 2026-08-05
 
-The largest release in the project's history: the catalogue grows to **163
+The largest release in the project's history: the catalogue grows to **164
 documented widgets**, every public example is rebuilt and verified, and the
 reference documentation is generated straight from the code so it can no
 longer drift.
