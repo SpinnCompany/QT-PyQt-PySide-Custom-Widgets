@@ -39,7 +39,8 @@ except ImportError as exc:  # pragma: no cover
     # __main__ entry turns this into the friendly CLI message. This also
     # fires when an old 'mcp' (< 1.2, no fastmcp) is installed.
     raise ImportError(
-        "The MCP server needs the 'mcp' package (>= 1.9):\n"
+        "The MCP server needs the 'mcp' package (>=1.9,<2 - 2.0 removed "
+        "mcp.server.fastmcp):\n"
         "    pip install 'QT-PyQt-PySide-Custom-Widgets[mcp]'") from exc
 try:
     from mcp.server.fastmcp.exceptions import ToolError

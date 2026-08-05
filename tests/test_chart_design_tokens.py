@@ -17,12 +17,26 @@ def lineChart(qapp):
     from Custom_Widgets.widgets.charts.qtcharts.QCustomLineChart import (
         QCustomLineChart)
 
+    # Keep every chart alive for the whole test and destroy it DETERMINISTICALLY
+    # at teardown. A chart discarded mid-test is only half-dead until the GC
+    # runs; the next app-wide setStyleSheet (applyDesignTokens) repolishes all
+    # widgets, touches the carcass, and segfaults — CPython 3.13's GC timing
+    # hit exactly that in CI.
+    made = []
+
     def build():
         chart = QCustomLineChart()
         chart.categoriesCsv = "Jan,Feb,Mar"
         chart.seriesCsv = "Revenue=12,19,15"
+        made.append(chart)
         return chart
-    return build
+
+    yield build
+
+    for chart in made:
+        chart.deleteLater()
+    made.clear()
+    qapp.processEvents()
 
 
 class TestActiveTokens:
