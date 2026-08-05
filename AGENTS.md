@@ -199,6 +199,16 @@ broken PyQt5 `libQt5Charts.so.5`. The tool now sets
 touching its startup, and give any new capture/introspection tool the same
 default.
 
+### Discarded widgets + app-wide restyling = GC-timing segfaults
+Any test (or app path) that drops widgets on the floor and later calls
+`applyDesignTokens` (an app-wide `setStyleSheet`) can crash: Qt repolishes
+every widget it knows about, including half-collected carcasses. Whether it
+crashes depends on the CPython version's GC timing (3.10 and 3.13 both blew
+up in CI; 3.14 masked it locally). The suite-wide cure is the autouse
+`_reap_dead_widgets` fixture in tests/conftest.py (gc.collect + two
+processEvents after every test). The library-side fix (theme listeners must
+disconnect on destroy) is tracked separately.
+
 ### Never `sys.exit()` in an import-time guard
 `Custom_Widgets/mcp/server.py` used to `sys.exit(<msg>)` when the `mcp`
 package was missing. SystemExit is not an Exception: anything importing the
