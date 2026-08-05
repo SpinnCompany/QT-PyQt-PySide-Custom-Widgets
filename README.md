@@ -1,42 +1,30 @@
 # QT PyQt PySide Custom Widgets
 
-[![GitHub](https://img.shields.io/github/license/SpinnCompany/QT-PyQt-PySide-Custom-Widgets?logo=Github)](https://github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets/blob/master/LICENSE)
-[![GitHub top language](https://img.shields.io/github/languages/top/SpinnCompany/QT-PyQt-PySide-Custom-Widgets?logo=github)](https://github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets)
-[![GitHub issues](https://img.shields.io/github/issues/SpinnCompany/QT-PyQt-PySide-Custom-Widgets?logo=github)](https://github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets/issues)
+[![PyPI](https://img.shields.io/pypi/v/QT-PyQt-PySide-Custom-Widgets?logo=pypi&logoColor=white)](https://pypi.org/project/QT-PyQt-PySide-Custom-Widgets/)
+[![Python](https://img.shields.io/pypi/pyversions/QT-PyQt-PySide-Custom-Widgets?logo=python&logoColor=white)](https://pypi.org/project/QT-PyQt-PySide-Custom-Widgets/)
+[![License](https://img.shields.io/github/license/SpinnCompany/QT-PyQt-PySide-Custom-Widgets?logo=github)](https://github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets/blob/main/LICENSE)
+[![Docs](https://img.shields.io/badge/docs-customwidgets-blue)](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/)
 
-## Repository Migration Notice
-
-This repository has been forked and is now actively maintained at:
-
-**New Repository**: [SpinnCompany/QT-PyQt-PySide-Custom-Widgets](https://github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets)
-
-### Changes
-- **New Maintainer**: Now actively maintained by SpinnCompany
-- **Continuous Updates**: Regular maintenance, bug fixes, and new features
-- **Improved Accessibility**: Resolved previous access limitations
-
-This repository is the project's permanent home; the original KhamisiKibet repository is no longer accessible. All development continues here.
-
-## Overview
-
-Custom widgets for QT Desktop Applications designed to simplify UI development. These widgets can be used in QT Designer and imported to PySide code.
+**163 documented widgets for PySide6** — charts, data tables, gauges,
+animated menus, window chrome, loaders and more. Every widget is
+authorable in **Qt Designer**, themed through **design tokens** with
+light/dark palettes, and documented with live screenshots generated
+straight from the code.
 
 ![Custom Widgets Art](https://github.com/SpinnCompany/Docs-QT-PyQt-PySide-Custom-Widgets/blob/main/images/custom_widgets_art.png?raw=true)
 
 ## Installation
 
-**First time installation:**
-```
-pip install QT-PyQt-PySide-Custom-Widgets
-```
-
-**Upgrade to latest version:**
-```
+```bash
+pip install QT-PyQt-PySide-Custom-Widgets          # first install
 pip install --upgrade QT-PyQt-PySide-Custom-Widgets
 ```
 
+Requires Python **3.10+** (PySide6's own floor).
+
 **Optional extras** (niche widgets pull their heavier stacks on demand):
-```
+
+```bash
 pip install "QT-PyQt-PySide-Custom-Widgets[qr]"       # QCustomQRGenerator
 pip install "QT-PyQt-PySide-Custom-Widgets[map]"      # QCustomMapView (QtLocation)
 pip install "QT-PyQt-PySide-Custom-Widgets[acrylic]"  # AcrylicEffect blur
@@ -45,33 +33,60 @@ pip install "QT-PyQt-PySide-Custom-Widgets[mcp]"      # the Custom_Widgets MCP s
 pip install "QT-PyQt-PySide-Custom-Widgets[all]"      # everything above
 ```
 
-## Quick Links
+## Highlights
 
-- **Documentation**: [spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/)
-- **GitHub Pages**: [spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/)
-- **Main Module**: [github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets](https://github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets)
+- **Painted chart family** — scatter, funnel, range bar, radial gauges,
+  Sankey, candlestick, beeswarm, diverging bar, bubble, dot matrix,
+  sparklines, donut and more; QPainter-native, crisp at any size.
+- **`QCustomDataTable`** — rich cell renderers (two-line, status,
+  currency, link), synthetic select/actions columns, sortable headers.
+- **Chrome & motion** — custom title bars, hamburger and slide menus,
+  animated stacked-widget transitions, flow layouts with animated reflow,
+  progress and skeleton loaders, typewriter/sparkles/gradient text.
+- **Design-token theming** — `applyDesignTokens` drives role-based QSS
+  and light/dark palettes across the whole set.
+- **Qt Designer first** — every widget and property can be authored
+  visually; the examples ship with editable `.ui` files.
+- **Typed** — full `.pyi` stubs, `py.typed`, mypy-clean.
+- **MCP server** (`[mcp]` extra) — agent control of Qt Designer, live app
+  observation, widget catalog/signature/render tools.
+- **Design-rule linter** — `Custom_Widgets.lint` catches glyph icons,
+  hardcoded hex colours, drop shadows and oversized icons.
 
 ## Usage
 
-Please read the required [project structure](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets) and important updates [here](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets) before proceeding.
-
-The examples folder contains code examples for testing and learning about the custom widgets.
+Read the required
+[project structure](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/)
+before starting — apps use a `ui/` + compiled `src/` + `Qss/` layout that
+keeps Designer files, generated code and themes separate. The
+[`examples/`](examples/) folder contains 82 complete apps built that way.
 
 ![QCustomArcLoader GIF](https://github.com/SpinnCompany/Docs-QT-PyQt-PySide-Custom-Widgets/raw/main/images/24-modern-ui.gif)
 
-## Documentation Resources
+## Documentation
 
-- **Full Documentation & Examples**: [spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/)
-- **Video Tutorials**: [YouTube Playlist](https://www.youtube.com/watch?v=21Qt9p_F7Ts&list=PLJ8t3BKaQLhPKj9Mx08WAwvz7TGskefbK)
-- **Widget Gallery**: [spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/Widgets/QCustomQMainWindow](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/Widgets/QCustomQMainWindow)
+- **Docs & widget reference**: [spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/)
+- **Widget gallery**: [163 widgets with screenshots](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/Widgets/QCustomQMainWindow)
+- **App showcase**: [92 real apps](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/gallery)
+- **Video tutorials**: [YouTube — SpinnTV](https://www.youtube.com/@SpinnTV)
 
-## Support
+## Pro & support
 
-If you find this project valuable and would like to contribute to its development and maintenance, you can support us on [Patreon](https://www.patreon.com/c/spinntv).
+The free library is complete on its own and licensed **GPLv3**. For
+commercial teams there is
+[**Custom Widgets Pro**](https://pypi.org/project/QT-PyQt-PySide-Custom-Widgets-Pro/)
+— starting with DataTable Pro (virtualization, server-side sort/filter,
+grouping with aggregates, pivot, frozen columns, inline editing,
+CSV/XLSX export) — plus twelve premium example applications. Plans at
+[customwidgets.org/pricing](https://customwidgets.org/pricing/); active
+[Patreon supporters](https://www.patreon.com/c/spinntv) get the same
+entitlements. The Pro licence includes a written GPL additional
+permission, so combining the core with Pro and your application does not
+pull your application under the GPL.
 
 ## Contributors
 
-Thanks to all the [contributors](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets) involved in the development of the project!
+Thanks to everyone involved in the development of the project!
 
 <a href="https://github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=SpinnCompany/QT-PyQt-PySide-Custom-Widgets" />
@@ -79,9 +94,9 @@ Thanks to all the [contributors](https://spinncompany.github.io/Docs-QT-PyQt-PyS
 
 *Made with [contrib.rocks](https://contrib.rocks).*
 
-## App Gallery
-
-View a collection of modern GUIs made using the custom widgets module: [View Gallery](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/gallery)
+> **Note** — this repository is the project's permanent home. It was
+> previously published from the KhamisiKibet account, which is no longer
+> accessible; all development continues here under SpinnCompany.
 
 ## Credits & third-party assets
 
