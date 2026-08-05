@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>720</width>
+    <height>620</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Kbd / Splitter / Carousel</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,1,0,1">
+    <property name="spacing">
+     <number>14</number>
+    </property>
+    <property name="leftMargin">
+     <number>18</number>
+    </property>
+    <property name="topMargin">
+     <number>18</number>
+    </property>
+    <property name="rightMargin">
+     <number>18</number>
+    </property>
+    <property name="bottomMargin">
+     <number>18</number>
+    </property>
+    <item>
+     <widget class="QLabel" name="kbdSectionLabel">
+      <property name="text">
+       <string>Keyboard shortcuts</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="kbdRow">
+      <property name="spacing">
+       <number>16</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="paletteLabel">
+        <property name="text">
+         <string>Command palette</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomKbd" name="paletteKbd">
+        <property name="keys" stdset="0">
+         <string>Ctrl+K</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="saveLabel">
+        <property name="text">
+         <string>Save all</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomKbd" name="saveKbd">
+        <property name="keys" stdset="0">
+         <string>Ctrl+Shift+S</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="closeLabel">
+        <property name="text">
+         <string>Close</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomKbd" name="closeKbd">
+        <property name="keys" stdset="0">
+         <string>Alt+F4</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="kbdSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="splitterSectionLabel">
+      <property name="text">
+       <string>Resizable splitter (drag the handles)</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCustomSplitter" name="splitter">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>150</height>
+       </size>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QFrame" name="sidebarPanel">
+       <layout class="QVBoxLayout" name="sidebarLayout">
+        <property name="leftMargin">
+         <number>16</number>
+        </property>
+        <property name="topMargin">
+         <number>16</number>
+        </property>
+        <property name="rightMargin">
+         <number>16</number>
+        </property>
+        <property name="bottomMargin">
+         <number>16</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="sidebarTitle">
+          <property name="text">
+           <string>Sidebar</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="sidebarBody">
+          <property name="text">
+           <string>Navigation, files, and outline live here.</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QFrame" name="editorPanel">
+       <layout class="QVBoxLayout" name="editorLayout">
+        <property name="leftMargin">
+         <number>16</number>
+        </property>
+        <property name="topMargin">
+         <number>16</number>
+        </property>
+        <property name="rightMargin">
+         <number>16</number>
+        </property>
+        <property name="bottomMargin">
+         <number>16</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="editorTitle">
+          <property name="text">
+           <string>Editor</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="editorBody">
+          <property name="text">
+           <string>The main working area. Drag a handle to resize.</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QFrame" name="previewPanel">
+       <layout class="QVBoxLayout" name="previewLayout">
+        <property name="leftMargin">
+         <number>16</number>
+        </property>
+        <property name="topMargin">
+         <number>16</number>
+        </property>
+        <property name="rightMargin">
+         <number>16</number>
+        </property>
+        <property name="bottomMargin">
+         <number>16</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="previewTitle">
+          <property name="text">
+           <string>Preview</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="previewBody">
+          <property name="text">
+           <string>Live output / preview pane.</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="carouselSectionLabel">
+      <property name="text">
+       <string>Carousel (auto-advances every 2.5s)</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCustomCarousel" name="carousel">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>140</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomKbd</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomKbd.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomSplitter</class>
+   <extends>QSplitter</extends>
+   <header location="global">Custom_Widgets.QCustomSplitter.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomCarousel</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomCarousel.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

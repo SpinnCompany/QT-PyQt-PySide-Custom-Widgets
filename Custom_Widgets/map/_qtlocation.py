@@ -185,12 +185,18 @@ class QtLocationEngine(object):
     stays the single source of truth and a reload replays cleanly.
     """
 
-    def __init__(self, owner=None, qmlPath=None):
+    def __init__(self, owner=None, qmlPath=None, provider=None):
         from qtpy.QtQuickWidgets import QQuickWidget
         from qtpy.QtPositioning import QGeoCoordinate     # noqa: F401 - probes the module
 
         self._owner = owner
-        self._path = qmlPath or self._writeQml()
+        # A QML Plugin's `name` (and a Map's `plugin`) are write-once: they
+        # cannot be swapped on a live Map without crashing QtQuick. So the
+        # provider the facade holds when the engine loads is baked into the
+        # QML instead of pushed afterwards.
+        if provider is None and owner is not None and hasattr(owner, "tileProvider"):
+            provider = owner.tileProvider()
+        self._path = qmlPath or self._writeQml(provider)
         self._view = QQuickWidget()
         self._view.setResizeMode(QQuickWidget.SizeRootObjectToView)
         self._view.setSource(QUrl.fromLocalFile(self._path))
@@ -202,15 +208,23 @@ class QtLocationEngine(object):
             raise RuntimeError("QML map produced no root object")
 
     @staticmethod
-    def _writeQml():
+    def _writeQml(provider=None):
         """Materialise the QML next to this module.
 
         Written to disk rather than loaded from a string because QQuickWidget
         wants a URL, and a real file gives usable line numbers when the QML
-        fails to compile.
+        fails to compile. A non-default provider gets its own file with the
+        provider baked in, because Plugin.name is write-once (see __init__).
         """
         folder = os.path.dirname(os.path.abspath(__file__))
-        path = os.path.join(folder, "_map.qml")
+        qml = _QML
+        suffix = ""
+        if provider and str(provider) != "osm":
+            safe = "".join(c for c in str(provider) if c.isalnum() or c in "-_")
+            qml = _QML.replace('property string providerName: "osm"',
+                               'property string providerName: "%s"' % safe)
+            suffix = "_" + safe
+        path = os.path.join(folder, "_map%s.qml" % suffix)
         existing = None
         if os.path.exists(path):
             try:
@@ -218,9 +232,9 @@ class QtLocationEngine(object):
                     existing = fh.read()
             except OSError:
                 existing = None
-        if existing != _QML:
+        if existing != qml:
             with open(path, "w", encoding="utf-8") as fh:
-                fh.write(_QML)
+                fh.write(qml)
         return path
 
     # -- facade hooks ---------------------------------------------------- #
@@ -266,7 +280,19 @@ class QtLocationEngine(object):
         Keys stay in the caller's config — the library never carries one.
         """
         options = dict(options or {})
-        self._root.setProperty("providerName", str(name))
+        current = self._root.property("providerName")
+        if str(name) != str(current):
+            # Plugin.name / Map.plugin are write-once in QtLocation: mutating
+            # them on a live Map segfaults QtQuick. The provider is baked in
+            # at engine construction (see __init__); a later switch needs a
+            # new engine, so refuse rather than crash.
+            import warnings
+            warnings.warn(
+                "QtLocationEngine: cannot switch tile provider %r -> %r on a "
+                "live map (QML Plugin.name is write-once); reload the engine "
+                "to change providers" % (str(current), str(name)),
+                RuntimeWarning)
+            return
         if options:
             self._applyPluginParameters(options)
 

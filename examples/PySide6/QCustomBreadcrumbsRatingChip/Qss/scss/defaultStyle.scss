@@ -1,0 +1,101 @@
+/* Breadcrumbs / Rating / Chips showcase — token-widget QSS recreated here
+   because loadJsonStyle does not ship the applyDesignTokens component styles. */
+
+#MainWindow,
+#centralwidget {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#rateLabel,
+#tagsLabel,
+#filtersLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#statusLabel {
+  color: $COLOR_TEXT_3;
+  font-size: 12px;
+}
+
+/* ---- QCustomBreadcrumbs ---- */
+QCustomBreadcrumbs {
+  background: transparent;
+}
+
+QCustomBreadcrumbs #breadcrumbLink {
+  background-color: transparent;
+  border: none;
+  color: $COLOR_ACCENT_1;
+  padding: 0 2px;
+}
+
+QCustomBreadcrumbs #breadcrumbLink:hover {
+  color: $COLOR_ACCENT_2;
+}
+
+QCustomBreadcrumbs #breadcrumbCurrent {
+  color: $COLOR_TEXT_1;
+  font-weight: 600;
+}
+
+QCustomBreadcrumbs #breadcrumbSep {
+  color: $COLOR_TEXT_3;
+}
+
+/* ---- QCustomRating ---- */
+QCustomRating {
+  background: transparent;
+}
+
+QCustomRating #ratingStar {
+  color: $COLOR_TEXT_4;
+  font-size: 18px;
+  background: transparent;
+}
+
+QCustomRating #ratingStar[filled="true"] {
+  color: $STAR_COLOR;
+}
+
+/* ---- QCustomChip / QCustomChipGroup ---- */
+QCustomChipGroup {
+  background: transparent;
+}
+
+QCustomChip {
+  background-color: $SURFACE_MUTED;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER_COLOR;
+  border-radius: 14px;
+}
+
+QCustomChip #chipLabel {
+  color: $COLOR_TEXT_1;
+  background-color: transparent;
+}
+
+QCustomChip[selected="true"] {
+  background-color: $COLOR_ACCENT_1;
+  border-color: $COLOR_ACCENT_1;
+}
+
+QCustomChip[selected="true"] #chipLabel {
+  color: $ON_FILL;
+}
+
+QCustomChip #chipClose {
+  background-color: transparent;
+  border: none;
+  color: $COLOR_TEXT_2;
+  border-radius: 8px;
+}
+
+QCustomChip #chipClose:hover {
+  background-color: $BORDER_COLOR;
+}
+
+QCustomChip[selected="true"] #chipClose {
+  color: $ON_FILL;
+}

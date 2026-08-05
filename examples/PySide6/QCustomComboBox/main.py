@@ -1,57 +1,87 @@
-########################################################################
-## QCustomComboBox - searchable / autocomplete select example
-##
-## Type to filter (substring), or click the arrow for the full list.
-## Styled from design tokens. Run:
-##     python main.py
-########################################################################
-import sys
-from PySide6 import QtWidgets
+"""QCustomComboBox showcase — a searchable autocomplete select and a plain
+picker, themed from json-styles design tokens."""
 
-from Custom_Widgets.QCustomComboBox import QCustomComboBox
-from Custom_Widgets.JSonStyles.tokens import DesignTokens, applyDesignTokens
+import os, sys
+
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
+
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
+
+from Custom_Widgets import *
+from qtpy.QtCore import QCoreApplication, QSettings
+from qtpy.QtWidgets import QApplication
 
 COUNTRIES = ["Kenya", "Nigeria", "Ghana", "South Africa", "Tanzania", "Uganda",
              "Egypt", "Morocco", "Ethiopia", "India", "Indonesia", "Brazil",
              "United States", "Germany", "France", "Japan", "Canada", "Mexico"]
 
 
-class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("QCustomComboBox Example")
-        central = QtWidgets.QWidget()
-        self.setCentralWidget(central)
-        form = QtWidgets.QFormLayout(central)
+class MainWindow(QCustomMainWindow):
+    def __init__(self, parent=None):
+        QCustomMainWindow.__init__(self)
+        from src.ui_MainWindow import Ui_MainWindow
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
 
-        self.search = QCustomComboBox(editable=True)
-        self.search.setItems(COUNTRIES)
-        self.search.setPlaceholderText("Type to search a country...")
+        # Set the app identity BEFORE loadJsonStyle: the theme loader consults
+        # QSettings while parsing CustomThemes, and without these names it reads
+        # the shared unnamed settings file (polluted by other example apps),
+        # which silently cancels this app's Default-Theme flag.
+        QCoreApplication.setOrganizationName("CustomWidgets")
+        QCoreApplication.setApplicationName("QCustomComboBox Showcase")
 
-        self.picker = QCustomComboBox(editable=False)
-        self.picker.setItems([(c, i) for i, c in enumerate(COUNTRIES)])
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
 
-        self.result = QtWidgets.QLabel("-")
-        self.search.currentTextChanged.connect(
-            lambda t: self.result.setText("Search: %s" % t))
-        self.picker.currentIndexChanged.connect(
-            lambda i: self.result.setText("Picked #%s = %s"
-                                          % (self.picker.currentData(),
-                                             self.picker.currentText())))
+        self.show()
+        themeEngine = self.themeEngine
+        org = getattr(themeEngine, "organizationName", "")
+        if org:
+            QCoreApplication.setOrganizationName(str(org))
+        appn = getattr(themeEngine, "applicationName", "")
+        if appn:
+            QCoreApplication.setApplicationName(str(appn))
+        orgd = getattr(themeEngine, "organizationDomain", "")
+        if orgd:
+            QCoreApplication.setOrganizationDomain(str(orgd))
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            for t in themeEngine.themes:
+                if getattr(t, "defaultTheme", False) and (init_set is None or not init_set):
+                    s.setValue("THEME", t.name)
+                    s.setValue("INIT-THEME-SET", True)
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
 
-        form.addRow("Autocomplete:", self.search)
-        form.addRow("Select:", self.picker)
-        form.addRow("Result:", self.result)
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
+
+        self._seedAndWire()
+
+    def _seedAndWire(self):
+        ui = self.ui
+
+        # type-to-filter autocomplete (substring matching)
+        ui.searchCombo.setItems(COUNTRIES)
+        ui.searchCombo.setPlaceholderText("Type to search a country...")
+        ui.searchCombo.currentTextChanged.connect(
+            lambda t: ui.resultLabel.setText("Search: %s" % t))
+
+        # plain picker with (label, data) items
+        ui.pickerCombo.setItems([(c, i) for i, c in enumerate(COUNTRIES)])
+        ui.pickerCombo.currentIndexChanged.connect(
+            lambda i: ui.resultLabel.setText(
+                "Picked #%s = %s" % (ui.pickerCombo.currentData(),
+                                     ui.pickerCombo.currentText())))
 
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    tokens = DesignTokens(theme="light")
-    app.setStyleSheet("QMainWindow, QWidget { background-color: %s; color: %s; }"
-                      % (tokens.role("surface"), tokens.role("on-surface")))
-    applyDesignTokens(app, tokens=tokens)
-
+    app = QApplication(sys.argv)
     window = MainWindow()
-    window.resize(420, 200)
-    window.show()
     sys.exit(app.exec())

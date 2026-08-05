@@ -1,0 +1,40 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomRadarChart Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Radar-Dark",
+          "Default-Theme": true,
+          "Background-color": "#0f1420",
+          "Text-color": "#e7ecf5",
+          "Accent-color": "#60a5fa",
+          "Icons-color": "#94a3b8",
+          "Create-icons": false,
+          "Other-variables": {
+            "SERIES_1": "#60a5fa",
+            "SERIES_2": "#4ade80",
+            "SERIES_3": "#fbbf24"
+          }
+        },
+        {
+          "Theme-name": "Radar-Light",
+          "Default-Theme": false,
+          "Background-color": "#f4f6fa",
+          "Text-color": "#17202f",
+          "Accent-color": "#2563eb",
+          "Icons-color": "#5b6b83",
+          "Create-icons": false,
+          "Other-variables": {
+            "SERIES_1": "#2563eb",
+            "SERIES_2": "#16a34a",
+            "SERIES_3": "#d97706"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,56 +1,96 @@
-import sys
-import os
+"""QCustomCodeEditor showcase — two editors (live Python pane + a loaded C++
+file) with the widget's six named syntax themes switchable from the button row."""
+
+import os, sys
+
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
+
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
+
 from functools import partial
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QApplication, QMainWindow, QToolBar, QPushButton, QVBoxLayout, QWidget, QLabel
-from Custom_Widgets.QCustomCodeEditor import QCustomCodeEditor
 
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
+from Custom_Widgets import *
+from qtpy.QtCore import QCoreApplication, QSettings
+from qtpy.QtWidgets import QApplication
 
-        # Main container widget
-        self.container = QWidget()
-        self.layout = QVBoxLayout()
-        self.container.setLayout(self.layout)
-        self.setCentralWidget(self.container)
 
-        # First editor
-        self.editor1_label = QLabel("Primary Code Editor")
-        self.editor1 = QCustomCodeEditor()
-        self.editor1.setTheme("default")  # Set default theme
-        self.editor1.setLang("python")
+class MainWindow(QCustomMainWindow):
+    def __init__(self, parent=None):
+        QCustomMainWindow.__init__(self)
+        from src.ui_MainWindow import Ui_MainWindow
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
 
-        # Second editor
-        self.editor2_label = QLabel("Embedded Code Editor")
-        self.editor2 = QCustomCodeEditor()
-        self.editor2.setTheme("default")  # Set default theme
-        self.editor2.loadFile(os.path.join( os.path.dirname(__file__), "hello.cpp"))
+        # Set the app identity BEFORE loadJsonStyle: the theme loader consults
+        # QSettings while parsing CustomThemes, and without these names it reads
+        # the shared unnamed settings file (polluted by other example apps),
+        # which silently cancels this app's Default-Theme flag.
+        QCoreApplication.setOrganizationName("CustomWidgets")
+        QCoreApplication.setApplicationName("QCustomCodeEditor Showcase")
 
-        # Add widgets to layout
-        self.layout.addWidget(self.editor1_label)
-        self.layout.addWidget(self.editor1)
-        self.layout.addWidget(self.editor2_label)
-        self.layout.addWidget(self.editor2)
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
 
-        self.create_toolbar()
+        self.show()
+        themeEngine = self.themeEngine
+        org = getattr(themeEngine, "organizationName", "")
+        if org:
+            QCoreApplication.setOrganizationName(str(org))
+        appn = getattr(themeEngine, "applicationName", "")
+        if appn:
+            QCoreApplication.setApplicationName(str(appn))
+        orgd = getattr(themeEngine, "organizationDomain", "")
+        if orgd:
+            QCoreApplication.setOrganizationDomain(str(orgd))
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            for t in themeEngine.themes:
+                if getattr(t, "defaultTheme", False) and (init_set is None or not init_set):
+                    s.setValue("THEME", t.name)
+                    s.setValue("INIT-THEME-SET", True)
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
 
-    def create_toolbar(self):
-        toolbar = QToolBar("Themes", self)
-        self.addToolBar(Qt.TopToolBarArea, toolbar)
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
 
-        themes = ["Default", "One Light", "One Dark", "Monokai", "Oceanic", "Zenburn"]
-        for theme in themes:
-            button = QPushButton(theme, self)
-            button.clicked.connect(partial(self.set_theme, theme.lower().replace(" ", "-")))
-            toolbar.addWidget(button)
+        self._seedAndWire()
 
-    def set_theme(self, theme):
-        self.editor1.setTheme(theme)
-        self.editor2.setTheme(theme)
+    def _seedAndWire(self):
+        ui = self.ui
+
+        # first editor: an empty, live Python pane
+        ui.editor1.setTheme("default")
+        ui.editor1.setLang("python")
+
+        # second editor: a C++ file loaded from disk
+        ui.editor2.setTheme("default")
+        ui.editor2.loadFile(os.path.join(os.path.dirname(__file__), "hello.cpp"))
+
+        # editor syntax-theme switcher (the widget's own named themes)
+        buttons = {
+            ui.themeDefaultButton: "default",
+            ui.themeOneLightButton: "one-light",
+            ui.themeOneDarkButton: "one-dark",
+            ui.themeMonokaiButton: "monokai",
+            ui.themeOceanicButton: "oceanic",
+            ui.themeZenburnButton: "zenburn",
+        }
+        for button, themeName in buttons.items():
+            button.clicked.connect(partial(self.applyEditorTheme, themeName))
+
+    def applyEditorTheme(self, themeName):
+        self.ui.editor1.setTheme(themeName)
+        self.ui.editor2.setTheme(themeName)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
-    window.show()
     sys.exit(app.exec())

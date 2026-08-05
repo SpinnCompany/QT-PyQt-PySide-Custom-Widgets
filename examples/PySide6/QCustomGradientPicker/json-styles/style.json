@@ -1,0 +1,48 @@
+{
+    "QtBinding": "PySide6",
+    "QMainWindow": {
+        "title": "QCustomGradientPicker"
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "QCustomGradientPickerDemo"
+        },
+        "ThemeSettings": {
+            "CustomThemes": [
+                {
+                    "Theme-name": "Picker Dark",
+                    "Default-Theme": true,
+                    "Create-icons": false,
+                    "Background-color": "#131320",
+                    "Text-color": "#eae9f4",
+                    "Accent-color": "#8b7bf7",
+                    "Icons-color": "#9d9ab5",
+                    "Other-variables": {
+                        "SURFACE": "#1c1c2e",
+                        "OUTLINE": "#2f2e47",
+                        "MUTED": "#918ea9",
+                        "ON_ACCENT": "#f6f4ff",
+                        "HANDLE_FILL": "#eae9f4"
+                    }
+                },
+                {
+                    "Theme-name": "Picker Light",
+                    "Default-Theme": false,
+                    "Create-icons": false,
+                    "Background-color": "#f6f5fb",
+                    "Text-color": "#201c33",
+                    "Accent-color": "#6d28d9",
+                    "Icons-color": "#6b7280",
+                    "Other-variables": {
+                        "SURFACE": "#ffffff",
+                        "OUTLINE": "#d9d6e8",
+                        "MUTED": "#7e7a94",
+                        "ON_ACCENT": "#ffffff",
+                        "HANDLE_FILL": "#ffffff"
+                    }
+                }
+            ]
+        }
+    }
+}

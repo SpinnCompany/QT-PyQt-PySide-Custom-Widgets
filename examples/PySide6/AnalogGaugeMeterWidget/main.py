@@ -1,471 +1,296 @@
-#####
-## SPINN DESIGN CODE
-# YOUTUBE: (SPINN TV) https://www.youtube.com/spinnTv
-# WEBSITE: spinncode.com
-########################################################################
+"""AnalogGaugeWidget showcase — a live gauge with sliders driving every property."""
 
-########################################################################
-## IMPORTS
-########################################################################
-import os
-import sys
+import os, sys
 
-from PySide6.QtWidgets import QMainWindow, QApplication
-from PySide6.QtGui import QFontDatabase
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
+
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
+
+from Custom_Widgets import *
+from qtpy.QtCore import QCoreApplication, QSettings
+from qtpy.QtGui import QColor
+from qtpy.QtWidgets import QApplication
+
+GAUGE_THEME_COUNT = 8  # built-in themes shipped in QAnalogGaugeThemes.json
 
 
-################################################################################################
-# Import the generated UI
-################################################################################################
-from ui_interface import *
-
-################################################################################################
-# MAIN WINDOW CLASS
-################################################################################################
-class MainWindow(QMainWindow):
+class MainWindow(QCustomMainWindow):
     def __init__(self, parent=None):
-        QMainWindow.__init__(self)
-        ################################################################################################
-        # Setup the UI main window
-        ################################################################################################
+        QCustomMainWindow.__init__(self)
+        from src.ui_MainWindow import Ui_MainWindow
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        ################################################################################################
-        # Show window
-        ################################################################################################
+        # Point QSettings at THIS app BEFORE loadJsonStyle: the loader reads
+        # THEME during parse, and a stale value in the shared pre-identity
+        # store strips every Default-Theme flag (wrong theme wins).
+        QCoreApplication.setOrganizationName("CustomWidgets")
+        QCoreApplication.setApplicationName("AnalogGaugeWidget Showcase")
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
+
         self.show()
+        themeEngine = self.themeEngine
+        org = getattr(themeEngine, "organizationName", "")
+        if org:
+            QCoreApplication.setOrganizationName(str(org))
+        appn = getattr(themeEngine, "applicationName", "")
+        if appn:
+            QCoreApplication.setApplicationName(str(appn))
+        orgd = getattr(themeEngine, "organizationDomain", "")
+        if orgd:
+            QCoreApplication.setOrganizationDomain(str(orgd))
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            default_theme = next(
+                (t.name for t in themeEngine.themes if getattr(t, "defaultTheme", False)),
+                "Gauge-Dark",
+            )
+            s.setValue("THEME", default_theme)
+            s.setValue("INIT-THEME-SET", True)
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
 
-        ################################################################################################
-        # CUSTOMIZE ANALOGUE GAUGE WIDGET
-        ################################################################################################
-        self.ui.widget.enableBarGraph = True
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
 
-        self.ui.widget.valueNeedleSnapzone = 1
+        self._setup_gauge()
+        self._wire_controls()
 
-        ################################################################################################
-        # Set gauge units
-        ################################################################################################
-        self.ui.widget.units = "Km/h"
+    # ------------------------------------------------------------------ setup
+    def _setup_gauge(self):
+        gauge = self.ui.gauge
 
-        ################################################################################################
-        # Set minimum gauge value
-        ################################################################################################
-        self.ui.widget.minValue = 0
-        ################################################################################################
-        # Set maximum gauge value
-        ################################################################################################
-        self.ui.widget.maxValue = 100
+        # Basic gauge configuration (typed Qt properties)
+        gauge.enableBarGraph = True
+        gauge.units = "Km/h"
+        gauge.minValue = 0
+        gauge.maxValue = 100
+        gauge.scalaCount = 10
 
-        ################################################################################################
-        # Set scale divisions
-        ################################################################################################
-        self.ui.widget.scalaCount = 10
+        # Start from the middle value
+        gauge.setValue(int((gauge.maxValue - gauge.minValue) / 2))
 
-        # Start from the minimum value
-        # self.ui.widget.updateValue(self.ui.widget.minValue)
-        # OR
-        # Start from half/middle value
-        self.ui.widget.updateValue(int(self.ui.widget.maxValue - self.ui.widget.minValue)/2)
+        # Gauge colours follow the ACTIVE theme (Other-variables in style.json)
+        self._apply_theme_gauge_colors()
 
+        # Gauge theme selector (built-in themes 0..N)
+        for x in range(GAUGE_THEME_COUNT):
+            if self.ui.theme_comboBox.findText(str(x)) < 0:
+                self.ui.theme_comboBox.addItem(str(x))
 
-        ################################################################################################
-        # Set slider minimum and maximum value
-        ################################################################################################
-        self.ui.ActualValueSlider.setMaximum(self.ui.widget.maxValue)
-        self.ui.ActualValueSlider.setMinimum(self.ui.widget.minValue)
-        self.ui.ActualValueSlider.setValue(self.ui.widget.value)
+    def _apply_theme_gauge_colors(self):
+        te = self.themeEngine
+        gauge = self.ui.gauge
+        g1 = te.themeColor("GAUGE_1", te.themeColor("ACCENT_2"))
+        g2 = te.themeColor("GAUGE_2", te.themeColor("ACCENT_1"))
+        g3 = te.themeColor("GAUGE_3", te.themeColor("ACCENT_1"))
+        gauge.setCustomGaugeTheme([[0.0, g1], [0.5, g2], [1.0, g3]])
+        scale = QColor(te.themeColor("GAUGE_SCALE", te.themeColor("TEXT_2")))
+        gauge.setBigScaleColor(scale)
+        gauge.setFineScaleColor(scale)
 
-        ################################################################################################
-        # Set slider gauge outer radius
-        ################################################################################################
-        self.ui.OuterRadiusSlider.setValue(self.ui.widget.gauge_color_outer_radius_factor * 1000)
-        self.ui.lcdOuterRadius.display(self.ui.widget.gauge_color_outer_radius_factor * 1000)
+    # ----------------------------------------------------------------- wiring
+    def _wire_controls(self):
+        ui = self.ui
+        gauge = ui.gauge
 
-        ################################################################################################
-        # Set slider gauge inner radius
-        ################################################################################################
-        self.ui.InnenRadiusSlider.setValue(int(self.ui.widget.gauge_color_inner_radius_factor) * 1000)
-        self.ui.lcdInnerRadius.display(self.ui.widget.gauge_color_inner_radius_factor * 1000)
+        # Value slider range mirrors the gauge range
+        ui.ActualValueSlider.setMaximum(gauge.maxValue)
+        ui.ActualValueSlider.setMinimum(gauge.minValue)
+        ui.ActualValueSlider.setValue(gauge.value)
 
-        ################################################################################################
-        # Set slider gauge start position
-        ################################################################################################
-        self.ui.GaugeStartSlider.setValue(self.ui.widget.scale_angle_start_value)
-        self.ui.lcdGaugeStart.display(self.ui.widget.scale_angle_start_value)
+        # Radius sliders (0..1000 mapped to a 0..1 factor by the widget)
+        ui.OuterRadiusSlider.setValue(int(gauge.gaugeColorOuterRadiusFactor * 1000))
+        ui.lcdOuterRadius.display(int(gauge.gaugeColorOuterRadiusFactor * 1000))
+        ui.InnenRadiusSlider.setValue(int(gauge.gaugeColorInnerRadiusFactor * 1000))
+        ui.lcdInnerRadius.display(int(gauge.gaugeColorInnerRadiusFactor * 1000))
 
-        ################################################################################################
-        # Set slider gauge size
-        ################################################################################################
-        self.ui.GaugeSizeSlider.setValue(self.ui.widget.scale_angle_size)
-        self.ui.lcdGaugeSize.display(self.ui.widget.scale_angle_size)
+        # Scale angle sliders
+        ui.GaugeStartSlider.setValue(int(gauge.scaleStartAngle))
+        ui.lcdGaugeStart.display(int(gauge.scaleStartAngle))
+        ui.GaugeSizeSlider.setValue(int(gauge.totalScaleAngleSize))
+        ui.lcdGaugeSize.display(int(gauge.totalScaleAngleSize))
 
-        ################################################################################################
-        # Set gauge start position
-        ################################################################################################
+        # RGBA needle colour sliders
+        for slider in (ui.RedSlider_Needle, ui.GreenSlider_Needle,
+                       ui.BlueSlider_Needle, ui.TrancSlider_Needle):
+            slider.valueChanged.connect(self.setNeedleColor)
+        ui.lcdNumber_Red_Needle.display(ui.RedSlider_Needle.value())
+        ui.lcdNumber_Green_Needle.display(ui.GreenSlider_Needle.value())
+        ui.lcdNumber_Blue_Needle.display(ui.BlueSlider_Needle.value())
+        ui.lcdNumber_Trancparency_Needle.display(ui.TrancSlider_Needle.value())
 
-        ################################################################################################
-        # R G B A gauge needle color sliders
-        ################################################################################################
-        self.ui.RedSlider_Needle.valueChanged.connect(self.setNeedleColor)
-        self.ui.GreenSlider_Needle.valueChanged.connect(self.setNeedleColor)
-        self.ui.BlueSlider_Needle.valueChanged.connect(self.setNeedleColor)
+        # RGBA needle-on-drag colour sliders
+        for slider in (ui.RedSlider_NeedleDrag, ui.GreenSlider_NeedleDrag,
+                       ui.BlueSlider_NeedleDrag, ui.TrancSlider_NeedleDrag):
+            slider.valueChanged.connect(self.setNeedleColorOnDrag)
+        ui.lcdNumber_Red_NeedleDrag.display(ui.RedSlider_NeedleDrag.value())
+        ui.lcdNumber_Green_NeedleDrag.display(ui.GreenSlider_NeedleDrag.value())
+        ui.lcdNumber_Blue_NeedleDrag.display(ui.BlueSlider_NeedleDrag.value())
+        ui.lcdNumber_Trancparency_NeedleDrag.display(ui.TrancSlider_NeedleDrag.value())
 
-        ################################################################################################
-        # Transparency(A) gauge needle color sliders
-        ################################################################################################
-        self.ui.TrancSlider_Needle.valueChanged.connect(self.setNeedleColor)
+        # RGBA scale text colour sliders
+        for slider in (ui.RedSlider_Scale, ui.GreenSlider_Scale,
+                       ui.BlueSlider_Scale, ui.TrancSlider_Scale):
+            slider.valueChanged.connect(self.setScaleValueColor)
+        ui.lcdNumber_Red_Scale.display(ui.RedSlider_Scale.value())
+        ui.lcdNumber_Green_Scale.display(ui.GreenSlider_Scale.value())
+        ui.lcdNumber_Blue_Scale.display(ui.BlueSlider_Scale.value())
+        ui.lcdNumber_Trancparency_Scale.display(ui.TrancSlider_Scale.value())
 
-        ################################################################################################
-        # Update LCD RGBA needle color indicators
-        ################################################################################################
-        self.ui.lcdNumber_Red_Needle.display(self.ui.RedSlider_Needle.value())
-        self.ui.lcdNumber_Green_Needle.display(self.ui.GreenSlider_Needle.value())
-        self.ui.lcdNumber_Blue_Needle.display(self.ui.RedSlider_Needle.value())
-        self.ui.lcdNumber_Trancparency_Needle.display(self.ui.TrancSlider_Needle.value())
+        # RGBA value text colour sliders
+        for slider in (ui.RedSlider_Display, ui.GreenSlider_Display,
+                       ui.BlueSlider_Display, ui.TrancSlider_Display):
+            slider.valueChanged.connect(self.setDisplayValueColor)
+        ui.lcdNumber_Red_Display.display(ui.RedSlider_Display.value())
+        ui.lcdNumber_Green_Display.display(ui.GreenSlider_Display.value())
+        ui.lcdNumber_Blue_Display.display(ui.BlueSlider_Display.value())
+        ui.lcdNumber_Trancparency_Display.display(ui.TrancSlider_Display.value())
 
-        ################################################################################################
-        # Update RGBA needle color indicators on user drag
-        ################################################################################################
-        self.ui.RedSlider_NeedleDrag.valueChanged.connect(self.setNeedleColorOnDrag)
-        self.ui.GreenSlider_NeedleDrag.valueChanged.connect(self.setNeedleColorOnDrag)
-        self.ui.BlueSlider_NeedleDrag.valueChanged.connect(self.setNeedleColorOnDrag)
-        self.ui.TrancSlider_NeedleDrag.valueChanged.connect(self.setNeedleColorOnDrag)
+        # Value + geometry sliders
+        ui.ActualValueSlider.valueChanged.connect(self.updateGaugeValue)
+        gauge.valueChanged.connect(self.updateSliderValue)
+        ui.GaugeSizeSlider.valueChanged.connect(self.updateScaleAngleSize)
+        ui.GaugeStartSlider.valueChanged.connect(self.updateStartScaleAngle)
+        ui.InnenRadiusSlider.valueChanged.connect(self.updateGaugeColorInnerRadius)
+        ui.OuterRadiusSlider.valueChanged.connect(self.updateGaugeColorOuterRadius)
+        ui.offsetSlider.valueChanged.connect(self.updateAngleOffset)
+        ui.MinValueSlider.valueChanged.connect(self.updateMinVal)
+        ui.MaxValueSlider.valueChanged.connect(self.updateMaxVal)
+        ui.MainGridSlider.valueChanged.connect(self.updateScalaCount)
 
-        ################################################################################################
-        # Update LCD RGBA needle color indicators on user drag
-        ################################################################################################
-        self.ui.lcdNumber_Red_NeedleDrag.display(self.ui.RedSlider_NeedleDrag.value())
-        self.ui.lcdNumber_Green_NeedleDrag.display(self.ui.GreenSlider_NeedleDrag.value())
-        self.ui.lcdNumber_Blue_NeedleDrag.display(self.ui.BlueSlider_NeedleDrag.value())
-        self.ui.lcdNumber_Trancparency_NeedleDrag.display(self.ui.TrancSlider_NeedleDrag.value())
+        # Show/hide checkboxes
+        ui.CB_barGraph.stateChanged.connect(self.toggleBarGraphMarker)
+        ui.CB_ValueText.stateChanged.connect(self.toggleValueText)
+        ui.CB_CenterPoint.stateChanged.connect(self.toggleCenterPoint)
+        ui.CB_ScaleText.stateChanged.connect(self.toggleScaleText)
+        ui.CB_ShowBarGraph.stateChanged.connect(self.setEnableScalePolygon)
+        ui.CB_Grid.stateChanged.connect(self.toggleScaleGrid)
+        ui.CB_fineGrid.stateChanged.connect(self.toggleFineScaleGrid)
+        ui.CB_Needle.stateChanged.connect(self.toggleNeedle)
 
+        # Built-in gauge theme selector
+        ui.theme_comboBox.currentTextChanged.connect(self.changeGaugeTheme)
 
-        ################################################################################################
-        # Update RGBA scale text color
-        ################################################################################################
-        self.ui.RedSlider_Scale.valueChanged.connect(self.setScaleValueColor)
-        self.ui.GreenSlider_Scale.valueChanged.connect(self.setScaleValueColor)
-        self.ui.BlueSlider_Scale.valueChanged.connect(self.setScaleValueColor)
-        self.ui.TrancSlider_Scale.valueChanged.connect(self.setScaleValueColor)
+        self.updateGaugeValue()
 
-        ################################################################################################
-        # Update RGBA LCD scale text color indicators
-        ################################################################################################
-        self.ui.lcdNumber_Red_Scale.display(self.ui.RedSlider_Scale.value())
-        self.ui.lcdNumber_Green_Scale.display(self.ui.GreenSlider_Scale.value())
-        self.ui.lcdNumber_Blue_Scale.display(self.ui.BlueSlider_Scale.value())
-        self.ui.lcdNumber_Trancparency_Scale.display(self.ui.TrancSlider_Scale.value())
-
-
-        ################################################################################################
-        # Update RGBA value text color
-        ################################################################################################
-        self.ui.RedSlider_Display.valueChanged.connect(self.setDisplayValueColor)
-        self.ui.GreenSlider_Display.valueChanged.connect(self.setDisplayValueColor)
-        self.ui.BlueSlider_Display.valueChanged.connect(self.setDisplayValueColor)
-        self.ui.TrancSlider_Display.valueChanged.connect(self.setDisplayValueColor)
-
-        ################################################################################################
-        # Update slider value
-        ################################################################################################
-        self.ui.ActualValueSlider.valueChanged.connect( lambda:  self.updateGaugeValue())
-        self.ui.widget.valueChanged.connect( lambda:  self.updateSliderValue())
-
-        self.ui.GaugeSizeSlider.valueChanged.connect( lambda:  self.updateScaleAngleSize())
-
-        self.ui.GaugeStartSlider.valueChanged.connect( lambda:  self.updateStartScaleAngle())
-
-        self.ui.InnenRadiusSlider.valueChanged.connect( lambda:  self.updateGaugeColorInnerRadius())
-
-        self.ui.OuterRadiusSlider.valueChanged.connect( lambda:  self.updateGaugeColorOuterRadius())
-
-        self.ui.offsetSlider.valueChanged.connect( lambda:  self.updateAngleOffset())
-
-        self.ui.MinValueSlider.valueChanged.connect( lambda:  self.updateMinVal())
-
-        self.ui.MaxValueSlider.valueChanged.connect( lambda:  self.updateMaxVal())
-
-        self.ui.MainGridSlider.valueChanged.connect( lambda:  self.updateScalaCount())
-
-        
-
-        
-
-        ################################################################################################
-        # Update RGBA LCD value text color indicators
-        ################################################################################################
-        self.ui.lcdNumber_Red_Display.display(self.ui.RedSlider_Display.value())
-        self.ui.lcdNumber_Green_Display.display(self.ui.GreenSlider_Display.value())
-        self.ui.lcdNumber_Blue_Display.display(self.ui.BlueSlider_Display.value())
-        self.ui.lcdNumber_Trancparency_Display.display(self.ui.TrancSlider_Display.value())
-
-
-
-        ################################################################################################
-        # Show hide bar graph marker
-        ################################################################################################
-        self.ui.CB_barGraph.stateChanged.connect(self.en_disable_barGraph)
-
-        ################################################################################################
-        # Show hide scale value
-        ################################################################################################
-        self.ui.CB_ValueText.stateChanged.connect(self.en_disable_ValueText)
-
-        ################################################################################################
-        # Show hide center pointer
-        ################################################################################################
-        self.ui.CB_CenterPoint.stateChanged.connect(self.en_disable_CB_CenterPoint)
-
-        ################################################################################################
-        # Show hide gauge scale text
-        ################################################################################################
-        self.ui.CB_ScaleText.stateChanged.connect(self.en_disable_ScaleText)
-
-        ################################################################################################
-        # Show hide bar graph
-        ################################################################################################
-        self.ui.CB_ShowBarGraph.stateChanged.connect(self.setEnableScalePolygon)
-
-        ################################################################################################
-        # Show hide long grid scale divisions
-        ################################################################################################
-        self.ui.CB_Grid.stateChanged.connect(self.set_enable_Scale_Grid)
-
-        ################################################################################################
-        # Show hide fine scale divisions
-        ################################################################################################
-        self.ui.CB_fineGrid.stateChanged.connect(self.set_enable_fine_Scale_Grid)
-
-        ################################################################################################
-        # Show hide needle/scale pointer
-        ################################################################################################
-        self.ui.CB_Needle.stateChanged.connect(self.en_disable_Needle)
-
-
-        ################################################################################################
-        # Select gauge theme
-        ################################################################################################
-        # self.ui.widget.setGaugeTheme(0)
-
-        # self.ui.widget.setCustomGaugeTheme(
-        #     color1 = "#FF2B00",
-        #     color2= "#821600",
-        #     color3 = "#260600"
-        # )
-
-        self.ui.widget.setCustomGaugeTheme(
-            color1 = "#002523",
-            color2= "#990008",
-            color3 = "#00F6E9"
-        )
-
-        # self.ui.widget.setCustomGaugeTheme(
-        #     color1 = "#fff",
-        #     color2= "#555",
-        #     color3 = "#000"
-        # )
-
-        # self.ui.widget.setScalePolygonColor(
-        #     color1 = "red"
-        # )
-
-        # self.ui.widget.setNeedleCenterColor(
-        #     color1 = "red"
-        # )
-
-        # self.ui.widget.setOuterCircleColor(
-        #     color1 = "red"
-        # )
-
-        self.ui.widget.setBigScaleColor("#005275")
-        self.ui.widget.setFineScaleColor("#005275")
-
-        for x in range(1, 25):
-            self.ui.theme_comboBox.addItem(str(x))
-
-
-        ################################################################################################
-        # Set custom font
-        ################################################################################################
-        QFontDatabase.addApplicationFont(os.path.join(os.path.dirname(__file__), 'fonts/ds_digital/DS-DIGIB.TTF') )
-
-        # self.ui.widget.setValueFontFamily("DS-Digital")
-        # self.ui.widget.setScaleFontFamily("Verdana")
-
-        ################################################################################################
-        # Change gauge theme
-        ################################################################################################
-        self.ui.theme_comboBox.currentTextChanged.connect(lambda: self.changeGaugeTheme())
-
-        self.updateGaugeValue()       
-
-        ################################################################################################
-        # END
-        ################################################################################################
-
+    # ------------------------------------------------------------------ slots
     def changeGaugeTheme(self):
-        print(self.ui.theme_comboBox.currentText())
-        self.ui.widget.setGaugeTheme(int(self.ui.theme_comboBox.currentText()))
+        text = self.ui.theme_comboBox.currentText()
+        if text.isdigit():
+            self.ui.gauge.setGaugeTheme(int(text))
 
     def updateScalaCount(self):
-        self.ui.widget.setScalaCount(self.ui.MainGridSlider.value())
-        self.ui.lcdScalaCount.display(int(self.ui.MainGridSlider.value()))    
+        self.ui.gauge.setScalaCount(self.ui.MainGridSlider.value())
+        self.ui.lcdScalaCount.display(int(self.ui.MainGridSlider.value()))
 
     def updateMaxVal(self):
-        self.ui.widget.setMaxValue(self.ui.MaxValueSlider.value())
-        self.ui.lcdMaxVal.display(int(self.ui.MaxValueSlider.value()))    
-
-        self.ui.ActualValueSlider.setMaximum(self.ui.MaxValueSlider.value())
-        
+        self.ui.gauge.setMaxValue(self.ui.MaxValueSlider.value())
+        self.ui.lcdMaxVal.display(int(self.ui.MaxValueSlider.value()))
+        self.ui.ActualValueSlider.setMaximum(self.ui.gauge.maxValue)
 
     def updateMinVal(self):
-        self.ui.widget.setMinValue(self.ui.MinValueSlider.value())
-        self.ui.lcdMinVal.display(int(self.ui.MinValueSlider.value()))  
-
-        self.ui.ActualValueSlider.setMinimum(self.ui.MinValueSlider.value())  
+        self.ui.gauge.setMinValue(self.ui.MinValueSlider.value())
+        self.ui.lcdMinVal.display(int(self.ui.MinValueSlider.value()))
+        self.ui.ActualValueSlider.setMinimum(self.ui.gauge.minValue)
 
     def updateAngleOffset(self):
-        self.ui.widget.updateAngleOffset(self.ui.offsetSlider.value())
-        self.ui.lcdGaugeOffset.display(int(self.ui.offsetSlider.value()))    
+        self.ui.gauge.setAngleOffset(self.ui.offsetSlider.value())
+        self.ui.lcdGaugeOffset.display(int(self.ui.offsetSlider.value()))
 
     def updateGaugeColorOuterRadius(self):
-        self.ui.widget.setGaugeColorOuterRadiusFactor(self.ui.OuterRadiusSlider.value())
-        self.ui.lcdOuterRadius.display(int(self.ui.OuterRadiusSlider.value()))        
+        self.ui.gauge.setGaugeColorOuterRadiusFactor(self.ui.OuterRadiusSlider.value())
+        self.ui.lcdOuterRadius.display(int(self.ui.OuterRadiusSlider.value()))
 
     def updateGaugeColorInnerRadius(self):
-        self.ui.widget.setGaugeColorInnerRadiusFactor(self.ui.InnenRadiusSlider.value())
-        self.ui.lcdInnerRadius.display(int(self.ui.InnenRadiusSlider.value()))        
+        self.ui.gauge.setGaugeColorInnerRadiusFactor(self.ui.InnenRadiusSlider.value())
+        self.ui.lcdInnerRadius.display(int(self.ui.InnenRadiusSlider.value()))
 
     def updateStartScaleAngle(self):
-        self.ui.widget.setScaleStartAngle(self.ui.GaugeStartSlider.value())
+        self.ui.gauge.setScaleStartAngle(self.ui.GaugeStartSlider.value())
         self.ui.lcdGaugeStart.display(int(self.ui.GaugeStartSlider.value()))
 
     def updateScaleAngleSize(self):
-        self.ui.widget.setTotalScaleAngleSize(self.ui.GaugeSizeSlider.value())
+        self.ui.gauge.setTotalScaleAngleSize(self.ui.GaugeSizeSlider.value())
         self.ui.lcdGaugeSize.display(int(self.ui.GaugeSizeSlider.value()))
 
     def updateSliderValue(self):
-        self.ui.ActualValueSlider.setValue(int(self.ui.widget.value))
-        self.ui.lcdGaugeValue.display(int(self.ui.widget.value))
-        self.ui.ActualValue.display(int(self.ui.widget.value))
+        self.ui.ActualValueSlider.setValue(int(self.ui.gauge.value))
+        self.ui.lcdGaugeValue.display(int(self.ui.gauge.value))
+        self.ui.ActualValue.display(int(self.ui.gauge.value))
 
     def updateGaugeValue(self):
-        self.ui.widget.updateValue(self.ui.ActualValueSlider.value())
-        self.ui.lcdGaugeValue.display(int(self.ui.widget.value))
-        self.ui.ActualValue.display(int(self.ui.widget.value))
+        self.ui.gauge.setValue(self.ui.ActualValueSlider.value())
+        self.ui.lcdGaugeValue.display(int(self.ui.gauge.value))
+        self.ui.ActualValue.display(int(self.ui.gauge.value))
 
-    ################################################################################################
-    # SET NEEDLE COLOR
-    ################################################################################################
+    # RGBA slider groups -> typed QColor setters on the widget
     def setNeedleColor(self):
-        # Get RGBA values from sliders
-        R = self.ui.RedSlider_Needle.value()
-        G = self.ui.GreenSlider_Needle.value()
-        B = self.ui.BlueSlider_Needle.value()
-        Transparency = self.ui.TrancSlider_Needle.value()
-        # print(R, G, B, Transparency)
-        self.ui.widget.setNeedleColor(R=R, G=G, B=B, Transparency=Transparency)
+        self.ui.gauge.setNeedleColor(QColor(
+            self.ui.RedSlider_Needle.value(),
+            self.ui.GreenSlider_Needle.value(),
+            self.ui.BlueSlider_Needle.value(),
+            self.ui.TrancSlider_Needle.value(),
+        ))
 
-    ################################################################################################
-    # SET NEEDLE COLOR ON DRAG
-    ################################################################################################
     def setNeedleColorOnDrag(self):
-        # Get RGBA values from sliders
-        R = self.ui.RedSlider_NeedleDrag.value()
-        G = self.ui.GreenSlider_NeedleDrag.value()
-        B = self.ui.BlueSlider_NeedleDrag.value()
-        Transparency = self.ui.TrancSlider_NeedleDrag.value()
-        # print(R, G, B, Transparency)
-        self.ui.widget.setNeedleColorOnDrag(R=R, G=G, B=B, Transparency=Transparency)
+        self.ui.gauge.setNeedleColorOnDrag(QColor(
+            self.ui.RedSlider_NeedleDrag.value(),
+            self.ui.GreenSlider_NeedleDrag.value(),
+            self.ui.BlueSlider_NeedleDrag.value(),
+            self.ui.TrancSlider_NeedleDrag.value(),
+        ))
 
-
-    ################################################################################################
-    # SET SCALE TEXT COLOR
-    ################################################################################################
     def setScaleValueColor(self):
-        # Get RGBA values from sliders
-        R = self.ui.RedSlider_Scale.value()
-        G = self.ui.GreenSlider_Scale.value()
-        B = self.ui.BlueSlider_Scale.value()
-        Transparency = self.ui.TrancSlider_Scale.value()
-        # print(R, G, B, Transparency)
-        self.ui.widget.setScaleValueColor(R=R, G=G, B=B, Transparency=Transparency)
+        self.ui.gauge.setScaleValueColor(QColor(
+            self.ui.RedSlider_Scale.value(),
+            self.ui.GreenSlider_Scale.value(),
+            self.ui.BlueSlider_Scale.value(),
+            self.ui.TrancSlider_Scale.value(),
+        ))
 
-
-    ################################################################################################
-    # SET VALUE DISPLAY COLOR
-    ################################################################################################
     def setDisplayValueColor(self):
-        # GET RGBA VALUE
-        R = self.ui.RedSlider_Display.value()
-        G = self.ui.GreenSlider_Display.value()
-        B = self.ui.BlueSlider_Display.value()
-        Transparency = self.ui.TrancSlider_Display.value()
-        # print(R, G, B, Transparency)
-        self.ui.widget.setDisplayValueColor(R=R, G=G, B=B, Transparency=Transparency)
+        self.ui.gauge.setDisplayValueColor(QColor(
+            self.ui.RedSlider_Display.value(),
+            self.ui.GreenSlider_Display.value(),
+            self.ui.BlueSlider_Display.value(),
+            self.ui.TrancSlider_Display.value(),
+        ))
 
-    ################################################################################################
-    # SHOW HIDE BAR GRAPH
-    ################################################################################################
-    def en_disable_barGraph(self):
-        self.ui.widget.setEnableBarGraph(self.ui.CB_barGraph.isChecked())
+    # Show/hide toggles
+    def toggleBarGraphMarker(self):
+        self.ui.gauge.setEnableBarGraph(self.ui.CB_barGraph.isChecked())
 
-    ################################################################################################
-    # SHOW HIDE VALUE TEXT
-    ################################################################################################
-    def en_disable_ValueText(self):
-        self.ui.widget.setEnableValueText(self.ui.CB_ValueText.isChecked())
+    def toggleValueText(self):
+        self.ui.gauge.setEnableValueText(self.ui.CB_ValueText.isChecked())
 
-    ################################################################################################
-    # SHOW HIDE CENTER POINTER
-    ################################################################################################
-    def en_disable_CB_CenterPoint(self):
-        self.ui.widget.setEnableCenterPoint(self.ui.CB_CenterPoint.isChecked())
+    def toggleCenterPoint(self):
+        self.ui.gauge.setEnableCenterPoint(self.ui.CB_CenterPoint.isChecked())
 
-    ################################################################################################
-    # SHOW HIDE NEEDLE
-    ################################################################################################
-    def en_disable_Needle(self):
-        self.ui.widget.setEnableNeedlePolygon(self.ui.CB_Needle.isChecked())
+    def toggleNeedle(self):
+        self.ui.gauge.setEnableNeedlePolygon(self.ui.CB_Needle.isChecked())
 
-    ################################################################################################
-    # SHOW HIDE SCALE TEXT
-    ################################################################################################
-    def en_disable_ScaleText(self):
-        self.ui.widget.setEnableScaleText(self.ui.CB_ScaleText.isChecked())
+    def toggleScaleText(self):
+        self.ui.gauge.setEnableScaleText(self.ui.CB_ScaleText.isChecked())
 
-    ################################################################################################
-    # ENABLE DISABLE FILL COLOR
-    ################################################################################################
     def setEnableScalePolygon(self):
-        self.ui.widget.setEnableScalePolygon(self.ui.CB_ShowBarGraph.isChecked())
+        self.ui.gauge.setEnableScalePolygon(self.ui.CB_ShowBarGraph.isChecked())
 
-    ################################################################################################
-    # ENABLE DISABLE BIG SCALE
-    ################################################################################################
-    def set_enable_Scale_Grid(self):
-        self.ui.widget.setEnableBigScaleGrid(self.ui.CB_Grid.isChecked())
+    def toggleScaleGrid(self):
+        self.ui.gauge.setEnableBigScaleGrid(self.ui.CB_Grid.isChecked())
 
-    ################################################################################################
-    # ENABLE DISABLE FINE SCALE MARKERS
-    ################################################################################################
-    def set_enable_fine_Scale_Grid(self):
-        self.ui.widget.setEnableFineScaleGrid(self.ui.CB_fineGrid.isChecked())
+    def toggleFineScaleGrid(self):
+        self.ui.gauge.setEnableFineScaleGrid(self.ui.CB_fineGrid.isChecked())
 
 
-########################################################################
-## EXECUTE APP
-########################################################################
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = QApplication(sys.argv)
-    ########################################################################
-    ## 
-    ########################################################################
     window = MainWindow()
-    window.show()
-    sys.exit(app.exec_())
-
-########################################################################
-## END===>
-########################################################################  
+    sys.exit(app.exec())

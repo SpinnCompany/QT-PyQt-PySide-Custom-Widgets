@@ -1,0 +1,93 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+QMenuBar {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+}
+
+QMenuBar::item:selected {
+  background: $COLOR_BACKGROUND_3;
+}
+
+QMenu {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+}
+
+QStatusBar {
+  background: $COLOR_BACKGROUND_1;
+  color: $COLOR_TEXT_3;
+}
+
+#leftBar, #rightBar {
+  background: $COLOR_BACKGROUND_2;
+  border-radius: 10px;
+}
+
+#leftLabel, #rightLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 14px;
+}
+
+#addWindowBtn {
+  background: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-weight: 600;
+}
+
+#addWindowBtn:hover {
+  background: $COLOR_ACCENT_2;
+}
+
+#scrollArea {
+  background: transparent;
+  border: 1px solid $COLOR_BACKGROUND_3;
+  border-radius: 10px;
+}
+
+#scrollAreaWidgetContents {
+  background: transparent;
+}
+
+/* ---- QCustomEmbeddedWindow chrome ---- */
+QCustomEmbeddedWindow {
+  background-color: $COLOR_BACKGROUND_2;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 10px;
+}
+
+QCustomEmbeddedWindow #header {
+  background-color: $COLOR_BACKGROUND_3;
+  padding: 6px;
+}
+
+QCustomEmbeddedWindow #header QLabel {
+  color: $COLOR_TEXT_1;
+  font-weight: bold;
+}
+
+QCustomEmbeddedWindow #header QPushButton#close-button,
+QCustomEmbeddedWindow #header QPushButton#hide-button {
+  background-color: transparent;
+  border: none;
+}
+
+QCustomEmbeddedWindow #header QPushButton#close-button:hover,
+QCustomEmbeddedWindow #header QPushButton#hide-button:hover {
+  background-color: $COLOR_BACKGROUND_4;
+  border-radius: 4px;
+}
+
+QCustomEmbeddedWindow #content-area {
+  background-color: $COLOR_BACKGROUND_2;
+  padding: 8px;
+}
+
+QCustomEmbeddedWindow #content-area QLabel {
+  color: $COLOR_TEXT_1;
+}

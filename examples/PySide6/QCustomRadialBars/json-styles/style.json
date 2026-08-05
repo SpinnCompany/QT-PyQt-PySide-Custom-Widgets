@@ -1,0 +1,40 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomRadialBars Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Rings-Dark",
+          "Default-Theme": true,
+          "Background-color": "#101522",
+          "Text-color": "#e8edf6",
+          "Accent-color": "#60a5fa",
+          "Icons-color": "#94a3b8",
+          "Create-icons": false,
+          "Other-variables": {
+            "RING_1": "#60a5fa",
+            "RING_2": "#4ade80",
+            "RING_3": "#fbbf24"
+          }
+        },
+        {
+          "Theme-name": "Rings-Light",
+          "Default-Theme": false,
+          "Background-color": "#f5f7fb",
+          "Text-color": "#182130",
+          "Accent-color": "#2563eb",
+          "Icons-color": "#5b6b83",
+          "Create-icons": false,
+          "Other-variables": {
+            "RING_1": "#2563eb",
+            "RING_2": "#16a34a",
+            "RING_3": "#d97706"
+          }
+        }
+      ]
+    }
+  }
+}

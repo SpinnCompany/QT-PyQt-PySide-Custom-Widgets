@@ -1,0 +1,58 @@
+{
+    "QtBinding": "PySide6",
+    "QMainWindow": {
+        "title": "QCustomDateRangePicker — preview"
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "DateRangeDemo"
+        },
+        "ThemeSettings": {
+            "CustomThemes": [
+                {
+                    "Theme-name": "Travel Light",
+                    "Default-Theme": true,
+                    "Create-icons": false,
+                    "Background-color": "#eef1f5",
+                    "Text-color": "#1c2430",
+                    "Accent-color": "#2f8f5b",
+                    "Icons-color": "#8b93a1",
+                    "Other-variables": {
+                        "CARD_BG": "#ffffff",
+                        "FIELD_BG": "#ffffff",
+                        "FIELD_BORDER": "#d9dfe6",
+                        "FIELD_CAP": "#8b93a1",
+                        "FIELD_VAL": "#1c2430",
+                        "SAVE_HOVER": "#277a4d",
+                        "SAVE_TEXT": "#ffffff",
+                        "PICKER_BAND": "#e9edf0",
+                        "PICKER_TEXT": "#1c2430",
+                        "PICKER_MUTED": "#aab2bd"
+                    }
+                },
+                {
+                    "Theme-name": "Travel Dark",
+                    "Default-Theme": false,
+                    "Create-icons": false,
+                    "Background-color": "#0e1016",
+                    "Text-color": "#e7e9ef",
+                    "Accent-color": "#3aa774",
+                    "Icons-color": "#9aa1b2",
+                    "Other-variables": {
+                        "CARD_BG": "#171a22",
+                        "FIELD_BG": "#171a22",
+                        "FIELD_BORDER": "#2b3040",
+                        "FIELD_CAP": "#8b93a1",
+                        "FIELD_VAL": "#e7e9ef",
+                        "SAVE_HOVER": "#2f8f5b",
+                        "SAVE_TEXT": "#ffffff",
+                        "PICKER_BAND": "#1e2330",
+                        "PICKER_TEXT": "#e7e9ef",
+                        "PICKER_MUTED": "#6b7280"
+                    }
+                }
+            ]
+        }
+    }
+}

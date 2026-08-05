@@ -1,0 +1,61 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomQPushButtonGroup Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Groups-Dark",
+          "Default-Theme": true,
+          "Background-color": "#12151d",
+          "Text-color": "#e9edf5",
+          "Accent-color": "#4fc3f7",
+          "Icons-color": "#93a1b8",
+          "Create-icons": false
+        },
+        {
+          "Theme-name": "Groups-Light",
+          "Default-Theme": false,
+          "Background-color": "#f5f7fb",
+          "Text-color": "#171d29",
+          "Accent-color": "#0277bd",
+          "Icons-color": "#5d6b83",
+          "Create-icons": false
+        }
+      ]
+    }
+  },
+  "QPushButtonGroup": [
+    {
+      "Buttons": [
+        "group1Btn1",
+        "group1Btn2",
+        "group1Btn3",
+        "group1Btn4"
+      ],
+      "ActiveButton": "group1Btn1",
+      "Style": [
+        {
+          "Active": "background-color: $COLOR_ACCENT_1; color: $COLOR_BACKGROUND_1; border-radius: 5px; padding: 8px 14px;",
+          "NotActive": "background-color: transparent; color: $COLOR_TEXT_2; border-radius: 5px; padding: 8px 14px;"
+        }
+      ]
+    },
+    {
+      "Buttons": [
+        "group2Btn1",
+        "group2Btn2",
+        "group2Btn3"
+      ],
+      "ActiveButton": "group2Btn1",
+      "Style": [
+        {
+          "Active": "background-color: $COLOR_TEXT_1; border-radius: 0px; color: $COLOR_BACKGROUND_1; padding: 10px 15px;",
+          "NotActive": "background-color: $COLOR_BACKGROUND_6; border-radius: 20px; color: $COLOR_TEXT_1; padding: 20px;"
+        }
+      ]
+    }
+  ]
+}

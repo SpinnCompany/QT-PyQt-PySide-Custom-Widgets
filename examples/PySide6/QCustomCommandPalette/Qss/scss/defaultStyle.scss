@@ -1,0 +1,57 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#titleLabel {
+  color: $COLOR_TEXT_1;
+  font-size: 22px;
+  font-weight: bold;
+  padding: 4px 0;
+}
+
+#hintLabel {
+  color: $COLOR_TEXT_3;
+  font-size: 14px;
+}
+
+/* ---- QCustomCommandPalette (child overlay + panel) ---- */
+QCustomCommandPalette {
+  background-color: rgba($SCRIM_R, $SCRIM_G, $SCRIM_B, 0.45);
+}
+
+#commandPalettePanel {
+  background-color: $COLOR_BACKGROUND_2;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 12px;
+}
+
+#commandPaletteSearch {
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid $COLOR_BACKGROUND_4;
+  color: $COLOR_TEXT_1;
+  padding: 12px;
+  font-size: 16px;
+}
+
+#commandPaletteList {
+  background-color: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: none;
+  outline: 0;
+  padding: 6px;
+}
+
+#commandPaletteList::item {
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+#commandPaletteList::item:selected {
+  background-color: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+}
+
+#commandPaletteList::item:hover {
+  background-color: $COLOR_BACKGROUND_3;
+}

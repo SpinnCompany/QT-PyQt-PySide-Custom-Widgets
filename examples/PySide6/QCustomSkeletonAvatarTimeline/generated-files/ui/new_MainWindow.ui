@@ -1,0 +1,156 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>480</width>
+    <height>520</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Skeleton / Avatars / Timeline</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="rootLayout" stretch="0,0,0,0,0,1">
+    <property name="spacing">
+     <number>10</number>
+    </property>
+    <property name="leftMargin">
+     <number>16</number>
+    </property>
+    <property name="topMargin">
+     <number>16</number>
+    </property>
+    <property name="rightMargin">
+     <number>16</number>
+    </property>
+    <property name="bottomMargin">
+     <number>16</number>
+    </property>
+    <item>
+     <widget class="QLabel" name="loadingLabel">
+      <property name="text">
+       <string>Loading card (swaps after 1.5s):</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QWidget" name="loadingCard" native="true">
+      <layout class="QHBoxLayout" name="loadingCardLayout">
+       <property name="spacing">
+        <number>10</number>
+       </property>
+       <property name="leftMargin">
+        <number>12</number>
+       </property>
+       <property name="topMargin">
+        <number>12</number>
+       </property>
+       <property name="rightMargin">
+        <number>12</number>
+       </property>
+       <property name="bottomMargin">
+        <number>12</number>
+       </property>
+       <item>
+        <widget class="QCustomSkeleton" name="skeletonAvatar">
+         <property name="shape" stdset="0">
+          <string>circle</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="skeletonLines">
+         <property name="spacing">
+          <number>8</number>
+         </property>
+         <item>
+          <widget class="QCustomSkeleton" name="skeletonLine1" />
+         </item>
+         <item>
+          <widget class="QCustomSkeleton" name="skeletonLine2" />
+         </item>
+         <item>
+          <spacer name="skeletonSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>10</width>
+             <height>10</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="teamLabel">
+      <property name="text">
+       <string>Team:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="avatarRow">
+      <item>
+       <widget class="QCustomAvatarGroup" name="avatarGroup">
+        <property name="maxVisible" stdset="0">
+         <number>4</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="avatarSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>10</width>
+          <height>10</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="activityLabel">
+      <property name="text">
+       <string>Activity:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCustomTimeline" name="timeline" />
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomSkeleton</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomSkeleton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomAvatarGroup</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomAvatarGroup.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomTimeline</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomTimeline.h</header>
+  </customwidget>
+ <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>

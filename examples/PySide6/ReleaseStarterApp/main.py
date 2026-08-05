@@ -1,80 +1,119 @@
-import sys
-from qtpy.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QHBoxLayout
-from Custom_Widgets.QCustomQPushButton import QCustomQPushButton
-from Custom_Widgets.QCustomToast import QCustomToast
-from Custom_Widgets.QCustomForm import QCustomForm, QCustomFormField
-from Custom_Widgets.QCustomComboBox import QCustomComboBox
-from Custom_Widgets.QCustomInput import QCustomInput
+"""Release starter app — the minimal template to copy when starting a project.
+
+Structure and chrome live in ui/MainWindow.ui + Qss/scss (compiled to
+src/ui_MainWindow.py); themes live in json-styles/style.json; only form
+fields (data) and signal wiring live here.
+"""
+
+import os, sys
+
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
+
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
+
+from Custom_Widgets import *
 from Custom_Widgets.QCustomButtonGroup import QCustomButtonGroup
-from Custom_Widgets.JSonStyles import loadJsonStyle
-from Custom_Widgets.QCustomTheme import QCustomTheme
+from Custom_Widgets.QCustomComboBox import QCustomComboBox
+from Custom_Widgets.QCustomForm import QCustomFormField
+from Custom_Widgets.QCustomInput import QCustomInput
+from Custom_Widgets.QCustomToast import QCustomToast
+from qtpy.QtCore import QCoreApplication, QSettings
+from qtpy.QtWidgets import QApplication
 
 
-class ReleaseStarterWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Custom Widgets Release Starter")
-        self.resize(760, 520)
+class MainWindow(QCustomMainWindow):
+    def __init__(self, parent=None):
+        QCustomMainWindow.__init__(self)
+        # Set BEFORE loadJsonStyle: the theme engine reads QSettings() while
+        # parsing the json — without these names it reads the interpreter-wide
+        # settings file and the app's own THEME/default theme never resolve.
+        QCoreApplication.setOrganizationName("CustomWidgets")
+        QCoreApplication.setApplicationName("ReleaseStarterApp")
 
-        self.theme = QCustomTheme()
-        self.theme.setTheme("Light")
-        loadJsonStyle(self, self.theme)
+        from src.ui_MainWindow import Ui_MainWindow
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
 
-        layout = QVBoxLayout(self)
-        title = QLabel("Release-ready starter app")
-        title.setStyleSheet("font-size: 20px; font-weight: 600;")
-        layout.addWidget(title)
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
 
-        form = QCustomForm(self)
-        
-        # Name field using QCustomInput
-        name_input = QCustomInput(self)
-        name_input.setPlaceholderText("Enter your name")
-        name_input.variant = "outline"
-        name_input.sizeVariant = "md"
-        name_field = QCustomFormField("Name", widget=name_input)
-        name_field.set_required(True)
-        form.add_field(name_field)
+        self.show()
+        themeEngine = self.themeEngine
+        org = getattr(themeEngine, "organizationName", "")
+        if org:
+            QCoreApplication.setOrganizationName(str(org))
+        appn = getattr(themeEngine, "applicationName", "")
+        if appn:
+            QCoreApplication.setApplicationName(str(appn))
+        orgd = getattr(themeEngine, "organizationDomain", "")
+        if orgd:
+            QCoreApplication.setOrganizationDomain(str(orgd))
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            for t in themeEngine.themes:
+                if getattr(t, "defaultTheme", False) and (init_set is None or not init_set):
+                    s.setValue("THEME", t.name)
+                    s.setValue("INIT-THEME-SET", True)
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
 
-        # Email field using QCustomInput
-        email_input = QCustomInput(self)
-        email_input.setPlaceholderText("Enter your email")
-        email_input.variant = "outline"
-        email_field = QCustomFormField("Email", widget=email_input)
-        email_field.set_validator(lambda value: "@" in value)
-        form.add_field(email_field)
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
 
-        # Region selection
+        self._buildForm()
+        self._wireDemo()
+
+    def _buildForm(self):
+        """Form fields are data-driven, so they are added here in code."""
+        form = self.ui.signupForm
+
+        nameInput = QCustomInput(self)
+        nameInput.setPlaceholderText("Enter your name")
+        nameInput.variant = "outline"
+        nameInput.sizeVariant = "md"
+        nameField = QCustomFormField("Name", widget=nameInput)
+        nameField.set_required(True)
+        form.add_field(nameField)
+
+        emailInput = QCustomInput(self)
+        emailInput.setPlaceholderText("Enter your email")
+        emailInput.variant = "outline"
+        emailField = QCustomFormField("Email", widget=emailInput)
+        emailField.set_validator(lambda value: "@" in value)
+        form.add_field(emailField)
+
         region = QCustomComboBox(self, editable=True)
         region.setPlaceholderText("Choose a region")
         region.setItems(["North America", "Europe", "Asia Pacific", "Latin America"])
         region.setCurrentIndex(0)
-        region_field = QCustomFormField("Region", widget=region)
-        form.add_field(region_field)
+        regionField = QCustomFormField("Region", widget=region)
+        form.add_field(regionField)
 
-        # Preference buttons using QCustomButtonGroup
-        pref_label = QLabel("Preference")
-        pref_label.setStyleSheet("font-weight: 500; margin-top: 8px;")
-        layout.addWidget(pref_label)
-        
-        prefs = QCustomButtonGroup(self, exclusive=True, orientation="horizontal")
-        prefs.setButtons(["Light Mode", "Dark Mode", "Auto"])
-        prefs.setSelectedId(2)
-        layout.addWidget(prefs)
+        # QCustomButtonGroup's layout direction is fixed at construction time
+        # (the orientation property does not rebuild the layout), so the
+        # horizontal group is created here and dropped into the .ui holder.
+        self.prefsGroup = QCustomButtonGroup(self, exclusive=True,
+                                             orientation="horizontal")
+        self.prefsGroup.setButtons(["Light Mode", "Dark Mode", "Auto"])
+        self.prefsGroup.setSelectedId(2)
+        self.ui.prefsHolder.addWidget(self.prefsGroup)
 
-        form.submitted.connect(self._handle_submit)
-        layout.addWidget(form)
+    def _wireDemo(self):
+        self.ui.signupForm.submitted.connect(self._handleSubmit)
+        self.ui.submitButton.clicked.connect(
+            lambda: QCustomToast.success(self, "Starter app ready", title="Success"))
 
-        button = QCustomQPushButton("Submit sample")
-        button.clicked.connect(lambda: QCustomToast.success(self, "Starter app ready", title="Success"))
-        layout.addWidget(button)
-
-    def _handle_submit(self, payload):
+    def _handleSubmit(self, payload):
         QCustomToast.success(self, f"Submitted {payload['Name']}", title="Form")
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = ReleaseStarterWindow()
-    window.show()
+    window = MainWindow()
     sys.exit(app.exec())

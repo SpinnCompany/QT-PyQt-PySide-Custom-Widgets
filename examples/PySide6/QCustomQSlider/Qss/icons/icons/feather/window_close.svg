@@ -23,8 +23,8 @@
      id="defs4" />
   <sodipodi:namedview
      id="base"
-     pagecolor="black"
-     bordercolor="black"
+     pagecolor="#9ca3af"
+     bordercolor="#9ca3af"
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
@@ -81,12 +81,12 @@
          inkscape:connector-curvature="0"
          id="path819"
          d="m 7.3121057,1028.5248 16.3605673,16.5668"
-         style="fill:none;stroke:black;stroke-width:2.75656373;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         style="fill:none;stroke:#9ca3af;stroke-width:2.75656373;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <path
          inkscape:connector-curvature="0"
          id="path819-3"
          d="M 23.672021,1028.524 7.3127575,1045.0923"
-         style="fill:none;stroke:black;stroke-width:2.75656373;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         style="fill:none;stroke:#9ca3af;stroke-width:2.75656373;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     </g>
   </g>
 </svg>

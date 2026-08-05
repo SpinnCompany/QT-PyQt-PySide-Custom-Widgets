@@ -1,0 +1,51 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QFlowProgressBar Demo"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Flow-Night",
+          "Default-Theme": true,
+          "Background-color": "#111420",
+          "Text-color": "#e8ecf1",
+          "Accent-color": "#0088fe",
+          "Icons-color": "#9ca3af",
+          "Create-icons": false
+        },
+        {
+          "Theme-name": "Flow-Day",
+          "Default-Theme": false,
+          "Background-color": "#f5f7fa",
+          "Text-color": "#1a1a2e",
+          "Accent-color": "#0088fe",
+          "Icons-color": "#6b7280",
+          "Create-icons": false
+        }
+      ]
+    }
+  },
+  "_comment_ChartPalette": "Data-viz colours for the three QFlowProgressBar variants, keyed by theme name. Read with json.load in main.py — the bars take their colours at construction time.",
+  "ChartPalette": {
+    "Flow-Night": {
+      "circularFinished": "#0088fe",
+      "circularUnfinished": "#2d3142",
+      "flatFinished": "#00b050",
+      "flatUnfinished": "#ffc000",
+      "squareFinished": "#ff5252",
+      "squareUnfinished": "#4a4f63",
+      "finishedNumber": "#ffffff"
+    },
+    "Flow-Day": {
+      "circularFinished": "#0088fe",
+      "circularUnfinished": "#e4e7ed",
+      "flatFinished": "#00b050",
+      "flatUnfinished": "#ffc000",
+      "squareFinished": "#ff0000",
+      "squareUnfinished": "#808080",
+      "finishedNumber": "#ffffff"
+    }
+  }
+}

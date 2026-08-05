@@ -22,7 +22,30 @@
                     "Background-color": "#0d0e12",
                     "Text-color": "#e9ebf1",
                     "Accent-color": "#7b6cf6",
-                    "Icons-color": "#c2c6d2"
+                    "Icons-color": "#c2c6d2",
+                    "_comment": "Other-variables become $VARS in Qss/scss — data hues (dots, avatars, badges, delta pills) live WITH the theme. Keep in sync with ChartPalette below (same hues, read by Python for chart series).",
+                    "Other-variables": {
+                        "CHART_ONLINE": "#7b6cf6",
+                        "CHART_OFFLINE": "#f2794b",
+                        "CHART_RETURNS": "#f4c44e",
+                        "CHART_LOYAL": "#7b6cf6",
+                        "CHART_NEW": "#f2794b",
+                        "CHART_UP": "#3ddc97",
+                        "CHART_DOWN": "#f5678a",
+                        "CHART_WARN": "#e0a020",
+                        "CHART_UP_SOFT": "rgba(61, 220, 151, 0.16)",
+                        "CHART_DOWN_SOFT": "rgba(245, 103, 138, 0.16)",
+                        "CHART_WARN_SOFT": "rgba(240, 170, 40, 0.16)",
+                        "CHART_NEUTRAL": "#8b909e",
+                        "CHART_NEUTRAL_SOFT": "rgba(139, 144, 158, 0.16)",
+                        "AVATAR_0": "#f2794b",
+                        "AVATAR_1": "#7b6cf6",
+                        "AVATAR_2": "#f4c44e",
+                        "AVATAR_3": "#3ddc97",
+                        "AVATAR_4": "#f5678a",
+                        "DELTA_SOFT": "rgba(120, 120, 120, 0.14)",
+                        "DELTA_ON_ACCENT": "rgba(255, 255, 255, 0.22)"
+                    }
                 },
                 {
                     "Theme-name": "Winning Light",
@@ -31,7 +54,29 @@
                     "Background-color": "#eceff5",
                     "Text-color": "#161a24",
                     "Accent-color": "#6c5ce7",
-                    "Icons-color": "#3b4150"
+                    "Icons-color": "#3b4150",
+                    "Other-variables": {
+                        "CHART_ONLINE": "#6c5ce7",
+                        "CHART_OFFLINE": "#f2794b",
+                        "CHART_RETURNS": "#e6a51c",
+                        "CHART_LOYAL": "#6c5ce7",
+                        "CHART_NEW": "#f2794b",
+                        "CHART_UP": "#17b26a",
+                        "CHART_DOWN": "#e14d6e",
+                        "CHART_WARN": "#b97e12",
+                        "CHART_UP_SOFT": "rgba(23, 178, 106, 0.16)",
+                        "CHART_DOWN_SOFT": "rgba(225, 77, 110, 0.16)",
+                        "CHART_WARN_SOFT": "rgba(240, 170, 40, 0.18)",
+                        "CHART_NEUTRAL": "#6c7280",
+                        "CHART_NEUTRAL_SOFT": "rgba(108, 114, 128, 0.14)",
+                        "AVATAR_0": "#f2794b",
+                        "AVATAR_1": "#6c5ce7",
+                        "AVATAR_2": "#e6a51c",
+                        "AVATAR_3": "#17b26a",
+                        "AVATAR_4": "#e14d6e",
+                        "DELTA_SOFT": "rgba(120, 120, 120, 0.14)",
+                        "DELTA_ON_ACCENT": "rgba(255, 255, 255, 0.22)"
+                    }
                 }
             ]
         }

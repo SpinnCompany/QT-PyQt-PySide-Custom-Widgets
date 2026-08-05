@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>568</width>
+    <height>320</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QCustomQMainWindow Starter</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="centralLayout">
+    <property name="spacing">0</property>
+    <property name="leftMargin">10</property>
+    <property name="topMargin">10</property>
+    <property name="rightMargin">10</property>
+    <property name="bottomMargin">10</property>
+    <item>
+     <widget class="QFrame" name="mainBody">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <layout class="QVBoxLayout" name="mainBodyLayout">
+       <property name="spacing">0</property>
+       <property name="leftMargin">0</property>
+       <property name="topMargin">0</property>
+       <property name="rightMargin">0</property>
+       <property name="bottomMargin">0</property>
+       <item>
+        <widget class="QWidget" name="headerWidget" native="true">
+         <layout class="QHBoxLayout" name="headerLayout">
+          <property name="spacing">6</property>
+          <property name="leftMargin">12</property>
+          <property name="topMargin">6</property>
+          <property name="rightMargin">6</property>
+          <property name="bottomMargin">6</property>
+          <item>
+           <widget class="QLabel" name="titleBarLabel">
+            <property name="text">
+             <string>CUSTOM TITLE BAR</string>
+            </property>
+           </widget>
+          </item>
+          <item alignment="Qt::AlignRight|Qt::AlignTop">
+           <widget class="QFrame" name="windowButtonsFrame">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <layout class="QHBoxLayout" name="windowButtonsLayout">
+             <property name="spacing">5</property>
+             <property name="leftMargin">0</property>
+             <property name="topMargin">0</property>
+             <property name="rightMargin">0</property>
+             <property name="bottomMargin">0</property>
+             <item>
+              <widget class="QPushButton" name="minimizeWindowButton">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="cursor">
+                <cursorShape>PointingHandCursor</cursorShape>
+               </property>
+               <property name="icon">
+                <iconset>
+                 <normaloff>theme-icons:icons/feather/minus.svg</normaloff>theme-icons:icons/feather/minus.svg</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="restoreWindowButton">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="cursor">
+                <cursorShape>PointingHandCursor</cursorShape>
+               </property>
+               <property name="icon">
+                <iconset>
+                 <normaloff>theme-icons:icons/feather/maximize-2.svg</normaloff>theme-icons:icons/feather/maximize-2.svg</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="closeWindowButton">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="cursor">
+                <cursorShape>PointingHandCursor</cursorShape>
+               </property>
+               <property name="icon">
+                <iconset>
+                 <normaloff>theme-icons:icons/feather/x.svg</normaloff>theme-icons:icons/feather/x.svg</iconset>
+                </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QFrame" name="bodyFrame">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <layout class="QVBoxLayout" name="bodyLayout">
+          <property name="spacing">0</property>
+          <property name="leftMargin">0</property>
+          <property name="topMargin">0</property>
+          <property name="rightMargin">0</property>
+          <property name="bottomMargin">0</property>
+          <item alignment="Qt::AlignHCenter|Qt::AlignBottom">
+           <widget class="QLabel" name="logoLabel">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>60</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>60</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="pixmap">
+             <pixmap>theme-icons:icons/feather/github.svg</pixmap>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item alignment="Qt::AlignHCenter|Qt::AlignTop">
+           <widget class="QLabel" name="brandLabel">
+            <property name="text">
+             <string>GITHUB</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="footerFrame">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <layout class="QHBoxLayout" name="footerLayout">
+             <property name="spacing">0</property>
+             <property name="leftMargin">0</property>
+             <property name="topMargin">0</property>
+             <property name="rightMargin">0</property>
+             <property name="bottomMargin">0</property>
+             <item alignment="Qt::AlignRight|Qt::AlignBottom">
+              <widget class="QFrame" name="sizeGrip">
+               <property name="minimumSize">
+                <size>
+                 <width>10</width>
+                 <height>10</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>10</width>
+                 <height>10</height>
+                </size>
+               </property>
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

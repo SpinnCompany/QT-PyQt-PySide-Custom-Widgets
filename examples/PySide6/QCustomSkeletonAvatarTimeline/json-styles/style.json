@@ -1,0 +1,28 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomSkeletonAvatarTimeline Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Feed Night",
+          "Default-Theme": true,
+          "Background-color": "#171c26",
+          "Text-color": "#e9edf5",
+          "Accent-color": "#6ea8f0",
+          "Icons-color": "#98a2b3"
+        },
+        {
+          "Theme-name": "Feed Day",
+          "Default-Theme": false,
+          "Background-color": "#f4f6fa",
+          "Text-color": "#1d2433",
+          "Accent-color": "#2e6bce",
+          "Icons-color": "#5c6572"
+        }
+      ]
+    }
+  }
+}

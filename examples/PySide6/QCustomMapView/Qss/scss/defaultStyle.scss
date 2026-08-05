@@ -1,0 +1,105 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#titleLabel {
+  color: $COLOR_TEXT_1;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#offlineBadge {
+  color: $COLOR_ACCENT_1;
+  background: $COLOR_BACKGROUND_2;
+  border: 1px solid $COLOR_ACCENT_2;
+  border-radius: 10px;
+  padding: 3px 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+#mapCard, #controlsCard {
+  background: $COLOR_BACKGROUND_3;
+  border: none;
+  border-radius: 12px;
+}
+
+#mapView {
+  background: $COLOR_BACKGROUND_2;
+}
+
+#mapView QLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+#styleCaption, #zoomCaption {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+#statusLabel {
+  color: $COLOR_TEXT_3;
+  font-size: 12px;
+}
+
+#controlsCard QPushButton {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_1;
+  border-radius: 8px;
+  padding: 6px 12px;
+}
+
+#controlsCard QPushButton:hover {
+  border: 1px solid $COLOR_ACCENT_1;
+  color: $COLOR_ACCENT_1;
+}
+
+#controlsCard QPushButton:pressed {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#fitFleetBtn {
+  qproperty-icon: url($PATH_RESOURCES+'feather/maximize.svg');
+}
+
+#moveFleetBtn {
+  qproperty-icon: url($PATH_RESOURCES+'feather/navigation.svg');
+}
+
+#themeToggleBtn {
+  qproperty-icon: url($PATH_RESOURCES+'feather/moon.svg');
+}
+
+#styleBox {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_1;
+  border-radius: 8px;
+  padding: 5px 10px;
+}
+
+#styleBox QAbstractItemView {
+  background: $COLOR_BACKGROUND_3;
+  color: $COLOR_TEXT_1;
+  selection-background-color: $COLOR_ACCENT_1;
+}
+
+#zoomSlider::groove:horizontal {
+  height: 6px;
+  background: $COLOR_BACKGROUND_2;
+  border-radius: 3px;
+}
+
+#zoomSlider::sub-page:horizontal {
+  background: $COLOR_ACCENT_1;
+  border-radius: 3px;
+}
+
+#zoomSlider::handle:horizontal {
+  width: 14px;
+  margin: -5px 0;
+  border-radius: 7px;
+  background: $COLOR_ACCENT_1;
+}

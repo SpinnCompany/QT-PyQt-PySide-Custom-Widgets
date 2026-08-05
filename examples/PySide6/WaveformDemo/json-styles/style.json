@@ -1,0 +1,60 @@
+{
+    "ShowLogs": false,
+    "QtBinding": "PySide6",
+    "CheckForMissingicons": false,
+    "QMainWindow": {
+        "title": "QCustomWaveform — Demo"
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "WaveformDemo",
+            "OrganizationDomain": "spinncode.com"
+        },
+        "ThemeSettings": {
+            "CustomThemes": [
+                {
+                    "Theme-name": "Waveform Dark",
+                    "Default-Theme": true,
+                    "Create-icons": true,
+                    "Background-color": "#171a22",
+                    "Text-color": "#e7e9ef",
+                    "Accent-color": "#38bdf8",
+                    "Icons-color": "#9aa1b2"
+                },
+                {
+                    "Theme-name": "Waveform Light",
+                    "Default-Theme": false,
+                    "Create-icons": true,
+                    "Background-color": "#ffffff",
+                    "Text-color": "#1c2430",
+                    "Accent-color": "#1f9ad6",
+                    "Icons-color": "#6b7280"
+                }
+            ]
+        }
+    },
+    "_comment_ChartPalette": "Read in code by main.py — waveform line / bar hues live with the theme so they flip on theme switch (token-driven).",
+    "ChartPalette": {
+        "Waveform Dark": {
+            "ecgLine": "#ff5c6c",
+            "ecgGrid": "#242a38",
+            "waterBar1": "#38bdf8",
+            "waterBar2": "#3aa0ff",
+            "voiceBar1": "#8b5cf6",
+            "voiceBar2": "#a78bfa",
+            "neonBar1": "#39d353",
+            "neonBar2": "#8affc1"
+        },
+        "Waveform Light": {
+            "ecgLine": "#e0475c",
+            "ecgGrid": "#dfe3ec",
+            "waterBar1": "#1f9ad6",
+            "waterBar2": "#2b8ae6",
+            "voiceBar1": "#7c4fe0",
+            "voiceBar2": "#9a7cf0",
+            "neonBar1": "#21b14a",
+            "neonBar2": "#58d68b"
+        }
+    }
+}

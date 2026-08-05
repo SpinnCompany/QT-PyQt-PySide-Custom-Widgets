@@ -1,0 +1,27 @@
+{
+  "QComboBox": [
+    {
+      "name": "pos",
+      "items": [
+        {
+          "name": "top-right"
+        },
+        {
+          "name": "top-left"
+        },
+        {
+          "name": "bottom-right"
+        },
+        {
+          "name": "bottom-left"
+        },
+        {
+          "name": "top-center"
+        },
+        {
+          "name": "bottom-center"
+        }
+      ]
+    }
+  ]
+}

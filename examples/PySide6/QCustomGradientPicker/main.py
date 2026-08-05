@@ -1,130 +1,150 @@
-########################################################################
-## QCustomGradientPicker example
-##
-## An editor plus a live preview: click the bar to add a stop, drag a handle to
-## move it, double-click a handle (or press Return) to recolour it, Delete to
-## remove it. The preview panel paints the same gradient at full size so the
-## angle and type controls have something to act on.
-## Run:
-##     python main.py
-########################################################################
+"""QCustomGradientPicker showcase.
+
+An editor plus a live preview: click the bar to add a stop, drag a handle to
+move it, double-click a handle (or press Return) to recolour it, Delete to
+remove it. The preview panel paints the same gradient at full size so the
+angle and type controls have something to act on. Full project structure:
+ui/ + compiled src/ + json-styles themes + Qss scss tokens (zero inline
+styling).
+"""
+
+import os
 import sys
-from PySide6 import QtWidgets, QtGui, QtCore
 
-from Custom_Widgets.QCustomGradientPicker import QCustomGradientPicker
-from Custom_Widgets.JSonStyles.tokens import applyDesignTokens
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
+
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
+
+from Custom_Widgets import *
+from qtpy.QtCore import QCoreApplication, QRectF, QSettings
+from qtpy.QtGui import QBrush, QPainter, QPen
+from qtpy.QtWidgets import QApplication, QFrame
+
+THEME_DARK = "Picker Dark"
+THEME_LIGHT = "Picker Light"
+
+SEED_STOPS = "0:#2563eb,0.5:#a855f7,1:#16a34a"
 
 
-class Preview(QtWidgets.QFrame):
-    """Paints whatever gradient the picker currently describes."""
+class Preview(QFrame):
+    """Paints whatever gradient the picker currently describes.
+
+    Demo-local painting helper: its frame colour comes from the picker's
+    themed borderColor property, so it follows the active theme.
+    """
 
     def __init__(self, picker, parent=None):
         super().__init__(parent)
         self._picker = picker
-        self.setMinimumHeight(160)
 
     def paintEvent(self, event):
-        painter = QtGui.QPainter(self)
-        painter.setRenderHint(QtGui.QPainter.Antialiasing)
-        rect = QtCore.QRectF(self.rect()).adjusted(1, 1, -1, -1)
-        painter.setBrush(QtGui.QBrush(self._picker.gradient(rect)))
-        painter.setPen(QtGui.QPen(QtGui.QColor("#cbd5e1")))
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        rect = QRectF(self.rect()).adjusted(1, 1, -1, -1)
+        painter.setBrush(QBrush(self._picker.gradient(rect)))
+        painter.setPen(QPen(self._picker.borderColor))
         painter.drawRoundedRect(rect, 10, 10)
 
 
-class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("QCustomGradientPicker")
-        central = QtWidgets.QWidget()
-        self.setCentralWidget(central)
-        layout = QtWidgets.QVBoxLayout(central)
-        layout.setContentsMargins(24, 24, 24, 24)
-        layout.setSpacing(16)
-        self._theme = "light"
+class MainWindow(QCustomMainWindow):
+    def __init__(self, parent=None):
+        QCustomMainWindow.__init__(self)
+        from src.ui_MainWindow import Ui_MainWindow
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
 
-        layout.addWidget(self._heading("Gradient"))
-        self.picker = QCustomGradientPicker(
-            stops=[(0.0, "#2563eb"), (0.5, "#a855f7"), (1.0, "#16a34a")])
-        layout.addWidget(self.picker)
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
 
-        self.preview = Preview(self.picker)
-        layout.addWidget(self.preview, 1)
+        self.show()
+        themeEngine = self.themeEngine
+        org = getattr(themeEngine, "organizationName", "")
+        if org:
+            QCoreApplication.setOrganizationName(str(org))
+        appn = getattr(themeEngine, "applicationName", "")
+        if appn:
+            QCoreApplication.setApplicationName(str(appn))
+        orgd = getattr(themeEngine, "organizationDomain", "")
+        if orgd:
+            QCoreApplication.setOrganizationDomain(str(orgd))
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            # Prefer the json default; a stale THEME in the pre-boot QSettings
+            # scope strips Default-Theme flags, so fall back to the first
+            # custom (non-predefined) theme rather than silently keeping the
+            # engine's built-in Light palette.
+            chosen = None
+            for t in themeEngine.themes:
+                if getattr(t, "defaultTheme", False):
+                    chosen = t.name
+                    break
+            if chosen is None:
+                for t in themeEngine.themes:
+                    if not getattr(t, "predefined", False):
+                        chosen = t.name
+                        break
+            if chosen is not None:
+                s.setValue("THEME", chosen)
+                s.setValue("INIT-THEME-SET", True)
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
 
-        controls = QtWidgets.QHBoxLayout()
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
 
-        self.typeBox = QtWidgets.QComboBox()
-        self.typeBox.addItems(["linear", "radial"])
-        self.typeBox.currentTextChanged.connect(self._setType)
-        controls.addWidget(QtWidgets.QLabel("Type"))
-        controls.addWidget(self.typeBox)
+        self._seedGradient()
+        self._wire()
 
-        self.angle = QtWidgets.QSlider(QtCore.Qt.Horizontal)
-        self.angle.setRange(0, 359)
-        self.angle.valueChanged.connect(self._setAngle)
-        controls.addWidget(QtWidgets.QLabel("Angle"))
-        controls.addWidget(self.angle, 1)
+    def _seedGradient(self):
+        """Demo data: the initial three-stop gradient + the live preview."""
+        self.ui.gradientPicker.stopsCsv = SEED_STOPS
+        self.preview = Preview(self.ui.gradientPicker, self.ui.previewHolder)
+        self.ui.previewLayout.addWidget(self.preview)
+        self.ui.statusLabel.setText(self.ui.gradientPicker.stopsCsv)
 
-        for text, slot in (("Edit selected stop", self.picker.editStopColor),
-                           ("Light / dark", self._toggleTheme)):
-            btn = QtWidgets.QPushButton(text)
-            btn.clicked.connect(slot)
-            controls.addWidget(btn)
-        layout.addLayout(controls)
-
-        presets = QtWidgets.QHBoxLayout()
-        for name, csv in (
-                ("Sunset", "0:#f59e0b,0.5:#ef4444,1:#7c3aed"),
-                ("Ocean", "0:#0ea5e9,1:#065f46"),
-                ("Fade", "0:#002563eb,1:#2563eb")):
-            btn = QtWidgets.QPushButton(name)
-            btn.clicked.connect(lambda _=False, c=csv: self._applyPreset(c))
-            presets.addWidget(btn)
-        presets.addStretch(1)
-        layout.addLayout(presets)
-
-        self.status = QtWidgets.QLabel(self.picker.stopsCsv)
-        layout.addWidget(self.status)
-
-        self.picker.gradientChanged.connect(self._onChanged)
-        self.picker.stopSelected.connect(
-            lambda i: self.status.setText("stop %d selected — %s"
-                                          % (i, self.picker.stopColor(i).name())))
-        self.resize(560, 480)
-
-    @staticmethod
-    def _heading(text):
-        label = QtWidgets.QLabel(text)
-        font = label.font()
-        font.setBold(True)
-        label.setFont(font)
-        return label
+    def _wire(self):
+        picker = self.ui.gradientPicker
+        picker.gradientChanged.connect(self._onChanged)
+        picker.stopSelected.connect(
+            lambda i: self.ui.statusLabel.setText(
+                "stop %d selected — %s" % (i, picker.stopColor(i).name())))
+        self.ui.typeBox.currentTextChanged.connect(self._setType)
+        self.ui.angleSlider.valueChanged.connect(self._setAngle)
+        self.ui.editStopBtn.clicked.connect(picker.editStopColor)
+        self.ui.themeBtn.clicked.connect(
+            lambda: self.themeEngine.toggleTheme(dark=THEME_DARK,
+                                                 light=THEME_LIGHT))
+        for button, csv in (
+                (self.ui.presetSunset, "0:#f59e0b,0.5:#ef4444,1:#7c3aed"),
+                (self.ui.presetOcean, "0:#0ea5e9,1:#065f46"),
+                (self.ui.presetFade, "0:#002563eb,1:#2563eb")):
+            button.clicked.connect(lambda _=False, c=csv: self._applyPreset(c))
 
     def _onChanged(self, csv):
-        self.status.setText(csv)
+        self.ui.statusLabel.setText(csv)
         self.preview.update()
 
     def _setType(self, value):
-        self.picker.gradientType = value
-        self.angle.setEnabled(value == "linear")
+        self.ui.gradientPicker.gradientType = value
+        self.ui.angleSlider.setEnabled(value == "linear")
         self.preview.update()
 
     def _setAngle(self, value):
-        self.picker.angle = value
+        self.ui.gradientPicker.angle = value
         self.preview.update()
 
     def _applyPreset(self, csv):
-        self.picker.stopsCsv = csv
+        self.ui.gradientPicker.stopsCsv = csv
         self.preview.update()
-
-    def _toggleTheme(self):
-        self._theme = "dark" if self._theme == "light" else "light"
-        applyDesignTokens(QtWidgets.QApplication.instance(), theme=self._theme)
 
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    applyDesignTokens(app, theme="light")
+    app = QApplication(sys.argv)
     window = MainWindow()
-    window.show()
     sys.exit(app.exec())

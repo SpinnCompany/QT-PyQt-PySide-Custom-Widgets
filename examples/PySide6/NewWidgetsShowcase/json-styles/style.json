@@ -1,0 +1,38 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "New Widgets Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Showcase-Dark",
+          "Default-Theme": true,
+          "Background-color": "#12141c",
+          "Text-color": "#e8ecf4",
+          "Accent-color": "#8b7cf6",
+          "Icons-color": "#9aa3b5",
+          "Create-icons": false,
+          "Other-variables": {
+            "HEAT_LOW": "#1e1b3a",
+            "HEAT_HIGH": "#b3a4ff"
+          }
+        },
+        {
+          "Theme-name": "Showcase-Light",
+          "Default-Theme": false,
+          "Background-color": "#f5f6fa",
+          "Text-color": "#1d2433",
+          "Accent-color": "#6d5ce7",
+          "Icons-color": "#5f6b80",
+          "Create-icons": false,
+          "Other-variables": {
+            "HEAT_LOW": "#e4defc",
+            "HEAT_HIGH": "#6d5ce7"
+          }
+        }
+      ]
+    }
+  }
+}

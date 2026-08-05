@@ -1,0 +1,34 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#titleLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 22px;
+  font-weight: bold;
+  padding: 4px 0;
+}
+
+#card {
+  background: $COLOR_BACKGROUND_3;
+  border-radius: 12px;
+}
+
+/* Toggle colours come from the widget's typed Qt properties so they follow
+   the active theme. */
+QCustomCheckBox {
+  qproperty-backgroundColor: $COLOR_BACKGROUND_5;
+  qproperty-circleColor: $COLOR_TEXT_1;
+  qproperty-activeColor: $COLOR_ACCENT_1;
+  background: transparent;
+}
+
+QCustomCheckBox QLabel {
+  color: $COLOR_TEXT_1;
+  font-size: 14px;
+  background: transparent;
+}
+
+#checkBox_2 {
+  qproperty-activeColor: $COLOR_ACCENT_2;
+}

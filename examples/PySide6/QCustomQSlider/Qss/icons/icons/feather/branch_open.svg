@@ -21,8 +21,8 @@
      id="defs4" />
   <sodipodi:namedview
      id="base"
-     pagecolor="black"
-     bordercolor="black"
+     pagecolor="#9ca3af"
+     bordercolor="#9ca3af"
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
@@ -81,7 +81,7 @@
          inkscape:connector-curvature="0"
          id="path822"
          d="M 3.0068297,1035.3672 16,1023.3622 l 12.99317,12.005"
-         style="fill:none;fill-opacity:0.99215686;stroke:black;stroke-width:3.84843516;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         style="fill:none;fill-opacity:0.99215686;stroke:#9ca3af;stroke-width:3.84843516;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     </g>
   </g>
 </svg>

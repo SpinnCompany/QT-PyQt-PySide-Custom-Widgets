@@ -1,0 +1,98 @@
+/* Stat cards / Progress rings / Card showcase — all chrome from theme
+   tokens. Trend colours (up / down) are theme Other-variables so they flip
+   with the theme. */
+
+#MainWindow,
+#centralwidget {
+  background: $COLOR_BACKGROUND_1;
+}
+
+/* --- KPI stat cards ---------------------------------------------------- */
+QCustomStatCard {
+  background-color: $COLOR_BACKGROUND_2;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 12px;
+}
+
+QCustomStatCard #statLabel {
+  background: transparent;
+  color: $COLOR_TEXT_3;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+QCustomStatCard #statValue {
+  background: transparent;
+  color: $COLOR_TEXT_1;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+QCustomStatCard #statCaption {
+  background: transparent;
+  color: $COLOR_TEXT_3;
+  font-size: 12px;
+}
+
+QCustomStatCard #statDelta {
+  background: transparent;
+  color: $COLOR_TEXT_3;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+QCustomStatCard[trend="up"] #statDelta {
+  color: $TREND_UP;
+}
+
+QCustomStatCard[trend="down"] #statDelta {
+  color: $TREND_DOWN;
+}
+
+QCustomStatCard[trend="flat"] #statDelta {
+  color: $COLOR_TEXT_3;
+}
+
+/* --- Card container ----------------------------------------------------- */
+QCustomCard {
+  background-color: $COLOR_BACKGROUND_2;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 14px;
+}
+
+QCustomCard #cardTitle {
+  background: transparent;
+  color: $COLOR_TEXT_1;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+QCustomCard #cardSubtitle {
+  background: transparent;
+  color: $COLOR_TEXT_3;
+  font-size: 12px;
+}
+
+QCustomCard #cardBody {
+  background: transparent;
+}
+
+/* --- Progress rings (painted; colours via qproperty) -------------------- */
+QCustomProgressRing {
+  background: transparent;
+  qproperty-ringColor: $COLOR_ACCENT_1;
+  qproperty-trackColor: $COLOR_BACKGROUND_4;
+  qproperty-textColor: $COLOR_TEXT_1;
+}
+
+#ringsHolder {
+  background: transparent;
+}
+
+#salesLabel,
+#supportLabel,
+#marketingLabel {
+  background: transparent;
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}

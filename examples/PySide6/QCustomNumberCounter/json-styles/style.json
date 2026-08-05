@@ -1,0 +1,28 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomNumberCounter Example"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "CounterDark",
+          "Default-Theme": true,
+          "Background-color": "#15120c",
+          "Text-color": "#f2ede2",
+          "Accent-color": "#fbbf24",
+          "Icons-color": "#a89f8d"
+        },
+        {
+          "Theme-name": "CounterLight",
+          "Default-Theme": false,
+          "Background-color": "#faf7f0",
+          "Text-color": "#211c12",
+          "Accent-color": "#b45309",
+          "Icons-color": "#6b7280"
+        }
+      ]
+    }
+  }
+}

@@ -30,14 +30,14 @@
       <path
          id="path994"
          d="M 0.0,5.65 L 0.0,-5.65"
-         style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:1pt;stroke-opacity:1"
+         style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#9ca3af;stroke-width:1pt;stroke-opacity:1"
          transform="scale(0.2)" />
     </marker>
   </defs>
   <sodipodi:namedview
      id="base"
-     pagecolor="black"
-     bordercolor="black"
+     pagecolor="#9ca3af"
+     bordercolor="#9ca3af"
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
@@ -89,7 +89,7 @@
      id="layer1"
      transform="translate(0,-1020.3622)">
     <path
-       style="fill:none;stroke:black;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:none;stroke:#9ca3af;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 16,1020.3622 v 16 h 16"
        id="path4521"
        inkscape:connector-curvature="0"

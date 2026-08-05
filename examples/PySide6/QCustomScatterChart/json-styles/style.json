@@ -1,0 +1,28 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomScatterChart Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Scatter Night",
+          "Default-Theme": true,
+          "Background-color": "#151a23",
+          "Text-color": "#e8ecf4",
+          "Accent-color": "#5b9cf5",
+          "Icons-color": "#9aa4b5"
+        },
+        {
+          "Theme-name": "Scatter Day",
+          "Default-Theme": false,
+          "Background-color": "#f2f4f8",
+          "Text-color": "#1c2230",
+          "Accent-color": "#2f6fd0",
+          "Icons-color": "#5b6472"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>500</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QCustomRadioGroup</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="mainLayout">
+    <property name="spacing">
+     <number>18</number>
+    </property>
+    <property name="leftMargin">
+     <number>24</number>
+    </property>
+    <property name="topMargin">
+     <number>24</number>
+    </property>
+    <property name="rightMargin">
+     <number>24</number>
+    </property>
+    <property name="bottomMargin">
+     <number>24</number>
+    </property>
+    <item>
+     <widget class="QFrame" name="planCard">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <layout class="QVBoxLayout" name="planCardLayout">
+       <item>
+        <widget class="QCustomRadioGroup" name="planGroup">
+         <property name="optionsCsv" stdset="0">
+          <string notr="true">free=Community - free forever,pro=Pro - $12/month,studio=Studio - $29/month</string>
+         </property>
+         <property name="selectedValue" stdset="0">
+          <string notr="true">free</string>
+         </property>
+         <property name="title" stdset="0">
+          <string notr="true">Choose a plan</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QFrame" name="billingCard">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <layout class="QVBoxLayout" name="billingCardLayout">
+       <item>
+        <widget class="QCustomRadioGroup" name="billingGroup">
+         <property name="optionsCsv" stdset="0">
+          <string notr="true">monthly=Monthly,yearly=Yearly</string>
+         </property>
+         <property name="selectedValue" stdset="0">
+          <string notr="true">monthly</string>
+         </property>
+         <property name="orientation" stdset="0">
+          <string notr="true">horizontal</string>
+         </property>
+         <property name="title" stdset="0">
+          <string notr="true">Billing period</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QFrame" name="seatsCard">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <layout class="QVBoxLayout" name="seatsCardLayout">
+       <property name="spacing">
+        <number>12</number>
+       </property>
+       <item>
+        <widget class="QCustomRadioGroup" name="seatsGroup">
+         <property name="optionsCsv" stdset="0">
+          <string notr="true">1,2,5</string>
+         </property>
+         <property name="selectedValue" stdset="0">
+          <string notr="true">2</string>
+         </property>
+         <property name="orientation" stdset="0">
+          <string notr="true">horizontal</string>
+         </property>
+         <property name="title" stdset="0">
+          <string notr="true">Seats</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="swapButton">
+         <property name="text">
+          <string>Replace seat options with 2, 5, 10</string>
+         </property>
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <spacer name="mainSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QLabel" name="statusLabel">
+      <property name="text">
+       <string>plan=free  billing=monthly</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="themeButton">
+      <property name="text">
+       <string>Toggle light / dark</string>
+      </property>
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomRadioGroup</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomRadioGroup.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

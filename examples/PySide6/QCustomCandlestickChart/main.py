@@ -1,17 +1,20 @@
-########################################################################
-## QCustomCandlestickChart example
-##
-## A 30-session price series with a readout driven by hover and click, plus
-## toggles for the hollow-up-candle style, the grid and the painted tooltip.
-## Rendered with QPainter only - no QtCharts.
-## Run:
-##     python main.py
-########################################################################
-import sys
-from PySide6 import QtWidgets
+"""QCustomCandlestickChart showcase — a 30-session price series with a hover /
+click readout, style toggles, and a JSON-theme light/dark switch."""
 
-from Custom_Widgets.QCustomCandlestickChart import QCustomCandlestickChart
-from Custom_Widgets.JSonStyles.tokens import applyDesignTokens
+import os, sys
+
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
+
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
+
+from Custom_Widgets import *
+from qtpy.QtCore import QCoreApplication, QSettings
+from qtpy.QtWidgets import QApplication
+
+THEME_DARK = "Candle Night"
+THEME_LIGHT = "Candle Day"
 
 
 def _series(count=30, start=124.0, seed=7):
@@ -32,71 +35,96 @@ def _series(count=30, start=124.0, seed=7):
     return candles, labels
 
 
-class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("QCustomCandlestickChart")
-        central = QtWidgets.QWidget()
-        self.setCentralWidget(central)
-        layout = QtWidgets.QVBoxLayout(central)
-        layout.setContentsMargins(20, 20, 20, 20)
-        layout.setSpacing(14)
-        self._theme = "light"
+class MainWindow(QCustomMainWindow):
+    def __init__(self, parent=None):
+        QCustomMainWindow.__init__(self)
+        from src.ui_MainWindow import Ui_MainWindow
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
 
+        # Set the app identity BEFORE loadJsonStyle: the theme loader consults
+        # QSettings while parsing CustomThemes, and without these names it reads
+        # the shared unnamed settings file (polluted by other example apps),
+        # which silently cancels this app's Default-Theme flag.
+        QCoreApplication.setOrganizationName("CustomWidgets")
+        QCoreApplication.setApplicationName("QCustomCandlestickChart Showcase")
+
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
+
+        self.show()
+        themeEngine = self.themeEngine
+        org = getattr(themeEngine, "organizationName", "")
+        if org:
+            QCoreApplication.setOrganizationName(str(org))
+        appn = getattr(themeEngine, "applicationName", "")
+        if appn:
+            QCoreApplication.setApplicationName(str(appn))
+        orgd = getattr(themeEngine, "organizationDomain", "")
+        if orgd:
+            QCoreApplication.setOrganizationDomain(str(orgd))
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            for t in themeEngine.themes:
+                if getattr(t, "defaultTheme", False) and (init_set is None or not init_set):
+                    s.setValue("THEME", t.name)
+                    s.setValue("INIT-THEME-SET", True)
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
+
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
+
+        self._seedAndWire()
+
+    def _seedAndWire(self):
+        ui = self.ui
+
+        # seed the price series AFTER the chart exists (data-driven config)
         candles, labels = _series()
-        self.chart = QCustomCandlestickChart(data=candles, labels=labels)
-        self.chart.setMinimumHeight(300)
-        self.chart.candleHovered.connect(self._onHover)
-        self.chart.candleClicked.connect(self._onClick)
-        layout.addWidget(self.chart, 1)
+        ui.chart.setData(candles, labels)
+        ui.chart.candleHovered.connect(self._onHover)
+        ui.chart.candleClicked.connect(self._onClick)
 
-        self.readout = QtWidgets.QLabel("Hover a candle to inspect its OHLC")
-        layout.addWidget(self.readout)
-
-        controls = QtWidgets.QHBoxLayout()
-        for text, slot in (("Hollow up candles", self._toggleHollow),
-                           ("Grid", self._toggleGrid),
-                           ("Tooltip", self._toggleTooltip),
-                           ("Light / dark", self._toggleTheme)):
-            btn = QtWidgets.QPushButton(text)
-            btn.clicked.connect(slot)
-            controls.addWidget(btn)
-        controls.addStretch(1)
-        layout.addLayout(controls)
-
-        self.resize(720, 460)
+        ui.hollowButton.clicked.connect(self._toggleHollow)
+        ui.gridButton.clicked.connect(self._toggleGrid)
+        ui.tooltipButton.clicked.connect(self._toggleTooltip)
+        ui.themeButton.clicked.connect(self._toggleTheme)
 
     def _onHover(self, index):
         if index < 0:
-            self.readout.setText("Hover a candle to inspect its OHLC")
+            self.ui.readoutLabel.setText("Hover a candle to inspect its OHLC")
             return
-        o, h, l, c = self.chart.data()[index]
+        o, h, l, c = self.ui.chart.data()[index]
         direction = "up" if c >= o else "down"
-        self.readout.setText(
+        self.ui.readoutLabel.setText(
             "%s  O %.2f  H %.2f  L %.2f  C %.2f  (%s)"
-            % (self.chart.labels()[index], o, h, l, c, direction))
+            % (self.ui.chart.labels()[index], o, h, l, c, direction))
 
     def _onClick(self, index):
-        self.readout.setText("clicked candle %d (%s)"
-                             % (index, self.chart.labels()[index]))
+        self.ui.readoutLabel.setText(
+            "clicked candle %d (%s)" % (index, self.ui.chart.labels()[index]))
 
     def _toggleHollow(self):
-        self.chart.hollowUpCandles = not self.chart.hollowUpCandles
+        self.ui.chart.hollowUpCandles = not self.ui.chart.hollowUpCandles
 
     def _toggleGrid(self):
-        self.chart.showGrid = not self.chart.showGrid
+        self.ui.chart.showGrid = not self.ui.chart.showGrid
 
     def _toggleTooltip(self):
-        self.chart.showTooltip = not self.chart.showTooltip
+        self.ui.chart.showTooltip = not self.ui.chart.showTooltip
 
     def _toggleTheme(self):
-        self._theme = "dark" if self._theme == "light" else "light"
-        applyDesignTokens(QtWidgets.QApplication.instance(), theme=self._theme)
+        current = str(getattr(self.themeEngine, "theme", "") or THEME_DARK)
+        target = THEME_LIGHT if current == THEME_DARK else THEME_DARK
+        self.themeEngine.setTheme(target)
 
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    applyDesignTokens(app, theme="light")
+    app = QApplication(sys.argv)
     window = MainWindow()
-    window.show()
     sys.exit(app.exec())

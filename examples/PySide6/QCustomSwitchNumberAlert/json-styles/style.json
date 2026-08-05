@@ -1,0 +1,40 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomSwitchNumberAlert Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Settings Night",
+          "Default-Theme": true,
+          "Background-color": "#151a23",
+          "Text-color": "#e9edf4",
+          "Accent-color": "#58a6ff",
+          "Icons-color": "#98a2b3",
+          "Other-variables": {
+            "SEMANTIC_INFO": "#58a6ff",
+            "SEMANTIC_SUCCESS": "#3fb950",
+            "SEMANTIC_WARNING": "#d29922",
+            "SEMANTIC_DESTRUCTIVE": "#f85149"
+          }
+        },
+        {
+          "Theme-name": "Settings Day",
+          "Default-Theme": false,
+          "Background-color": "#f3f5f9",
+          "Text-color": "#1c2230",
+          "Accent-color": "#2a6bd0",
+          "Icons-color": "#5a6371",
+          "Other-variables": {
+            "SEMANTIC_INFO": "#0969da",
+            "SEMANTIC_SUCCESS": "#1a7f37",
+            "SEMANTIC_WARNING": "#9a6700",
+            "SEMANTIC_DESTRUCTIVE": "#cf222e"
+          }
+        }
+      ]
+    }
+  }
+}

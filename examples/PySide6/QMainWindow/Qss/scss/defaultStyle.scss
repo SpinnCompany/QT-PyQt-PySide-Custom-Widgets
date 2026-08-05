@@ -1,0 +1,72 @@
+/* Frameless-window starter: the window itself is translucent, so the visible
+   "window" is #mainBody. Margins on #centralwidget leave room for the drop
+   shadow painted by QCustomMainWindow. */
+
+#centralwidget {
+  background: transparent;
+}
+
+#mainBody {
+  background: $COLOR_BACKGROUND_1;
+  border-radius: 10px;
+}
+
+/* Custom title bar (double-click = maximize / restore, drag = move) */
+#headerWidget {
+  background: $HEADER_BG;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+#titleBarLabel {
+  background: transparent;
+  color: $TITLEBAR_TEXT;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+#windowButtonsFrame {
+  background: transparent;
+}
+
+#minimizeWindowButton, #restoreWindowButton, #closeWindowButton {
+  background: $WINBTN_BG;
+  border-radius: 4px;
+  min-width: 26px;
+  max-width: 26px;
+  min-height: 22px;
+  max-height: 22px;
+  padding: 2px;
+}
+
+#minimizeWindowButton:hover, #restoreWindowButton:hover {
+  background: $WINBTN_BG_HOVER;
+}
+
+#closeWindowButton:hover {
+  background: $COLOR_ACCENT_1;
+}
+
+/* Body */
+#bodyFrame, #footerFrame {
+  background: transparent;
+}
+
+#logoLabel {
+  border: 5px solid $COLOR_ACCENT_1;
+  border-radius: 30px;
+  padding: 8px;
+}
+
+#brandLabel {
+  color: $COLOR_TEXT_1;
+  font-size: 24px;
+  font-weight: bold;
+  padding: 6px 0 12px 0;
+}
+
+#sizeGrip {
+  background: $COLOR_BACKGROUND_3;
+  border-radius: 2px;
+}

@@ -3,85 +3,94 @@
 ##
 ## Three groups driven entirely through the group API: a vertical plan picker
 ## with explicit value=label options, a horizontal group, and one whose options
-## are replaced at runtime to show that a surviving selection is kept. Includes
-## a live light/dark toggle so you can watch the colours re-tokenize.
+## are replaced at runtime to show that a surviving selection is kept. Themed
+## through the Custom_Widgets pipeline (ui/ + Qss scss + json-styles), with a
+## live light/dark toggle so you can watch the colours re-tokenize.
 ## Run:
 ##     python main.py
 ########################################################################
-import sys
-from PySide6 import QtWidgets
+import os, sys
 
-from Custom_Widgets.QCustomRadioGroup import QCustomRadioGroup
-from Custom_Widgets.JSonStyles.tokens import applyDesignTokens
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
+
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
+
+from Custom_Widgets import *
+from qtpy.QtCore import QCoreApplication, QSettings
+from qtpy.QtWidgets import QApplication
 
 
-class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("QCustomRadioGroup")
-        central = QtWidgets.QWidget()
-        self.setCentralWidget(central)
-        layout = QtWidgets.QVBoxLayout(central)
-        layout.setContentsMargins(24, 24, 24, 24)
-        layout.setSpacing(22)
-        self._theme = "light"
+class MainWindow(QCustomMainWindow):
+    def __init__(self, parent=None):
+        QCustomMainWindow.__init__(self)
+        from src.ui_MainWindow import Ui_MainWindow
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
 
-        # -- plan picker: value=label keeps the wire format off the UI text --
-        self.plans = QCustomRadioGroup(
-            options=["free=Community - free forever",
-                     "pro=Pro - $12/month",
-                     "studio=Studio - $29/month"],
-            value="free",
-            title="Choose a plan")
-        self.plans.valueChanged.connect(
-            lambda v: self.status.setText("plan=%s  billing=%s"
-                                          % (v, self.billing.value() or "-")))
-        layout.addWidget(self.plans)
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
 
-        # -- horizontal group ---------------------------------------------
-        self.billing = QCustomRadioGroup(
-            options=["monthly=Monthly", "yearly=Yearly"],
-            value="monthly",
-            orientation="horizontal",
-            title="Billing period")
-        self.billing.valueChanged.connect(
-            lambda v: self.status.setText("plan=%s  billing=%s"
-                                          % (self.plans.value() or "-", v)))
-        layout.addWidget(self.billing)
+        self.show()
+        themeEngine = self.themeEngine
+        org = getattr(themeEngine, "organizationName", "")
+        if org:
+            QCoreApplication.setOrganizationName(str(org))
+        appn = getattr(themeEngine, "applicationName", "")
+        if appn:
+            QCoreApplication.setApplicationName(str(appn))
+        orgd = getattr(themeEngine, "organizationDomain", "")
+        if orgd:
+            QCoreApplication.setOrganizationDomain(str(orgd))
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            for t in themeEngine.themes:
+                if getattr(t, "defaultTheme", False) and (init_set is None or not init_set):
+                    s.setValue("THEME", t.name)
+                    s.setValue("INIT-THEME-SET", True)
+            # Default-Theme is ignored by the json parser when ANY QSettings
+            # file already holds a THEME, so pin this app's default explicitly.
+            if not s.value("INIT-THEME-SET"):
+                s.setValue("THEME", "Group-Dark")
+                s.setValue("INIT-THEME-SET", True)
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
 
-        # -- options replaced at runtime ------------------------------------
-        self.seats = QCustomRadioGroup(options=["1", "2", "5"], value="2",
-                                       orientation="horizontal",
-                                       title="Seats")
-        layout.addWidget(self.seats)
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
 
-        swap = QtWidgets.QPushButton("Replace seat options with 2, 5, 10")
-        swap.clicked.connect(self._swapSeats)
-        layout.addWidget(swap)
+        self._wireDemo()
 
-        layout.addStretch(1)
-        self.status = QtWidgets.QLabel("plan=free  billing=monthly")
-        layout.addWidget(self.status)
-
-        themeBtn = QtWidgets.QPushButton("Toggle light / dark")
-        themeBtn.clicked.connect(self._toggleTheme)
-        layout.addWidget(themeBtn)
-
-        self.resize(480, 560)
+    def _wireDemo(self):
+        ui = self.ui
+        ui.planGroup.valueChanged.connect(
+            lambda v: ui.statusLabel.setText(
+                "plan=%s  billing=%s" % (v, ui.billingGroup.value() or "-")))
+        ui.billingGroup.valueChanged.connect(
+            lambda v: ui.statusLabel.setText(
+                "plan=%s  billing=%s" % (ui.planGroup.value() or "-", v)))
+        ui.swapButton.clicked.connect(self._swapSeats)
+        ui.themeButton.clicked.connect(self._toggleTheme)
 
     def _swapSeats(self):
         # "2" survives the swap, so the selection is preserved.
-        self.seats.setOptions(["2", "5", "10"])
-        self.status.setText("seats kept selection: %s" % (self.seats.value() or "none"))
+        self.ui.seatsGroup.setOptions(["2", "5", "10"])
+        self.ui.statusLabel.setText(
+            "seats kept selection: %s" % (self.ui.seatsGroup.value() or "none"))
 
     def _toggleTheme(self):
-        self._theme = "dark" if self._theme == "light" else "light"
-        applyDesignTokens(QtWidgets.QApplication.instance(), theme=self._theme)
+        themeEngine = self.themeEngine
+        target = "Group-Light" if themeEngine.theme == "Group-Dark" else "Group-Dark"
+        QSettings().setValue("THEME", target)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
 
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    applyDesignTokens(app, theme="light")
+    app = QApplication(sys.argv)
     window = MainWindow()
-    window.show()
     sys.exit(app.exec())

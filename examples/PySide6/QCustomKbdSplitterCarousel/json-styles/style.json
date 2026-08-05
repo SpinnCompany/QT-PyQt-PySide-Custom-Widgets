@@ -1,0 +1,28 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomKbdSplitterCarousel Example"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "VioletDusk",
+          "Default-Theme": true,
+          "Background-color": "#14101d",
+          "Text-color": "#ece7f5",
+          "Accent-color": "#a78bfa",
+          "Icons-color": "#9d94b3"
+        },
+        {
+          "Theme-name": "VioletDawn",
+          "Default-Theme": false,
+          "Background-color": "#f7f5fb",
+          "Text-color": "#201a2c",
+          "Accent-color": "#7c3aed",
+          "Icons-color": "#6b7280"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,65 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#typerCard {
+  background: $COLOR_BACKGROUND_3;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+#typewriterText {
+  min-height: 48px;
+  qproperty-textColor: $COLOR_TEXT_1;
+  qproperty-caretColor: $COLOR_ACCENT_1;
+}
+
+#statusLabel {
+  color: $COLOR_TEXT_3;
+  font-size: 12px;
+}
+
+#speedLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+#speedSlider {
+  min-width: 120px;
+}
+
+#speedSlider::groove:horizontal {
+  height: 6px;
+  border-radius: 3px;
+  background: $COLOR_BACKGROUND_2;
+}
+
+#speedSlider::handle:horizontal {
+  width: 14px;
+  margin: -5px 0;
+  border-radius: 7px;
+  background: $COLOR_ACCENT_1;
+}
+
+#speedSlider::sub-page:horizontal {
+  border-radius: 3px;
+  background: $COLOR_ACCENT_2;
+}
+
+#startButton, #stopButton, #skipButton, #caretButton, #themeButton {
+  background: $COLOR_BACKGROUND_3;
+  color: $COLOR_TEXT_2;
+  border: 1px solid $COLOR_BACKGROUND_2;
+  border-radius: 6px;
+  padding: 6px 14px;
+}
+
+#startButton:hover, #stopButton:hover, #skipButton:hover, #caretButton:hover, #themeButton:hover {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+}
+
+#startButton:pressed, #stopButton:pressed, #skipButton:pressed, #caretButton:pressed, #themeButton:pressed {
+  background: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+}

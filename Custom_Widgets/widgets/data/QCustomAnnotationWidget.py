@@ -120,6 +120,10 @@ class Canvas(QLabel):
         return True
 
     def loadImageAnnotations(self, image_url):
+        # Without a project folder there is nowhere to load annotations from —
+        # setBackgroundImage() must still work as a plain image canvas.
+        if not self.project_folder:
+            return
         # Construct the path to the JSON file corresponding to the image URL
         image_filename = Path(image_url).name
         annotation_filename = image_filename + ".json"

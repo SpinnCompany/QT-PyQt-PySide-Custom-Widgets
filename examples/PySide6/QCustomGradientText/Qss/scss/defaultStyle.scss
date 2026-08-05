@@ -1,0 +1,42 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#angleCaption {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+#animateBtn,
+#themeBtn {
+  background: $SURFACE;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $OUTLINE;
+  border-radius: 6px;
+  padding: 5px 14px;
+}
+
+#animateBtn:hover,
+#themeBtn:hover {
+  border-color: $COLOR_ACCENT_1;
+  color: $COLOR_ACCENT_1;
+}
+
+#angleSlider::groove:horizontal {
+  height: 4px;
+  background: $OUTLINE;
+  border-radius: 2px;
+}
+
+#angleSlider::handle:horizontal {
+  width: 14px;
+  height: 14px;
+  margin: -5px 0;
+  border-radius: 7px;
+  background: $COLOR_ACCENT_1;
+}
+
+#angleSlider::sub-page:horizontal {
+  background: $COLOR_ACCENT_1;
+  border-radius: 2px;
+}

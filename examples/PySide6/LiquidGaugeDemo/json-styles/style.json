@@ -1,0 +1,68 @@
+{
+    "ShowLogs": false,
+    "QtBinding": "PySide6",
+    "CheckForMissingicons": false,
+    "QMainWindow": {
+        "title": "QCustomLiquidGauge — Demo"
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "LiquidGaugeDemo",
+            "OrganizationDomain": "spinncode.com"
+        },
+        "ThemeSettings": {
+            "CustomThemes": [
+                {
+                    "Theme-name": "Liquid Dark",
+                    "Default-Theme": true,
+                    "Create-icons": true,
+                    "Background-color": "#171a22",
+                    "Text-color": "#e7e9ef",
+                    "Accent-color": "#3aa0ff",
+                    "Icons-color": "#9aa1b2"
+                },
+                {
+                    "Theme-name": "Liquid Light",
+                    "Default-Theme": false,
+                    "Create-icons": true,
+                    "Background-color": "#ffffff",
+                    "Text-color": "#1c2430",
+                    "Accent-color": "#2b8ae6",
+                    "Icons-color": "#6b7280"
+                }
+            ]
+        }
+    },
+    "_comment_ChartPalette": "Read in code by main.py — gauge fill / badge hues live with the theme so they flip on theme switch (token-driven).",
+    "ChartPalette": {
+        "Liquid Dark": {
+            "fuelFill1": "#3aa0ff",
+            "fuelFill2": "#7c5cff",
+            "fuelBg": "#141826",
+            "battFill1": "#2fd27a",
+            "battFill2": "#7be0a8",
+            "battBg": "#101a16",
+            "tankFill1": "#28c2d1",
+            "tankFill2": "#5bd6e0",
+            "tankBg": "#0f1f26",
+            "humFill1": "#5b8cff",
+            "humFill2": "#8ab4ff",
+            "humBg": "#12131f"
+        },
+        "Liquid Light": {
+            "fuelFill1": "#2b8ae6",
+            "fuelFill2": "#6b4be0",
+            "fuelBg": "#e9f0fb",
+            "battFill1": "#1fae62",
+            "battFill2": "#56c98b",
+            "battBg": "#e9f7ef",
+            "tankFill1": "#17a3b3",
+            "tankFill2": "#3fc0cd",
+            "tankBg": "#e7f6f8",
+            "humFill1": "#3f6fe0",
+            "humFill2": "#6f97ea",
+            "humBg": "#ecf0fb"
+        }
+    }
+}

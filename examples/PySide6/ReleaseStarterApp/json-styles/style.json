@@ -1,0 +1,30 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "ReleaseStarterApp"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Starter-Dark",
+          "Default-Theme": true,
+          "Background-color": "#13161f",
+          "Text-color": "#e8ecf1",
+          "Accent-color": "#4A90D9",
+          "Icons-color": "#9ca3af",
+          "Create-icons": false
+        },
+        {
+          "Theme-name": "Starter-Light",
+          "Default-Theme": false,
+          "Background-color": "#f5f7fa",
+          "Text-color": "#1a1a2e",
+          "Accent-color": "#4A90D9",
+          "Icons-color": "#6b7280",
+          "Create-icons": false
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>560</width>
+    <height>420</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Stat cards / Progress rings / Card</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="rootLayout">
+    <property name="spacing">
+     <number>14</number>
+    </property>
+    <property name="leftMargin">
+     <number>14</number>
+    </property>
+    <property name="topMargin">
+     <number>14</number>
+    </property>
+    <property name="rightMargin">
+     <number>14</number>
+    </property>
+    <property name="bottomMargin">
+     <number>14</number>
+    </property>
+    <item>
+     <layout class="QHBoxLayout" name="statsRow">
+      <property name="spacing">
+       <number>12</number>
+      </property>
+      <item>
+       <widget class="QCustomStatCard" name="statRevenue">
+        <property name="label" stdset="0">
+         <string>Revenue</string>
+        </property>
+        <property name="value" stdset="0">
+         <string>$48.2k</string>
+        </property>
+        <property name="caption" stdset="0">
+         <string>vs last mo</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomStatCard" name="statChurn">
+        <property name="label" stdset="0">
+         <string>Churn</string>
+        </property>
+        <property name="value" stdset="0">
+         <string>2.1%</string>
+        </property>
+        <property name="caption" stdset="0">
+         <string>vs last mo</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomStatCard" name="statSignups">
+        <property name="label" stdset="0">
+         <string>Sign-ups</string>
+        </property>
+        <property name="value" stdset="0">
+         <string>1,204</string>
+        </property>
+        <property name="caption" stdset="0">
+         <string>this week</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QCustomCard" name="goalsCard">
+      <property name="title" stdset="0">
+       <string>Quarterly goals</string>
+      </property>
+      <property name="subtitle" stdset="0">
+       <string>Progress toward Q3 targets</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QWidget" name="ringsHolder" native="true">
+      <layout class="QHBoxLayout" name="ringsLayout">
+       <property name="spacing">
+        <number>20</number>
+       </property>
+       <item>
+        <layout class="QVBoxLayout" name="salesColumn">
+         <item alignment="Qt::AlignHCenter">
+          <widget class="QCustomProgressRing" name="ringSales">
+           <property name="minimumSize">
+            <size>
+             <width>96</width>
+             <height>96</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item alignment="Qt::AlignHCenter">
+          <widget class="QLabel" name="salesLabel">
+           <property name="text">
+            <string>Sales</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="supportColumn">
+         <item alignment="Qt::AlignHCenter">
+          <widget class="QCustomProgressRing" name="ringSupport">
+           <property name="minimumSize">
+            <size>
+             <width>96</width>
+             <height>96</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item alignment="Qt::AlignHCenter">
+          <widget class="QLabel" name="supportLabel">
+           <property name="text">
+            <string>Support</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="marketingColumn">
+         <item alignment="Qt::AlignHCenter">
+          <widget class="QCustomProgressRing" name="ringMarketing">
+           <property name="minimumSize">
+            <size>
+             <width>96</width>
+             <height>96</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item alignment="Qt::AlignHCenter">
+          <widget class="QLabel" name="marketingLabel">
+           <property name="text">
+            <string>Marketing</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <spacer name="bottomSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>10</width>
+        <height>10</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomStatCard</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomStatCard.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomCard</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomCard.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomProgressRing</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomProgressRing.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

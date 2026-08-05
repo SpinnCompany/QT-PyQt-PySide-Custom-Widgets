@@ -1,0 +1,370 @@
+/* QCustomFlowWidget test suite — every piece of chrome lives here
+   ($TOKENS + $OTHER_VARIABLES from json-styles/style.json only).
+   Flow tiles are tagged with dynamic properties in code
+   (tileKind / tileRole / flash) and styled purely from these rules. */
+
+#MainWindow {
+  background-color: $WINDOW;
+}
+
+#centralwidget,
+#managementTab,
+#animationTab,
+#layoutTab,
+#testsTab,
+#infoTab {
+  background: transparent;
+}
+
+QLabel {
+  color: $COLOR_TEXT_1;
+  background: transparent;
+}
+
+/* ── Group boxes ── */
+QGroupBox {
+  font-weight: bold;
+  border: 2px solid $PANEL_BORDER;
+  border-radius: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  color: $COLOR_TEXT_1;
+  background-color: $PANEL;
+}
+
+QGroupBox::title {
+  subcontrol-origin: margin;
+  left: 10px;
+  padding: 0 8px 0 8px;
+  color: $COLOR_ACCENT_1;
+}
+
+/* ── Buttons (accent default + role variants) ── */
+QPushButton {
+  background-color: $COLOR_ACCENT_1;
+  color: $ON_ACCENT;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  min-width: 80px;
+}
+
+QPushButton:hover {
+  background-color: $ACCENT_HOVER;
+}
+
+QPushButton:pressed {
+  background-color: $ACCENT_PRESSED;
+}
+
+QPushButton[role="danger"] {
+  background-color: $DANGER;
+}
+
+QPushButton[role="danger"]:hover {
+  background-color: $DANGER_HOVER;
+}
+
+QPushButton[role="warning"] {
+  background-color: $WARNING;
+  color: $ON_WARNING;
+}
+
+QPushButton[role="warning"]:hover {
+  background-color: $WARNING_HOVER;
+}
+
+QPushButton[role="success"] {
+  background-color: $SUCCESS;
+}
+
+QPushButton[role="success"]:hover {
+  background-color: $SUCCESS_HOVER;
+}
+
+/* ── Inputs ── */
+QComboBox,
+QSpinBox,
+QLineEdit {
+  background-color: $WINDOW;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_ACCENT_1;
+  border-radius: 4px;
+  padding: 5px;
+  min-width: 100px;
+}
+
+QComboBox::drop-down {
+  border: none;
+  width: 22px;
+}
+
+QComboBox QAbstractItemView {
+  background-color: $PANEL;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $PANEL_BORDER;
+  outline: 0;
+  selection-background-color: $COLOR_ACCENT_1;
+  selection-color: $ON_ACCENT;
+}
+
+/* ── Sliders ── */
+QSlider::groove:horizontal {
+  border: 1px solid $COLOR_ACCENT_1;
+  height: 6px;
+  background: $WINDOW;
+  margin: 2px 0;
+  border-radius: 3px;
+}
+
+QSlider::handle:horizontal {
+  background: $COLOR_ACCENT_1;
+  width: 18px;
+  margin: -4px 0;
+  border-radius: 9px;
+}
+
+QSlider::handle:horizontal:hover {
+  background: $ACCENT_HOVER;
+}
+
+/* ── Check boxes ── */
+QCheckBox,
+QRadioButton {
+  color: $COLOR_TEXT_1;
+  spacing: 8px;
+  background: transparent;
+}
+
+/* ── Scroll area + flow surface ── */
+#flowScroll {
+  border: 2px solid $PANEL_BORDER;
+  border-radius: 8px;
+  background-color: $PANEL;
+}
+
+#flowWidget {
+  background-color: $PANEL;
+  border-radius: 8px;
+}
+
+/* ── Splitter ── */
+QSplitter::handle {
+  background: $PANEL_BORDER;
+}
+
+/* ── Tabs (ID-scoped: the generated _styles.scss ships
+       QTabBar::tab:top:… rules that out-specific bare type selectors) ── */
+#controlTabs::pane {
+  border: 1px solid $PANEL_BORDER;
+  border-radius: 6px;
+  background-color: $PANEL;
+}
+
+#controlTabs::tab-bar {
+  alignment: center;
+}
+
+#controlTabs QTabBar::tab {
+  background-color: $PANEL_BORDER;
+  color: $COLOR_TEXT_1;
+  padding: 8px 16px;
+  margin-right: 2px;
+  border: none;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+#controlTabs QTabBar::tab:selected {
+  background-color: $COLOR_ACCENT_1;
+  color: $ON_ACCENT;
+}
+
+#controlTabs QTabBar::tab:hover:!selected {
+  background-color: $ACCENT_HOVER;
+  color: $ON_ACCENT;
+}
+
+/* ── Status bar + state labels ── */
+QStatusBar {
+  color: $COLOR_TEXT_1;
+  background: transparent;
+}
+
+#counterLabel {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+#counterLabel[state="filled"] {
+  color: $STATE_OK;
+}
+
+#counterLabel[state="empty"] {
+  color: $STATE_EMPTY;
+}
+
+#animStatus {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+#animStatus[state="idle"] {
+  color: $STATE_OK;
+}
+
+#animStatus[state="busy"] {
+  color: $STATE_BUSY;
+}
+
+/* ── Info panel ── */
+#infoLabel {
+  background-color: $WINDOW;
+  color: $COLOR_TEXT_1;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+/* ── Flow tiles (created in code, styled ONLY here) ─────────────────────
+   tileKind = color | gradient | number | letter | icon | custom
+   tileRole = tile1..tile8 (palette) / num1..num5 (number palette) */
+
+QFrame[tileKind="color"],
+QFrame[tileKind="gradient"],
+QFrame[tileKind="number"],
+QFrame[tileKind="letter"],
+QFrame[tileKind="icon"],
+QFrame[tileKind="custom"] {
+  border-radius: 8px;
+  border: 2px solid $TILE_EDGE;
+}
+
+QFrame[tileKind="color"]:hover {
+  border: 3px solid $WARNING;
+}
+
+QFrame[tileRole="tile1"] { background-color: $TILE_1; }
+QFrame[tileRole="tile2"] { background-color: $TILE_2; }
+QFrame[tileRole="tile3"] { background-color: $TILE_3; }
+QFrame[tileRole="tile4"] { background-color: $TILE_4; }
+QFrame[tileRole="tile5"] { background-color: $TILE_5; }
+QFrame[tileRole="tile6"] { background-color: $TILE_6; }
+QFrame[tileRole="tile7"] { background-color: $TILE_7; }
+QFrame[tileRole="tile8"] { background-color: $TILE_8; }
+
+QFrame[tileRole="num1"] { background-color: $NUM_1; }
+QFrame[tileRole="num2"] { background-color: $NUM_2; }
+QFrame[tileRole="num3"] { background-color: $NUM_3; }
+QFrame[tileRole="num4"] { background-color: $NUM_4; }
+QFrame[tileRole="num5"] { background-color: $NUM_5; }
+
+QFrame[tileKind="gradient"] {
+  background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+      stop:0 $GRAD_START, stop:1 $GRAD_END);
+}
+
+QFrame[tileKind="letter"] {
+  background-color: $TILE_LETTER;
+  border-radius: 45px;
+}
+
+QFrame[tileKind="icon"] {
+  background-color: $TILE_ICON;
+  border-radius: 10px;
+}
+
+QFrame[tileKind="custom"] {
+  background-color: $TILE_CUSTOM;
+  border-radius: 5px;
+}
+
+QFrame[flash="true"] {
+  border: 3px solid $WARNING;
+}
+
+/* Tile labels */
+QFrame[tileKind="color"] QLabel,
+QFrame[tileKind="gradient"] QLabel,
+QFrame[tileKind="number"] QLabel,
+QFrame[tileKind="letter"] QLabel,
+QFrame[tileKind="icon"] QLabel,
+QFrame[tileKind="custom"] QLabel {
+  color: $TILE_TEXT;
+  font-weight: bold;
+  font-size: 14px;
+  background-color: $TILE_SCRIM;
+  border-radius: 4px;
+  padding: 4px;
+}
+
+QFrame[tileKind="number"] QLabel {
+  font-size: 28px;
+  background-color: transparent;
+  padding: 0;
+}
+
+QFrame[tileKind="letter"] QLabel {
+  font-size: 36px;
+  background-color: transparent;
+  padding: 0;
+}
+
+QFrame[tileKind="icon"] QLabel {
+  background-color: transparent;
+  padding: 0;
+}
+
+/* Icon tiles: the SVG file comes from the feather set via the theme-icons
+   search path; QCustomQLabel tints it to iconColor. */
+QFrame[tileKind="icon"] QCustomQLabel {
+  qproperty-iconColor: $TILE_TEXT;
+  qproperty-iconSize: 48;
+}
+
+QCustomQLabel[flowIcon="star"] { qproperty-pixmap: url($PATH_RESOURCES+'feather/star.svg'); }
+QCustomQLabel[flowIcon="heart"] { qproperty-pixmap: url($PATH_RESOURCES+'feather/heart.svg'); }
+QCustomQLabel[flowIcon="feather"] { qproperty-pixmap: url($PATH_RESOURCES+'feather/feather.svg'); }
+QCustomQLabel[flowIcon="send"] { qproperty-pixmap: url($PATH_RESOURCES+'feather/send.svg'); }
+QCustomQLabel[flowIcon="award"] { qproperty-pixmap: url($PATH_RESOURCES+'feather/award.svg'); }
+QCustomQLabel[flowIcon="sun"] { qproperty-pixmap: url($PATH_RESOURCES+'feather/sun.svg'); }
+QCustomQLabel[flowIcon="target"] { qproperty-pixmap: url($PATH_RESOURCES+'feather/target.svg'); }
+QCustomQLabel[flowIcon="zap"] { qproperty-pixmap: url($PATH_RESOURCES+'feather/zap.svg'); }
+QCustomQLabel[flowIcon="gift"] { qproperty-pixmap: url($PATH_RESOURCES+'feather/gift.svg'); }
+QCustomQLabel[flowIcon="coffee"] { qproperty-pixmap: url($PATH_RESOURCES+'feather/coffee.svg'); }
+
+/* Button tiles */
+QPushButton[role="tileButton"] {
+  background-color: $COLOR_ACCENT_1;
+  color: $ON_ACCENT;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  min-width: 0;
+}
+
+QPushButton[role="tileButton"]:hover {
+  background-color: $ACCENT_HOVER;
+}
+
+/* ── Scrollbars ── */
+QScrollBar:vertical {
+  background: transparent;
+  width: 10px;
+  margin: 0;
+}
+
+QScrollBar::handle:vertical {
+  background: $PANEL_BORDER;
+  border-radius: 5px;
+  min-height: 30px;
+}
+
+QScrollBar::handle:vertical:hover {
+  background: $COLOR_ACCENT_1;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+  height: 0;
+}

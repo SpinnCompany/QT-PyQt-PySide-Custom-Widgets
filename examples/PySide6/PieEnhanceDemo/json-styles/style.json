@@ -1,0 +1,48 @@
+{
+    "ShowLogs": false,
+    "QtBinding": "PySide6",
+    "CheckForMissingicons": false,
+    "QMainWindow": {
+        "title": "QCustomPieChart — % callouts + hatch"
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "PieEnhanceDemo",
+            "OrganizationDomain": "spinncode.com"
+        },
+        "ThemeSettings": {
+            "CustomThemes": [
+                {
+                    "Theme-name": "Pie Dark",
+                    "Default-Theme": true,
+                    "Create-icons": true,
+                    "Background-color": "#171a22",
+                    "Text-color": "#e7e9ef",
+                    "Accent-color": "#8b5cf6",
+                    "Icons-color": "#9aa1b2"
+                },
+                {
+                    "Theme-name": "Pie Light",
+                    "Default-Theme": false,
+                    "Create-icons": true,
+                    "Background-color": "#ffffff",
+                    "Text-color": "#1c2430",
+                    "Accent-color": "#7c4fe0",
+                    "Icons-color": "#6b7280"
+                }
+            ]
+        }
+    },
+    "_comment_ChartPalette": "Read in code by main.py — slice hues live with the theme so they flip on theme switch (token-driven).",
+    "ChartPalette": {
+        "Pie Dark": {
+            "transferColors": ["#8b5cf6", "#c3f53c", "#1f9bff", "#3a4150", "#5b6472"],
+            "storageColors": ["#3aa0ff", "#7c5cff", "#28c2d1", "#3a4150"]
+        },
+        "Pie Light": {
+            "transferColors": ["#7c4fe0", "#9fce1f", "#1f8ae0", "#c6ccd8", "#aab2c0"],
+            "storageColors": ["#2b8ae6", "#6b4be0", "#17a3b3", "#c6ccd8"]
+        }
+    }
+}

@@ -1,0 +1,152 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>471</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QCard Showcase</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>16</number>
+    </property>
+    <property name="leftMargin">
+     <number>16</number>
+    </property>
+    <property name="topMargin">
+     <number>16</number>
+    </property>
+    <property name="rightMargin">
+     <number>16</number>
+    </property>
+    <property name="bottomMargin">
+     <number>16</number>
+    </property>
+    <item>
+     <widget class="QWidget" name="cardRowTop" native="true">
+      <layout class="QHBoxLayout" name="cardRowTopLayout">
+       <property name="spacing">
+        <number>16</number>
+       </property>
+       <item>
+        <widget class="QWidget" name="card1" native="true">
+         <layout class="QVBoxLayout" name="card1Layout">
+          <item>
+           <widget class="QLabel" name="cardLabel1">
+            <property name="text">
+             <string>Card 1</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="card2" native="true">
+         <layout class="QVBoxLayout" name="card2Layout">
+          <item>
+           <widget class="QLabel" name="cardLabel2">
+            <property name="text">
+             <string>Card 2</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="card3" native="true">
+         <layout class="QVBoxLayout" name="card3Layout">
+          <item>
+           <widget class="QLabel" name="cardLabel3">
+            <property name="text">
+             <string>Card 3</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QWidget" name="cardRowBottom" native="true">
+      <layout class="QHBoxLayout" name="cardRowBottomLayout">
+       <property name="spacing">
+        <number>16</number>
+       </property>
+       <item>
+        <widget class="QWidget" name="card4" native="true">
+         <layout class="QVBoxLayout" name="card4Layout">
+          <item>
+           <widget class="QLabel" name="cardLabel4">
+            <property name="text">
+             <string>Card 4</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="card5" native="true">
+         <layout class="QVBoxLayout" name="card5Layout">
+          <item>
+           <widget class="QLabel" name="cardLabel5">
+            <property name="text">
+             <string>Card 5</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="card6" native="true">
+         <layout class="QVBoxLayout" name="card6Layout">
+          <item>
+           <widget class="QLabel" name="cardLabel6">
+            <property name="text">
+             <string>Card 6</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets><customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>

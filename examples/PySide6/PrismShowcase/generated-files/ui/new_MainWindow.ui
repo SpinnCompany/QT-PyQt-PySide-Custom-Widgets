@@ -1,0 +1,293 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>780</width>
+    <height>560</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Prism Showcase</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="mainLayout">
+    <property name="spacing">
+     <number>16</number>
+    </property>
+    <property name="leftMargin">
+     <number>24</number>
+    </property>
+    <property name="topMargin">
+     <number>24</number>
+    </property>
+    <property name="rightMargin">
+     <number>24</number>
+    </property>
+    <property name="bottomMargin">
+     <number>24</number>
+    </property>
+    <item>
+     <layout class="QHBoxLayout" name="headerRow">
+      <item>
+       <widget class="QLabel" name="titleLabel">
+        <property name="text">
+         <string>Prism Showcase</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="headerSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>10</width>
+          <height>10</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="themeButton">
+        <property name="text">
+         <string>Light / dark</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QFrame" name="gradientCard">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <layout class="QVBoxLayout" name="gradientCardLayout">
+       <property name="spacing">
+        <number>8</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="gradientCaption">
+         <property name="text">
+          <string>QCustomGradientText — animated hue sweep</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomGradientText" name="gradientText">
+         <property name="text" stdset="0">
+          <string>Refracting light into colour</string>
+         </property>
+         <property name="animated" stdset="0">
+          <bool>true</bool>
+         </property>
+         <property name="fontScale" stdset="0">
+          <double>1.60</double>
+         </property>
+         <property name="bold" stdset="0">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QFrame" name="sparkleCard">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <layout class="QVBoxLayout" name="sparkleCardLayout">
+       <property name="spacing">
+        <number>8</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="sparkleCaption">
+         <property name="text">
+          <string>QCustomSparklesText — click it to reseed the sparkles</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomSparklesText" name="sparklesText">
+         <property name="text" stdset="0">
+          <string>Sparkles included</string>
+         </property>
+         <property name="fontScale" stdset="0">
+          <double>1.40</double>
+         </property>
+         <property name="bold" stdset="0">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="bottomRow">
+      <property name="spacing">
+       <number>16</number>
+      </property>
+      <item>
+       <widget class="QFrame" name="rainbowCard">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <layout class="QVBoxLayout" name="rainbowCardLayout">
+         <property name="spacing">
+          <number>12</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="rainbowCaption">
+           <property name="text">
+            <string>QCustomRainbowButton</string>
+           </property>
+          </widget>
+         </item>
+         <item alignment="Qt::AlignLeft">
+          <widget class="QCustomRainbowButton" name="rainbowButton">
+           <property name="text" stdset="0">
+            <string>Get started</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="launchLabel">
+           <property name="text">
+            <string>Not launched yet</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="rainbowSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>10</width>
+             <height>10</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QFrame" name="ringCard">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <layout class="QHBoxLayout" name="ringCardLayout">
+         <property name="spacing">
+          <number>16</number>
+         </property>
+         <item>
+          <widget class="QCustomProgressRing" name="progressRing">
+           <property name="minimumSize">
+            <size>
+             <width>110</width>
+             <height>110</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="ringSideLayout">
+           <property name="spacing">
+            <number>8</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="ringCaption">
+             <property name="text">
+              <string>QCustomProgressRing + QCustomNumberCounter</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCustomNumberCounter" name="numberCounter">
+             <property name="suffix" stdset="0">
+              <string>%</string>
+             </property>
+             <property name="fontScale" stdset="0">
+              <double>1.80</double>
+             </property>
+             <property name="bold" stdset="0">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSlider" name="driveSlider">
+             <property name="minimum">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="value">
+              <number>64</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <spacer name="bottomSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>10</width>
+        <height>10</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomGradientText</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomGradientText.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomSparklesText</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomSparklesText.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomRainbowButton</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomRainbowButton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomProgressRing</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomProgressRing.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomNumberCounter</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomNumberCounter.h</header>
+  </customwidget>
+ <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>

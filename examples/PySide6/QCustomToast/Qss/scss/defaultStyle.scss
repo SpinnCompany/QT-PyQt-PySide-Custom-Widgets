@@ -1,0 +1,111 @@
+/* QCustomToast demo — all chrome lives here ($TOKENS only). */
+
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#cornerLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 14px;
+}
+
+/* ── Corner picker ── */
+#pos {
+  background-color: $CARD;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER;
+  border-radius: 8px;
+  padding: 6px 12px;
+  min-width: 130px;
+}
+#pos::drop-down {
+  border: none;
+  width: 22px;
+}
+#pos QAbstractItemView {
+  background-color: $CARD;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER;
+  outline: 0;
+  selection-background-color: $COLOR_ACCENT_1;
+  selection-color: $ON_ACCENT;
+}
+
+/* ── Trigger buttons (token-widget variants) ── */
+QCustomQPushButton {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 8px 12px;
+  font-size: 14px;
+  min-height: 30px;
+}
+QCustomQPushButton[variant="primary"] {
+  background-color: $COLOR_ACCENT_1;
+  color: $ON_ACCENT;
+}
+QCustomQPushButton[variant="primary"]:hover {
+  background-color: $COLOR_ACCENT_2;
+}
+QCustomQPushButton[variant="secondary"] {
+  background-color: $MUTED;
+  color: $COLOR_TEXT_1;
+}
+QCustomQPushButton[variant="secondary"]:hover {
+  background-color: $BORDER;
+}
+QCustomQPushButton[variant="success"] {
+  background-color: $SUCCESS;
+  color: $ON_ACCENT;
+}
+QCustomQPushButton[variant="success"]:hover {
+  background-color: $COLOR_ACCENT_2;
+}
+
+/* ── Toasts (created at runtime, parented to the window) ── */
+QCustomToast {
+  background-color: $CARD;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER;
+  border-radius: 8px;
+}
+QCustomToast #toastTitle {
+  color: $COLOR_TEXT_1;
+  font-weight: 600;
+}
+QCustomToast #toastMessage {
+  color: $COLOR_TEXT_2;
+}
+QCustomToast #toastClose {
+  background-color: transparent;
+  border: none;
+  color: $COLOR_TEXT_2;
+  border-radius: 4px;
+}
+QCustomToast #toastClose:hover {
+  background-color: $MUTED;
+}
+QCustomToast[variant="success"] {
+  border-left: 4px solid $SUCCESS;
+}
+QCustomToast[variant="success"] #toastIcon {
+  color: $SUCCESS;
+}
+QCustomToast[variant="error"] {
+  border-left: 4px solid $DANGER;
+}
+QCustomToast[variant="error"] #toastIcon {
+  color: $DANGER;
+}
+QCustomToast[variant="warning"] {
+  border-left: 4px solid $WARNING;
+}
+QCustomToast[variant="warning"] #toastIcon {
+  color: $WARNING;
+}
+QCustomToast[variant="info"] {
+  border-left: 4px solid $INFO;
+}
+QCustomToast[variant="info"] #toastIcon {
+  color: $INFO;
+}

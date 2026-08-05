@@ -1,0 +1,54 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#scrollArea {
+  background: transparent;
+  border: none;
+}
+
+#scrollAreaWidgetContents {
+  background: transparent;
+}
+
+/* ---- trigger buttons, tinted per modal type via a dynamic property ---- */
+#scrollAreaWidgetContents QPushButton {
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 6px;
+  padding: 6px 12px;
+}
+
+#scrollAreaWidgetContents QPushButton[kind="information"] {
+  background: $MODAL_INFO;
+}
+
+#scrollAreaWidgetContents QPushButton[kind="success"] {
+  background: $MODAL_SUCCESS;
+}
+
+#scrollAreaWidgetContents QPushButton[kind="warning"] {
+  background: $MODAL_WARNING;
+}
+
+#scrollAreaWidgetContents QPushButton[kind="error"] {
+  background: $MODAL_ERROR;
+}
+
+#scrollAreaWidgetContents QPushButton[kind="custom"] {
+  background: $MODAL_CUSTOM;
+}
+
+/* ---- the modals themselves (children of the window, app-styled) ---- */
+InformationModal, SuccessModal, ErrorModal, WarningModal, CustomModal {
+  border-radius: 10px;
+}
+
+CustomModal {
+  background-color: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+}
+
+CustomModal * {
+  background-color: transparent;
+}

@@ -1,0 +1,847 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1000</width>
+    <height>640</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QAppSettings — Theme &amp; Session Persistence</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="centralLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QWidget" name="header">
+      <layout class="QHBoxLayout" name="headerLayout">
+       <property name="leftMargin">
+     <number>16</number>
+    </property>
+       <property name="topMargin">
+     <number>10</number>
+    </property>
+       <property name="rightMargin">
+     <number>16</number>
+    </property>
+       <property name="bottomMargin">
+     <number>10</number>
+    </property>
+       <item>
+        <widget class="QLabel" name="appTitleLabel">
+         <property name="text">
+          <string>QT Settings Session</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="headerSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="helpBtn">
+         <property name="text">
+          <string>Help</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="show_hide_exit_prompt">
+         <property name="text">
+          <string>Exit app</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCustomSlideMenu" name="exitPrompt">
+      <layout class="QHBoxLayout" name="exitPromptLayout">
+       <property name="leftMargin">
+     <number>16</number>
+    </property>
+       <property name="topMargin">
+     <number>8</number>
+    </property>
+       <property name="rightMargin">
+     <number>16</number>
+    </property>
+       <property name="bottomMargin">
+     <number>8</number>
+    </property>
+       <item>
+        <widget class="QLabel" name="exitPromptLabel">
+         <property name="text">
+          <string>Do you really want to exit the app?</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="exitPromptSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="close_exit_prompt">
+         <property name="text">
+          <string>Cancel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="exit">
+         <property name="text">
+          <string>Exit</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="bodyLayout">
+      <property name="spacing">
+     <number>0</number>
+    </property>
+      <item>
+       <widget class="QCustomQStackedWidget" name="mainPages">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="loginPage">
+         <layout class="QVBoxLayout" name="loginPageLayout">
+          <property name="leftMargin">
+     <number>60</number>
+    </property>
+          <property name="topMargin">
+     <number>30</number>
+    </property>
+          <property name="rightMargin">
+     <number>60</number>
+    </property>
+          <property name="bottomMargin">
+     <number>30</number>
+    </property>
+          <property name="spacing">
+     <number>12</number>
+    </property>
+          <item>
+           <spacer name="loginTopSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </spacer>
+          </item>
+          <item alignment="Qt::AlignHCenter">
+           <widget class="QFrame" name="loginCard">
+            <property name="minimumSize">
+             <size>
+              <width>460</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>560</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <layout class="QVBoxLayout" name="loginCardLayout">
+             <property name="leftMargin">
+     <number>24</number>
+    </property>
+             <property name="topMargin">
+     <number>24</number>
+    </property>
+             <property name="rightMargin">
+     <number>24</number>
+    </property>
+             <property name="bottomMargin">
+     <number>24</number>
+    </property>
+             <property name="spacing">
+     <number>10</number>
+    </property>
+             <item>
+              <widget class="QLabel" name="loginTitle">
+               <property name="text">
+                <string>Login</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="loginResponse">
+               <property name="text">
+                <string>Please login or register to activate the app</string>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="loginUsername">
+               <property name="placeholderText">
+                <string>Username</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="loginPasswordRow">
+               <property name="spacing">
+     <number>6</number>
+    </property>
+               <item>
+                <widget class="QLineEdit" name="loginPassword">
+                 <property name="echoMode">
+                  <enum>QLineEdit::Password</enum>
+                 </property>
+                 <property name="placeholderText">
+                  <string>Password</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="showHideLoginPass">
+                 <property name="maximumSize">
+                  <size>
+                   <width>36</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string />
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QPushButton" name="submitLogin">
+               <property name="text">
+                <string>Login</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="loginAltRow">
+               <item>
+                <widget class="QLabel" name="loginAltLabel">
+                 <property name="text">
+                  <string>No account yet?</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="signUpBtn">
+                 <property name="text">
+                  <string>Create account</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="loginAltSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <spacer name="loginBottomSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="signUpPage">
+         <layout class="QVBoxLayout" name="signUpPageLayout">
+          <property name="leftMargin">
+     <number>60</number>
+    </property>
+          <property name="topMargin">
+     <number>30</number>
+    </property>
+          <property name="rightMargin">
+     <number>60</number>
+    </property>
+          <property name="bottomMargin">
+     <number>30</number>
+    </property>
+          <item>
+           <spacer name="signupTopSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </spacer>
+          </item>
+          <item alignment="Qt::AlignHCenter">
+           <widget class="QFrame" name="signupCard">
+            <property name="minimumSize">
+             <size>
+              <width>460</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>560</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <layout class="QVBoxLayout" name="signupCardLayout">
+             <property name="leftMargin">
+     <number>24</number>
+    </property>
+             <property name="topMargin">
+     <number>24</number>
+    </property>
+             <property name="rightMargin">
+     <number>24</number>
+    </property>
+             <property name="bottomMargin">
+     <number>24</number>
+    </property>
+             <property name="spacing">
+     <number>10</number>
+    </property>
+             <item>
+              <widget class="QLabel" name="signupTitle">
+               <property name="text">
+                <string>Create your account</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="registerResponse">
+               <property name="text">
+                <string>Register to generate your app id and key</string>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="signup_username">
+               <property name="placeholderText">
+                <string>Username</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="signupPasswordRow">
+               <property name="spacing">
+     <number>6</number>
+    </property>
+               <item>
+                <widget class="QLineEdit" name="signup_password">
+                 <property name="echoMode">
+                  <enum>QLineEdit::Password</enum>
+                 </property>
+                 <property name="placeholderText">
+                  <string>Password</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="show_hide_signup_password">
+                 <property name="maximumSize">
+                  <size>
+                   <width>36</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string />
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="signupConfPasswordRow">
+               <property name="spacing">
+     <number>6</number>
+    </property>
+               <item>
+                <widget class="QLineEdit" name="signup_conf_password">
+                 <property name="echoMode">
+                  <enum>QLineEdit::Password</enum>
+                 </property>
+                 <property name="placeholderText">
+                  <string>Confirm password</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="show_hide_signup_conf_password">
+                 <property name="maximumSize">
+                  <size>
+                   <width>36</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string />
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QPushButton" name="signup_btn">
+               <property name="text">
+                <string>Register</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="signupAltRow">
+               <item>
+                <widget class="QLabel" name="signupAltLabel">
+                 <property name="text">
+                  <string>Already registered?</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="loginBtn">
+                 <property name="text">
+                  <string>Back to login</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="signupAltSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <spacer name="signupBottomSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="homePage">
+         <layout class="QVBoxLayout" name="homePageLayout">
+          <property name="leftMargin">
+     <number>60</number>
+    </property>
+          <property name="topMargin">
+     <number>30</number>
+    </property>
+          <property name="rightMargin">
+     <number>60</number>
+    </property>
+          <property name="bottomMargin">
+     <number>30</number>
+    </property>
+          <item>
+           <spacer name="homeTopSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </spacer>
+          </item>
+          <item alignment="Qt::AlignHCenter">
+           <widget class="QFrame" name="homeCard">
+            <property name="minimumSize">
+             <size>
+              <width>460</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>560</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <layout class="QVBoxLayout" name="homeCardLayout">
+             <property name="leftMargin">
+     <number>24</number>
+    </property>
+             <property name="topMargin">
+     <number>24</number>
+    </property>
+             <property name="rightMargin">
+     <number>24</number>
+    </property>
+             <property name="bottomMargin">
+     <number>24</number>
+    </property>
+             <property name="spacing">
+     <number>12</number>
+    </property>
+             <item>
+              <widget class="QLabel" name="homeTitle">
+               <property name="text">
+                <string>App session active</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="appDetails">
+               <property name="text">
+                <string>Your app details will appear here.</string>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="logoutBtn">
+               <property name="text">
+                <string>Logout</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <spacer name="homeBottomSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="networkErrorPage">
+         <layout class="QVBoxLayout" name="networkErrorLayout">
+          <property name="leftMargin">
+     <number>60</number>
+    </property>
+          <property name="topMargin">
+     <number>30</number>
+    </property>
+          <property name="rightMargin">
+     <number>60</number>
+    </property>
+          <property name="bottomMargin">
+     <number>30</number>
+    </property>
+          <property name="spacing">
+     <number>12</number>
+    </property>
+          <item>
+           <spacer name="networkTopSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="networkErrorTitle">
+            <property name="text">
+             <string>Something went wrong</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="networkErrorBody">
+            <property name="text">
+             <string>The app session could not be verified. Please try again.</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="tryAgain">
+            <property name="text">
+             <string>Try again</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="networkBottomSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomSlideMenu" name="userAccount">
+        <layout class="QVBoxLayout" name="userAccountLayout">
+         <property name="leftMargin">
+     <number>14</number>
+    </property>
+         <property name="topMargin">
+     <number>14</number>
+    </property>
+         <property name="rightMargin">
+     <number>14</number>
+    </property>
+         <property name="bottomMargin">
+     <number>14</number>
+    </property>
+         <property name="spacing">
+     <number>10</number>
+    </property>
+         <item>
+          <widget class="QLabel" name="accountTitle">
+           <property name="text">
+            <string>My Account</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QStackedWidget" name="userAccountPages">
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
+           <widget class="QWidget" name="loginAccount">
+            <layout class="QVBoxLayout" name="loginAccountLayout">
+             <property name="spacing">
+     <number>8</number>
+    </property>
+             <item>
+              <widget class="QLabel" name="accountHintTitle">
+               <property name="text">
+                <string>Not logged in</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="accountHintBody">
+               <property name="text">
+                <string>Login or register to view your stored app session.</string>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="accountHintSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="loggedAccountDetails">
+            <layout class="QVBoxLayout" name="loggedAccountLayout">
+             <property name="spacing">
+     <number>6</number>
+    </property>
+             <item>
+              <widget class="QLabel" name="usernameCaption">
+               <property name="text">
+                <string>Username</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="username">
+               <property name="text">
+                <string>—</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="appIdCaption">
+               <property name="text">
+                <string>App ID</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="app_id">
+               <property name="text">
+                <string>—</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="appKeyCaption">
+               <property name="text">
+                <string>App key</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="app_key">
+               <property name="text">
+                <string>—</string>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="keyDateCaption">
+               <property name="text">
+                <string>Expiry date</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="key_date">
+               <property name="text">
+                <string>—</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="loggedAccountSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QPushButton" name="logoutUser">
+               <property name="text">
+                <string>Logout</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QWidget" name="footer">
+      <layout class="QHBoxLayout" name="footerLayout">
+       <property name="leftMargin">
+     <number>16</number>
+    </property>
+       <property name="topMargin">
+     <number>10</number>
+    </property>
+       <property name="rightMargin">
+     <number>16</number>
+    </property>
+       <property name="bottomMargin">
+     <number>10</number>
+    </property>
+       <property name="spacing">
+     <number>10</number>
+    </property>
+       <item>
+        <widget class="QPushButton" name="pushButton">
+         <property name="text">
+          <string>Actions</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="footerSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="themeCaption">
+         <property name="text">
+          <string>Dark theme</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBox">
+         <property name="text">
+          <string />
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="show_hide_user_account">
+         <property name="text">
+          <string>My account</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomSlideMenu</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomSlideMenu.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomQStackedWidget</class>
+   <extends>QStackedWidget</extends>
+   <header location="global">Custom_Widgets.QCustomQStackedWidget.h</header>
+  </customwidget>
+ <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>

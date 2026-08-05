@@ -1,0 +1,44 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#mainHeading, #groupedHeading, #maskedHeading {
+  color: $COLOR_TEXT_1;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+#hintLabel {
+  color: $COLOR_TEXT_3;
+  font-size: 12px;
+}
+
+#statusLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+#codeInput, #groupedInput, #maskedInput {
+  qproperty-boxBackgroundColor: $COLOR_BACKGROUND_2;
+  qproperty-boxBorderColor: $COLOR_BACKGROUND_4;
+  qproperty-boxBorderActiveColor: $COLOR_ACCENT_1;
+  qproperty-textColor: $COLOR_TEXT_1;
+}
+
+#clearButton, #pasteButton, #themeButton {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_2;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 6px;
+  padding: 6px 14px;
+}
+
+#clearButton:hover, #pasteButton:hover, #themeButton:hover {
+  background: $COLOR_BACKGROUND_3;
+  color: $COLOR_TEXT_1;
+}
+
+#clearButton:pressed, #pasteButton:pressed, #themeButton:pressed {
+  background: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+}

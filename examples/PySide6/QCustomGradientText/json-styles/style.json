@@ -1,0 +1,46 @@
+{
+    "QtBinding": "PySide6",
+    "QMainWindow": {
+        "title": "QCustomGradientText"
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "QCustomGradientTextDemo"
+        },
+        "ThemeSettings": {
+            "CustomThemes": [
+                {
+                    "Theme-name": "Headline Dark",
+                    "Default-Theme": true,
+                    "Create-icons": false,
+                    "Background-color": "#12121c",
+                    "Text-color": "#eceaf6",
+                    "Accent-color": "#7d6df5",
+                    "Icons-color": "#9b98b2",
+                    "Other-variables": {
+                        "SURFACE": "#1b1b2a",
+                        "OUTLINE": "#2d2c44",
+                        "MUTED": "#8f8ca6",
+                        "ON_ACCENT": "#f5f3ff"
+                    }
+                },
+                {
+                    "Theme-name": "Headline Light",
+                    "Default-Theme": false,
+                    "Create-icons": false,
+                    "Background-color": "#f6f5fa",
+                    "Text-color": "#1e1a30",
+                    "Accent-color": "#5b21b6",
+                    "Icons-color": "#6b7280",
+                    "Other-variables": {
+                        "SURFACE": "#ffffff",
+                        "OUTLINE": "#d8d5e6",
+                        "MUTED": "#7d7994",
+                        "ON_ACCENT": "#ffffff"
+                    }
+                }
+            ]
+        }
+    }
+}

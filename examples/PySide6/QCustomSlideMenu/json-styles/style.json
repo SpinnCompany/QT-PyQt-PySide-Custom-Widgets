@@ -1,0 +1,69 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomSlideMenu Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Slide Night",
+          "Default-Theme": true,
+          "Create-icons": true,
+          "Background-color": "#131720",
+          "Text-color": "#e9edf4",
+          "Accent-color": "#38b2ac",
+          "Icons-color": "#e9edf4",
+          "Other-variables": {
+            "MENU_BG": "#1b2130",
+            "MENU_BORDER": "#2b3346"
+          }
+        },
+        {
+          "Theme-name": "Slide Day",
+          "Default-Theme": false,
+          "Create-icons": true,
+          "Background-color": "#f3f5f9",
+          "Text-color": "#182030",
+          "Accent-color": "#0d9488",
+          "Icons-color": "#3a4256",
+          "Other-variables": {
+            "MENU_BG": "#ffffff",
+            "MENU_BORDER": "#d8deea"
+          }
+        }
+      ]
+    }
+  },
+  "QCustomSlideMenu": {
+    "slideMenu": {
+      "defaultSize": {
+        "width": "auto",
+        "height": "auto"
+      },
+      "collapsedSize": {
+        "width": "auto",
+        "height": 0
+      },
+      "expandedSize": {
+        "width": "auto",
+        "height": "auto"
+      },
+      "toggleButton": {
+        "buttonName": "menuToggleButton"
+      },
+      "menuTransitionAnimation": {
+        "animationDuration": 2000,
+        "animationEasingCurve": "Linear",
+        "whenCollapsing": {
+          "animationDuration": 500,
+          "animationEasingCurve": "Linear"
+        },
+        "whenExpanding": {
+          "animationDuration": 500,
+          "animationEasingCurve": "OutInBack"
+        }
+      }
+    }
+  }
+}

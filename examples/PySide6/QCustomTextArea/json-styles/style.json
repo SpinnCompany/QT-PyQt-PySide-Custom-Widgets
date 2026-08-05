@@ -1,0 +1,42 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomTextArea Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Slate",
+          "Default-Theme": true,
+          "Background-color": "#12151c",
+          "Text-color": "#e8ecf1",
+          "Accent-color": "#7AB3F0",
+          "Icons-color": "#9ca3af",
+          "Other-variables": {
+            "CARD": "#1a1e29",
+            "MUTED": "#232a38",
+            "BORDER": "#2c3342",
+            "DANGER": "#ef4444",
+            "ON_ACCENT": "#0d1117"
+          }
+        },
+        {
+          "Theme-name": "Paper",
+          "Default-Theme": false,
+          "Background-color": "#f5f7fa",
+          "Text-color": "#1a1d27",
+          "Accent-color": "#4A90D9",
+          "Icons-color": "#6b7280",
+          "Other-variables": {
+            "CARD": "#ffffff",
+            "MUTED": "#eaeef4",
+            "BORDER": "#d8dee7",
+            "DANGER": "#dc2626",
+            "ON_ACCENT": "#ffffff"
+          }
+        }
+      ]
+    }
+  }
+}

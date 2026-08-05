@@ -1,67 +1,91 @@
-########################################################################
-## QCustomBreadcrumbs + QCustomRating + QCustomChip example
-##
-## A breadcrumb trail, a star rating, and removable + filter chips.
-## Styled from design tokens. Run:
-##     python main.py
-########################################################################
-import sys
-from PySide6 import QtWidgets
+"""Breadcrumbs / Rating / Chips showcase — a breadcrumb trail, a star rating,
+and removable + filter chips, themed from json-styles design tokens."""
 
-from Custom_Widgets.QCustomBreadcrumbs import QCustomBreadcrumbs
-from Custom_Widgets.QCustomRating import QCustomRating
-from Custom_Widgets.QCustomChip import QCustomChipGroup
-from Custom_Widgets.JSonStyles.tokens import DesignTokens, applyDesignTokens
+import os, sys
+
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
+
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
+
+from Custom_Widgets import *
+from qtpy.QtCore import QCoreApplication, QSettings
+from qtpy.QtWidgets import QApplication
 
 
-class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Breadcrumbs / Rating / Chips")
-        central = QtWidgets.QWidget()
-        self.setCentralWidget(central)
-        form = QtWidgets.QVBoxLayout(central)
+class MainWindow(QCustomMainWindow):
+    def __init__(self, parent=None):
+        QCustomMainWindow.__init__(self)
+        from src.ui_MainWindow import Ui_MainWindow
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
 
-        crumbs = QCustomBreadcrumbs()
-        crumbs.setItems([("Home", "/"), ("Library", "/lib"), ("Widgets", "/lib/widgets"),
-                         "Rating"])
-        crumbs.itemClicked.connect(lambda i, d: self.status.setText("Go to: %s" % d))
-        form.addWidget(crumbs)
+        # Set the app identity BEFORE loadJsonStyle: the theme loader consults
+        # QSettings while parsing CustomThemes, and without these names it reads
+        # the shared unnamed settings file (polluted by other example apps),
+        # which silently cancels this app's Default-Theme flag.
+        QCoreApplication.setOrganizationName("CustomWidgets")
+        QCoreApplication.setApplicationName("Breadcrumbs Rating Chips Showcase")
 
-        rating = QCustomRating(maximum=5)
-        rating.setValue(3)
-        rating.valueChanged.connect(lambda v: self.status.setText("Rated %d/5" % v))
-        rrow = QtWidgets.QHBoxLayout()
-        rrow.addWidget(QtWidgets.QLabel("Rate:"))
-        rrow.addWidget(rating)
-        rrow.addStretch(1)
-        form.addLayout(rrow)
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
 
-        form.addWidget(QtWidgets.QLabel("Removable tags:"))
-        tags = QCustomChipGroup(closable=True)
-        tags.setChips(["python", "pyside6", "qt", "widgets", "tokens"])
-        form.addWidget(tags)
+        self.show()
+        themeEngine = self.themeEngine
+        org = getattr(themeEngine, "organizationName", "")
+        if org:
+            QCoreApplication.setOrganizationName(str(org))
+        appn = getattr(themeEngine, "applicationName", "")
+        if appn:
+            QCoreApplication.setApplicationName(str(appn))
+        orgd = getattr(themeEngine, "organizationDomain", "")
+        if orgd:
+            QCoreApplication.setOrganizationDomain(str(orgd))
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            for t in themeEngine.themes:
+                if getattr(t, "defaultTheme", False) and (init_set is None or not init_set):
+                    s.setValue("THEME", t.name)
+                    s.setValue("INIT-THEME-SET", True)
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
 
-        form.addWidget(QtWidgets.QLabel("Filter (multi-select):"))
-        filters = QCustomChipGroup(selectable=True, exclusive=False)
-        filters.setChips(["All", "Free", "Pro", "New"])
-        filters.selectionChanged.connect(
-            lambda sel: self.status.setText("Filters: %s" % (", ".join(map(str, sel)) or "none")))
-        form.addWidget(filters)
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
 
-        self.status = QtWidgets.QLabel("-")
-        form.addStretch(1)
-        form.addWidget(self.status)
+        self._seedAndWire()
+
+    def _seedAndWire(self):
+        ui = self.ui
+
+        # breadcrumb trail (data-driven, so seeded here rather than in the .ui)
+        ui.breadcrumbs.setItems([("Home", "/"), ("Library", "/lib"),
+                                 ("Widgets", "/lib/widgets"), "Rating"])
+        ui.breadcrumbs.itemClicked.connect(
+            lambda i, d: ui.statusLabel.setText("Go to: %s" % d))
+
+        # star rating (initial value comes from the .ui)
+        ui.rating.valueChanged.connect(
+            lambda v: ui.statusLabel.setText("Rated %d/5" % v))
+
+        # removable tags
+        for tag in ("python", "pyside6", "qt", "widgets", "tokens"):
+            ui.tagsGroup.addChip(tag, closable=True)
+
+        # multi-select filter chips
+        for name in ("All", "Free", "Pro", "New"):
+            ui.filtersGroup.addChip(name, selectable=True)
+        ui.filtersGroup.selectionChanged.connect(
+            lambda sel: ui.statusLabel.setText(
+                "Filters: %s" % (", ".join(map(str, sel)) or "none")))
 
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    tokens = DesignTokens(theme="light")
-    app.setStyleSheet("QMainWindow, QWidget { background-color: %s; color: %s; }"
-                      % (tokens.role("surface"), tokens.role("on-surface")))
-    applyDesignTokens(app, tokens=tokens)
-
+    app = QApplication(sys.argv)
     window = MainWindow()
-    window.resize(480, 420)
-    window.show()
     sys.exit(app.exec())

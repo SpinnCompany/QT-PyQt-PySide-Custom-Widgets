@@ -1,101 +1,92 @@
-########################################################################
-## QCustomMultiSelect example
-##
-## Four fields: a plain multi-select, a searchable one over a longer list, one
-## capped at 3 choices, and one that collapses to "+N" past two chips. Click a
-## field to open its popup; click a chip's x to drop just that one.
-## Run:
-##     python main.py
-########################################################################
-import sys
-from PySide6 import QtWidgets
+"""QCustomMultiSelect showcase — four fields: a plain multi-select, a
+searchable one over a longer list, one capped at 3 choices, and one that
+collapses to "+N" past two chips. Click a field to open its popup; click a
+chip's x to drop just that one."""
 
-from Custom_Widgets.QCustomMultiSelect import QCustomMultiSelect
-from Custom_Widgets.JSonStyles.tokens import applyDesignTokens
+import os, sys
 
-LANGUAGES = ["py=Python", "js=JavaScript", "rs=Rust", "go=Go", "cpp=C++",
-             "rb=Ruby", "kt=Kotlin", "swift=Swift", "ts=TypeScript"]
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
+
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
+
+from Custom_Widgets import *
+from qtpy.QtCore import QCoreApplication, QSettings
+from qtpy.QtWidgets import QApplication
+
+LANGUAGE_KEYS = ["py", "js", "rs", "go", "cpp", "rb", "kt", "swift", "ts"]
 
 
-class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("QCustomMultiSelect")
-        central = QtWidgets.QWidget()
-        self.setCentralWidget(central)
-        layout = QtWidgets.QVBoxLayout(central)
-        layout.setContentsMargins(24, 24, 24, 24)
-        layout.setSpacing(16)
-        self._theme = "light"
+class MainWindow(QCustomMainWindow):
+    def __init__(self, parent=None):
+        QCustomMainWindow.__init__(self)
+        from src.ui_MainWindow import Ui_MainWindow
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
 
-        layout.addWidget(self._heading("Colours"))
-        self.colours = QCustomMultiSelect(options=["Red", "Green", "Blue"],
-                                          placeholder="Choose colours")
-        self.colours.selectionChanged.connect(self._report)
-        layout.addWidget(self.colours)
+        # Name the app BEFORE loadJsonStyle: theme parsing checks QSettings for
+        # an existing THEME, and without these names QSettings resolves to the
+        # shared "Unknown Organization/main.py.conf" — whose stale THEME would
+        # cancel this app's Default-Theme flag on every first run.
+        QCoreApplication.setOrganizationName("CustomWidgets")
+        QCoreApplication.setApplicationName("QCustomMultiSelect Example")
 
-        layout.addWidget(self._heading("Languages (searchable)"))
-        self.languages = QCustomMultiSelect(options=LANGUAGES,
-                                            placeholder="Search and pick")
-        self.languages.searchable = True
-        self.languages.selectionChanged.connect(self._report)
-        layout.addWidget(self.languages)
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
 
-        layout.addWidget(self._heading("Pick at most 3"))
-        self.capped = QCustomMultiSelect(options=LANGUAGES,
-                                         placeholder="Up to three")
-        self.capped.maxSelection = 3
-        self.capped.selectionChanged.connect(self._report)
-        layout.addWidget(self.capped)
+        self.show()
+        themeEngine = self.themeEngine
+        org = getattr(themeEngine, "organizationName", "")
+        if org:
+            QCoreApplication.setOrganizationName(str(org))
+        appn = getattr(themeEngine, "applicationName", "")
+        if appn:
+            QCoreApplication.setApplicationName(str(appn))
+        orgd = getattr(themeEngine, "organizationDomain", "")
+        if orgd:
+            QCoreApplication.setOrganizationDomain(str(orgd))
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            for t in themeEngine.themes:
+                if getattr(t, "defaultTheme", False) and (init_set is None or not init_set):
+                    s.setValue("THEME", t.name)
+                    s.setValue("INIT-THEME-SET", True)
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
 
-        layout.addWidget(self._heading("Collapses past 2 chips"))
-        self.collapsed = QCustomMultiSelect(
-            options=LANGUAGES, selected=["py", "js", "rs", "go"])
-        self.collapsed.maxChips = 2
-        layout.addWidget(self.collapsed)
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
 
-        row = QtWidgets.QHBoxLayout()
-        for text, slot in (("Clear colours", self.colours.clearSelection),
-                           ("Select all languages",
-                            lambda: self.languages.setSelected(
-                                [o.split("=")[0] for o in LANGUAGES])),
-                           ("Light / dark", self._toggleTheme)):
-            btn = QtWidgets.QPushButton(text)
-            btn.clicked.connect(slot)
-            row.addWidget(btn)
-        row.addStretch(1)
-        layout.addLayout(row)
+        self._wireControls()
 
-        self.status = QtWidgets.QLabel("Nothing selected yet")
-        layout.addWidget(self.status)
-        layout.addStretch(1)
-        self.resize(520, 520)
+    def _wireControls(self):
+        ui = self.ui
+        for field in (ui.coloursSelect, ui.languagesSelect, ui.cappedSelect):
+            field.selectionChanged.connect(self._report)
 
-    @staticmethod
-    def _heading(text):
-        label = QtWidgets.QLabel(text)
-        font = label.font()
-        font.setBold(True)
-        label.setFont(font)
-        return label
+        ui.clearButton.clicked.connect(ui.coloursSelect.clearSelection)
+        ui.selectAllButton.clicked.connect(
+            lambda: ui.languagesSelect.setSelected(list(LANGUAGE_KEYS)))
+        ui.themeButton.clicked.connect(
+            lambda: self.themeEngine.toggleTheme(dark="MeadowDark",
+                                                 light="MeadowLight"))
 
     def _report(self, _values):
         parts = []
-        for name, field in (("colours", self.colours),
-                            ("languages", self.languages),
-                            ("capped", self.capped)):
+        for name, field in (("colours", self.ui.coloursSelect),
+                            ("languages", self.ui.languagesSelect),
+                            ("capped", self.ui.cappedSelect)):
             if field.selected():
                 parts.append("%s: %s" % (name, ", ".join(field.selectedLabels())))
-        self.status.setText(" | ".join(parts) or "Nothing selected yet")
-
-    def _toggleTheme(self):
-        self._theme = "dark" if self._theme == "light" else "light"
-        applyDesignTokens(QtWidgets.QApplication.instance(), theme=self._theme)
+        self.ui.statusLabel.setText(" | ".join(parts) or "Nothing selected yet")
 
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    applyDesignTokens(app, theme="light")
+    app = QApplication(sys.argv)
     window = MainWindow()
-    window.show()
     sys.exit(app.exec())

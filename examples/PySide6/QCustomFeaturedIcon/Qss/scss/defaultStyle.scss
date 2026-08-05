@@ -1,0 +1,50 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+/* Featured icon tiles — colours follow the theme via typed properties. */
+QCustomFeaturedIcon {
+  qproperty-accentColor: $COLOR_ACCENT_1;
+  qproperty-iconColor: $COLOR_ACCENT_1;
+  qproperty-surfaceColor: $SURFACE;
+}
+
+#statusLabel {
+  color: $MUTED;
+  font-size: 12px;
+}
+
+#sizeCaption {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+#sizeCombo {
+  background: $SURFACE;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $OUTLINE;
+  border-radius: 6px;
+  padding: 4px 10px;
+  min-width: 64px;
+}
+
+#sizeCombo QAbstractItemView {
+  background: $SURFACE;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $OUTLINE;
+  selection-background-color: $COLOR_ACCENT_1;
+  selection-color: $ON_ACCENT;
+}
+
+#themeBtn {
+  background: $SURFACE;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $OUTLINE;
+  border-radius: 6px;
+  padding: 5px 14px;
+}
+
+#themeBtn:hover {
+  border-color: $COLOR_ACCENT_1;
+  color: $COLOR_ACCENT_1;
+}

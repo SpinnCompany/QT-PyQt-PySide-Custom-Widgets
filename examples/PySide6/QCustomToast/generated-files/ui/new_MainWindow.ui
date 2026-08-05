@@ -1,0 +1,168 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>560</width>
+    <height>360</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QCustomToast Example</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="rootLayout">
+    <property name="spacing">
+     <number>14</number>
+    </property>
+    <property name="leftMargin">
+     <number>20</number>
+    </property>
+    <property name="topMargin">
+     <number>20</number>
+    </property>
+    <property name="rightMargin">
+     <number>20</number>
+    </property>
+    <property name="bottomMargin">
+     <number>20</number>
+    </property>
+    <item>
+     <layout class="QHBoxLayout" name="cornerRow">
+      <property name="spacing">
+       <number>10</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="cornerLabel">
+        <property name="text">
+         <string>Corner:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="pos">
+        <item>
+         <property name="text">
+          <string>top-right</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>top-left</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>bottom-right</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>bottom-left</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>top-center</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>bottom-center</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <spacer name="cornerSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QGridLayout" name="buttonGrid">
+      <property name="horizontalSpacing">
+       <number>10</number>
+      </property>
+      <property name="verticalSpacing">
+       <number>10</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QCustomQPushButton" name="successBtn">
+        <property name="text">
+         <string>Success</string>
+        </property>
+        <property name="variant" stdset="0">
+         <string>success</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QCustomQPushButton" name="errorBtn">
+        <property name="text">
+         <string>Error</string>
+        </property>
+        <property name="variant" stdset="0">
+         <string>secondary</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCustomQPushButton" name="warningBtn">
+        <property name="text">
+         <string>Warning</string>
+        </property>
+        <property name="variant" stdset="0">
+         <string>secondary</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QCustomQPushButton" name="infoBtn">
+        <property name="text">
+         <string>Info</string>
+        </property>
+        <property name="variant" stdset="0">
+         <string>primary</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <spacer name="bottomSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomQPushButton</class>
+   <extends>QPushButton</extends>
+   <header>Custom_Widgets.QCustomQPushButton</header>
+  </customwidget>
+ <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>

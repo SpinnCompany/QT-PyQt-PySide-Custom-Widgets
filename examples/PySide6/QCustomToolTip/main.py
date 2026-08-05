@@ -1,84 +1,77 @@
-import sys
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QColor
-from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QPushButton, QWidget, QGraphicsDropShadowEffect
+"""QCustomQToolTip showcase — auto-positioned custom tooltips.
+
+Four buttons carry plain Qt toolTips; the app-wide QCustomQToolTipFilter
+replaces the native tooltip with the custom bubble (tail position auto).
+All styling lives in json-styles/ + Qss/scss/defaultStyle.scss; this file
+only boots the app and installs the filter.
+"""
+
+import os, sys
+
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
+
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
+
+from Custom_Widgets import *
 from Custom_Widgets.QCustomQToolTip import QCustomQToolTipFilter
-
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("QCustomQToolTip Tail Position Test")
-        self.central_widget = QWidget()
-        self.setCentralWidget(self.central_widget)
-        self.layout = QVBoxLayout(self.central_widget)
-
-        self.setStyleSheet("""
-            QMainWindow, * {
-                background-color: #f0f0f0;
-            }
-            QCustomQToolTip *{
-                color: #000
-            }
-            QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                padding: 8px 16px;
-                border: none;
-                border-radius: 4px;
-            }
-            QPushButton:hover {
-                background-color: #45a049;
-            }
-            QPushButton:pressed {
-                background-color: #3e8e41;
-            }
-        """)
-
-        button = QPushButton("HOVER: Auto-positioned Tool-Tip")
-        self.layout.addWidget(button)
-        self.addShadow(button)
-        button.setToolTip("Testing Auto-positioned Tool-Tip.  Try resizing the window then hover again!")
-
-        widget = QWidget()
-        widgetLayout = QHBoxLayout()
-
-        button = QPushButton("HOVER: Auto-positioned Tool-Tip")
-        self.layout.addWidget(button)
-        self.addShadow(button)
-        button.setToolTip("Testing Auto-positioned Tool-Tip.  Try resizing the window then hover again!")
-
-        widgetLayout.addWidget(button)
-
-        button = QPushButton("HOVER: Auto-positioned Tool-Tip")
-        self.layout.addWidget(button)
-        self.addShadow(button)
-        button.setToolTip("Testing Auto-positioned Tool-Tip.  Try resizing the window then hover again!")
-        
-        widgetLayout.addWidget(button)
-
-        widget.setLayout(widgetLayout)
-        self.layout.addWidget(widget)
-        
-        button = QPushButton("HOVER: Auto-positioned Tool-Tip")
-        self.layout.addWidget(button)
-        self.addShadow(button)
-        button.setToolTip("Testing Auto-positioned Tool-Tip.  Try resizing the window then hover again!")
+from Custom_Widgets.QAppSettings import QAppSettings
+from qtpy.QtCore import QCoreApplication, QSettings
+from qtpy.QtWidgets import QApplication
 
 
-    def addShadow(self, widget):
-        effect = QGraphicsDropShadowEffect(widget)
-        effect.setColor(QColor(30, 30, 30, 200))
-        effect.setBlurRadius(20)
-        effect.setXOffset(0)
-        effect.setYOffset(0)
-        widget.setGraphicsEffect(effect)
+class MainWindow(QCustomMainWindow):
+    def __init__(self, parent=None):
+        QCustomMainWindow.__init__(self)
+        from src.ui_MainWindow import Ui_MainWindow
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
+
+        self.show()
+        themeEngine = self.themeEngine
+        org = getattr(themeEngine, "organizationName", "")
+        if org:
+            QCoreApplication.setOrganizationName(str(org))
+        appn = getattr(themeEngine, "applicationName", "")
+        if appn:
+            QCoreApplication.setApplicationName(str(appn))
+        orgd = getattr(themeEngine, "organizationDomain", "")
+        if orgd:
+            QCoreApplication.setOrganizationDomain(str(orgd))
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            for t in themeEngine.themes:
+                if getattr(t, "defaultTheme", False) and (init_set is None or not init_set):
+                    s.setValue("THEME", t.name)
+                    s.setValue("INIT-THEME-SET", True)
+        if s.value("THEME") is None:
+            # The Default-Theme flag is dropped by the loader whenever a stale
+            # generic-scope THEME setting exists, so fall back to the first
+            # app-defined (non-predefined) theme explicitly.
+            for t in themeEngine.themes:
+                if not getattr(t, "predefined", False):
+                    s.setValue("THEME", t.name)
+                    s.setValue("INIT-THEME-SET", True)
+                    break
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
+
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    # Install the QCustomQToolTipFilter event to your app in order to use the custom tooltip
-    app_tooltip_filter = QCustomQToolTipFilter(tailPosition="auto")
-    app.installEventFilter(app_tooltip_filter)
+    # Install the QCustomQToolTipFilter on the app to use the custom tooltip
+    appToolTipFilter = QCustomQToolTipFilter(tailPosition="auto")
+    app.installEventFilter(appToolTipFilter)
     window = MainWindow()
-    window.resize(500, 300)
-    window.show()
     sys.exit(app.exec())

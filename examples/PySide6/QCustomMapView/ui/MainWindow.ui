@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>900</width>
+    <height>640</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QCustomMapView — Fleet Tracking</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>12</number>
+    </property>
+    <property name="leftMargin">
+     <number>16</number>
+    </property>
+    <property name="topMargin">
+     <number>16</number>
+    </property>
+    <property name="rightMargin">
+     <number>16</number>
+    </property>
+    <property name="bottomMargin">
+     <number>16</number>
+    </property>
+    <item>
+     <layout class="QHBoxLayout" name="headerRow">
+      <item>
+       <widget class="QLabel" name="titleLabel">
+        <property name="text">
+         <string>Fleet Tracking — QCustomMapView</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="headerSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="offlineBadge">
+        <property name="text">
+         <string>OFFLINE DEMO</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QFrame" name="mapCard">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <layout class="QVBoxLayout" name="mapCardLayout">
+       <property name="leftMargin">
+     <number>8</number>
+    </property>
+       <property name="topMargin">
+     <number>8</number>
+    </property>
+       <property name="rightMargin">
+     <number>8</number>
+    </property>
+       <property name="bottomMargin">
+     <number>8</number>
+    </property>
+       <item>
+        <widget class="QCustomMapView" name="mapView">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>380</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QFrame" name="controlsCard">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <layout class="QHBoxLayout" name="controlsLayout">
+       <property name="spacing">
+     <number>8</number>
+    </property>
+       <property name="leftMargin">
+     <number>12</number>
+    </property>
+       <property name="topMargin">
+     <number>8</number>
+    </property>
+       <property name="rightMargin">
+     <number>12</number>
+    </property>
+       <property name="bottomMargin">
+     <number>8</number>
+    </property>
+       <item>
+        <widget class="QLabel" name="styleCaption">
+         <property name="text">
+          <string>Style</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="styleBox">
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>0</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="zoomCaption">
+         <property name="text">
+          <string>Zoom</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSlider" name="zoomSlider">
+         <property name="minimum">
+          <number>0</number>
+         </property>
+         <property name="maximum">
+          <number>20</number>
+         </property>
+         <property name="value">
+          <number>13</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="focusKbzBtn">
+         <property name="text">
+          <string>Focus KBZ</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="focusKcaBtn">
+         <property name="text">
+          <string>Focus KCA</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="fitFleetBtn">
+         <property name="text">
+          <string>Fit fleet</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="moveFleetBtn">
+         <property name="text">
+          <string>Move fleet</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="themeToggleBtn">
+         <property name="text">
+          <string>Light / dark</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="statusLabel">
+      <property name="text">
+       <string>starting the map engine...</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomMapView</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.map.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

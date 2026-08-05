@@ -1,70 +1,89 @@
-########################################################################
-## QCustomTabWidget + QCustomAccordion example
-##
-## A tabbed container (switch the tab style live) and a collapsible
-## accordion. Styled from design tokens. Run:
-##     python main.py
-########################################################################
-import sys
-from PySide6 import QtWidgets
+"""QCustomTabWidget + QCustomAccordion showcase.
 
-from Custom_Widgets.QCustomTabWidget import QCustomTabWidget
-from Custom_Widgets.QCustomAccordion import QCustomAccordion
-from Custom_Widgets.QCustomComboBox import QCustomComboBox
-from Custom_Widgets.JSonStyles.tokens import DesignTokens, applyDesignTokens
+A tabbed container (switch the tab style live from a combo) and an
+exclusive collapsible accordion. All styling lives in json-styles/ +
+Qss/scss/defaultStyle.scss; this file only boots the app and seeds data.
+"""
 
+import os, sys
 
-def _page(text):
-    w = QtWidgets.QWidget()
-    lay = QtWidgets.QVBoxLayout(w)
-    lay.addWidget(QtWidgets.QLabel(text))
-    lay.addStretch(1)
-    return w
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
+
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
+
+from Custom_Widgets import *
+from Custom_Widgets.QAppSettings import QAppSettings
+from qtpy.QtCore import QCoreApplication, QSettings
+from qtpy.QtWidgets import QApplication, QLabel
 
 
-class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("QCustomTabWidget + QCustomAccordion")
-        central = QtWidgets.QWidget()
-        self.setCentralWidget(central)
-        layout = QtWidgets.QVBoxLayout(central)
+class MainWindow(QCustomMainWindow):
+    def __init__(self, parent=None):
+        QCustomMainWindow.__init__(self)
+        from src.ui_MainWindow import Ui_MainWindow
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
 
-        # tab style switcher
-        top = QtWidgets.QHBoxLayout()
-        self.styleBox = QCustomComboBox(editable=False)
-        self.styleBox.setItems(["underline", "pills", "enclosed"])
-        self.styleBox.currentTextChanged.connect(self._setTabStyle)
-        top.addWidget(QtWidgets.QLabel("Tab style:"))
-        top.addWidget(self.styleBox)
-        top.addStretch(1)
-        layout.addLayout(top)
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
 
-        self.tabs = QCustomTabWidget()
-        self.tabs.addTab(_page("Profile settings go here."), "Profile")
-        self.tabs.addTab(_page("Account settings go here."), "Account")
-        self.tabs.addTab(_page("Notification settings go here."), "Notifications")
-        layout.addWidget(self.tabs)
+        self.show()
+        themeEngine = self.themeEngine
+        org = getattr(themeEngine, "organizationName", "")
+        if org:
+            QCoreApplication.setOrganizationName(str(org))
+        appn = getattr(themeEngine, "applicationName", "")
+        if appn:
+            QCoreApplication.setApplicationName(str(appn))
+        orgd = getattr(themeEngine, "organizationDomain", "")
+        if orgd:
+            QCoreApplication.setOrganizationDomain(str(orgd))
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            for t in themeEngine.themes:
+                if getattr(t, "defaultTheme", False) and (init_set is None or not init_set):
+                    s.setValue("THEME", t.name)
+                    s.setValue("INIT-THEME-SET", True)
+        if s.value("THEME") is None:
+            # The Default-Theme flag is dropped by the loader whenever a stale
+            # generic-scope THEME setting exists, so fall back to the first
+            # app-defined (non-predefined) theme explicitly.
+            for t in themeEngine.themes:
+                if not getattr(t, "predefined", False):
+                    s.setValue("THEME", t.name)
+                    s.setValue("INIT-THEME-SET", True)
+                    break
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
 
-        acc = QCustomAccordion(exclusive=True)
-        acc.addSection("What is this?", QtWidgets.QLabel("A collapsible accordion."))
-        acc.addSection("How does it work?", QtWidgets.QLabel("Click a header to expand."))
-        acc.addSection("Is it exclusive?", QtWidgets.QLabel("Yes - only one open at a time."))
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
+
+        self._seedAccordion()
+        self._wire()
+
+    def _seedAccordion(self):
+        acc = self.ui.accordion
+        acc.setExclusive(True)
+        acc.addSection("What is this?", QLabel("A collapsible accordion."))
+        acc.addSection("How does it work?", QLabel("Click a header to expand."))
+        acc.addSection("Is it exclusive?", QLabel("Yes - only one open at a time."))
         acc.setExpanded(0, True)
-        layout.addWidget(acc)
+
+    def _wire(self):
+        self.ui.styleBox.currentTextChanged.connect(self._setTabStyle)
 
     def _setTabStyle(self, style):
-        self.tabs.tabStyle = style
+        self.ui.tabs.tabStyle = style
 
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    tokens = DesignTokens(theme="light")
-    app.setStyleSheet("QMainWindow, QWidget { background-color: %s; color: %s; }"
-                      % (tokens.role("surface"), tokens.role("on-surface")))
-    applyDesignTokens(app, tokens=tokens)
-
+    app = QApplication(sys.argv)
     window = MainWindow()
-    window.resize(520, 480)
-    window.show()
     sys.exit(app.exec())

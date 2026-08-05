@@ -1,0 +1,37 @@
+{
+  "QComboBox": [
+    {
+      "name": "widgetType",
+      "items": [
+        {
+          "name": "Color Box"
+        },
+        {
+          "name": "Number Box"
+        },
+        {
+          "name": "Letter Box"
+        },
+        {
+          "name": "Icon Box"
+        },
+        {
+          "name": "Button"
+        },
+        {
+          "name": "Custom Size"
+        },
+        {
+          "name": "Random Color"
+        },
+        {
+          "name": "Gradient Box"
+        }
+      ]
+    },
+    {
+      "name": "easingCombo",
+      "items": []
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+    "QtBinding": "PySide6",
+    "QMainWindow": {
+        "title": "QCustomBubbleChart — preview"
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "BubbleDemo"
+        },
+        "ThemeSettings": {
+            "CustomThemes": [
+                {
+                    "Theme-name": "Bubble Dark",
+                    "Default-Theme": true,
+                    "Create-icons": false,
+                    "Background-color": "#0e1016",
+                    "Text-color": "#e7e9ef",
+                    "Accent-color": "#3aa0ff",
+                    "Icons-color": "#9aa1b2",
+                    "Other-variables": {
+                        "CARD_BG": "#171a22",
+                        "CARD_BORDER": "#232833",
+                        "CARD_TITLE": "#f4f6fb",
+                        "INPUT_BG": "#0e1016",
+                        "INPUT_BORDER": "#2b3040"
+                    }
+                },
+                {
+                    "Theme-name": "Bubble Light",
+                    "Default-Theme": false,
+                    "Create-icons": false,
+                    "Background-color": "#eef1f5",
+                    "Text-color": "#1c2430",
+                    "Accent-color": "#2b7fd4",
+                    "Icons-color": "#6b7280",
+                    "Other-variables": {
+                        "CARD_BG": "#ffffff",
+                        "CARD_BORDER": "#dfe3ea",
+                        "CARD_TITLE": "#10151d",
+                        "INPUT_BG": "#f5f7fa",
+                        "INPUT_BORDER": "#d3d9e2"
+                    }
+                }
+            ]
+        }
+    },
+    "_comment_ChartPalette": "Bubble hues read in code via chartPalette() — they live with the theme so a switch re-hues the demo data.",
+    "ChartPalette": {
+        "Bubble Dark": {
+            "positive": "#3fb27f",
+            "negative": "#e0607e",
+            "neutral": "#8b9cff",
+            "catA": "#3aa0ff",
+            "catB": "#7c5cff",
+            "catC": "#5bd6e0"
+        },
+        "Bubble Light": {
+            "positive": "#2c9a68",
+            "negative": "#cc4a68",
+            "neutral": "#6c80f2",
+            "catA": "#2b7fd4",
+            "catB": "#6a49ea",
+            "catC": "#2fb3c2"
+        }
+    }
+}

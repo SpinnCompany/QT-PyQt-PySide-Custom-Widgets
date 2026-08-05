@@ -1,0 +1,75 @@
+//===================================================//
+// QCustomRangeBarChart showcase — all chrome lives here.
+// Tokens only; hues come from json-styles/style.json.
+//===================================================//
+
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+// The chart paints with QPainter; its colours are typed Qt properties,
+// themed here so they flip with the active theme.
+#chart {
+  qproperty-barColor: $COLOR_ACCENT_1;
+  qproperty-gridColor: $COLOR_BACKGROUND_3;
+  qproperty-labelColor: $COLOR_TEXT_2;
+  qproperty-boundsColor: $COLOR_TEXT_1;
+}
+
+#statusLabel {
+  color: $COLOR_ACCENT_1;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#orientationLabel, #widthLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+#orientationCombo {
+  background: $COLOR_BACKGROUND_3;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 6px;
+  padding: 4px 10px;
+  min-width: 100px;
+}
+
+#orientationCombo QAbstractItemView {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  selection-background-color: $COLOR_ACCENT_1;
+}
+
+#widthSlider::groove:horizontal {
+  height: 6px;
+  border-radius: 3px;
+  background: $COLOR_BACKGROUND_3;
+}
+
+#widthSlider::handle:horizontal {
+  width: 16px;
+  height: 16px;
+  margin: -5px 0;
+  border-radius: 8px;
+  background: $COLOR_ACCENT_1;
+}
+
+#widthSlider::sub-page:horizontal {
+  border-radius: 3px;
+  background: $COLOR_ACCENT_2;
+}
+
+#boundsButton, #themeButton {
+  background: $COLOR_BACKGROUND_3;
+  color: $COLOR_TEXT_2;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 8px;
+  padding: 8px 14px;
+}
+
+#boundsButton:hover, #themeButton:hover {
+  border: 1px solid $COLOR_ACCENT_1;
+  color: $COLOR_TEXT_1;
+}

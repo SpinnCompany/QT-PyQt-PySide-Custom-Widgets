@@ -1,0 +1,35 @@
+/* QCustomSparklesText showcase — all chrome from theme tokens. The sparkle
+   hues for the second banner live in the theme's Other-variables
+   (SPARKLE_COLORS) and are applied from code so they flip with the theme. */
+
+#MainWindow,
+#centralwidget {
+  background: $COLOR_BACKGROUND_1;
+}
+
+QCustomSparklesText {
+  background: transparent;
+  qproperty-textColor: $COLOR_TEXT_1;
+}
+
+#countLabel,
+#seedLabel {
+  background: transparent;
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+#animateBtn,
+#themeBtn {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 8px;
+  padding: 5px 12px;
+}
+
+#animateBtn:hover,
+#themeBtn:hover {
+  background: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+}

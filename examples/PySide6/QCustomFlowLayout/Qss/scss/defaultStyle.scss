@@ -1,0 +1,21 @@
+#MainWindow,
+#flowHost {
+  background: $COLOR_BACKGROUND_1;
+}
+
+/* The flowing chips: same green pill look in both themes. */
+#flowHost QPushButton {
+  background: $COLOR_ACCENT_1;
+  color: $ON_ACCENT;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+}
+
+#flowHost QPushButton:hover {
+  background: $ACCENT_HOVER;
+}
+
+#flowHost QPushButton:pressed {
+  background: $ACCENT_PRESSED;
+}

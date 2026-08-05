@@ -1,0 +1,58 @@
+//===================================================//
+// QCustomRadioButton showcase — all chrome lives here.
+// Tokens only; hues come from json-styles/style.json.
+//===================================================//
+
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#planCard, #sizeCard, #looseCard {
+  background: $COLOR_BACKGROUND_2;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+#planHeading, #sizeHeading, #looseHeading {
+  background: transparent;
+  color: $COLOR_TEXT_1;
+  font-size: 15px;
+  font-weight: bold;
+  padding-bottom: 2px;
+}
+
+// Native QWidget holders inside the cards stay see-through.
+#plansBox, #sizesBox, #looseBox {
+  background: transparent;
+}
+
+// The radio buttons paint with QPainter; their colours are typed Qt
+// properties, themed here so they flip with the active theme.
+#radioPlanFree, #radioPlanPro, #radioPlanStudio,
+#radioSizeSm, #radioSizeMd, #radioSizeLg,
+#radioLooseA, #radioLooseB {
+  background: transparent;
+  qproperty-textColor: $COLOR_TEXT_1;
+  qproperty-ringColor: $COLOR_TEXT_3;
+  qproperty-ringCheckedColor: $COLOR_ACCENT_1;
+  qproperty-dotColor: $COLOR_ACCENT_1;
+}
+
+#statusLabel {
+  color: $COLOR_ACCENT_1;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#themeButton {
+  background: $COLOR_BACKGROUND_3;
+  color: $COLOR_TEXT_2;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 8px;
+  padding: 8px 14px;
+}
+
+#themeButton:hover {
+  border: 1px solid $COLOR_ACCENT_1;
+  color: $COLOR_TEXT_1;
+}

@@ -1,0 +1,22 @@
+{
+  "QPushButton": [
+    {
+      "name": "minimizeWindowButton",
+      "icon": "ui/theme-icons:icons/feather/minus.svg"
+    },
+    {
+      "name": "restoreWindowButton",
+      "icon": "ui/theme-icons:icons/feather/maximize-2.svg"
+    },
+    {
+      "name": "closeWindowButton",
+      "icon": "ui/theme-icons:icons/feather/x.svg"
+    }
+  ],
+  "QLabel": [
+    {
+      "name": "logoLabel",
+      "pixmap": "ui/theme-icons:icons/feather/github.svg"
+    }
+  ]
+}

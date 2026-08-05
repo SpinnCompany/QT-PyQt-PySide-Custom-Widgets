@@ -1,0 +1,28 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomSocialButton Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Social Night",
+          "Default-Theme": true,
+          "Background-color": "#161b24",
+          "Text-color": "#eaeef6",
+          "Accent-color": "#62a0ef",
+          "Icons-color": "#9aa4b5"
+        },
+        {
+          "Theme-name": "Social Day",
+          "Default-Theme": false,
+          "Background-color": "#f3f5f9",
+          "Text-color": "#1c2330",
+          "Accent-color": "#2c6ccd",
+          "Icons-color": "#5b6472"
+        }
+      ]
+    }
+  }
+}

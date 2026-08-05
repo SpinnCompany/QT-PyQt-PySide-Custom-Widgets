@@ -1,0 +1,83 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+/* ---- Empty state ------------------------------------------------ */
+#emptyState {
+  qproperty-markColor: $MUTED;
+}
+
+#emptyState #emptyTitle {
+  color: $COLOR_TEXT_1;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+#emptyState #emptyDesc {
+  color: $MUTED;
+  font-size: 13px;
+}
+
+#emptyState QPushButton {
+  background: $COLOR_ACCENT_1;
+  color: $ON_ACCENT;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-weight: 600;
+}
+
+#emptyState QPushButton:hover {
+  background: $COLOR_ACCENT_2;
+}
+
+/* ---- File drop zone --------------------------------------------- */
+#dropZone {
+  background: $CARD_BG;
+  border: 2px dashed $OUTLINE;
+  border-radius: 10px;
+}
+
+#dropZone[dragActive="true"] {
+  border-color: $COLOR_ACCENT_1;
+}
+
+#dropZone #dropPrompt {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+  background: transparent;
+  border: none;
+}
+
+#dropZone #dropDetail {
+  color: $MUTED;
+  font-size: 12px;
+  background: transparent;
+  border: none;
+}
+
+/* ---- Range slider ------------------------------------------------ */
+#priceRange {
+  qproperty-trackColor: $OUTLINE;
+  qproperty-fillColor: $COLOR_ACCENT_1;
+  qproperty-handleColor: $HANDLE_FILL;
+  qproperty-handleBorderColor: $COLOR_ACCENT_1;
+}
+
+#rangeCaption {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#rangeValue {
+  color: $COLOR_ACCENT_1;
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 84px;
+}
+
+#statusLabel {
+  color: $MUTED;
+  font-size: 12px;
+}

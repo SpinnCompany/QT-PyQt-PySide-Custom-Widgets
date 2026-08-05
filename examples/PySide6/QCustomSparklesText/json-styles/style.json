@@ -1,0 +1,34 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomSparklesText Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Sparkle Night",
+          "Default-Theme": true,
+          "Background-color": "#181524",
+          "Text-color": "#efeaf9",
+          "Accent-color": "#b18cf2",
+          "Icons-color": "#a09ab5",
+          "Other-variables": {
+            "SPARKLE_COLORS": "#4ade80,#38bdf8"
+          }
+        },
+        {
+          "Theme-name": "Sparkle Day",
+          "Default-Theme": false,
+          "Background-color": "#f6f4fb",
+          "Text-color": "#231d33",
+          "Accent-color": "#7c4ee0",
+          "Icons-color": "#6a6480",
+          "Other-variables": {
+            "SPARKLE_COLORS": "#16a34a,#0ea5e9"
+          }
+        }
+      ]
+    }
+  }
+}

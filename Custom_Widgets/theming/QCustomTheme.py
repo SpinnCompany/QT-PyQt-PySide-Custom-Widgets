@@ -29,6 +29,17 @@ def _qcolor_rgbf(color):
         raise ValueError(f"Invalid color: {color!r}")
     return qc.redF(), qc.greenF(), qc.blueF()
 
+def _setSettingIfChanged(settings, key, value):
+    """Write a QSettings key only when the value actually changed.
+
+    Every write marks the settings dirty and costs a QLockFile + fdatasync
+    round-trip when the QSettings object is destroyed. The theming code
+    re-asserts ICONS-COLOR/THEME once per component, so an app boot issued
+    dozens of redundant writes — tens of seconds on a slow filesystem."""
+    if settings.value(key) != value:
+        settings.setValue(key, value)
+
+
 # Icons are shipped and themed as SVG. Importing QtSvg makes sure the Qt SVG
 # image-format plugin is bundled by deployment tools (PyInstaller, cx_Freeze).
 try:
@@ -233,7 +244,7 @@ class QCustomTheme(QObject):
         self._theme = value
         settings = QSettings()
         try:
-            settings.setValue("THEME", value)
+            _setSettingIfChanged(settings, "THEME", value)
         except Exception as e:
             logError(f"Failed to write theme to QSettings: {e}")
         # if settings.value("INIT-THEME-SET") is None:
@@ -294,14 +305,23 @@ class QCustomTheme(QObject):
         _theme = settings.value("THEME")
         for theme in self.themes:
             if theme.name == _theme:
-               return theme 
-            
+               return theme
+
             if theme.name == self.theme:
-               return theme 
-            
+               return theme
+
+        # The stored name matches nothing (foreign machine state, renamed
+        # theme): honour the json's declared default before the legacy
+        # name-based "Light" guess. (No broader "any custom theme" tier —
+        # engines accumulate partially-configured themes, and "Light" is
+        # guaranteed to have valid colours for the icon pipeline.)
+        for theme in self.themes:
+            if getattr(theme, "defaultTheme", False):
+               return theme
+
         for theme in self.themes:
             if theme.name == "Light":
-               return theme 
+               return theme
 
     @Property(str)
     def iconsColor(self):
@@ -399,7 +419,7 @@ class QCustomTheme(QObject):
 
             settings = QSettings()
             try:
-                settings.setValue("ICONS-COLOR", icons_color)
+                _setSettingIfChanged(settings, "ICONS-COLOR", icons_color)
             except Exception as e:
                 logError(f"Failed to write ICONS-COLOR to QSettings: {e}")
 
@@ -709,7 +729,7 @@ class QCustomTheme(QObject):
 
         settings = QSettings()
         try:
-            settings.setValue("ICONS-COLOR", iconsColor)
+            _setSettingIfChanged(settings, "ICONS-COLOR", iconsColor)
         except Exception as e:
             logError(f"Failed to write ICONS-COLOR to QSettings: {e}")
         
@@ -1323,7 +1343,7 @@ class QCustomTheme(QObject):
             iconsColor, iconsForce = self._resolveIconsColor(themeInfo)
             settings = QSettings()
             try:
-                settings.setValue("GENERATED-ICONS-COLOR", iconsColor)
+                _setSettingIfChanged(settings, "GENERATED-ICONS-COLOR", iconsColor)
             except Exception as e:
                 logError(f"Failed to write GENERATED-ICONS-COLOR to QSettings: {e}")
 
@@ -1516,7 +1536,7 @@ class QCustomTheme(QObject):
             iconsColor, resolved_force = self._resolveIconsColor(themeInfo)
             force = force or resolved_force
             try:
-                QSettings().setValue("GENERATED-ICONS-COLOR", iconsColor)
+                _setSettingIfChanged(QSettings(), "GENERATED-ICONS-COLOR", iconsColor)
             except Exception as e:
                 logError(f"Failed to write GENERATED-ICONS-COLOR to QSettings: {e}")
 

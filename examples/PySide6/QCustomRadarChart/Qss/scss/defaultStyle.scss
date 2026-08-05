@@ -1,0 +1,80 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#radarChart {
+  background: transparent;
+  qproperty-gridColor: $COLOR_BACKGROUND_4;
+  qproperty-axisColor: $COLOR_BACKGROUND_5;
+  qproperty-labelColor: $COLOR_TEXT_2;
+}
+
+#statusLabel {
+  color: $COLOR_TEXT_3;
+  font-size: 12px;
+}
+
+#gridCaption, #ringsCaption, #fillCaption, #rotateCaption {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+#gridBox {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 6px;
+  padding: 4px 10px;
+}
+
+#gridBox QAbstractItemView {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  selection-background-color: $COLOR_ACCENT_1;
+}
+
+#ringsSpin {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+
+#fillSlider::groove:horizontal, #rotateSlider::groove:horizontal {
+  height: 6px;
+  background: $COLOR_BACKGROUND_3;
+  border-radius: 3px;
+}
+
+#fillSlider::sub-page:horizontal, #rotateSlider::sub-page:horizontal {
+  background: $COLOR_ACCENT_1;
+  border-radius: 3px;
+}
+
+#fillSlider::handle:horizontal, #rotateSlider::handle:horizontal {
+  width: 14px;
+  margin: -5px 0;
+  border-radius: 7px;
+  background: $COLOR_ACCENT_1;
+}
+
+#markersBtn, #legendBtn, #ringLabelsBtn, #dropSeriesBtn, #resetBtn, #themeBtn {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+#markersBtn:hover, #legendBtn:hover, #ringLabelsBtn:hover,
+#dropSeriesBtn:hover, #resetBtn:hover, #themeBtn:hover {
+  border: 1px solid $COLOR_ACCENT_1;
+  color: $COLOR_ACCENT_1;
+}
+
+#markersBtn:pressed, #legendBtn:pressed, #ringLabelsBtn:pressed,
+#dropSeriesBtn:pressed, #resetBtn:pressed, #themeBtn:pressed {
+  background: $COLOR_BACKGROUND_3;
+}

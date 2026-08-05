@@ -1,113 +1,109 @@
-"""QCustomRulerPicker — live preview.
+"""QCustomRulerPicker showcase — fixed / centered / vertical rulers, token-driven.
 
-A quick showcase (not the full forms pipeline — just a preview of the new widget):
-a weight ruler (fixed span, the reference "Wight" card), a height ruler with a big
-readout, a scrolling-centered picker, and a vertical ruler — showing fixed vs
-centered, horizontal vs vertical, snap, units and the live value readout.
-
-Run through the MCP: designer_launch(project=…) then designer_run_app(project=…).
+Demonstrates a weight ruler (fixed span, value in the card header), a height
+ruler with a big readout (centered scrolling picker), a fine-step body-fat
+ruler and a vertical thermostat ruler — fixed vs centered, horizontal vs
+vertical, snap, units and the live value readout. Structure lives in
+ui/MainWindow.ui (Designer-editable); chrome in Qss/scss/defaultStyle.scss;
+indicator hues in the ChartPalette section of json-styles/style.json so they
+flip with the theme.
 """
+
+import json
+import os
 import sys
 
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import (QApplication, QMainWindow, QWidget, QLabel, QHBoxLayout,
-                            QGridLayout, QVBoxLayout, QFrame)
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
 
-from Custom_Widgets.QCustomRulerPicker import QCustomRulerPicker
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
 
-ACCENT = "#7c5cff"
+from Custom_Widgets import *
+from qtpy.QtCore import QCoreApplication, QSettings
+from qtpy.QtWidgets import QApplication
 
-
-def card(title, unit, widget, header_value_label=None):
-    frame = QFrame()
-    frame.setObjectName("card")
-    lay = QVBoxLayout(frame)
-    lay.setContentsMargins(20, 16, 20, 16)
-    lay.setSpacing(4)
-    head = QHBoxLayout()
-    cap = QLabel(title); cap.setObjectName("cardTitle")
-    u = QLabel(unit); u.setObjectName("cardUnit")
-    head.addWidget(cap)
-    head.addStretch(1)
-    if header_value_label is not None:
-        head.addWidget(header_value_label)
-    head.addWidget(u)
-    lay.addLayout(head)
-    lay.addSpacing(6)
-    lay.addWidget(widget, 1)
-    return frame
+THEME_DEFAULT = "Ruler Dark"
 
 
-class Preview(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("QCustomRulerPicker — preview")
-        self.resize(940, 620)
-        root = QWidget()
-        self.setCentralWidget(root)
-        grid = QGridLayout(root)
-        grid.setContentsMargins(24, 24, 24, 24)
-        grid.setHorizontalSpacing(20)
-        grid.setVerticalSpacing(20)
-
-        # Weight — fixed span (the reference), value shown in the header
-        self.wlabel = QLabel("65"); self.wlabel.setObjectName("headVal")
-        weight = QCustomRulerPicker(value=65, minimum=40, maximum=120, step=1)
-        weight.majorEvery = 5
-        weight.indicatorColor = ACCENT
-        weight.valueChanged.connect(lambda v: self.wlabel.setText("%g" % v))
-        grid.addWidget(card("Weight", "Kg", weight, self.wlabel), 0, 0, 1, 2)
-
-        # Height — centered scrolling picker, big value readout
-        height = QCustomRulerPicker(value=178, minimum=120, maximum=210, step=1)
-        height.centered = True
-        height.tickSpacing = 10
-        height.majorEvery = 5
-        height.showValue = True
-        height.unit = "cm"
-        height.indicatorColor = "#2fd27a"
-        grid.addWidget(card("Height", "", height), 1, 0)
-
-        # Body fat — fixed, fine step, one decimal
-        bf = QCustomRulerPicker(value=18.5, minimum=5, maximum=40, step=0.5)
-        bf.majorEvery = 10          # a label every 5.0
-        bf.showValue = True
-        bf.unit = "%"
-        bf.indicatorColor = "#f4a63b"
-        grid.addWidget(card("Body fat", "", bf), 1, 1)
-
-        # Vertical ruler — temperature
-        temp = QCustomRulerPicker(value=22, minimum=16, maximum=30, step=1,
-                                  orientation="vertical")
-        temp.majorEvery = 2
-        temp.showValue = True
-        temp.unit = "°C"
-        temp.indicatorColor = "#3aa0ff"
-        grid.addWidget(card("Thermostat", "", temp), 0, 2, 2, 1)
-
-        self.setStyleSheet("""
-            QMainWindow { background: #0e1016; }
-            QWidget { color: #e7e9ef; font-family: 'Segoe UI', 'Inter', sans-serif; }
-            QFrame#card {
-                background: #171a22; border: 1px solid #232833; border-radius: 18px;
-            }
-            QLabel#cardTitle { font-size: 16px; font-weight: 600; color: #f4f6fb; }
-            QLabel#cardUnit  { font-size: 13px; color: #6b7280; }
-            QLabel#headVal   { font-size: 18px; font-weight: 700; color: #7c5cff; }
-        """)
+def chartPalette(themeName):
+    """Ruler indicator hues live WITH the theme (ChartPalette in style.json)."""
+    root = os.path.dirname(os.path.abspath(__file__))
+    with open(os.path.join(root, "json-styles", "style.json"), encoding="utf-8") as f:
+        data = json.load(f)
+    pal = data.get("ChartPalette", {})
+    return pal.get(str(themeName)) or pal.get(THEME_DEFAULT) or {}
 
 
-def main():
-    app = QApplication.instance() or QApplication(sys.argv)
-    win = Preview()
-    win.show()
-    try:
+class MainWindow(QCustomMainWindow):
+    def __init__(self, parent=None):
+        QCustomMainWindow.__init__(self)
+        from src.ui_MainWindow import Ui_MainWindow
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+
+        # Point QSettings at THIS app BEFORE loadJsonStyle: the loader reads
+        # THEME during parse, and a stale value in the shared pre-identity
+        # store strips every Default-Theme flag (wrong theme wins).
+        QCoreApplication.setOrganizationName("Custom Widgets")
+        QCoreApplication.setApplicationName("RulerPickerDemo")
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
+
+        self.show()
+        themeEngine = self.themeEngine
+        org = getattr(themeEngine, "organizationName", "")
+        if org:
+            QCoreApplication.setOrganizationName(str(org))
+        appn = getattr(themeEngine, "applicationName", "")
+        if appn:
+            QCoreApplication.setApplicationName(str(appn))
+        orgd = getattr(themeEngine, "organizationDomain", "")
+        if orgd:
+            QCoreApplication.setOrganizationDomain(str(orgd))
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            # Prefer the theme flagged default; a stale shared QSettings file can
+            # clear every defaultTheme flag at load time, so fall back to this
+            # app's own default theme name explicitly.
+            names = [t.name for t in themeEngine.themes]
+            default = next((t.name for t in themeEngine.themes
+                            if getattr(t, "defaultTheme", False)), None)
+            if default is None and THEME_DEFAULT in names:
+                default = THEME_DEFAULT
+            if default:
+                s.setValue("THEME", default)
+                s.setValue("INIT-THEME-SET", True)
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
+
         from Custom_Widgets.AppControl import maybe_start_app_control
-        maybe_start_app_control()
-    except Exception:
-        pass
-    app.exec()
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
+
+        self._seedRulers()
+
+    def _seedRulers(self):
+        """Theme-driven indicator colours + live readout wiring (static ruler
+        config — spans, steps, units, orientation — lives in the .ui)."""
+        theme = QSettings().value("THEME") or getattr(self.themeEngine, "theme", "")
+        pal = chartPalette(theme)
+        ui = self.ui
+
+        ui.weightRuler.indicatorColor = pal["weightIndicator"]
+        ui.heightRuler.indicatorColor = pal["heightIndicator"]
+        ui.bodyFatRuler.indicatorColor = pal["bodyFatIndicator"]
+        ui.thermoRuler.indicatorColor = pal["thermoIndicator"]
+
+        # Weight — value shown live in the card header
+        ui.weightRuler.valueChanged.connect(
+            lambda v: ui.weightValue.setText("%g" % v))
 
 
 if __name__ == "__main__":
-    main()
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    sys.exit(app.exec())

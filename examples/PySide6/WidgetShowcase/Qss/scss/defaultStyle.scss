@@ -1,0 +1,544 @@
+/* Widget Showcase — every piece of chrome lives here ($TOKENS +
+   $OTHER_VARIABLES only; theme values come from json-styles/style.json). */
+
+#MainWindow,
+#centralwidget {
+  background: $COLOR_BACKGROUND_1;
+}
+
+/* ── Header + section titles ── */
+#headerTitle {
+  color: $COLOR_TEXT_1;
+  font-size: 24px;
+  font-weight: 700;
+  padding-bottom: 4px;
+}
+
+#themeLabel {
+  color: $COLOR_TEXT_2;
+  font-weight: 500;
+}
+
+#formsSectionLabel,
+#kpiSectionLabel,
+#alertsSectionLabel,
+#cardSectionLabel {
+  color: $COLOR_TEXT_1;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+#groupSectionLabel,
+#rangeSectionLabel,
+#switchSectionLabel,
+#progressSectionLabel,
+#ratingSectionLabel,
+#badgeSectionLabel,
+#toastSectionLabel,
+#accordionSectionLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+/* ── Tabs ── */
+#tabs::pane {
+  border: 1px solid $BORDER;
+  border-radius: 8px;
+  background-color: $CARD;
+  top: -1px;
+}
+
+#tabs QTabBar::tab {
+  background-color: transparent;
+  color: $COLOR_TEXT_2;
+  padding: 8px 16px;
+  margin-right: 2px;
+  border: none;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+#tabs QTabBar::tab:hover:!selected {
+  color: $COLOR_ACCENT_1;
+}
+
+#tabs QTabBar::tab:selected {
+  background-color: $CARD;
+  color: $COLOR_ACCENT_1;
+  border: 1px solid $BORDER;
+  border-bottom: none;
+  font-weight: 600;
+}
+
+#inputsTab,
+#dataTab,
+#feedbackTab,
+#advancedTab,
+#inputsScroll,
+#dataScroll,
+#feedbackScroll,
+#advancedScroll,
+#inputsContent,
+#dataContent,
+#feedbackContent,
+#advancedContent,
+#themeGroupHost,
+#prefGroupHost,
+#cardContentHolder {
+  background: transparent;
+  border: none;
+}
+
+/* ── Form card + QCustomForm rows ── */
+#formCard {
+  background: $MUTED;
+  border: 1px solid $BORDER;
+  border-radius: 12px;
+  padding: 8px;
+}
+
+#formCard QLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 12px;
+  background: transparent;
+}
+
+#showcaseForm QPushButton {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER;
+  border-radius: 8px;
+  padding: 6px 14px;
+}
+
+#showcaseForm QPushButton:hover {
+  border: 1px solid $COLOR_ACCENT_1;
+  color: $COLOR_ACCENT_1;
+}
+
+QCustomInput {
+  background: $CARD;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER;
+  border-radius: 8px;
+  padding: 6px 10px;
+  selection-background-color: $COLOR_ACCENT_1;
+}
+
+QCustomInput:focus {
+  border: 1px solid $COLOR_ACCENT_1;
+}
+
+QCustomInput[state="error"] {
+  border: 1px solid $DANGER;
+}
+
+/* ── Combo box (form selection field) ── */
+QCustomComboBox {
+  background-color: $CARD;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER;
+  border-radius: 8px;
+  padding: 5px 10px;
+  min-width: 130px;
+}
+
+QCustomComboBox::drop-down {
+  border: none;
+  width: 22px;
+}
+
+QCustomComboBox QAbstractItemView {
+  background-color: $CARD;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER;
+  outline: 0;
+  selection-background-color: $COLOR_ACCENT_1;
+  selection-color: $ON_ACCENT;
+}
+
+/* ── Button groups (theme switcher + billing period) ── */
+QCustomButtonGroup QPushButton {
+  background: transparent;
+  color: $COLOR_TEXT_2;
+  border: 1px solid $BORDER;
+  border-radius: 8px;
+  padding: 5px 16px;
+}
+
+QCustomButtonGroup QPushButton:hover {
+  border-color: $COLOR_ACCENT_1;
+  color: $COLOR_ACCENT_1;
+}
+
+QCustomButtonGroup QPushButton:checked {
+  background: $COLOR_ACCENT_1;
+  color: $ON_ACCENT;
+  border: 1px solid $COLOR_ACCENT_1;
+  font-weight: 600;
+}
+
+/* ── Checkbox (painted; colours via qproperty) ── */
+#agreeCheck {
+  color: $COLOR_TEXT_1;
+  spacing: 8px;
+  background: transparent;
+  qproperty-backgroundColor: $COLOR_BACKGROUND_5;
+  qproperty-circleColor: $KNOB;
+  qproperty-activeColor: $COLOR_ACCENT_1;
+}
+
+/* ── Range slider + switch (painted; colours via qproperty) ── */
+QCustomRangeSlider {
+  background: transparent;
+  qproperty-trackColor: $COLOR_BACKGROUND_4;
+  qproperty-fillColor: $COLOR_ACCENT_1;
+  qproperty-handleColor: $KNOB;
+  qproperty-handleBorderColor: $COLOR_ACCENT_1;
+}
+
+QCustomSwitch {
+  background: transparent;
+  qproperty-trackOnColor: $COLOR_ACCENT_1;
+  qproperty-trackOffColor: $COLOR_BACKGROUND_5;
+  qproperty-thumbColor: $KNOB;
+}
+
+/* ── KPI stat cards ── */
+QCustomStatCard {
+  background-color: $CARD;
+  border: 1px solid $BORDER;
+  border-radius: 12px;
+}
+
+QCustomStatCard #statLabel {
+  background: transparent;
+  color: $COLOR_TEXT_3;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+QCustomStatCard #statValue {
+  background: transparent;
+  color: $COLOR_TEXT_1;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+QCustomStatCard #statCaption {
+  background: transparent;
+  color: $COLOR_TEXT_3;
+  font-size: 12px;
+}
+
+QCustomStatCard #statDelta {
+  background: transparent;
+  color: $COLOR_TEXT_3;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+QCustomStatCard[trend="up"] #statDelta {
+  color: $TREND_UP;
+}
+
+QCustomStatCard[trend="down"] #statDelta {
+  color: $TREND_DOWN;
+}
+
+/* ── Progress rings (painted; colours via qproperty) ── */
+QCustomProgressRing {
+  background: transparent;
+  qproperty-ringColor: $COLOR_ACCENT_1;
+  qproperty-trackColor: $COLOR_BACKGROUND_4;
+  qproperty-textColor: $COLOR_TEXT_1;
+}
+
+#cpuLabel,
+#memoryLabel,
+#diskLabel {
+  background: transparent;
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+/* ── Rating ── */
+QCustomRating {
+  background: transparent;
+}
+
+QCustomRating #ratingStar {
+  background: transparent;
+  color: $COLOR_TEXT_4;
+  font-size: 18px;
+}
+
+QCustomRating #ratingStar[filled="true"] {
+  color: $WARNING;
+}
+
+/* ── Badges ── */
+QCustomBadge {
+  border-radius: 10px;
+  padding: 2px 10px;
+  font-weight: 500;
+  font-size: 12px;
+  background-color: $MUTED;
+  color: $COLOR_TEXT_1;
+}
+
+QCustomBadge[variant="primary"] {
+  background-color: $COLOR_ACCENT_1;
+  color: $ON_ACCENT;
+}
+
+QCustomBadge[variant="success"] {
+  background-color: $SUCCESS;
+  color: $ON_ACCENT;
+}
+
+QCustomBadge[variant="warning"] {
+  background-color: $WARNING;
+  color: $ON_ACCENT;
+}
+
+QCustomBadge[variant="destructive"] {
+  background-color: $DANGER;
+  color: $ON_ACCENT;
+}
+
+/* ── Alerts ── */
+QCustomAlert {
+  background-color: $CARD;
+  border: 1px solid $BORDER;
+  border-radius: 10px;
+}
+
+QCustomAlert #alertTitle {
+  background: transparent;
+  font-weight: 600;
+}
+
+QCustomAlert #alertText {
+  background: transparent;
+  color: $COLOR_TEXT_2;
+}
+
+QCustomAlert #alertIcon {
+  background: transparent;
+  font-size: 16px;
+}
+
+QCustomAlert #alertClose {
+  background: transparent;
+  border: none;
+  color: $COLOR_TEXT_3;
+}
+
+QCustomAlert #alertClose:hover {
+  color: $COLOR_TEXT_1;
+}
+
+QCustomAlert[variant="info"] {
+  border-color: $INFO;
+  border-left: 4px solid $INFO;
+}
+
+QCustomAlert[variant="info"] #alertIcon,
+QCustomAlert[variant="info"] #alertTitle {
+  color: $INFO;
+}
+
+QCustomAlert[variant="success"] {
+  border-color: $SUCCESS;
+  border-left: 4px solid $SUCCESS;
+}
+
+QCustomAlert[variant="success"] #alertIcon,
+QCustomAlert[variant="success"] #alertTitle {
+  color: $SUCCESS;
+}
+
+QCustomAlert[variant="warning"] {
+  border-color: $WARNING;
+  border-left: 4px solid $WARNING;
+}
+
+QCustomAlert[variant="warning"] #alertIcon,
+QCustomAlert[variant="warning"] #alertTitle {
+  color: $WARNING;
+}
+
+QCustomAlert[variant="destructive"] {
+  border-color: $DANGER;
+  border-left: 4px solid $DANGER;
+}
+
+QCustomAlert[variant="destructive"] #alertIcon,
+QCustomAlert[variant="destructive"] #alertTitle {
+  color: $DANGER;
+}
+
+/* ── Toast trigger buttons + runtime toasts ── */
+QCustomQPushButton[variant="outline"] {
+  background: transparent;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER;
+  border-radius: 8px;
+  padding: 7px 18px;
+}
+
+QCustomQPushButton[variant="outline"]:hover {
+  border-color: $COLOR_ACCENT_1;
+  color: $COLOR_ACCENT_1;
+}
+
+QCustomToast {
+  background-color: $CARD;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER;
+  border-radius: 8px;
+}
+
+QCustomToast #toastTitle {
+  color: $COLOR_TEXT_1;
+  font-weight: 600;
+}
+
+QCustomToast #toastMessage {
+  color: $COLOR_TEXT_2;
+}
+
+QCustomToast #toastClose {
+  background-color: transparent;
+  border: none;
+  color: $COLOR_TEXT_2;
+  border-radius: 4px;
+}
+
+QCustomToast #toastClose:hover {
+  background-color: $MUTED;
+}
+
+QCustomToast[variant="success"] {
+  border-left: 4px solid $SUCCESS;
+}
+
+QCustomToast[variant="success"] #toastIcon {
+  color: $SUCCESS;
+}
+
+QCustomToast[variant="error"] {
+  border-left: 4px solid $DANGER;
+}
+
+QCustomToast[variant="error"] #toastIcon {
+  color: $DANGER;
+}
+
+QCustomToast[variant="warning"] {
+  border-left: 4px solid $WARNING;
+}
+
+QCustomToast[variant="warning"] #toastIcon {
+  color: $WARNING;
+}
+
+QCustomToast[variant="info"] {
+  border-left: 4px solid $INFO;
+}
+
+QCustomToast[variant="info"] #toastIcon {
+  color: $INFO;
+}
+
+/* ── Card container + accordion ── */
+QCustomCard {
+  background-color: $CARD;
+  border: 1px solid $BORDER;
+  border-radius: 14px;
+}
+
+QCustomCard #cardTitle {
+  background: transparent;
+  color: $COLOR_TEXT_1;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+QCustomCard #cardSubtitle {
+  background: transparent;
+  color: $COLOR_TEXT_3;
+  font-size: 12px;
+}
+
+QCustomCard #cardBody {
+  background: transparent;
+}
+
+#cardDescLabel {
+  background: transparent;
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+QCustomAccordion {
+  background: transparent;
+}
+
+QCustomAccordion #accordionHeader {
+  text-align: left;
+  background-color: $MUTED;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-weight: 600;
+}
+
+QCustomAccordion #accordionHeader:hover {
+  border-color: $COLOR_ACCENT_1;
+}
+
+QCustomAccordion #accordionHeader:checked {
+  color: $COLOR_ACCENT_1;
+  border-color: $COLOR_ACCENT_1;
+}
+
+QCustomAccordion #accordionContent {
+  background-color: $CARD;
+  border: 1px solid $BORDER;
+  border-top: none;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+QCustomAccordion #accordionContent QLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+  background: transparent;
+}
+
+/* ── Scrollbars ── */
+QScrollBar:vertical {
+  background: transparent;
+  width: 10px;
+  margin: 0;
+}
+
+QScrollBar::handle:vertical {
+  background: $COLOR_BACKGROUND_4;
+  border-radius: 5px;
+  min-height: 30px;
+}
+
+QScrollBar::handle:vertical:hover {
+  background: $COLOR_ACCENT_1;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+  height: 0;
+}

@@ -5,8 +5,8 @@ description: >-
   forms pipeline (.ui + compiled src/ + json-styles themes + Qss/scss $TOKENS +
   GuiFunctions managers + background workers). Use this for any production-shaped
   app, dashboard, or multi-page tool. NOT the quick pure-code token demo (that is
-  custom-widgets-demo). Mirrors examples/PySide6/AuroraDeckPro and
-  examples/PySide6/WinningDashboard_CorrectArchitecture.
+  custom-widgets-demo). Mirrors examples/PySide6/WinningDashboard_CorrectArchitecture (and the
+  supporter-only AuroraDeckPro in Custom-Widgets-Premium-Examples).
 ---
 
 # Building a real Custom_Widgets app (the forms pipeline)
@@ -21,7 +21,7 @@ never silently pretend the MCP path doesn't exist.
 The library's value is `.ui` forms + QSS/SCSS + JSON theming + component/manager
 composition — that is what makes an app maintainable. A single hand-built
 `main.py` full of hard-coded hex is a FAILURE for a production build, even if it
-looks right. Real apps look like `examples/PySide6/AuroraDeckPro`:
+looks right. Real apps look like `examples/PySide6/WinningDashboard_CorrectArchitecture`:
 
 ```
 ui/*.ui            hand/Designer-authored forms (structure + objectNames only)
@@ -34,7 +34,7 @@ main.py            minimal boot
 
 ## Golden build loop (no live MCP)
 ```bash
-# 1. scaffold: copy the structure of examples/PySide6/AuroraDeckPro (Qss/ has the
+# 1. scaffold: copy the structure of examples/PySide6/WinningDashboard_CorrectArchitecture (Qss/ has the
 #    icons _icons.qrc + scss skeleton). Keep _styles.scss / _variables.scss —
 #    they are GENERATED; only write chrome.scss / defaultStyle.scss.
 # 2. compile forms after EVERY .ui edit:

@@ -1,0 +1,66 @@
+/* QCustomComboBox showcase — field, drop-down and both popup lists styled
+   from theme tokens (loadJsonStyle does not ship the token-widget QSS). */
+
+#MainWindow,
+#centralwidget {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#autocompleteLabel,
+#selectLabel,
+#resultCaption {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#resultLabel {
+  color: $COLOR_TEXT_1;
+  font-size: 13px;
+}
+
+/* ---- QCustomComboBox field ---- */
+QCustomComboBox {
+  background-color: $FIELD_BG;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER_COLOR;
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+
+QCustomComboBox:focus {
+  border: 2px solid $COLOR_ACCENT_1;
+}
+
+QCustomComboBox:disabled {
+  color: $COLOR_TEXT_3;
+}
+
+QCustomComboBox QLineEdit {
+  background: transparent;
+  border: none;
+  color: $COLOR_TEXT_1;
+}
+
+QCustomComboBox::drop-down {
+  border: none;
+  width: 22px;
+  subcontrol-origin: padding;
+  subcontrol-position: center right;
+}
+
+/* ---- both popup lists: arrow drop-down + autocomplete completer ---- */
+#comboDropdown,
+#comboCompleterPopup {
+  background-color: $FIELD_BG;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER_COLOR;
+  outline: 0;
+  selection-background-color: $COLOR_ACCENT_1;
+  selection-color: $ON_FILL;
+}
+
+#comboDropdown::item,
+#comboCompleterPopup::item {
+  padding: 4px 8px;
+}

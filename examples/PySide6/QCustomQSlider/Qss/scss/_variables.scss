@@ -3,27 +3,27 @@
     //====================================================//
 
     // Background Colors
-    $COLOR_BACKGROUND_1: #0d1117;
-    $COLOR_BACKGROUND_2: #0a0d12;
-    $COLOR_BACKGROUND_3: #080a0e;
-    $COLOR_BACKGROUND_4: #06080b;
-    $COLOR_BACKGROUND_5: #040608;
+    $COLOR_BACKGROUND_1: #0f1117;
+    $COLOR_BACKGROUND_2: #0b0d12;
+    $COLOR_BACKGROUND_3: #090a0e;
+    $COLOR_BACKGROUND_4: #07080b;
+    $COLOR_BACKGROUND_5: #050608;
     $COLOR_BACKGROUND_6: #030405;
 
     // Background RGB Values
-    $CB1_R: 13;
+    $CB1_R: 15;
     $CB1_G: 17;
     $CB1_B: 23;
-    $CB2_R: 10;
+    $CB2_R: 11;
     $CB2_G: 13;
     $CB2_B: 18;
-    $CB3_R: 8;
+    $CB3_R: 9;
     $CB3_G: 10;
     $CB3_B: 14;
-    $CB4_R: 6;
+    $CB4_R: 7;
     $CB4_G: 8;
     $CB4_B: 11;
-    $CB5_R: 4;
+    $CB5_R: 5;
     $CB5_G: 6;
     $CB5_B: 8;
     $CB6_R: 3;
@@ -31,55 +31,55 @@
     $CB6_B: 5;
 
     // Text Colors
-    $COLOR_TEXT_1: white;
-    $COLOR_TEXT_2: #CCCCCC;
-    $COLOR_TEXT_3: #999999;
-    $COLOR_TEXT_4: #666666;
+    $COLOR_TEXT_1: #e8ecf1;
+    $COLOR_TEXT_2: #B9BCC0;
+    $COLOR_TEXT_3: #8B8D90;
+    $COLOR_TEXT_4: #5C5E60;
 
     // Text RGB Values
-    $CT1_R: 255;
-    $CT1_G: 255;
-    $CT1_B: 255;
-    $CT2_R: 204;
-    $CT2_G: 204;
-    $CT2_B: 204;
-    $CT3_R: 153;
-    $CT3_G: 153;
-    $CT3_B: 153;
-    $CT4_R: 102;
-    $CT4_G: 102;
-    $CT4_B: 102;
+    $CT1_R: 232;
+    $CT1_G: 236;
+    $CT1_B: 241;
+    $CT2_R: 185;
+    $CT2_G: 188;
+    $CT2_B: 192;
+    $CT3_R: 139;
+    $CT3_G: 141;
+    $CT3_B: 144;
+    $CT4_R: 92;
+    $CT4_G: 94;
+    $CT4_B: 96;
 
     // Accent Colors
-    $COLOR_ACCENT_1: #238636;
-    $COLOR_ACCENT_2: #1C6B2B;
-    $COLOR_ACCENT_3: #155020;
-    $COLOR_ACCENT_4: #0E3515;
+    $COLOR_ACCENT_1: #7AB3F0;
+    $COLOR_ACCENT_2: #618FC0;
+    $COLOR_ACCENT_3: #496B90;
+    $COLOR_ACCENT_4: #304760;
 
     // Accent RGB Values
-    $CA1_R: 35;
-    $CA1_G: 134;
-    $CA1_B: 54;
-    $CA2_R: 28;
-    $CA2_G: 107;
-    $CA2_B: 43;
-    $CA3_R: 21;
-    $CA3_G: 80;
-    $CA3_B: 32;
-    $CA4_R: 14;
-    $CA4_G: 53;
-    $CA4_B: 21;
+    $CA1_R: 122;
+    $CA1_G: 179;
+    $CA1_B: 240;
+    $CA2_R: 97;
+    $CA2_G: 143;
+    $CA2_B: 192;
+    $CA3_R: 73;
+    $CA3_G: 107;
+    $CA3_B: 144;
+    $CA4_R: 48;
+    $CA4_G: 71;
+    $CA4_B: 96;
 
     // Modern CSS Variables (Derived)
-    $COLOR_PRIMARY: #238636;
-    $COLOR_PRIMARY_DARK: #1C6B2B;
-    $COLOR_PRIMARY_LIGHT: #1C6B2B;
-    $COLOR_ON_PRIMARY: white;
-    $COLOR_SURFACE: #0d1117;
-    $COLOR_SURFACE_VARIANT: #080a0e;
-    $COLOR_ON_SURFACE: white;
-    $COLOR_BORDER: #06080b;
-    $COLOR_BORDER_FOCUS: #238636;
+    $COLOR_PRIMARY: #7AB3F0;
+    $COLOR_PRIMARY_DARK: #618FC0;
+    $COLOR_PRIMARY_LIGHT: #618FC0;
+    $COLOR_ON_PRIMARY: #e8ecf1;
+    $COLOR_SURFACE: #0f1117;
+    $COLOR_SURFACE_VARIANT: #090a0e;
+    $COLOR_ON_SURFACE: #e8ecf1;
+    $COLOR_BORDER: #07080b;
+    $COLOR_BORDER_FOCUS: #7AB3F0;
 
     // Theme Mode Variables
     $THEME_MODE: "DARK";
@@ -118,7 +118,7 @@
 
     // Paths
     $PATH_RESOURCES: 'theme-icons:icons/';
-    $ICONS_COLOR: white;
+    $ICONS_COLOR: #9ca3af;
     $RELATIVE_FOLDER: "/home/p/git/QT-PyQt-PySide-Custom-Widgets/examples/PySide6/QCustomQSlider/";
     $BASE_DIR: "/home/p/git/QT-PyQt-PySide-Custom-Widgets/examples/PySide6/QCustomQSlider/";
 

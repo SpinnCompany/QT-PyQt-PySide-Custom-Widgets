@@ -1,0 +1,73 @@
+{
+    "QtBinding": "PySide6",
+    "QMainWindow": {
+        "title": "QCustomDonut — % callouts + hatch"
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "DonutEnhanceDemo"
+        },
+        "ThemeSettings": {
+            "CustomThemes": [
+                {
+                    "Theme-name": "Donut Dark",
+                    "Default-Theme": true,
+                    "Create-icons": false,
+                    "Background-color": "#0e1016",
+                    "Text-color": "#e7e9ef",
+                    "Accent-color": "#8b5cf6",
+                    "Icons-color": "#9aa1b2",
+                    "Other-variables": {
+                        "CARD_BG": "#171a22",
+                        "CARD_BORDER": "#232833",
+                        "CARD_TITLE": "#f4f6fb",
+                        "CARD_SUB": "#6b7280",
+                        "LEG_NAME": "#c3c8d2",
+                        "DONUT_T1": "#8b5cf6",
+                        "DONUT_T2": "#c3f53c",
+                        "DONUT_T3": "#1f9bff",
+                        "DONUT_T4": "#3a4150",
+                        "DONUT_T5": "#5b6472",
+                        "DONUT_S1": "#3aa0ff",
+                        "DONUT_S2": "#7c5cff",
+                        "DONUT_S3": "#28c2d1",
+                        "DONUT_S4": "#3a4150",
+                        "DONUT_C1": "#7c6cf6",
+                        "DONUT_C2": "#f2794b",
+                        "DONUT_C3": "#f4c44e"
+                    }
+                },
+                {
+                    "Theme-name": "Donut Light",
+                    "Default-Theme": false,
+                    "Create-icons": false,
+                    "Background-color": "#eef1f5",
+                    "Text-color": "#1c2430",
+                    "Accent-color": "#7c4dea",
+                    "Icons-color": "#6b7280",
+                    "Other-variables": {
+                        "CARD_BG": "#ffffff",
+                        "CARD_BORDER": "#dfe3ea",
+                        "CARD_TITLE": "#10151d",
+                        "CARD_SUB": "#7b8494",
+                        "LEG_NAME": "#4c5563",
+                        "DONUT_T1": "#7c4dea",
+                        "DONUT_T2": "#9fce16",
+                        "DONUT_T3": "#1387e6",
+                        "DONUT_T4": "#3a4150",
+                        "DONUT_T5": "#8b93a1",
+                        "DONUT_S1": "#2b7fd4",
+                        "DONUT_S2": "#6a49ea",
+                        "DONUT_S3": "#1ba7b6",
+                        "DONUT_S4": "#3a4150",
+                        "DONUT_C1": "#6a58e0",
+                        "DONUT_C2": "#e0632f",
+                        "DONUT_C3": "#d9a814"
+                    }
+                }
+            ]
+        }
+    },
+    "_comment": "DONUT_* hues are read in code via themeEngine.themeColor() AND referenced in Qss/scss for the legend dots — one source, so slices and dots always match and flip with the theme."
+}

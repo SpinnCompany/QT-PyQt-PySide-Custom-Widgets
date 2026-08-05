@@ -1,0 +1,84 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#searchEdit {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+#searchEdit:focus {
+  border: 1px solid $COLOR_ACCENT_1;
+}
+
+#statusLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+QStatusBar {
+  color: $COLOR_TEXT_3;
+  background: $COLOR_BACKGROUND_1;
+}
+
+/* ---- QCustomDataTable: view, header, selection, footer ---- */
+QCustomDataTable {
+  background-color: transparent;
+}
+
+#dataTableView {
+  background-color: $COLOR_BACKGROUND_1;
+  alternate-background-color: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  gridline-color: $COLOR_BACKGROUND_4;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 8px;
+  selection-background-color: $COLOR_ACCENT_1;
+  selection-color: $COLOR_BACKGROUND_1;
+}
+
+#dataTableView::item {
+  padding: 4px 8px;
+}
+
+QCustomDataTable QHeaderView::section {
+  background-color: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_2;
+  border: none;
+  border-bottom: 1px solid $COLOR_BACKGROUND_4;
+  padding: 8px;
+  font-weight: 600;
+}
+
+QCustomDataTable QTableCornerButton::section {
+  background-color: $COLOR_BACKGROUND_2;
+  border: none;
+}
+
+#dataTableFooter {
+  background-color: transparent;
+}
+
+#dataTablePageLabel {
+  color: $COLOR_TEXT_2;
+}
+
+#dataTablePrev, #dataTableNext {
+  background-color: transparent;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 6px;
+  padding: 4px 12px;
+}
+
+#dataTablePrev:hover, #dataTableNext:hover {
+  background-color: $COLOR_BACKGROUND_2;
+}
+
+#dataTablePrev:disabled, #dataTableNext:disabled {
+  color: $COLOR_TEXT_4;
+}

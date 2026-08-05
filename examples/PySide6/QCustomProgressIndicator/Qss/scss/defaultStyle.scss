@@ -1,0 +1,52 @@
+#centralwidget {
+  background-color: $COLOR_BACKGROUND_1;
+}
+
+#titleLabel {
+  color: $COLOR_ACCENT_1;
+  font-size: 22px;
+  font-weight: bold;
+  padding: 4px 0;
+}
+
+#downloadCaption, #caption10, #caption5 {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+#downloadIndicator, #formIndicator10, #formIndicator5 {
+  background: transparent;
+}
+
+#statsFrame, #stepRow10, #stepRow5 {
+  background: transparent;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 8px;
+}
+
+#heightCaption, #stepsCaption, #themeCaption {
+  color: $COLOR_TEXT_3;
+  font-size: 13px;
+}
+
+#heightValue, #stepsValue, #themeValue {
+  color: $COLOR_ACCENT_1;
+  font-size: 13px;
+}
+
+#stepRow10 QPushButton, #stepRow5 QPushButton {
+  background-color: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  padding: 5px;
+  border-radius: 5px;
+  border: 2px solid $COLOR_BACKGROUND_5;
+}
+
+#stepRow10 QPushButton:hover, #stepRow5 QPushButton:hover {
+  border: 2px solid $COLOR_ACCENT_2;
+  color: $COLOR_ACCENT_1;
+}
+
+#stepRow10 QPushButton:pressed, #stepRow5 QPushButton:pressed {
+  background-color: $COLOR_BACKGROUND_4;
+}

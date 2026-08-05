@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>520</width>
+    <height>260</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QCustomCheckBox Showcase</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">16</property>
+    <property name="leftMargin">24</property>
+    <property name="topMargin">24</property>
+    <property name="rightMargin">24</property>
+    <property name="bottomMargin">24</property>
+    <item>
+     <widget class="QLabel" name="titleLabel">
+      <property name="text">
+       <string>Animated Toggle Checkboxes</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QFrame" name="card">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="spacing">20</property>
+       <property name="leftMargin">20</property>
+       <property name="topMargin">20</property>
+       <property name="rightMargin">20</property>
+       <property name="bottomMargin">20</property>
+       <item>
+        <widget class="QCustomCheckBox" name="checkBox_3">
+         <property name="minimumSize">
+          <size>
+           <width>140</width>
+           <height>28</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>CheckBox 1</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <property name="animationDuration" stdset="0">
+          <number>500</number>
+         </property>
+         <property name="animationEasingCurve" stdset="0">
+          <number>7</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomCheckBox" name="checkBox_2">
+         <property name="minimumSize">
+          <size>
+           <width>140</width>
+           <height>28</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>CheckBox 2</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCustomCheckBox" name="checkBox">
+         <property name="minimumSize">
+          <size>
+           <width>140</width>
+           <height>28</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>CheckBox 3</string>
+         </property>
+         <property name="animationDuration" stdset="0">
+          <number>200</number>
+         </property>
+         <property name="animationEasingCurve" stdset="0">
+          <number>0</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header location="global">Custom_Widgets.QCustomCheckBox.h</header>
+  </customwidget>
+ <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>

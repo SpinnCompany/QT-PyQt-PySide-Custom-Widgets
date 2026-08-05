@@ -1,0 +1,30 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "Pagination Popover Segmented Demo"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Pager-Dark",
+          "Default-Theme": true,
+          "Background-color": "#10141f",
+          "Text-color": "#e8ecf4",
+          "Accent-color": "#6ea8fe",
+          "Icons-color": "#9aa7bd",
+          "Create-icons": false
+        },
+        {
+          "Theme-name": "Pager-Light",
+          "Default-Theme": false,
+          "Background-color": "#f4f6fa",
+          "Text-color": "#1b2434",
+          "Accent-color": "#2563eb",
+          "Icons-color": "#5b6b83",
+          "Create-icons": false
+        }
+      ]
+    }
+  }
+}

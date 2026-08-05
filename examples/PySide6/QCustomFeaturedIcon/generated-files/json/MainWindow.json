@@ -1,0 +1,21 @@
+{
+  "QComboBox": [
+    {
+      "name": "sizeCombo",
+      "items": [
+        {
+          "name": "sm"
+        },
+        {
+          "name": "md"
+        },
+        {
+          "name": "lg"
+        },
+        {
+          "name": "xl"
+        }
+      ]
+    }
+  ]
+}

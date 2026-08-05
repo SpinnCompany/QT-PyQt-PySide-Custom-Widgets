@@ -1,0 +1,80 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomQPushButton Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Button Midnight",
+          "Default-Theme": true,
+          "Create-icons": true,
+          "Background-color": "#12162a",
+          "Text-color": "#e8ecf5",
+          "Accent-color": "#2596be",
+          "Icons-color": "#e8ecf5",
+          "Other-variables": {
+            "CARD_BG": "#1a1f38",
+            "CARD_BORDER": "#272e52"
+          }
+        },
+        {
+          "Theme-name": "Button Paper",
+          "Default-Theme": false,
+          "Create-icons": true,
+          "Background-color": "#f4f6fb",
+          "Text-color": "#161a2c",
+          "Accent-color": "#1b7ba0",
+          "Icons-color": "#3c4460",
+          "Other-variables": {
+            "CARD_BG": "#ffffff",
+            "CARD_BORDER": "#d9dfef"
+          }
+        }
+      ]
+    }
+  },
+  "QPushButton": [
+    {
+      "name": "customThemeButton",
+      "customTheme": [
+        {
+          "color1": "#2596be",
+          "color2": "rgb(37, 150, 190)"
+        }
+      ],
+      "animateOn": "hover"
+    },
+    {
+      "name": "shadowThemeButton",
+      "theme": "2",
+      "animateOn": "click",
+      "shadow": [
+        {
+          "color": "#2596be",
+          "applyShadowOn": "click",
+          "animateShadow": true,
+          "animateShadowDuration": 500,
+          "blurRadius": 100
+        }
+      ]
+    },
+    {
+      "name": "borderThemeButton",
+      "theme": "3",
+      "animation": "border",
+      "animateOn": "hover",
+      "shadow": [
+        {
+          "color": "#2596be",
+          "animateShadow": true,
+          "animateShadowDuration": 500,
+          "blurRadius": 100,
+          "xOffset": 2,
+          "yOffset": 2
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+    "QtBinding": "PySide6",
+    "QMainWindow": {
+        "title": "QCustomFeaturedIcon"
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "QCustomFeaturedIconDemo"
+        },
+        "ThemeSettings": {
+            "CustomThemes": [
+                {
+                    "Theme-name": "Featured Dark",
+                    "Default-Theme": true,
+                    "Create-icons": false,
+                    "Background-color": "#111420",
+                    "Text-color": "#e8ebf4",
+                    "Accent-color": "#6d8bfa",
+                    "Icons-color": "#9aa3b8",
+                    "Other-variables": {
+                        "SURFACE": "#1a1e2e",
+                        "OUTLINE": "#2b3145",
+                        "MUTED": "#8d95a9",
+                        "ON_ACCENT": "#f4f6ff"
+                    }
+                },
+                {
+                    "Theme-name": "Featured Light",
+                    "Default-Theme": false,
+                    "Create-icons": false,
+                    "Background-color": "#f5f6fa",
+                    "Text-color": "#1c2333",
+                    "Accent-color": "#4356e0",
+                    "Icons-color": "#6b7280",
+                    "Other-variables": {
+                        "SURFACE": "#ffffff",
+                        "OUTLINE": "#d7dbe7",
+                        "MUTED": "#7c8496",
+                        "ON_ACCENT": "#ffffff"
+                    }
+                }
+            ]
+        }
+    }
+}

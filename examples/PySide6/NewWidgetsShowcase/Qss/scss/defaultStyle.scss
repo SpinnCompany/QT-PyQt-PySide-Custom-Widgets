@@ -1,0 +1,136 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#headerLabel {
+  color: $COLOR_TEXT_1;
+  font-size: 26px;
+  font-weight: bold;
+  padding-bottom: 4px;
+}
+
+#formTitle, #vizTitle {
+  color: $COLOR_TEXT_1;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+#groupsTitle, #gaugeSectionLabel, #rulerCaption, #waveformCaption, #heatmapCaption {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+#radialCaption, #liquidCaption {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+#groupCaptionOutline, #groupCaptionPrimary, #groupCaptionSecondary {
+  color: $COLOR_TEXT_3;
+  font-size: 11px;
+}
+
+#leftScroll, #rightScroll, #leftContent, #rightContent {
+  background: transparent;
+  border: none;
+}
+
+#formCard, #groupsCard {
+  background: $COLOR_BACKGROUND_3;
+  border: none;
+  border-radius: 12px;
+  padding: 8px;
+}
+
+/* ---- form rows (QCustomForm renders QFormLayout labels + a Submit) ---- */
+#formCard QLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 12px;
+}
+
+#showcaseForm QPushButton {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_1;
+  border-radius: 8px;
+  padding: 6px 14px;
+}
+
+#showcaseForm QPushButton:hover {
+  border: 1px solid $COLOR_ACCENT_1;
+  color: $COLOR_ACCENT_1;
+}
+
+/* ---- QCustomInput variants ---- */
+QCustomInput {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_1;
+  border-radius: 8px;
+  selection-background-color: $COLOR_ACCENT_1;
+}
+
+QCustomInput:focus {
+  border: 1px solid $COLOR_ACCENT_1;
+}
+
+QCustomInput[variant="primary"] {
+  border: 1px solid $COLOR_ACCENT_1;
+}
+
+QCustomInput[variant="secondary"] {
+  background: $COLOR_BACKGROUND_4;
+  border: 1px solid $COLOR_BACKGROUND_4;
+}
+
+/* ---- QCustomButtonGroup buttons (variant carried as a dynamic property) ---- */
+QCustomButtonGroup QPushButton {
+  background: transparent;
+  color: $COLOR_TEXT_2;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 8px;
+  padding: 5px 14px;
+}
+
+QCustomButtonGroup QPushButton:checked {
+  background: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+  border: 1px solid $COLOR_ACCENT_1;
+}
+
+QCustomButtonGroup QPushButton[variant="primary"] {
+  border: 1px solid $COLOR_ACCENT_1;
+  color: $COLOR_ACCENT_1;
+}
+
+QCustomButtonGroup QPushButton[variant="primary"]:checked {
+  background: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+}
+
+QCustomButtonGroup QPushButton[variant="secondary"] {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_2;
+}
+
+QCustomButtonGroup QPushButton[variant="secondary"]:checked {
+  background: $COLOR_ACCENT_2;
+  color: $COLOR_BACKGROUND_1;
+}
+
+/* ---- submit action ---- */
+#submitBtn {
+  background: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 22px;
+  font-weight: 600;
+}
+
+#submitBtn:hover {
+  background: $COLOR_ACCENT_2;
+}

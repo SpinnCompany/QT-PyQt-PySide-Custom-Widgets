@@ -1,0 +1,50 @@
+//===================================================//
+// QCustomRadioGroup showcase — all chrome lives here.
+// Tokens only; hues come from json-styles/style.json.
+//===================================================//
+
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#planCard, #billingCard, #seatsCard {
+  background: $COLOR_BACKGROUND_2;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+// Group titles are painted with QPainter from a typed colour property.
+#planGroup, #billingGroup, #seatsGroup {
+  background: transparent;
+  qproperty-titleColor: $COLOR_TEXT_1;
+}
+
+// The radio buttons the groups build keep their class objectName, so one
+// rule themes every option in every group (including options swapped in
+// at runtime — new buttons are polished with the live stylesheet).
+#QCustomRadioButton {
+  background: transparent;
+  qproperty-textColor: $COLOR_TEXT_1;
+  qproperty-ringColor: $COLOR_TEXT_3;
+  qproperty-ringCheckedColor: $COLOR_ACCENT_1;
+  qproperty-dotColor: $COLOR_ACCENT_1;
+}
+
+#statusLabel {
+  color: $COLOR_ACCENT_1;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#swapButton, #themeButton {
+  background: $COLOR_BACKGROUND_3;
+  color: $COLOR_TEXT_2;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 8px;
+  padding: 8px 14px;
+}
+
+#swapButton:hover, #themeButton:hover {
+  border: 1px solid $COLOR_ACCENT_1;
+  color: $COLOR_TEXT_1;
+}

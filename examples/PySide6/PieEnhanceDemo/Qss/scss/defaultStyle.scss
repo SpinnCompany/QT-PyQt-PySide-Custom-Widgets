@@ -1,2 +1,41 @@
-// Project default styles (override theme styles)
-// New style files are @import-ed here automatically.
+// QCustomPieChart demo — chrome styles. Tokens ONLY (no hard-coded hex):
+// $COLOR_BACKGROUND_1..6, $COLOR_TEXT_1..4, $COLOR_ACCENT_1..4.
+// BG_1 is the base (card surface); higher numbers get darker, so the window
+// band behind the cards is BG_2. Slice hues are painted in main.py from the
+// token-driven ChartPalette in json-styles/style.json.
+
+#MainWindow,
+#centralwidget {
+    background-color: $COLOR_BACKGROUND_2;
+}
+
+#transferCard,
+#storageCard,
+#defaultCard {
+    background-color: $COLOR_BACKGROUND_1;
+    border: 1px solid $COLOR_BACKGROUND_3;
+    border-radius: 18px;
+}
+
+#transferTitle,
+#storageTitle,
+#defaultTitle {
+    background: transparent;
+    color: $COLOR_TEXT_1;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+#transferSub,
+#storageSub,
+#defaultSub {
+    background: transparent;
+    color: $COLOR_TEXT_3;
+    font-size: 11px;
+}
+
+#transferPie,
+#storagePie,
+#defaultPie {
+    background: transparent;
+}

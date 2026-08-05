@@ -1,76 +1,83 @@
-########################################################################
-## QCustomHeaderNav example
-##
-## A horizontal top nav. Narrow the window to watch items collapse into\n## a +N overflow rather than clipping off the edge.
-## Run:
-##     python main.py
-########################################################################
-import sys
+"""QCustomHeaderNav showcase — a horizontal top nav. Narrow the window to
+watch items collapse into a +N overflow rather than clipping off the edge."""
 
-from PySide6 import QtCore, QtWidgets
+import os, sys
 
-from Custom_Widgets.QCustomHeaderNav import QCustomHeaderNav
-from Custom_Widgets.JSonStyles.tokens import applyDesignTokens
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
 
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
 
-class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("QCustomHeaderNav")
-        central = QtWidgets.QWidget()
-        self.setCentralWidget(central)
-        layout = QtWidgets.QVBoxLayout(central)
-        layout.setContentsMargins(24, 24, 24, 24)
-        layout.setSpacing(16)
-        self._theme = "light"
-
-        self.nav = QCustomHeaderNav(
-            items=["home=Home", "docs=Docs", "pricing=Pricing", "blog=Blog",
-                   "changelog=Changelog"],
-            brand="Spinn UI")
-        self.nav.itemSelected.connect(
-            lambda key: self.status.setText("selected %s" % key))
-        self.nav.brandClicked.connect(
-            lambda: self.status.setText("brand clicked"))
-        self.nav.overflowClicked.connect(
-            lambda: self.status.setText("overflow clicked (%d hidden)"
-                                        % self.nav.hiddenCount()))
-        layout.addWidget(self.nav)
-        self.status = QtWidgets.QLabel("selected home")
-        layout.addWidget(self.status)
-
-        row = QtWidgets.QHBoxLayout()
-        indicator = QtWidgets.QComboBox()
-        indicator.addItems(["underline", "pill", "none"])
-        indicator.currentTextChanged.connect(
-            lambda v: setattr(self.nav, "indicator", v))
-        row.addWidget(QtWidgets.QLabel("Indicator"))
-        row.addWidget(indicator)
-
-        align = QtWidgets.QComboBox()
-        align.addItems(["left", "center", "right"])
-        align.currentTextChanged.connect(
-            lambda v: setattr(self.nav, "alignment", v))
-        row.addWidget(QtWidgets.QLabel("Align"))
-        row.addWidget(align)
-
-        theme = QtWidgets.QPushButton("Light / dark")
-        theme.clicked.connect(self._toggleTheme)
-        row.addWidget(theme)
-        row.addStretch(1)
-        layout.addLayout(row)
-        layout.addStretch(1)
-        self.resize(720, 320)
+from Custom_Widgets import *
+from qtpy.QtCore import QCoreApplication, QSettings
+from qtpy.QtWidgets import QApplication
 
 
-    def _toggleTheme(self):
-        self._theme = "dark" if self._theme == "light" else "light"
-        applyDesignTokens(QtWidgets.QApplication.instance(), theme=self._theme)
+class MainWindow(QCustomMainWindow):
+    def __init__(self, parent=None):
+        QCustomMainWindow.__init__(self)
+        from src.ui_MainWindow import Ui_MainWindow
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+
+        # Name the app BEFORE loadJsonStyle: theme parsing checks QSettings for
+        # an existing THEME, and without these names QSettings resolves to the
+        # shared "Unknown Organization/main.py.conf" — whose stale THEME would
+        # cancel this app's Default-Theme flag on every first run.
+        QCoreApplication.setOrganizationName("CustomWidgets")
+        QCoreApplication.setApplicationName("QCustomHeaderNav Example")
+
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
+
+        self.show()
+        themeEngine = self.themeEngine
+        org = getattr(themeEngine, "organizationName", "")
+        if org:
+            QCoreApplication.setOrganizationName(str(org))
+        appn = getattr(themeEngine, "applicationName", "")
+        if appn:
+            QCoreApplication.setApplicationName(str(appn))
+        orgd = getattr(themeEngine, "organizationDomain", "")
+        if orgd:
+            QCoreApplication.setOrganizationDomain(str(orgd))
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            for t in themeEngine.themes:
+                if getattr(t, "defaultTheme", False) and (init_set is None or not init_set):
+                    s.setValue("THEME", t.name)
+                    s.setValue("INIT-THEME-SET", True)
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
+
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
+
+        self._wireControls()
+
+    def _wireControls(self):
+        nav = self.ui.headerNav
+        status = self.ui.statusLabel
+        nav.itemSelected.connect(lambda key: status.setText("selected %s" % key))
+        nav.brandClicked.connect(lambda: status.setText("brand clicked"))
+        nav.overflowClicked.connect(
+            lambda: status.setText("overflow clicked (%d hidden)"
+                                   % nav.hiddenCount()))
+        self.ui.indicatorCombo.currentTextChanged.connect(
+            lambda v: setattr(nav, "indicator", v))
+        self.ui.alignCombo.currentTextChanged.connect(
+            lambda v: setattr(nav, "alignment", v))
+        self.ui.themeButton.clicked.connect(
+            lambda: self.themeEngine.toggleTheme(dark="NavMidnight",
+                                                 light="NavDaylight"))
 
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    applyDesignTokens(app, theme="light")
+    app = QApplication(sys.argv)
     window = MainWindow()
-    window.show()
     sys.exit(app.exec())

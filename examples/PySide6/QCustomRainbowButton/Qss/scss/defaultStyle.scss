@@ -1,0 +1,58 @@
+//===================================================//
+// QCustomRainbowButton showcase — all chrome lives here.
+// Tokens only; hues come from json-styles/style.json.
+//===================================================//
+
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+// The buttons paint their face and label with QPainter; the rotating conic
+// border keeps its own rainbow palette, but the face + label follow the theme.
+#startButton, #upgradeButton, #glowButton {
+  qproperty-surfaceColor: $COLOR_BACKGROUND_2;
+  qproperty-textColor: $COLOR_TEXT_1;
+}
+
+#statusLabel {
+  color: $COLOR_ACCENT_1;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#speedLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+#speedSlider::groove:horizontal {
+  height: 6px;
+  border-radius: 3px;
+  background: $COLOR_BACKGROUND_3;
+}
+
+#speedSlider::handle:horizontal {
+  width: 16px;
+  height: 16px;
+  margin: -5px 0;
+  border-radius: 8px;
+  background: $COLOR_ACCENT_1;
+}
+
+#speedSlider::sub-page:horizontal {
+  border-radius: 3px;
+  background: $COLOR_ACCENT_2;
+}
+
+#animateButton, #themeButton {
+  background: $COLOR_BACKGROUND_3;
+  color: $COLOR_TEXT_2;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 8px;
+  padding: 8px 14px;
+}
+
+#animateButton:hover, #themeButton:hover {
+  border: 1px solid $COLOR_ACCENT_1;
+  color: $COLOR_TEXT_1;
+}

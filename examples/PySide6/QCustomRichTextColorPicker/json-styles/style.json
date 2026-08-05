@@ -1,0 +1,30 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomRichTextColorPicker Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "RichText-Dark",
+          "Default-Theme": true,
+          "Create-icons": false,
+          "Background-color": "#11151b",
+          "Text-color": "#e8ecf1",
+          "Accent-color": "#22c55e",
+          "Icons-color": "#9ca3af"
+        },
+        {
+          "Theme-name": "RichText-Light",
+          "Default-Theme": false,
+          "Create-icons": false,
+          "Background-color": "#f6f8fa",
+          "Text-color": "#1a222c",
+          "Accent-color": "#16a34a",
+          "Icons-color": "#6b7280"
+        }
+      ]
+    }
+  }
+}

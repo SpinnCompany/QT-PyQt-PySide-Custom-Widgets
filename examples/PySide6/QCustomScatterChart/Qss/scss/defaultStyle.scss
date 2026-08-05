@@ -1,0 +1,47 @@
+/* QCustomScatterChart showcase — all chrome from theme tokens. */
+
+#MainWindow,
+#centralwidget {
+  background: $COLOR_BACKGROUND_1;
+}
+
+/* Painted chart colours come from the theme via qproperty so they flip
+   with the theme. */
+QCustomScatterChart {
+  background: transparent;
+  qproperty-gridColor: $COLOR_BACKGROUND_3;
+  qproperty-axisColor: $COLOR_BACKGROUND_5;
+  qproperty-labelColor: $COLOR_TEXT_3;
+}
+
+#markerLabel,
+#sizeLabel,
+#ticksLabel {
+  background: transparent;
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+#statusLabel {
+  background: transparent;
+  color: $COLOR_TEXT_3;
+  font-size: 13px;
+  padding-top: 4px;
+}
+
+#gridBtn,
+#legendBtn,
+#themeBtn {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 8px;
+  padding: 5px 12px;
+}
+
+#gridBtn:hover,
+#legendBtn:hover,
+#themeBtn:hover {
+  background: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+}
