@@ -325,3 +325,20 @@ Also: export `QT_QPA_PLATFORM=offscreen` explicitly — with a live display the 
 
 ### QSettings writes are expensive — write-if-changed only (fixed 2026-08-01)
 An app boot was issuing ~47 `QSettings.setValue` calls (161 QSettings constructions): the theming code re-asserted `ICONS-COLOR`/`THEME`/`GENERATED-ICONS-COLOR` once per component / per `applyIcons` call. Every write marks the settings dirty and costs a `QLockFile` + `fdatasync` round-trip (0.1–0.3s on a loaded filesystem) at QSettings destruction — component-heavy apps (AuroraChat, GlassHome, FinanceDashboard, CashFlowDashboard, CheckBoxDashboard, QCustomMapView) took >40s to reach `app.exec()` and looked like hangs. Fix: `_setSettingIfChanged()` in `Custom_Widgets/theming/QCustomTheme.py` guards the five hot sites — a settings write must compare-before-write. If an app "hangs" on boot with no output, count `QSettings.setValue` calls before suspecting anything else.
+
+### README.md IS the PyPI page — polish before upload, rebuild after edits (2026-08-05)
+`readme = "README.md"` in pyproject (free AND Pro) embeds the file into the
+wheel/sdist as `long_description`; whatever the artifact carries at upload
+time becomes the public pypi.org project page. Two near-misses on release
+day: the Pro README still said "Status: Scaffold", called the GPLv3 core
+"LGPL", and referenced internal design-doc paths minutes before an
+auto-upload chain would have published it; the free 2.3.1 artifacts were
+built before the README rewrite and needed a rebuild. Rules: (1) README
+edits count as release content — finish them BEFORE building/uploading;
+(2) after any README/pyproject edit, rebuild the artifacts (the wheel does
+not update itself); (3) grep the built wheel's METADATA for stale brands,
+internal paths and placeholder words ("Scaffold", "TODO") as part of the
+pre-upload gate; (4) classifiers must agree with `requires-python` — the
+2.3.1 floor fix (>=3.10) initially left a `Python :: 3.9` trove classifier
+behind.
+
