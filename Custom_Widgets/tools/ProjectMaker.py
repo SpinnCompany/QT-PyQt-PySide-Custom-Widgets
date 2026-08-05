@@ -1,8 +1,8 @@
 ########################################################################
 ## SPINN DESIGN CODE
-# YOUTUBE: (SPINN TV) https://www.youtube.com/spinnTv
-# WEBSITE: spinncode.com
-# EMAIL: info@spinncode.com
+# YOUTUBE: (SPINN TV) https://www.youtube.com/@SpinnTV
+# WEBSITE: customwidgets.org
+# EMAIL: info@customwidgets.org
 ########################################################################
 
 ########################################################################
@@ -322,9 +322,9 @@ def create_project():
     
     # Print welcome banner
     print_header("PROJECT MAKER")
-    print(colored("YouTube: https://www.youtube.com/spinnTv", "green"))
-    print(colored("Website: spinncode.com", "green"))
-    print(colored("Email: info@spinncode.com\n", "green"))
+    print(colored("YouTube: https://www.youtube.com/@SpinnTV", "green"))
+    print(colored("Website: customwidgets.org", "green"))
+    print(colored("Email: info@customwidgets.org\n", "green"))
     
     # Current Directory
     currentDir = os.getcwd()

@@ -8,8 +8,8 @@
 # Updated by 
 
 ## SPINN DESIGN CODE
-# YOUTUBE: (SPINN TV) https://www.youtube.com/spinnTv
-# WEBSITE: spinncode.com
+# YOUTUBE: (SPINN TV) https://www.youtube.com/@SpinnTV
+# WEBSITE: customwidgets.org
 # GitHub : https://github.com/KhamisiKibet
 
 

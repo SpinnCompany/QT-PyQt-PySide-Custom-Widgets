@@ -104,7 +104,7 @@ def main():
            "%d widgets, grouped by the job you are doing rather than by where "
            "they live in the source tree. %d of them animate here, showing the "
            "interaction rather than a frozen frame. %d ship in "
-           "[Pro](https://customwidgets.spinncode.com/pricing/); the rest are "
+           "[Pro](https://customwidgets.org/pricing/); the rest are "
            "free under GPLv3." % (total, animated, pro), ""]
 
     # Teaser strip for the app showcase — the widgets are the parts, these are

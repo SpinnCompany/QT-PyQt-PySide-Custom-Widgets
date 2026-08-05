@@ -1,7 +1,7 @@
 ########################################################################
 ## SPINN DESIGN CODE
-# YOUTUBE: (SPINN TV) https://www.youtube.com/spinnTv
-# WEBSITE: spinncode.com
+# YOUTUBE: (SPINN TV) https://www.youtube.com/@SpinnTV
+# WEBSITE: customwidgets.org
 ########################################################################
 
 """Map support — an OPTIONAL extra, deliberately outside the core widgets.

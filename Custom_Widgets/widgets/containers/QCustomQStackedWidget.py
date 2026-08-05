@@ -1,6 +1,6 @@
 ## SPINN DESIGN CODE
-# YOUTUBE: (SPINN TV) https://www.youtube.com/spinnTv
-# WEBSITE: spinncode.com
+# YOUTUBE: (SPINN TV) https://www.youtube.com/@SpinnTV
+# WEBSITE: customwidgets.org
 
 ## MODULE UPDATED TO USE QT.PY
 from qtpy.QtCore import Qt, QEasingCurve, QPoint, Slot, QParallelAnimationGroup, QPropertyAnimation, QAbstractAnimation, QTimeLine, Property, QSequentialAnimationGroup, Signal
