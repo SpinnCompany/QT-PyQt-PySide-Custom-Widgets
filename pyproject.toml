@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "QT-PyQt-PySide-Custom-Widgets"
-version = "2.3.0"
+version = "2.3.1"
 description = "A comprehensive library of custom Qt widgets, animations, and UI components for PySide and PyQt desktop applications."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { text = "GPL-3.0-only" }
 authors = [{ name = "Khamisi Kibet", email = "kibetkhamisi@gmail.com" }]
 keywords = [
