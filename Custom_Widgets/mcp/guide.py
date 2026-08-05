@@ -57,7 +57,8 @@ it renders correctly — it throws away theming, Designer, and maintainability.
 Switch themes BY NAME (`themeEngine.setTheme("<Custom Theme>")`), never the generic
 Light/Dark toggle (it can't match a custom theme name). Colour charts from a
 `ChartPalette` you read out of style.json so hues flip with the theme. Mirror the
-examples/PySide6/AuroraDeckPro + WinningDashboard_CorrectArchitecture layouts.
+examples/PySide6/WinningDashboard_CorrectArchitecture layout (supporters also
+get the AuroraDeckPro app in the premium examples repo).
 Known traps: Qt QColor hex is `#AARRGGBB` (a faint white is "#14ffffff"); token
 widgets (QCustomBadge…) need applyDesignTokens OR inline styling under
 loadJsonStyle; a QtCharts pie collapses to a hairline in small panels — use the
@@ -159,7 +160,7 @@ painted QCustomDonut; wire the sidebar toggle once (or via toggleButtonName).
     CONTENT: hover / press / checked transitions, show-hide, value changes, and
     live/streaming data should ANIMATE where it makes the widget feel alive
     (QPropertyAnimation / QVariantAnimation for property tweens; a QTimer tick for
-    continuous or streaming content). That is the library norm — 26+ widgets
+    continuous or streaming content). That is the library norm — 60+ widgets
     animate (Switch, Toast, Drawer, LiquidGauge, RadialGauge, Waveform, Skeleton,
     Carousel, CoverFlow…). A new widget that only paints a static frame should be a
     deliberate choice, not an oversight.
@@ -257,7 +258,7 @@ design-token theme, green accent, proper spacing, and seeded data.
 The library ships a design-rule linter (Custom_Widgets.lint) that enforces the
 VISUAL rules a type checker can't see. It runs automatically on every file edit
 (project hook) and in CI/pre-commit; call the design_lint tool yourself before
-you consider a screen done. Rules (full text: docs/design/design-rules.md):
+you consider a screen done. Rules (full text: Custom_Widgets/lint/DESIGN_RULES.md):
 
   * glyph-icons   [error]   NEVER use a unicode glyph as an icon in button/label
                             text — geometric shapes, dingbats, arrows, emoji,
@@ -267,8 +268,9 @@ you consider a screen done. Rules (full text: docs/design/design-rules.md):
                             collapses, and render differently per font/OS. Use a
                             REAL icon — a themed SVG (qproperty-icon:
                             url(theme-icons:icons/<set>/<name>.svg) / setIcon) or
-                            a painted QPixmap you recolour per theme (see
-                            examples/PySide6/AuroraJobsTable `_icon`).
+                            a painted QPixmap you recolour per theme, or the
+                            iconName/iconColor recolouring widgets
+                            (QCustomQPushButton, QCustomQLabel).
   * hardcoded-hex [warning] don't bury #rrggbb in chrome — drive colour from
                             token roles / a named ALL-CAPS palette constant so it
                             flips with the theme.
@@ -421,7 +423,8 @@ widget to any brand or mockup.
 - Reference: QCustomDataTable exposes per-column `align`, twoline subtitle
   scale/weight, kebab colour + status-dot size, and opt-in header affordances
   (persistent per-column sort carets, select caret, actions gear) — enough to
-  match a real SaaS "Jobs" table exactly (examples/PySide6/AuroraJobsTable).
+  match a real SaaS "Jobs" table exactly (the supporter-only AuroraJobsTable
+  app is built on precisely these knobs).
 - Verify rendering with a PIXEL PROBE (render_widget / grab -> toImage ->
   pixelColor) under a stable harness, never by eyeballing a downscaled shot.
   BUT offscreen != the real display: anything font/metric/style-sensitive (text

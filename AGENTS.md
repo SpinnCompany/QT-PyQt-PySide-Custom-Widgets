@@ -46,8 +46,9 @@ Requires the MCP extra: `pip install -e .[mcp]`. Kill with `pkill -f "Custom_Wid
 For any production-shaped build, the deliverable is `.ui` forms + `json-styles`
 CustomThemes + `Qss/scss` `$TOKENS` + `GuiFunctions` managers/workers — NOT a
 hand-built `main.py` with hard-coded hex. A code-only app that "looks right" is
-still a failure for maintenance. Mirror `examples/PySide6/AuroraDeckPro` and
-`examples/PySide6/WinningDashboard_CorrectArchitecture`. Compile forms with
+still a failure for maintenance. Mirror
+`examples/PySide6/WinningDashboard_CorrectArchitecture` (supporters also get
+the AuroraDeckPro app in Custom-Widgets-Premium-Examples). Compile forms with
 `Custom_Widgets --convert-ui ui --qt-library PySide6 --src-output-dir src`.
 Switch themes BY NAME (`themeEngine.setTheme("<Custom Theme>")`). Read the
 custom-widgets-app skill for the full procedure and the hard-won gotchas
@@ -110,7 +111,7 @@ The library ships a design-rule linter (`Custom_Widgets.lint`) that enforces the
 project's **visual** rules a type checker can't see. It runs automatically on
 every file edit (a PostToolUse hook in [`.claude/settings.json`](.claude/settings.json)),
 in pre-commit, and in CI — and is exposed to MCP agents as the `design_lint`
-tool. Canonical spec: [`docs/design/design-rules.md`](docs/design/design-rules.md).
+tool. Canonical spec: [`Custom_Widgets/lint/DESIGN_RULES.md`](Custom_Widgets/lint/DESIGN_RULES.md).
 
 - **`glyph-icons` (error)** — never use a unicode glyph as an icon in UI text
   (no `◑ ＋ ⚙ ✦ ➤ ✓ ↗` / emoji). Use a real themed-SVG or painted icon that
@@ -119,6 +120,8 @@ tool. Canonical spec: [`docs/design/design-rules.md`](docs/design/design-rules.m
   `#rrggbb` (ALL-CAPS palette constants are allowed).
 - **`drop-shadow` (warning)** — no `QGraphicsDropShadowEffect` without a
   `# allow-shadow: <reason>` justification.
+- **`large-icon` (warning)** — `setIconSize` with a literal ≥40 flags a large
+  image pushed through a QIcon; use a `QPixmap` (or `# allow-large-icon: <reason>`).
 
 Run it yourself before finishing a screen: `python -m Custom_Widgets.lint`
 (or the `design_lint` MCP tool). Pre-existing debt is grandfathered by
@@ -133,7 +136,7 @@ genuine false positive with `# noqa: <rule-id>`.
 | [`Custom_Widgets/DesignerBridge.py`](Custom_Widgets/DesignerBridge.py) | live link that runs inside Qt Designer + the app |
 | `Custom_Widgets/` | the widget library (import `from Custom_Widgets.QCustom… import …`) |
 | `examples/PySide6/` | runnable examples / showcases |
-| [`Custom_Widgets/lint/`](Custom_Widgets/lint/) | design-rule linter (rules in `rules.py`); spec in [`docs/design/design-rules.md`](docs/design/design-rules.md) |
+| [`Custom_Widgets/lint/`](Custom_Widgets/lint/) | design-rule linter (rules in `rules.py`); spec in [`Custom_Widgets/lint/DESIGN_RULES.md`](Custom_Widgets/lint/DESIGN_RULES.md) |
 | `.claude/skills/` | Claude Code skills for this repo |
 
 **If a capability is missing, add it to the MCP** — don't work around it in a shell.
@@ -256,7 +259,7 @@ Also: export `QT_QPA_PLATFORM=offscreen` explicitly — with a live display the 
 - **JSonStyles `QCustomCheckBox.animationEasingCurve` crashed every app whose style.json used it**: `JSonStyles/__init__.py` called `self.returnAnimationEasingCurve(...)` (self = the user's window) instead of the imported free function. Fixed 2026-08-01.
 - **QCustomQStackedWidget**: `setSlideTransition()`/`setFadeTransition()` restored as backward-compatible setters; `_initializeAllWidgetsOpacity` no longer zeroes the *current* page (fade-enabled stacks booted blank).
 - When verifying headless runs, set `PYTHONUNBUFFERED=1` or the `SURVEY:OK` print can be lost to block buffering (runner exits via `os._exit`).
-- **`QCustomComponentContainer` silently kills QSS backgrounds on a component root's direct children**: on every refresh it sets `WA_TranslucentBackground` on them (`widgets/containers/QCustomComponentContainer.py:110-115`; the comment claiming explicit QSS backgrounds still paint is wrong). A `role="card"` frame or gradient bar as a direct child of a component root renders transparent — buttons are unaffected, which hides the bug. In-app workaround: clear the attribute on rebuild (see `_solid()` in SmartHomeDashboard/CheckBoxDashboard GuiFunctions).
+- **`QCustomComponentContainer` silently kills QSS backgrounds on a component root's direct children**: on every refresh it sets `WA_TranslucentBackground` on them (`widgets/containers/QCustomComponentContainer.py:110-115`; the comment claiming explicit QSS backgrounds still paint is wrong). A `role="card"` frame or gradient bar as a direct child of a component root renders transparent — buttons are unaffected, which hides the bug. In-app workaround: clear the attribute on rebuild — a `_solid()` helper that re-clears `WA_TranslucentBackground` after each refresh (the SmartHomeDashboard/CheckBoxDashboard apps in the premium examples repo do this).
 - **Clearing `WA_TranslucentBackground` is not enough** — it implies `WA_NoSystemBackground`, which is NOT auto-cleared and alone still suppresses the QSS fill. Clear both.
 - **`Other-variables` in style.json are the sanctioned way to get per-theme non-token colours into scss** (available as `$NAME` after reload) — including inside `qlineargradient()`. That is how gradient chrome leaves `setStyleSheet` without hard-coding hex.
 - **A stale `Unknown Organization/main.py.conf` QSettings store poisons theme seeding**: `loadJsonStyle` checks QSettings for an existing `THEME` while org/app names are still unset, so it reads the shared pre-identity store; a stale `THEME` there cancels every `Default-Theme` flag and the app boots a BUILT-IN theme. **Primary fix: call `QCoreApplication.setOrganizationName/setApplicationName BEFORE `loadJsonStyle`.** Belt-and-braces: after the settings block, if `THEME` still names no current theme, set the app's default explicitly + `INIT-THEME-SET`.
@@ -311,7 +314,7 @@ Also: export `QT_QPA_PLATFORM=offscreen` explicitly — with a live display the 
 - **The pre-identity QSettings theme bug is FIXED at the library level (2026-08-01)**: `configure_settings` now applies the style.json `AppSettings` identity to QCoreApplication BEFORE any QSettings read; a persisted `THEME` only outranks `Default-Theme` when it names a theme the file actually defines; and `currentTheme`'s last-resort fallback prefers the declared default, then any custom theme, before the legacy name-"Light" guess. Regression: `tests/test_pre_identity_theme_default.py` + end-to-end repro (polluted `Unknown Organization/main.py.conf` → app still boots its Dark default). The per-app boot-order pre-set in examples remains as belt-and-braces.
 - **QCustomButtonGroup.orientation setter FIXED (2026-08-01)** — it now genuinely swaps the layout at runtime (buttons/order/margins/spacing/selection preserved), so .ui-promoted groups can be horizontal. Same commit fixed `addButton(button_id=None)` crashing on the nonexistent `QButtonGroup.count()` (auto-ids now `len(buttons())`). Regression tests: `tests/test_button_group_orientation.py`.
 - **design_lint flags hex fallback literals in Python** (`pal.get("k", "#hex")`) — index the palette with `[]` instead.
-- **qtsass cannot parse the full Qt gradient syntax** (`qlineargradient(spread:pad, x1:0, …)`) — the scss compile fails and the app silently runs UNSTYLED native gray. The short form (`qlineargradient(x1:…, stop:0 $VAR, stop:1 $VAR)` as used in SmartHomeDashboard's chrome.scss) compiles; when in doubt use flat `$TOKENS` and verify the app is actually styled.
+- **qtsass cannot parse the full Qt gradient syntax** (`qlineargradient(spread:pad, x1:0, …)`) — the scss compile fails and the app silently runs UNSTYLED native gray. The short form (`qlineargradient(x1:…, stop:0 $VAR, stop:1 $VAR)` as used in the premium SmartHomeDashboard's chrome.scss) compiles; when in doubt use flat `$TOKENS` and verify the app is actually styled.
 - **QSS selectors on layout names never match** (`#someLayout QPushButton` — layouts aren't widgets); select on container widget objectNames. Also a freshly copied `_variables.scss` lacks your custom Other-variables until a correctly-registered theme regenerates it — don't debug missing `$VARS` in scss before confirming the theme actually loaded.
 - **Hand-written .ui: numeric layout props MUST be `<number>`-wrapped** — `<property name="spacing">20</property>` with bare text silently compiles to 0 (margins/spacing vanish, no warning).
 - **QSS specificity**: `#container QPushButton` (1,0,1) beats `#myButton` (1,0,0) — per-widget overrides inside a styled container need the container prefix (`#container #myButton`), including their `[state=…]` variants.

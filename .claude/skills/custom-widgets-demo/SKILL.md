@@ -61,7 +61,9 @@ toggle; study `examples/svg_icons_demo` rather than hacking the theme engine).
 The token widgets need **no `.ui`, no `.qrc`, no JSON** — instantiate widgets in
 plain layouts and style the whole app with one call. This is the preferred path
 for any new `examples/PySide6/*` showcase. Reference implementation:
-`examples/PySide6/AuroraCommandDeck/main.py`.
+`examples/PySide6/DesignTokens/main.py` (pattern), and for a rich multi-panel
+deck built the same way, the supporter-only AuroraCommandDeck app in
+Custom-Widgets-Premium-Examples.
 
 ## The theming pattern
 
@@ -102,7 +104,7 @@ Roles available: `surface`, `surface-muted`, `on-surface`, `primary`,
 | `QCustomQPushButton` | `b = QCustomQPushButton("Save"); b.variant = "primary"` (primary/secondary/outline/ghost/destructive); `b.sizeVariant = "sm|md|lg"` |
 | `QCustomStatCard` | `QCustomStatCard(label=, value=, delta=, trend="up|down|flat", caption=)`; `.setValue()`, `.setDelta(text, trend=)` |
 | `QCustomDataTable` | `.setColumns([DataTableColumn(key, title, type="text|number|bool", width=, formatter=lambda v:...)])`; `.setData(list[dict])`; `.pageSize = 8`; `.setFilterText(s)`; signal `rowSelected(int)` — **index is the source row**, not the visible one |
-| `QCustomChipGroup` | `QCustomChipGroup(selectable=True, exclusive=True)`; `.addChip(text, data=)`; signal `selectionChanged(list)` (list of `data`) |
+| `QCustomChipGroup` | (import from `Custom_Widgets.QCustomChip`) `QCustomChipGroup(selectable=True, exclusive=True)`; `.addChip(text, data=)`; signal `selectionChanged(list)` (list of `data`) |
 | `QCustomCarousel` | `QCustomCarousel(wrap=True)`; `.addSlide(widget)`; `.setAutoAdvance(ms)`; `.next()/.previous()` |
 | `QCustomSplitter` | `QCustomSplitter(Qt.Horizontal)`; then normal QSplitter API + `.setSizes([...])` |
 | `QCustomProgressRing` | `QCustomProgressRing(value=87)`; `.setValue(int)`; give it a fixed size |

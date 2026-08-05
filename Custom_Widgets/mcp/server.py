@@ -130,9 +130,11 @@ def skills() -> str:
         "Custom Widgets — agent skills & knowledge\n"
         "=========================================\n"
         "1. Read customwidgets://agent-guide FIRST (RULE #1).\n"
-        "2. Claude Code skill: .claude/skills/custom-widgets-demo/SKILL.md —\n"
-        "   the token-widget demo pattern, verified widget signatures, gotchas,\n"
-        "   and the screenshot-verify workflow. Leads with 'MCP first'.\n"
+        "2. Claude Code skills (.claude/skills/):\n"
+        "   custom-widgets-app/SKILL.md — the FORMS PIPELINE for real apps\n"
+        "   (.ui + compiled src/ + json-styles + scss $TOKENS + managers);\n"
+        "   custom-widgets-demo/SKILL.md — the quick pure-code token demo\n"
+        "   pattern, verified widget signatures, gotchas, screenshot-verify.\n"
         "3. Repo discovery: AGENTS.md at the repo root summarises how to work\n"
         "   here and how to mount this MCP.\n"
         "4. Build & run ONLY through this MCP's tools (designer_* / app_* /\n"
@@ -819,7 +821,7 @@ def design_lint(paths: list[str] = [], select: str = "", ignore: str = "",
     Returns JSON {summary:{errors,warnings,failed}, findings:[...]}. `failed`
     true means fix the findings (or justify with `# noqa: <rule-id>`). Rules are
     defined in Custom_Widgets/lint/rules.py and documented in
-    docs/design/design-rules.md."""
+    Custom_Widgets/lint/DESIGN_RULES.md."""
     from Custom_Widgets import lint as _lint
     root = _resolve(project)
     cfg = _lint.load_config(root)
