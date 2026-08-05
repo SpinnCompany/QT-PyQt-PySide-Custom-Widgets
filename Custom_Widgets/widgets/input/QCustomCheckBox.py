@@ -1,7 +1,7 @@
 ########################################################################
 ## SPINN DESIGN CODE
-# YOUTUBE: (SPINN TV) https://www.youtube.com/spinnTv
-# WEBSITE: spinncode.com
+# YOUTUBE: (SPINN TV) https://www.youtube.com/@SpinnTV
+# WEBSITE: customwidgets.org
 ########################################################################
 from qtpy.QtCore import Qt, QEasingCurve, QPropertyAnimation, QSize, Property, QPoint, QEnum, QObject
 from qtpy.QtGui import QPalette, QIcon, QPaintEvent, QPainter, QColor

@@ -1,7 +1,7 @@
 ########################################################################
 ## QCustomProgressIndicator example — SPINN DESIGN CODE
-# YOUTUBE: (SPINN TV) https://www.youtube.com/spinnTv
-# WEBSITE: spinncode.com
+# YOUTUBE: (SPINN TV) https://www.youtube.com/@SpinnTV
+# WEBSITE: customwidgets.org
 ##
 ## Three form-progress indicators: a self-restyling download simulation,
 ## a 10-step form and a 5-step form, each driven from the buttons below

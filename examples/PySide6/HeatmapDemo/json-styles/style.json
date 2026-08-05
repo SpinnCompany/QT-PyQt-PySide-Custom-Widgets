@@ -9,7 +9,7 @@
         "AppSettings": {
             "OrganizationName": "Custom Widgets",
             "ApplicationName": "HeatmapDemo",
-            "OrganizationDomain": "spinncode.com"
+            "OrganizationDomain": "customwidgets.org"
         },
         "ThemeSettings": {
             "CustomThemes": [

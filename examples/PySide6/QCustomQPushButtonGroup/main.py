@@ -1,7 +1,7 @@
 ########################################################################
 ## QCustomQPushButtonGroup example — SPINN DESIGN CODE
-# YOUTUBE: (SPINN TV) https://www.youtube.com/spinnTv
-# WEBSITE: spinncode.com
+# YOUTUBE: (SPINN TV) https://www.youtube.com/@SpinnTV
+# WEBSITE: customwidgets.org
 ##
 ## Two exclusive button groups configured from json-styles/style.json:
 ## click any button and it takes the group's Active style while its

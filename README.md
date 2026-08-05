@@ -37,13 +37,13 @@ pip install --upgrade QT-PyQt-PySide-Custom-Widgets
 
 ## Quick Links
 
-- **Documentation**: [qtcustomwidgets.spinncode.com](https://qtcustomwidgets.spinncode.com/)
+- **Documentation**: [spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/)
 - **GitHub Pages**: [spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/)
 - **Main Module**: [github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets](https://github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets)
 
 ## Usage
 
-Please read the required [project structure](https://qtcustomwidgets.spinncode.com/docs/new-features#version-069) and important updates [here](https://qtcustomwidgets.spinncode.com/docs/new-features) before proceeding.
+Please read the required [project structure](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets) and important updates [here](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets) before proceeding.
 
 The examples folder contains code examples for testing and learning about the custom widgets.
 
@@ -51,17 +51,17 @@ The examples folder contains code examples for testing and learning about the cu
 
 ## Documentation Resources
 
-- **Full Documentation & Examples**: [qtcustomwidgets.spinncode.com](https://qtcustomwidgets.spinncode.com/)
+- **Full Documentation & Examples**: [spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/)
 - **Video Tutorials**: [YouTube Playlist](https://www.youtube.com/watch?v=21Qt9p_F7Ts&list=PLJ8t3BKaQLhPKj9Mx08WAwvz7TGskefbK)
-- **Widget Gallery**: [qtcustomwidgets.spinncode.com/Widgets/QCustomQMainWindow](https://qtcustomwidgets.spinncode.com/Widgets/QCustomQMainWindow)
+- **Widget Gallery**: [spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/Widgets/QCustomQMainWindow](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/Widgets/QCustomQMainWindow)
 
 ## Support
 
-If you find this project valuable and would like to contribute to its development and maintenance, you can support us on [Patreon](https://www.patreon.com/spinntv).
+If you find this project valuable and would like to contribute to its development and maintenance, you can support us on [Patreon](https://www.patreon.com/c/spinntv).
 
 ## Contributors
 
-Thanks to all the [contributors](https://qtcustomwidgets.spinncode.com/docs/contributors) involved in the development of the project!
+Thanks to all the [contributors](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets) involved in the development of the project!
 
 <a href="https://github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=SpinnCompany/QT-PyQt-PySide-Custom-Widgets" />
@@ -71,7 +71,7 @@ Thanks to all the [contributors](https://qtcustomwidgets.spinncode.com/docs/cont
 
 ## App Gallery
 
-View a collection of modern GUIs made using the custom widgets module: [View Gallery](https://qtcustomwidgets.spinncode.com/docs/gallery)
+View a collection of modern GUIs made using the custom widgets module: [View Gallery](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/gallery)
 
 ## Credits & third-party assets
 
