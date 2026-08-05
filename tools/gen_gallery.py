@@ -86,8 +86,20 @@ def main():
 
     total = sum(len(v) for v in groups.values())
     pro = sum(1 for v in groups.values() for n in v if tier.get(n) == "pro-ext")
+
+    # Count what the reader actually sees: a card "animates" when the thumbnail
+    # resolved FOR THAT CARD is a GIF. Derive it from thumbnail() rather than
+    # re-deciding with a second, subtly different rule, so the prose and the
+    # grid below it can never disagree.
+    #
+    # The previous expression re-tested `slugFor(n).gif` and was wrong twice
+    # over: it double-counted alias pages that collide under slugFor
+    # (QCustomTagEdit and QTagEdit both slug to "tagedit", so one file counted
+    # as two widgets), and it missed alias cards whose own slug has no GIF but
+    # whose _pageHero() resolves to a sibling's animation. It printed 61 where
+    # 60 GIF files exist and 63 cards animate.
     animated = sum(1 for v in groups.values() for n in v
-                   if os.path.isfile(os.path.join(SHOTS, "%s.gif" % slugFor(n))))
+                   if (thumbnail(n) or "").endswith(".gif"))
 
     # The gallery grid is raw JSX, not markdown constructs, so Docusaurus does
     # NOT rewrite its src/href with the site baseUrl the way it does for
