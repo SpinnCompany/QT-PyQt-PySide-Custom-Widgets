@@ -1,88 +1,112 @@
-import sys
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QColor
-from PySide6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QPushButton, QWidget, QGraphicsDropShadowEffect
+"""QCustomTipOverlay showcase — every tail position, one button each.
+
+Click a button to anchor a closable tip overlay to it. One tip is opened
+automatically on launch so the overlay is visible immediately. All styling
+lives in json-styles/ + Qss/scss/defaultStyle.scss; this file only boots
+the app and wires signals.
+"""
+
+import os, sys
+
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
+
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
+
+from Custom_Widgets import *
 from Custom_Widgets.QCustomTipOverlay import QCustomTipOverlay
+from Custom_Widgets.QAppSettings import QAppSettings
+from qtpy.QtCore import QCoreApplication, QSettings, QTimer
+from qtpy.QtWidgets import QApplication
 
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("QCustomTipOverlay Tail Position Test")
-        self.central_widget = QWidget()
-        self.setCentralWidget(self.central_widget)
-        self.layout = QHBoxLayout(self.central_widget)
 
-        # Create buttons to test different tail positions
-        self.create_button("Auto", "auto")
-        self.create_button("Top-Left", "top-left")
-        self.create_button("Top-Center", "top-center")
-        self.create_button("Top-Right", "top-right")
-        self.create_button("Bottom-Left", "bottom-left")
-        self.create_button("Bottom-Center", "bottom-center")
-        self.create_button("Bottom-Right", "bottom-right")
-        self.create_button("Auto", "auto")
-        self.create_button("Left-Top", "left-top")
-        self.create_button("Left-Bottom", "left-bottom")
-        self.create_button("Right-Top", "right-top")
-        self.create_button("Right-Bottom", "right-bottom")
-        self.create_button("Left-Center", "left-center")
-        self.create_button("Right-Center", "right-center")
-        self.create_button("Auto", "auto")
+class MainWindow(QCustomMainWindow):
+    def __init__(self, parent=None):
+        QCustomMainWindow.__init__(self)
+        from src.ui_MainWindow import Ui_MainWindow
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
 
-        self.setStyleSheet("""
-            QMainWindow, * {
-                background-color: #f0f0f0;
-            }
-            QCustomTipOverlay *{
-                color: #000
-            }
-            QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                padding: 8px 16px;
-                border: none;
-                border-radius: 4px;
-            }
-            QPushButton:hover {
-                background-color: #45a049;
-            }
-            QPushButton:pressed {
-                background-color: #3e8e41;
-            }
-        """)
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
 
-    def create_button(self, text, tail_position):
-        button = QPushButton(text)
-        button.clicked.connect(lambda: self.show_tip(button, tail_position))
-        self.layout.addWidget(button)
-        self.addShadow(button)
+        self.show()
+        themeEngine = self.themeEngine
+        org = getattr(themeEngine, "organizationName", "")
+        if org:
+            QCoreApplication.setOrganizationName(str(org))
+        appn = getattr(themeEngine, "applicationName", "")
+        if appn:
+            QCoreApplication.setApplicationName(str(appn))
+        orgd = getattr(themeEngine, "organizationDomain", "")
+        if orgd:
+            QCoreApplication.setOrganizationDomain(str(orgd))
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            for t in themeEngine.themes:
+                if getattr(t, "defaultTheme", False) and (init_set is None or not init_set):
+                    s.setValue("THEME", t.name)
+                    s.setValue("INIT-THEME-SET", True)
+        if s.value("THEME") is None:
+            # The Default-Theme flag is dropped by the loader whenever a stale
+            # generic-scope THEME setting exists, so fall back to the first
+            # app-defined (non-predefined) theme explicitly.
+            for t in themeEngine.themes:
+                if not getattr(t, "predefined", False):
+                    s.setValue("THEME", t.name)
+                    s.setValue("INIT-THEME-SET", True)
+                    break
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
 
-    def show_tip(self, button, tail_position):
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
+
+        self._wire()
+        # Open one tip on launch so the overlay shows without a click.
+        QTimer.singleShot(1500, lambda: self.showTip(self.ui.btnAuto2, "auto"))
+
+    def _wire(self):
+        pairs = [
+            (self.ui.btnAuto1, "auto"),
+            (self.ui.btnTopLeft, "top-left"),
+            (self.ui.btnTopCenter, "top-center"),
+            (self.ui.btnTopRight, "top-right"),
+            (self.ui.btnBottomLeft, "bottom-left"),
+            (self.ui.btnBottomCenter, "bottom-center"),
+            (self.ui.btnBottomRight, "bottom-right"),
+            (self.ui.btnAuto2, "auto"),
+            (self.ui.btnLeftTop, "left-top"),
+            (self.ui.btnLeftBottom, "left-bottom"),
+            (self.ui.btnRightTop, "right-top"),
+            (self.ui.btnRightBottom, "right-bottom"),
+            (self.ui.btnLeftCenter, "left-center"),
+            (self.ui.btnRightCenter, "right-center"),
+            (self.ui.btnAuto3, "auto"),
+        ]
+        for button, tailPosition in pairs:
+            button.clicked.connect(
+                lambda _=False, b=button, t=tailPosition: self.showTip(b, t))
+
+    def showTip(self, button, tailPosition):
         tip = QCustomTipOverlay(
             target=button,
-            title='Test Tip',
+            title="Test Tip",
             description="This is a test tip",
             isClosable=True,
-            tailPosition=tail_position,
+            tailPosition=tailPosition,
             parent=self,
-            duration=-1
+            duration=-1,
         )
-
-        self.addShadow(tip)
-
         tip.show()
-    
-    def addShadow(self, widget):
-        effect = QGraphicsDropShadowEffect(widget)
-        effect.setColor(QColor(30, 30, 30, 200))
-        effect.setBlurRadius(20)
-        effect.setXOffset(0)
-        effect.setYOffset(0)
-        widget.setGraphicsEffect(effect)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
-    window.resize(500, 300)
-    window.show()
     sys.exit(app.exec())

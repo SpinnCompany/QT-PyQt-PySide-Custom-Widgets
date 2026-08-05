@@ -1,0 +1,34 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomMultiSelect Example"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "MeadowDark",
+          "Default-Theme": true,
+          "Background-color": "#0f1512",
+          "Text-color": "#e8f1ec",
+          "Accent-color": "#34d399",
+          "Icons-color": "#93a89d",
+          "Other-variables": {
+            "FIELD_ERROR": "#f87171"
+          }
+        },
+        {
+          "Theme-name": "MeadowLight",
+          "Default-Theme": false,
+          "Background-color": "#f4faf6",
+          "Text-color": "#15201a",
+          "Accent-color": "#059669",
+          "Icons-color": "#6b7280",
+          "Other-variables": {
+            "FIELD_ERROR": "#dc2626"
+          }
+        }
+      ]
+    }
+  }
+}

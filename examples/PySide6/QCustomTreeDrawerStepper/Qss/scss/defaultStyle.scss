@@ -1,0 +1,121 @@
+/* QCustomTreeDrawerStepper demo — all chrome lives here ($TOKENS only). */
+
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+/* ── Stepper (circles + connectors + labels, driven by `state`) ── */
+QCustomStepper {
+  background: transparent;
+}
+QCustomStepper #stepperCircle {
+  border-radius: 14px;
+  border: 2px solid $BORDER;
+  color: $COLOR_TEXT_1;
+  background-color: $CARD;
+  font-weight: 600;
+}
+QCustomStepper #stepperCircle[state="active"] {
+  border-color: $COLOR_ACCENT_1;
+  color: $COLOR_ACCENT_1;
+}
+QCustomStepper #stepperCircle[state="completed"] {
+  border-color: $COLOR_ACCENT_1;
+  background-color: $COLOR_ACCENT_1;
+  color: $ON_ACCENT;
+}
+QCustomStepper #stepperCircle[state="pending"] {
+  border-color: $BORDER;
+  color: $COLOR_TEXT_3;
+}
+QCustomStepper #stepperLabel {
+  color: $COLOR_TEXT_2;
+}
+QCustomStepper #stepperConnector[state="completed"] {
+  color: $COLOR_ACCENT_1;
+  background-color: $COLOR_ACCENT_1;
+}
+QCustomStepper #stepperConnector[state="pending"] {
+  color: $BORDER;
+  background-color: $BORDER;
+}
+
+/* ── Buttons (token-widget variants) ── */
+QCustomQPushButton {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 8px 16px;
+  font-size: 14px;
+}
+QCustomQPushButton[variant="primary"] {
+  background-color: $COLOR_ACCENT_1;
+  color: $ON_ACCENT;
+}
+QCustomQPushButton[variant="primary"]:hover {
+  background-color: $COLOR_ACCENT_2;
+}
+QCustomQPushButton[variant="secondary"] {
+  background-color: $MUTED;
+  color: $COLOR_TEXT_1;
+}
+QCustomQPushButton[variant="secondary"]:hover {
+  background-color: $BORDER;
+}
+QCustomQPushButton[variant="outline"] {
+  background-color: transparent;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER;
+}
+QCustomQPushButton[variant="outline"]:hover {
+  background-color: $MUTED;
+}
+QCustomQPushButton[variant="ghost"] {
+  background-color: transparent;
+  color: $COLOR_TEXT_1;
+  text-align: left;
+}
+QCustomQPushButton[variant="ghost"]:hover {
+  background-color: $MUTED;
+}
+
+/* ── Tree ── */
+QCustomTreeWidget {
+  background-color: $CARD;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER;
+  border-radius: 8px;
+  outline: 0;
+}
+QCustomTreeWidget::item {
+  padding: 4px 8px;
+}
+QCustomTreeWidget::item:hover {
+  background-color: $MUTED;
+}
+QCustomTreeWidget::item:selected {
+  background-color: $COLOR_ACCENT_1;
+  color: $ON_ACCENT;
+}
+QCustomTreeWidget QHeaderView::section {
+  background-color: $MUTED;
+  color: $COLOR_TEXT_1;
+  border: none;
+  border-bottom: 1px solid $BORDER;
+  padding: 8px;
+}
+
+/* ── Drawer (runtime overlay: dim backdrop + panel) ── */
+QCustomDrawer {
+  background-color: rgba(0, 0, 0, 110);
+}
+#drawerPanel {
+  background-color: $CARD;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER;
+}
+#drawerPanel QLabel {
+  color: $COLOR_TEXT_1;
+  font-size: 14px;
+  padding: 4px 0;
+}

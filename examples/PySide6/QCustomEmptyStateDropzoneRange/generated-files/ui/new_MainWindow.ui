@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>440</width>
+    <height>480</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Empty state / Dropzone / Range</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="mainLayout">
+    <property name="spacing">
+     <number>14</number>
+    </property>
+    <property name="leftMargin">
+     <number>18</number>
+    </property>
+    <property name="topMargin">
+     <number>18</number>
+    </property>
+    <property name="rightMargin">
+     <number>18</number>
+    </property>
+    <property name="bottomMargin">
+     <number>18</number>
+    </property>
+    <item>
+     <widget class="QCustomEmptyState" name="emptyState" />
+    </item>
+    <item>
+     <widget class="QCustomFileDropZone" name="dropZone">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>110</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="rangeCaption">
+      <property name="text">
+       <string>Price range:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="rangeRow">
+      <property name="spacing">
+       <number>12</number>
+      </property>
+      <item>
+       <widget class="QCustomRangeSlider" name="priceRange">
+        <property name="minimum" stdset="0">
+         <number>0</number>
+        </property>
+        <property name="maximum" stdset="0">
+         <number>1000</number>
+        </property>
+        <property name="upperValue" stdset="0">
+         <number>750</number>
+        </property>
+        <property name="lowerValue" stdset="0">
+         <number>200</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="rangeValue">
+        <property name="text">
+         <string>$200 - $750</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="statusLabel">
+      <property name="text">
+       <string>-</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomEmptyState</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomEmptyState.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomFileDropZone</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomFileDropZone.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomRangeSlider</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomRangeSlider.h</header>
+  </customwidget>
+ <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>

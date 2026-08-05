@@ -1,0 +1,32 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#titleLabel {
+  color: $COLOR_TEXT_1;
+  font-size: 20px;
+  font-weight: 600;
+  padding-bottom: 4px;
+}
+
+#prefLabel {
+  color: $COLOR_TEXT_2;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+#submitButton {
+  background: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-weight: 600;
+}
+
+#submitButton:hover {
+  background: $COLOR_ACCENT_2;
+}
+
+#submitButton:pressed {
+  background: $COLOR_ACCENT_3;
+}

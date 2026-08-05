@@ -1,0 +1,48 @@
+{
+    "QtBinding": "PySide6",
+    "QMainWindow": {
+        "title": "Empty state / Dropzone / Range"
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "QCustomEmptyStateDropzoneRange"
+        },
+        "ThemeSettings": {
+            "CustomThemes": [
+                {
+                    "Theme-name": "Dropzone Dark",
+                    "Default-Theme": true,
+                    "Create-icons": false,
+                    "Background-color": "#10141c",
+                    "Text-color": "#e7ebf2",
+                    "Accent-color": "#4f8ef7",
+                    "Icons-color": "#9aa3b2",
+                    "Other-variables": {
+                        "CARD_BG": "#171c26",
+                        "OUTLINE": "#2a3140",
+                        "MUTED": "#8b93a5",
+                        "ON_ACCENT": "#f4f7ff",
+                        "HANDLE_FILL": "#e7ebf2"
+                    }
+                },
+                {
+                    "Theme-name": "Dropzone Light",
+                    "Default-Theme": false,
+                    "Create-icons": false,
+                    "Background-color": "#f4f6fa",
+                    "Text-color": "#1b2330",
+                    "Accent-color": "#2563eb",
+                    "Icons-color": "#6b7280",
+                    "Other-variables": {
+                        "CARD_BG": "#ffffff",
+                        "OUTLINE": "#d5dbe6",
+                        "MUTED": "#7b8494",
+                        "ON_ACCENT": "#ffffff",
+                        "HANDLE_FILL": "#ffffff"
+                    }
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>771</width>
+    <height>501</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>SVG Theme Icons - Interactive Test</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="rootLayout">
+    <item>
+     <layout class="QHBoxLayout" name="topBar">
+      <item>
+       <widget class="QLabel" name="themeLabel">
+        <property name="text">
+         <string>Theme:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="themeSelector"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="timingLabel">
+        <property name="text">
+         <string>Icons ready.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="topSpacer">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="body">
+      <item>
+       <widget class="QGroupBox" name="widgetsPanel">
+        <property name="title">
+         <string>Widgets styled with themed SVG icons (QSS)</string>
+        </property>
+        <layout class="QGridLayout" name="widgetsGrid">
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="checkBoxChecked">
+           <property name="text">
+            <string>Checked</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QCheckBox" name="checkBoxUnchecked">
+           <property name="text">
+            <string>Unchecked</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QCheckBox" name="checkBoxTristate">
+           <property name="text">
+            <string>Tristate</string>
+           </property>
+           <property name="tristate">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QRadioButton" name="radioA">
+           <property name="text">
+            <string>Option A</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QRadioButton" name="radioB">
+           <property name="text">
+            <string>Option B</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0" colspan="2">
+          <widget class="QComboBox" name="sampleCombo">
+           <item>
+            <property name="text">
+             <string>Combo arrow icon</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Item 2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Item 3</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QSpinBox" name="sampleSpin"/>
+         </item>
+         <item row="3" column="0" colspan="3">
+          <widget class="QSlider" name="sampleSlider">
+           <property name="value">
+            <number>60</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0" colspan="3">
+          <widget class="QProgressBar" name="sampleProgress">
+           <property name="value">
+            <number>60</number>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0" colspan="3">
+          <widget class="QLineEdit" name="sampleEdit">
+           <property name="text">
+            <string>QLineEdit</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0" colspan="3">
+          <layout class="QHBoxLayout" name="iconButtonsRow">
+           <item>
+            <widget class="QPushButton" name="saveBtn">
+             <property name="text">
+              <string>save</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../Qss/icons/_icons.qrc">
+               <normaloff>:/feather/icons/feather/save.svg</normaloff>:/feather/icons/feather/save.svg</iconset>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="settingsBtn">
+             <property name="text">
+              <string>settings</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../Qss/icons/_icons.qrc">
+               <normaloff>:/feather/icons/feather/settings.svg</normaloff>:/feather/icons/feather/settings.svg</iconset>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="deleteBtn">
+             <property name="text">
+              <string>delete</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../Qss/icons/_icons.qrc">
+               <normaloff>:/feather/icons/feather/trash-2.svg</normaloff>:/feather/icons/feather/trash-2.svg</iconset>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="materialBtn">
+             <property name="text">
+              <string>material</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../Qss/icons/_icons.qrc">
+               <normaloff>:/material_design/icons/material_design/blur_on.svg</normaloff>:/material_design/icons/material_design/blur_on.svg</iconset>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="7" column="0" colspan="3">
+          <widget class="QTabWidget" name="tabWidget">
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
+           <widget class="QWidget" name="tabOne">
+            <attribute name="icon">
+             <iconset resource="../Qss/icons/_icons.qrc">
+              <normaloff>:/feather/icons/feather/home.svg</normaloff>:/feather/icons/feather/home.svg</iconset>
+            </attribute>
+            <attribute name="title">
+             <string>Tab one</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout">
+             <item>
+              <widget class="QCustomComponentContainer" name="QCustomComponentContainer_2">
+               <property name="filePath" stdset="0">
+                <string>src/ui_newtest.py</string>
+               </property>
+               <property name="previewComponent" stdset="0">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tabTwo">
+            <attribute name="icon">
+             <iconset resource="../Qss/icons/_icons.qrc">
+              <normaloff>:/feather/icons/feather/star.svg</normaloff>:/feather/icons/feather/star.svg</iconset>
+            </attribute>
+            <attribute name="title">
+             <string>Tab two</string>
+            </attribute>
+            <widget class="QCustomThemeList" name="CustomThemeList">
+             <property name="geometry">
+              <rect>
+               <x>60</x>
+               <y>50</y>
+               <width>107</width>
+               <height>25</height>
+              </rect>
+             </property>
+             <property name="windowTitle">
+              <string>Custom Theme List</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="pushButton">
+             <property name="geometry">
+              <rect>
+               <x>60</x>
+               <y>140</y>
+               <width>92</width>
+               <height>25</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>PushButton</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label">
+             <property name="geometry">
+              <rect>
+               <x>90</x>
+               <y>100</y>
+               <width>71</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>TextLabel</string>
+             </property>
+            </widget>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="browserPanel">
+        <property name="title">
+         <string>Generated SVG icons of the active theme</string>
+        </property>
+        <layout class="QVBoxLayout" name="browserLayout">
+         <item>
+          <layout class="QHBoxLayout" name="browserControls">
+           <item>
+            <widget class="QComboBox" name="packSelector"/>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="filterEdit">
+             <property name="placeholderText">
+              <string>Filter icons...</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QListWidget" name="iconList">
+           <property name="iconSize">
+            <size>
+             <width>28</width>
+             <height>28</height>
+            </size>
+           </property>
+           <property name="resizeMode">
+            <enum>QListView::ResizeMode::Adjust</enum>
+           </property>
+           <property name="viewMode">
+            <enum>QListView::ViewMode::IconMode</enum>
+           </property>
+           <property name="uniformItemSizes">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="iconCountLabel">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomThemeList</class>
+   <extends>QComboBox</extends>
+   <header>Custom_Widgets.QCustomThemeList</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomComponentContainer</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomComponentContainer</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../Qss/icons/_icons.qrc"/>
+ </resources>
+ <connections/>
+</ui>

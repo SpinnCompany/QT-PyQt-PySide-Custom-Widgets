@@ -1,0 +1,95 @@
+// Aurora Jobs — chrome styles. TOKENS ONLY (no hard-coded hex).
+// Background-color in style.json IS the card/surface (BG_1); the generator
+// derives darker shades for higher indices, so the page uses BG_3 and
+// separators use BG_4. ICONS ARE SET HERE (qproperty-icon: url(theme-icons:...))
+// and recolour to the theme's Icons-color automatically — never set from Python
+// (Python only re-polishes to refresh). On-accent text uses $COLOR_BACKGROUND_1.
+
+// -- window shell ---------------------------------------------------------- //
+QCustomQMainWindow, #centralwidget, #mainColumn { background-color: $COLOR_BACKGROUND_3; }
+QCustomQStackedWidget, #pageStack, #JobsComponent, #jobsScrollContents { background: transparent; }
+QScrollArea, QScrollArea > QWidget > QWidget { background: transparent; border: 0; }
+
+// -- left icon rail (themed, like AuroraDeckPro) --------------------------- //
+QCustomSidebar#railBar { background-color: $COLOR_BACKGROUND_1; border: 0; border-right: 1px solid $COLOR_BACKGROUND_3; }
+#railLogo { background-color: $COLOR_ACCENT_1; color: $COLOR_BACKGROUND_1; border-radius: 10px; font-weight: 800; font-size: 18px; }
+#sidebarToggle {
+    background: transparent; border: 0; border-radius: 12px;
+    qproperty-icon: url(theme-icons:icons/feather/menu.svg);
+}
+#sidebarToggle:hover { background-color: $COLOR_BACKGROUND_3; }
+
+QCustomSidebarButton {
+    background: transparent; color: $COLOR_TEXT_2; border: 0; border-radius: 12px;
+    text-align: left; padding-left: 12px; font-size: 13px;
+}
+QCustomSidebarButton:hover { background-color: $COLOR_BACKGROUND_3; color: $COLOR_TEXT_1; }
+QCustomSidebarButton:checked { background-color: $COLOR_ACCENT_1; color: $COLOR_BACKGROUND_1; font-weight: 600; }
+
+#navWork     { qproperty-icon: url(theme-icons:icons/feather/briefcase.svg); }
+#navCalendar { qproperty-icon: url(theme-icons:icons/feather/calendar.svg); }
+#navClock    { qproperty-icon: url(theme-icons:icons/feather/clock.svg); }
+#navUsers    { qproperty-icon: url(theme-icons:icons/feather/users.svg); }
+#navInvoice  { qproperty-icon: url(theme-icons:icons/feather/file-text.svg); }
+#navNote     { qproperty-icon: url(theme-icons:icons/feather/edit-3.svg); }
+#navBox      { qproperty-icon: url(theme-icons:icons/feather/archive.svg); }
+#navChart    { qproperty-icon: url(theme-icons:icons/feather/bar-chart-2.svg); }
+#navSettings { qproperty-icon: url(theme-icons:icons/feather/settings.svg); }
+
+// -- topbar ---------------------------------------------------------------- //
+QFrame#topbar {
+    background-color: $COLOR_BACKGROUND_1;
+    border: 0;
+    border-bottom: 1px solid $COLOR_BACKGROUND_4;
+}
+QLabel#crumb { background: transparent; color: $COLOR_TEXT_1; font-size: 16px; }
+QToolButton#searchIcon, QToolButton#helpIcon, QToolButton#bellIcon {
+    background: transparent; border: 0; border-radius: 10px;
+}
+QToolButton#searchIcon:hover, QToolButton#helpIcon:hover, QToolButton#bellIcon:hover {
+    background-color: $COLOR_BACKGROUND_3;
+}
+QToolButton#searchIcon { qproperty-icon: url(theme-icons:icons/feather/search.svg); }
+QToolButton#helpIcon   { qproperty-icon: url(theme-icons:icons/feather/help-circle.svg); }
+QToolButton#bellIcon   { qproperty-icon: url(theme-icons:icons/feather/bell.svg); }
+QToolButton#avatarCaret { background: transparent; border: 0; qproperty-icon: url(theme-icons:icons/feather/chevron-down.svg); }
+QPushButton#avatar {
+    background-color: $COLOR_ACCENT_1; color: $COLOR_BACKGROUND_1; border: 0;
+    border-radius: 18px; font-weight: 700;
+}
+
+// -- page: title + add button ---------------------------------------------- //
+QLabel[role="h1"] { background: transparent; color: $COLOR_TEXT_1; font-size: 26px; font-weight: 800; }
+QPushButton#addJobBtn {
+    background-color: $COLOR_ACCENT_1; color: $COLOR_BACKGROUND_1; border: 0;
+    border-radius: 10px; padding: 10px 20px; font-weight: 700; font-size: 14px;
+    qproperty-icon: url(theme-icons:icons/feather/plus.svg);
+}
+QPushButton#addJobBtn:hover { background-color: $COLOR_ACCENT_2; }
+
+// -- the card holding toolbar + table -------------------------------------- //
+QFrame[role="card"] { background-color: $COLOR_BACKGROUND_1; border-radius: 22px; }
+
+// -- the DataTable's internal view (objectName dataTableView) -------------- //
+#dataTableView {
+    background: transparent;
+    border: 0;
+    outline: 0;
+    gridline-color: transparent;
+}
+// NB: the row separator is drawn by the delegate (setRowSeparatorColor) so it is
+// uniform across rich AND plain cells — a QSS ::item border only shows under the
+// plain (non-custom-painted) cells, leaving gaps. Keep only the padding here.
+#dataTableView::item { padding-left: 4px; }
+#dataTableView QHeaderView { background: transparent; }
+#dataTableView QHeaderView::section {
+    background: transparent;
+    color: $COLOR_TEXT_3;
+    border: 0;
+    border-bottom: 1px solid $COLOR_BACKGROUND_4;
+    padding: 8px 6px;
+    font-weight: 700;
+}
+#dataTableView QScrollBar:vertical { background: transparent; width: 10px; margin: 2px; }
+#dataTableView QScrollBar::handle:vertical { background: $COLOR_BACKGROUND_4; border-radius: 5px; min-height: 30px; }
+#dataTableView QScrollBar::add-line:vertical, #dataTableView QScrollBar::sub-line:vertical { height: 0; }

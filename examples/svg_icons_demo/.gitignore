@@ -1,0 +1,6 @@
+# Generated at runtime by the theme engine
+Qss/
+generated-files/
+logs/
+# Generated from ui/ by Custom_Widgets --convert-ui / --monitor-ui
+src/

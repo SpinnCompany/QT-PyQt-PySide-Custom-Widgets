@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PlayerCard</class>
+ <widget class="QWidget" name="PlayerCard">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>280</width><height>130</height></rect></property>
+  <layout class="QVBoxLayout" name="playerRoot">
+   <property name="leftMargin"><number>0</number></property><property name="topMargin"><number>0</number></property>
+   <property name="rightMargin"><number>0</number></property><property name="bottomMargin"><number>0</number></property>
+   <property name="spacing"><number>0</number></property>
+   <item>
+    <widget class="QCustomGlassFrame" name="playerGlass">
+     <property name="backdropSource" stdset="0"><string>wallpaper</string></property>
+     <property name="cornerRadius" stdset="0"><number>22</number></property>
+     <layout class="QVBoxLayout" name="playerLayout">
+      <property name="leftMargin"><number>6</number></property><property name="topMargin"><number>4</number></property>
+      <property name="rightMargin"><number>6</number></property><property name="bottomMargin"><number>4</number></property>
+      <property name="spacing"><number>0</number></property>
+      <item>
+       <widget class="QCustomPlayerBar" name="player">
+        <property name="sizePolicy"><sizepolicy hsizetype="Expanding" vsizetype="Expanding"><horstretch>0</horstretch><verstretch>0</verstretch></sizepolicy></property>
+        <property name="title" stdset="0"><string>Greater Than One</string></property>
+        <property name="artist" stdset="0"><string>Ericdoa x Valorant</string></property>
+        <property name="durationSeconds" stdset="0"><double>147.0</double></property>
+        <property name="elapsedSeconds" stdset="0"><double>34.0</double></property>
+        <property name="coverPath" stdset="0"><string>https://picsum.photos/seed/glasscover/128/128</string></property>
+        <property name="playing" stdset="0"><bool>true</bool></property>
+        <property name="cornerRadius" stdset="0"><number>18</number></property>
+        <property name="compactMode" stdset="0"><bool>true</bool></property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget><class>QCustomGlassFrame</class><extends>QFrame</extends><header>Custom_Widgets.QCustomGlassFrame</header><container>1</container></customwidget>
+  <customwidget><class>QCustomPlayerBar</class><extends>QWidget</extends><header>Custom_Widgets.QCustomPlayerBar</header><container>0</container></customwidget>
+ </customwidgets>
+ <connections/>
+</ui>

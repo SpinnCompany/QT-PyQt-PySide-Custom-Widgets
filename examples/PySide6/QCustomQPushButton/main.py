@@ -1,173 +1,77 @@
-########################################################################
-## SPINN DESIGN CODE
-# YOUTUBE: (SPINN TV) https://www.youtube.com/spinnTv
-# WEBSITE: spinncode.com
-########################################################################
+"""QCustomQPushButton showcase — animated button themes, shadows and icons.
 
-########################################################################
-## IMPORTS
-########################################################################
-import sys
-from PySide6.QtCore import *
-from Custom_Widgets import iconify as ico
+All button styling (themes, hover/click animations, animated shadows) is
+declared in json-styles/style.json; the static chrome lives in
+Qss/scss/defaultStyle.scss. Nothing is styled from Python.
+"""
 
-########################################################################
-# IMPORT GUI FILE
-from ui_interface import *
-########################################################################
+import os, sys
 
-########################################################################
-# IMPORT CUSTOM BUTTONS FILE
-# Because ill be frequently updating this package,
-# run "pip install --upgrade QT-PyQt-PySide-Custom-Widgets"
-# to install any updates
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
+
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
+
 from Custom_Widgets import *
-########################################################################
+from Custom_Widgets.QAppSettings import QAppSettings
+from qtpy.QtCore import QCoreApplication, QDir, QSettings
+from qtpy.QtWidgets import QApplication
 
-########################################################################
-## MAIN WINDOW CLASS
-########################################################################
-class MainWindow(QMainWindow):
+# Register the themed-icon search path BEFORE setupUi runs: the compiled ui
+# references icons as "theme-icons:icons/..." and a QIcon created before the
+# search path exists stays null forever (the failed lookup is cached).
+QDir.addSearchPath("theme-icons",
+                   os.path.join(os.path.dirname(os.path.abspath(__file__)), "Qss", "icons"))
+
+
+class MainWindow(QCustomMainWindow):
     def __init__(self, parent=None):
-        QMainWindow.__init__(self)
+        QCustomMainWindow.__init__(self)
+        from src.ui_MainWindow import Ui_MainWindow
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        # NOTE: You need to fetch iconify icons for this demo or edit the json stye file
-        # to provide your icons relative path:
-        # FETCH iCONE:
-        # Fetch the icon libraries - Font Awesome, Material Design etc.
-        # run in your terminal "iconify-fetch"
-        # Start the icon browser to find the icon you want
-        # run in your terminal "iconify-browser"
+        # Set the QSettings identity BEFORE loadJsonStyle: while the json is
+        # parsed the engine consults QSettings(), and without these names it
+        # falls back to "Unknown Organization/main.py.conf" whose stale THEME
+        # key strips the Default-Theme flag from the json themes.
+        QCoreApplication.setOrganizationName("CustomWidgets")
+        QCoreApplication.setApplicationName("QCustomQPushButton Showcase")
 
-        ######################################################################
-        ## APPLY STYLE FROM JSON FILE
-        ########################################################################
-        loadJsonStyle(self, self.ui)
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
 
-        #######################################################################
-        # SHOW WINDOW
-        #######################################################################
         self.show()
+        themeEngine = self.themeEngine
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            default = None
+            for t in themeEngine.themes:
+                if getattr(t, "defaultTheme", False):
+                    default = t.name
+                    break
+            if default is None:
+                # Fall back to the first custom (non-predefined) theme
+                for t in themeEngine.themes:
+                    if not getattr(t, "predefined", False):
+                        default = t.name
+                        break
+            if default:
+                s.setValue("THEME", default)
+                s.setValue("INIT-THEME-SET", True)
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
 
-        ######################################################################
-        ## UNCOMMENT/COMMENT THE COMMENTED STATEMENTS TO SEE THEIR EFFECTS
-        ########################################################################
-
-        # for w in self.ui.widget.findChildren(QPushButton):            
-
-            ########################################################################
-            # check if the stylesheet was found 
-            ########################################################################
-            # if no style was found, apply the default style from the animation theme
-            ########################################################################
-
-            # if not w.wasThemed:
-            	########################################################################
-                # w is the button
-                # 9 is the theme
-                ########################################################################
-                # applyAnimationThemeStyle(w, 2)
-
-                ########################################################################
-                # OR
-                ########################################################################
-                # Appply your own custom theme
-                ########################################################################
-                # applyCustomAnimationThemeStyle(w, "red", "yellow")
-                # print(w)
-
-        ########################################################################
-        # Create new button
-        ########################################################################
-        # button = QPushButton("name")
-        # button.setText("Login")
-        # button.setObjectTheme(2)
-        # self.ui.gridLayout.addWidget(button, 2, 1, 1, 1)
-
-        ########################################################################
-        # UNCOMMENT THE STATEMENTS BELOW TO SEE THEIR EFFECTS
-        ########################################################################
-        # self.ui.pushButton.setObjectTheme(1)
-        # self.ui.pushButton_2.setObjectTheme(2)
-        # self.ui.pushButton_3.setObjectTheme(3)
-        # self.ui.pushButton_4.setObjectTheme(4)
-        # self.ui.pushButton_5.setObjectTheme(5)
-        # self.ui.pushButton_6.setObjectTheme(6)
-        # self.ui.pushButton_7.setObjectTheme(11)
-        # self.ui.pushButton_5.setObjectTheme(10)
-        # self.ui.pushButton.setObjectCustomTheme("#fff", "#000")
-        # self.ui.pushButton.setObjectAnimateOn("hover")
-        # self.ui.pushButton_7.setObjectAnimateOn("click")
-        # self.ui.pushButton._animation.setEasingCurve(QtCore.QEasingCurve.InOutElastic)
-
-        ########################################################################
-        # STYLE APPLIED AFTER THE ANIMATION IS COMPLETE
-        ########################################################################
-        # self.ui.pushButton.setObjectFallBackStyle("""
-        # border-style: solid;
-        # border-top-color: qlineargradient(spread:pad, x1:0, y1:1, x2:1, y2:1, stop:0 #FF4200, stop:0.4 #C0DB50, stop:0.5 #100E19, stop:1 #100E19);
-        # border-bottom-color: qlineargradient(spread:pad, x1:0, y1:1, x2:1, y2:1, stop:0 #FF4200, stop:0.5 #FF4200, stop:0.6 #C0DB50, stop:1 #C0DB50);
-        # border-left-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #FF4200, stop:0.3 #FF4200, stop:0.7 #100E19, stop:1 #100E19);
-        # border-right-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 #C0DB50, stop:0.3 #C0DB50, stop:0.7 #100E19, stop:1 #100E19);
-        # border-width: 5px;
-        # border-radius: 1px;
-        # color: #d3dae3;
-        # padding: 2px;
-        # background-color: #100E19;
-        # """)  
-
-        ########################################################################
-        # STYLE APPLIED ALONGSIDE ANIMATION THEME STYLE AND FALLBACK STYLE
-        ########################################################################
-        # self.ui.pushButton.setObjectDefaultStyle(
-        #     """
-        #         border-radius:5px;
-        #         border-width: 10px;
-        #         color: #d3dae3;
-        #         padding: 5px;
-        #     """)   
-
-        ########################################################################
-        # Apply button icon
-        ########################################################################
-        # iconify(
-            # self.ui.pushButton, 
-            # icon = "font-awesome:solid:cloud-download-alt", 
-            # color = "orange", 
-            # size = 64, 
-            # animation = "spin", 
-            # animateOn = "click"
-            # )
-
-        ########################################################################
-        # Apply button shadow
-        ########################################################################
-        # applyButtonShadow(
-        #     self.ui.pushButton_4, 
-        #     color= "#fff", 
-        #     applyShadowOn= "hover", 
-        #     animateShadow = True, 
-        #     blurRadius = 100, 
-        #     animateShadowDuration = 500,
-        #     xOffset = 0,
-        #     yOffset = 0
-        #     )
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
 
 
-
-########################################################################
-## EXECUTE APP
-########################################################################
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    ########################################################################
-    ## 
-    ########################################################################
     window = MainWindow()
-    window.show()
-    sys.exit(app.exec_())
-########################################################################
-## END===>
-########################################################################  
+    sys.exit(app.exec())

@@ -1,0 +1,54 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#titleLabel {
+  color: $COLOR_TEXT_1;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 4px 0;
+}
+
+#statusLabel {
+  color: $COLOR_TEXT_3;
+  font-size: 14px;
+}
+
+#delayLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 14px;
+}
+
+/* ---- QCustomCopyButton colours come from its typed colour properties ---- */
+QCustomCopyButton {
+  qproperty-accentColor: $COLOR_ACCENT_1;
+  qproperty-successColor: $SUCCESS;
+  qproperty-textColor: $COLOR_TEXT_1;
+  qproperty-surfaceColor: $COLOR_BACKGROUND_2;
+}
+
+#delaySpin {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 6px;
+  padding: 4px 8px;
+  min-width: 80px;
+}
+
+#themeButton {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 6px;
+  padding: 5px 14px;
+}
+
+#themeButton:hover {
+  background: $COLOR_BACKGROUND_3;
+}
+
+#themeButton:pressed {
+  background: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+}

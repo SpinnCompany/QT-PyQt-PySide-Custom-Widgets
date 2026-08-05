@@ -1,103 +1,132 @@
-import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QPushButton, QWidget
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QColor
+"""QFlowProgressBar demo — Circular, Flat and Square step bars with clickable steps."""
 
+import json
+import os, sys
+
+# Force PySide6 to match compiled ui files
+os.environ.setdefault("QT_API", "pyside6")
+
+from Custom_Widgets.Project import setProjectRoot
+setProjectRoot(__file__)
+
+from Custom_Widgets import *
 from Custom_Widgets.QFlowProgressBar import QFlowProgressBar
+from qtpy.QtCore import QCoreApplication, QSettings, Qt
+from qtpy.QtGui import QColor
+from qtpy.QtWidgets import QApplication
+
+STEPS = ["Start: Step 1", "Step 2", "Step 3", "Final step: Step 4"]
 
 
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
+class MainWindow(QCustomMainWindow):
+    def __init__(self, parent=None):
+        QCustomMainWindow.__init__(self)
+        # Set BEFORE loadJsonStyle: the theme engine reads QSettings() while
+        # parsing the json — without these names it reads the interpreter-wide
+        # settings file and the app's own THEME/default theme never resolve.
+        QCoreApplication.setOrganizationName("CustomWidgets")
+        QCoreApplication.setApplicationName("QFlowProgressBar Demo")
 
-        self.setWindowTitle("Progress Bar Test")
-        self.setGeometry(100, 100, 800, 600)
+        from src.ui_MainWindow import Ui_MainWindow
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
 
-        main_layout = QVBoxLayout()
+        loadJsonStyle(self, self.ui, jsonFiles={"json-styles/style.json"})
 
-        # Initialize the QFlowProgressBase widget
-        steps = ["Start: Step 1", "Step 2", "Step 3", "Final step: Step 4"]
+        self.show()
+        themeEngine = self.themeEngine
+        org = getattr(themeEngine, "organizationName", "")
+        if org:
+            QCoreApplication.setOrganizationName(str(org))
+        appn = getattr(themeEngine, "applicationName", "")
+        if appn:
+            QCoreApplication.setApplicationName(str(appn))
+        orgd = getattr(themeEngine, "organizationDomain", "")
+        if orgd:
+            QCoreApplication.setOrganizationDomain(str(orgd))
+        s = QSettings()
+        init_set = s.value("INIT-THEME-SET")
+        if s.value("THEME") is None or not init_set:
+            for t in themeEngine.themes:
+                if getattr(t, "defaultTheme", False) and (init_set is None or not init_set):
+                    s.setValue("THEME", t.name)
+                    s.setValue("INIT-THEME-SET", True)
+        s.setValue("THEMES-LIST", themeEngine.themes)
+        themeEngine.reloadJsonStyles(update=False)
+        themeEngine.applyCompiledSass(generateIcons=False, paintEntireApp=True)
 
-        # Initialize different styles of QFlowProgressBar widgets with additional arguments
-        self.flow_progress_bars = []
-        styles = [
-            QFlowProgressBar.Styles.Circular,
-            QFlowProgressBar.Styles.Flat,
-            QFlowProgressBar.Styles.Square
+        from Custom_Widgets.AppControl import maybe_start_app_control
+        try:
+            maybe_start_app_control()
+        except Exception:
+            pass
+
+        self._buildBars()
+        self._wireDemo()
+
+    def _chartPalette(self):
+        """ChartPalette section for the active theme (falls back to the first)."""
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            "json-styles", "style.json")
+        with open(path) as fh:
+            palettes = json.load(fh)["ChartPalette"]
+        theme = str(getattr(self.themeEngine, "theme", "") or "")
+        return palettes.get(theme) or next(iter(palettes.values()))
+
+    def _buildBars(self):
+        """The bars take their steps + colours in the constructor, so they are
+        created here (data first) and dropped into the .ui holder layouts."""
+        pal = self._chartPalette()
+        variants = [
+            (QFlowProgressBar.Styles.Circular, self.ui.circularHolder,
+             pal["circularFinished"], pal["circularUnfinished"]),
+            (QFlowProgressBar.Styles.Flat, self.ui.flatHolder,
+             pal["flatFinished"], pal["flatUnfinished"]),
+            (QFlowProgressBar.Styles.Square, self.ui.squareHolder,
+             pal["squareFinished"], pal["squareUnfinished"]),
         ]
+        finishedNumber = QColor(pal["finishedNumber"])
 
-        for style in styles:
-            # Customize colors for different progress bars
-            if style == QFlowProgressBar.Styles.Circular:
-                finished_color = QColor(0, 136, 254)  # Blue
-                unfinished_color = QColor(228, 231, 237)  # Light gray
-            elif style == QFlowProgressBar.Styles.Flat:
-                finished_color = QColor(0, 176, 80)  # Green
-                unfinished_color = QColor(255, 192, 0)  # Yellow
-            else:
-                finished_color = QColor(255, 0, 0)  # Red
-                unfinished_color = QColor(128, 128, 128)  # Dark gray
-
-            # Create progress bars with customized colors and labels
-            progress_bar = QFlowProgressBar(
-                steps,
+        self.flowProgressBars = []
+        for style, holder, finished, unfinished in variants:
+            bar = QFlowProgressBar(
+                STEPS,
                 style,
-                finishedBackgroundColor=finished_color,
-                unfinishedBackgroundColor=unfinished_color,
-                finishedNumberColor=Qt.white,  # White
-                numberFontSize=12,  # Font size
-                textFontSize=10,  # Font size
-                pointerDirection=QFlowProgressBar.Direction.Down,  # Pointer direction for flat style
-                animationDuration=1000,  # Animation duration
-                stepsClickable=True  # Steps are clickable
+                finishedBackgroundColor=QColor(finished),
+                unfinishedBackgroundColor=QColor(unfinished),
+                finishedNumberColor=finishedNumber,
+                numberFontSize=12,
+                textFontSize=10,
+                pointerDirection=QFlowProgressBar.Direction.Down,
+                animationDuration=1000,
+                stepsClickable=True,
             )
+            bar.setMaximumHeight(100)
+            bar.setMinimumHeight(70)
+            bar.setAttribute(Qt.WA_TranslucentBackground, True)
+            bar.onStepClicked.connect(self.onStepClicked)
+            holder.addWidget(bar)
+            self.flowProgressBars.append(bar)
 
-            progress_bar.setMaximumHeight(100)
-            progress_bar.setMinimumHeight(70)
-            progress_bar.onStepClicked.connect(self.on_step_clicked)
-            self.flow_progress_bars.append(progress_bar)
+    def _wireDemo(self):
+        self.ui.nextButton.clicked.connect(self.nextStep)
+        self.ui.prevButton.clicked.connect(self.prevStep)
 
-        # Add buttons to control the progress bars
-        self.next_button = QPushButton("Next Step")
-        self.next_button.clicked.connect(self.next_step)
+    def nextStep(self):
+        for bar in self.flowProgressBars:
+            bar.changeCurrentStep(bar.getCurrentStep() + 1)
 
-        self.prev_button = QPushButton("Previous Step")
-        self.prev_button.clicked.connect(self.prev_step)
+    def prevStep(self):
+        for bar in self.flowProgressBars:
+            bar.changeCurrentStep(bar.getCurrentStep() - 1)
 
-        # Add widgets to layout
-        for progress_bar in self.flow_progress_bars:
-            main_layout.addWidget(progress_bar)
-
-        main_layout.addWidget(self.next_button)
-        main_layout.addWidget(self.prev_button)
-
-        container = QWidget()
-        container.setLayout(main_layout)
-        self.setCentralWidget(container)
-
-    def next_step(self):
-        # Move to the next step for each progress bar
-        for progress_bar in self.flow_progress_bars:
-            progress_bar.changeCurrentStep(progress_bar.getCurrentStep() + 1)
-
-    def prev_step(self):
-        # Move to the previous step for each progress bar
-        for progress_bar in self.flow_progress_bars:
-            progress_bar.changeCurrentStep(progress_bar.getCurrentStep() - 1)
-
-    def on_step_clicked(self, step: int):
-        # Handle step clicked event
+    def onStepClicked(self, step: int):
         print(f"Step {step + 1} clicked")
-
-        # Set the clicked step for each progress bar
-        for progress_bar in self.flow_progress_bars:
-            progress_bar.changeCurrentStep(step + 1)
+        for bar in self.flowProgressBars:
+            bar.changeCurrentStep(step + 1)
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-
     window = MainWindow()
-    window.show()
-
     sys.exit(app.exec())

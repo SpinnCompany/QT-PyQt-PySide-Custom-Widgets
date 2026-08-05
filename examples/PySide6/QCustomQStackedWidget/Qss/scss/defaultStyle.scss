@@ -1,0 +1,59 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#titleLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 22px;
+  font-weight: bold;
+  padding: 4px 0;
+}
+
+#myStackedWidget {
+  border-radius: 12px;
+}
+
+#page {
+  background: $COLOR_ACCENT_1;
+  border-radius: 12px;
+}
+
+#page_2 {
+  background: $COLOR_BACKGROUND_3;
+  border-radius: 12px;
+}
+
+#page_3 {
+  background: $COLOR_BACKGROUND_2;
+  border-radius: 12px;
+}
+
+#label, #label_2, #label_3 {
+  color: $COLOR_TEXT_1;
+  font-size: 30px;
+  font-weight: bold;
+  background: transparent;
+}
+
+#frame {
+  background: $COLOR_BACKGROUND_2;
+  border-radius: 10px;
+  padding: 6px;
+}
+
+#frame QPushButton {
+  background: $COLOR_BACKGROUND_4;
+  color: $COLOR_TEXT_1;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-weight: 600;
+}
+
+#frame QPushButton:hover {
+  background: $COLOR_ACCENT_1;
+}
+
+#frame QPushButton:pressed {
+  background: $COLOR_ACCENT_2;
+}

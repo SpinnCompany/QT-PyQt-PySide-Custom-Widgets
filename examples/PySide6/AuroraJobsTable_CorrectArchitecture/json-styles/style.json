@@ -1,0 +1,53 @@
+{
+    "ShowLogs": true,
+    "QtBinding": "PySide6",
+    "LiveCompileQss": true,
+    "CheckForMissingicons": true,
+    "QMainWindow": {
+        "title": "Aurora \u2014 Work \u00b7 Jobs (Correct Architecture)",
+        "borderRadius": -4
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "AuroraJobsTableCorrectArchitecture",
+            "OrganizationDomain": "spinncode.com"
+        },
+        "ThemeSettings": {
+            "QtDesignerIconsColor": "theme",
+            "CustomThemes": [
+                {
+                    "Theme-name": "Aurora Light",
+                    "Default-Theme": true,
+                    "Create-icons": true,
+                    "Background-color": "#ffffff",
+                    "Text-color": "#0f172a",
+                    "Accent-color": "#f97316",
+                    "Icons-color": "#64748b"
+                },
+                {
+                    "Theme-name": "Aurora Dark",
+                    "Default-Theme": false,
+                    "Create-icons": true,
+                    "Background-color": "#1a212c",
+                    "Text-color": "#e9edf4",
+                    "Accent-color": "#f97316",
+                    "Icons-color": "#9aa4b5"
+                }
+            ]
+        }
+    },
+    "_comment_StatusPalette": "Semantic DATA colours (job status hues, link/schedule colours). Read in code by gui/theme.py \u2014 these are the same in both themes (a status has one meaning), so they live outside the token roles.",
+    "StatusPalette": {
+        "pending": "#06b6d4",
+        "scheduled": "#f59e0b",
+        "travelling": "#3b82f6",
+        "onhold": "#ef4444",
+        "completed": "#10b981",
+        "external": "#8b5cf6",
+        "inprogress": "#22c55e",
+        "requested": "#f59e0b",
+        "jobLink": "#22c55e",
+        "scheduleTime": "#f97316"
+    }
+}

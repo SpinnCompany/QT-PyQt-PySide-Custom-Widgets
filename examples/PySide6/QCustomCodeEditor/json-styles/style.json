@@ -1,0 +1,34 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomCodeEditor Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Editor Night",
+          "Default-Theme": true,
+          "Background-color": "#14161c",
+          "Text-color": "#e8eaf0",
+          "Accent-color": "#4f8cff",
+          "Icons-color": "#9aa0b0",
+          "Other-variables": {
+            "BORDER_COLOR": "#3a4054"
+          }
+        },
+        {
+          "Theme-name": "Editor Day",
+          "Default-Theme": false,
+          "Background-color": "#f5f6f9",
+          "Text-color": "#1e222b",
+          "Accent-color": "#2f6bd6",
+          "Icons-color": "#5b6270",
+          "Other-variables": {
+            "BORDER_COLOR": "#c9cfdc"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,129 @@
+//===================================================//
+    // FILE AUTO-GENERATED, ANY CHANGES MADE WILL BE LOST //
+    //====================================================//
+
+    // Background Colors
+    $COLOR_BACKGROUND_1: #f5f7fa;
+    $COLOR_BACKGROUND_2: #E8EAED;
+    $COLOR_BACKGROUND_3: #DCDEE1;
+    $COLOR_BACKGROUND_4: #D0D1D4;
+    $COLOR_BACKGROUND_5: #C4C5C8;
+    $COLOR_BACKGROUND_6: #B7B9BB;
+
+    // Background RGB Values
+    $CB1_R: 245;
+    $CB1_G: 247;
+    $CB1_B: 250;
+    $CB2_R: 232;
+    $CB2_G: 234;
+    $CB2_B: 237;
+    $CB3_R: 220;
+    $CB3_G: 222;
+    $CB3_B: 225;
+    $CB4_R: 208;
+    $CB4_G: 209;
+    $CB4_B: 212;
+    $CB5_R: 196;
+    $CB5_G: 197;
+    $CB5_B: 200;
+    $CB6_R: 183;
+    $CB6_G: 185;
+    $CB6_B: 187;
+
+    // Text Colors
+    $COLOR_TEXT_1: #182234;
+    $COLOR_TEXT_2: #464E5C;
+    $COLOR_TEXT_3: #747A85;
+    $COLOR_TEXT_4: #A2A6AD;
+
+    // Text RGB Values
+    $CT1_R: 24;
+    $CT1_G: 34;
+    $CT1_B: 52;
+    $CT2_R: 70;
+    $CT2_G: 78;
+    $CT2_B: 92;
+    $CT3_R: 116;
+    $CT3_G: 122;
+    $CT3_B: 133;
+    $CT4_R: 162;
+    $CT4_G: 166;
+    $CT4_B: 173;
+
+    // Accent Colors
+    $COLOR_ACCENT_1: #40a6e2;
+    $COLOR_ACCENT_2: #66B7E7;
+    $COLOR_ACCENT_3: #8CC9ED;
+    $COLOR_ACCENT_4: #B2DBF3;
+
+    // Accent RGB Values
+    $CA1_R: 64;
+    $CA1_G: 166;
+    $CA1_B: 226;
+    $CA2_R: 102;
+    $CA2_G: 183;
+    $CA2_B: 231;
+    $CA3_R: 140;
+    $CA3_G: 201;
+    $CA3_B: 237;
+    $CA4_R: 178;
+    $CA4_G: 219;
+    $CA4_B: 243;
+
+    // Modern CSS Variables (Derived)
+    $COLOR_PRIMARY: #40a6e2;
+    $COLOR_PRIMARY_DARK: #66B7E7;
+    $COLOR_PRIMARY_LIGHT: #66B7E7;
+    $COLOR_ON_PRIMARY: #182234;
+    $COLOR_SURFACE: #f5f7fa;
+    $COLOR_SURFACE_VARIANT: #DCDEE1;
+    $COLOR_ON_SURFACE: #182234;
+    $COLOR_BORDER: #D0D1D4;
+    $COLOR_BORDER_FOCUS: #40a6e2;
+
+    // Theme Mode Variables
+    $THEME_MODE: "LIGHT";
+    $THEME_ICON: "sun";
+    $THEME_STATUS: "Light Mode Active";
+    $IS_THEME_DARK: false;
+
+    // Spacing
+    $SPACING_XS: 4px;
+    $SPACING_SM: 8px;
+    $SPACING_MD: 12px;
+    $SPACING_LG: 16px;
+    $SPACING_XL: 20px;
+    $SPACING_XXL: 24px;
+    $SPACING_3XL: 32px;
+
+    // Border Radius
+    $BORDER_RADIUS_NONE: 0px;
+    $BORDER_RADIUS_SM: 4px;
+    $BORDER_RADIUS_MD: 6px;
+    $BORDER_RADIUS_LG: 8px;
+    $BORDER_RADIUS_XL: 12px;
+    $BORDER_RADIUS_2XL: 16px;
+    $BORDER_RADIUS_3XL: 24px;
+    $BORDER_RADIUS_FULL: 9999px;
+
+    // Legacy Variables (Keep for backward compatibility)
+    $OPACITY_TOOLTIP: 230;
+    $SIZE_BORDER_RADIUS: 8px;
+    $BORDER_1: 1px solid $COLOR_BACKGROUND_1;
+    $BORDER_2: 1px solid $COLOR_BACKGROUND_4;
+    $BORDER_3: 1px solid $COLOR_BACKGROUND_6;
+    $BORDER_SELECTION_3: 1px solid $COLOR_ACCENT_3;
+    $BORDER_SELECTION_2: 1px solid $COLOR_ACCENT_2;
+    $BORDER_SELECTION_1: 1px solid $COLOR_ACCENT_1;
+
+    // Paths
+    $PATH_RESOURCES: 'theme-icons:icons/';
+    $ICONS_COLOR: #8393a3;
+    $RELATIVE_FOLDER: "/home/p/git/QT-PyQt-PySide-Custom-Widgets/examples/PySide6/QAppSettings/";
+    $BASE_DIR: "/home/p/git/QT-PyQt-PySide-Custom-Widgets/examples/PySide6/QAppSettings/";
+
+    
+    //===================================================//
+    // END //
+    //====================================================//
+    

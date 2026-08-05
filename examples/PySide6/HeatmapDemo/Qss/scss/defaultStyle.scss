@@ -1,0 +1,41 @@
+// QCustomHeatmap demo — chrome styles. Tokens ONLY (no hard-coded hex):
+// $COLOR_BACKGROUND_1..6, $COLOR_TEXT_1..4, $COLOR_ACCENT_1..4.
+// BG_1 is the base (card surface); higher numbers get darker, so the window
+// band behind the cards is BG_2. Heatmap ramp colours are painted in main.py
+// from the token-driven ChartPalette in json-styles/style.json.
+
+#MainWindow,
+#centralwidget {
+    background-color: $COLOR_BACKGROUND_2;
+}
+
+#activityCard,
+#contributionsCard,
+#loadCard {
+    background-color: $COLOR_BACKGROUND_1;
+    border: 1px solid $COLOR_BACKGROUND_3;
+    border-radius: 18px;
+}
+
+#activityTitle,
+#contributionsTitle,
+#loadTitle {
+    background: transparent;
+    color: $COLOR_TEXT_1;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+#activitySub,
+#contributionsSub,
+#loadSub {
+    background: transparent;
+    color: $COLOR_TEXT_3;
+    font-size: 11px;
+}
+
+#activityHeatmap,
+#contributionsHeatmap,
+#loadHeatmap {
+    background: transparent;
+}

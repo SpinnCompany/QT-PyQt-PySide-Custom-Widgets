@@ -1,0 +1,258 @@
+#MainWindow, #centralwidget {
+  background: $COLOR_BACKGROUND_1;
+}
+
+/* The base theme paints QLabel backgrounds; keep labels transparent so
+   container chrome (header, cards, panels) shows through. */
+QLabel {
+  background: transparent;
+}
+
+/* ---------------- header + footer chrome ---------------- */
+#header, #footer {
+  background: $COLOR_BACKGROUND_2;
+}
+
+#appTitleLabel {
+  color: $COLOR_TEXT_1;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+#themeCaption {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+#header QPushButton, #footer QPushButton {
+  background: $COLOR_BACKGROUND_3;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 8px;
+  padding: 6px 14px;
+}
+
+#header QPushButton:hover, #footer QPushButton:hover {
+  border: 1px solid $COLOR_ACCENT_1;
+  color: $COLOR_ACCENT_1;
+}
+
+#helpBtn {
+  qproperty-icon: url($PATH_RESOURCES+'feather/help-circle.svg');
+}
+
+#show_hide_exit_prompt {
+  qproperty-icon: url($PATH_RESOURCES+'feather/power.svg');
+}
+
+#show_hide_user_account {
+  qproperty-icon: url($PATH_RESOURCES+'feather/user.svg');
+}
+
+#pushButton {
+  qproperty-icon: url($PATH_RESOURCES+'feather/menu.svg');
+}
+
+/* ---------------- exit prompt slide-down ---------------- */
+#exitPrompt {
+  background: $COLOR_BACKGROUND_4;
+}
+
+#exitPromptLabel {
+  color: $COLOR_TEXT_1;
+  font-size: 14px;
+}
+
+#exitPrompt QPushButton {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_1;
+  border-radius: 8px;
+  padding: 6px 16px;
+}
+
+#exit {
+  background: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+  border: none;
+  font-weight: 600;
+}
+
+/* ---------------- pages ---------------- */
+#mainPages, #loginPage, #signUpPage, #homePage, #networkErrorPage {
+  background: transparent;
+}
+
+#loginCard, #signupCard, #homeCard {
+  background: $COLOR_BACKGROUND_2;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 14px;
+}
+
+#loginTitle, #signupTitle, #homeTitle, #networkErrorTitle {
+  color: $COLOR_TEXT_1;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#loginResponse, #registerResponse, #networkErrorBody, #loginAltLabel, #signupAltLabel {
+  color: $COLOR_TEXT_3;
+  font-size: 12px;
+}
+
+#loginResponse[state="error"], #registerResponse[state="error"] {
+  color: $COLOR_ACCENT_1;
+  font-weight: 600;
+}
+
+#appDetails {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+#mainPages QLineEdit {
+  background: $COLOR_BACKGROUND_3;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 8px;
+  padding: 8px 12px;
+  selection-background-color: $COLOR_ACCENT_1;
+}
+
+#mainPages QLineEdit:focus {
+  border: 1px solid $COLOR_ACCENT_1;
+}
+
+#mainPages QPushButton {
+  background: $COLOR_BACKGROUND_3;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 8px;
+  padding: 8px 16px;
+}
+
+#mainPages QPushButton:hover {
+  border: 1px solid $COLOR_ACCENT_1;
+}
+
+/* the extra #mainPages prefix out-ranks the generic page-button rule above */
+#mainPages #submitLogin, #mainPages #signup_btn, #mainPages #tryAgain {
+  background: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+  border: none;
+  font-weight: 600;
+}
+
+#mainPages #signUpBtn, #mainPages #loginBtn {
+  background: transparent;
+  border: none;
+  color: $COLOR_ACCENT_1;
+  text-decoration: underline;
+  padding: 4px 4px;
+}
+
+/* eye toggles: state property flips the icon (set in code via setProperty) */
+#mainPages #showHideLoginPass,
+#mainPages #show_hide_signup_password,
+#mainPages #show_hide_signup_conf_password {
+  background: transparent;
+  border: none;
+  qproperty-icon: url($PATH_RESOURCES+'feather/eye.svg');
+}
+
+#mainPages #showHideLoginPass[state="visible"],
+#mainPages #show_hide_signup_password[state="visible"],
+#mainPages #show_hide_signup_conf_password[state="visible"] {
+  qproperty-icon: url($PATH_RESOURCES+'feather/eye-off.svg');
+}
+
+/* ---------------- account side panel ---------------- */
+#userAccount {
+  background: $COLOR_BACKGROUND_2;
+}
+
+#userAccountPages, #loginAccount, #loggedAccountDetails {
+  background: transparent;
+  border: none;
+}
+
+#accountTitle {
+  color: $COLOR_TEXT_1;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+#accountHintTitle {
+  color: $COLOR_TEXT_2;
+  font-weight: 600;
+}
+
+#accountHintBody {
+  color: $COLOR_TEXT_3;
+  font-size: 12px;
+}
+
+#usernameCaption, #appIdCaption, #appKeyCaption, #keyDateCaption {
+  color: $COLOR_TEXT_3;
+  font-size: 11px;
+  margin-top: 6px;
+}
+
+#username, #app_id, #app_key, #key_date {
+  color: $COLOR_TEXT_1;
+  font-size: 13px;
+}
+
+#userAccount QPushButton {
+  background: $COLOR_BACKGROUND_3;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 8px;
+  padding: 6px 14px;
+}
+
+#userAccount QPushButton:hover {
+  border: 1px solid $COLOR_ACCENT_1;
+  color: $COLOR_ACCENT_1;
+}
+
+#logoutBtn, #logoutUser {
+  qproperty-icon: url($PATH_RESOURCES+'feather/log-out.svg');
+}
+
+/* ---------------- menus + checkbox ---------------- */
+QMenu {
+  background: $COLOR_BACKGROUND_3;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+QMenu::item {
+  padding: 6px 18px;
+  border-radius: 6px;
+}
+
+QMenu::item:selected {
+  background: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+}
+
+#checkBox {
+  color: $COLOR_TEXT_2;
+}
+
+#checkBox::indicator {
+  width: 18px;
+  height: 18px;
+  border: 1px solid $COLOR_TEXT_3;
+  border-radius: 5px;
+  background: $COLOR_BACKGROUND_3;
+}
+
+#checkBox::indicator:checked {
+  background: $COLOR_ACCENT_1;
+  border: 1px solid $COLOR_ACCENT_1;
+  image: url($PATH_RESOURCES+'feather/check.svg');
+}

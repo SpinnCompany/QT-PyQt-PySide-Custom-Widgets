@@ -1,0 +1,55 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#radialBars {
+  background: transparent;
+  qproperty-trackColor: $COLOR_BACKGROUND_3;
+  qproperty-labelColor: $COLOR_TEXT_2;
+}
+
+#statusLabel {
+  color: $COLOR_TEXT_3;
+  font-size: 12px;
+}
+
+#thicknessCaption, #startCaption {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+#thicknessSlider::groove:horizontal, #startSlider::groove:horizontal {
+  height: 6px;
+  background: $COLOR_BACKGROUND_3;
+  border-radius: 3px;
+}
+
+#thicknessSlider::sub-page:horizontal, #startSlider::sub-page:horizontal {
+  background: $COLOR_ACCENT_1;
+  border-radius: 3px;
+}
+
+#thicknessSlider::handle:horizontal, #startSlider::handle:horizontal {
+  width: 14px;
+  margin: -5px 0;
+  border-radius: 7px;
+  background: $COLOR_ACCENT_1;
+}
+
+#roundedBtn, #trackBtn, #clockwiseBtn, #themeBtn {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+#roundedBtn:hover, #trackBtn:hover, #clockwiseBtn:hover, #themeBtn:hover {
+  border: 1px solid $COLOR_ACCENT_1;
+  color: $COLOR_ACCENT_1;
+}
+
+#roundedBtn:pressed, #trackBtn:pressed, #clockwiseBtn:pressed, #themeBtn:pressed {
+  background: $COLOR_BACKGROUND_3;
+}

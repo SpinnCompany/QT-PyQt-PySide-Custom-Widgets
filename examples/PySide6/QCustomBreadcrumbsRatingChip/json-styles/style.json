@@ -1,0 +1,40 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "Breadcrumbs Rating Chips Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Trail Night",
+          "Default-Theme": true,
+          "Background-color": "#13161d",
+          "Text-color": "#e9ebf2",
+          "Accent-color": "#5b8def",
+          "Icons-color": "#9aa0b0",
+          "Other-variables": {
+            "SURFACE_MUTED": "#242938",
+            "BORDER_COLOR": "#3a4054",
+            "STAR_COLOR": "#e8a13c",
+            "ON_FILL": "#ffffff"
+          }
+        },
+        {
+          "Theme-name": "Trail Day",
+          "Default-Theme": false,
+          "Background-color": "#f7f8fb",
+          "Text-color": "#20242e",
+          "Accent-color": "#2f6bd6",
+          "Icons-color": "#5b6270",
+          "Other-variables": {
+            "SURFACE_MUTED": "#e8ebf2",
+            "BORDER_COLOR": "#c9cfdc",
+            "STAR_COLOR": "#e08a00",
+            "ON_FILL": "#ffffff"
+          }
+        }
+      ]
+    }
+  }
+}

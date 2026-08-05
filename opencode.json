@@ -1,0 +1,16 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    "This repo is for code and README only.",
+    "All documentation, tutorials, blog posts, changelogs, API docs, and showcase screenshots belong in the Docusaurus site at /home/p/git/Docs-QT-PyQt-PySide-Custom-Widgets/.",
+    "The Pro marketing website (billing/pricing only) is at /home/p/git/custom-widgets-pro-website/.",
+    "Never save screenshots or documentation into this repository."
+  ],
+  "mcp": {
+    "custom-widgets": {
+      "type": "remote",
+      "url": "http://127.0.0.1:8765/mcp",
+      "enabled": true
+    }
+  }
+}

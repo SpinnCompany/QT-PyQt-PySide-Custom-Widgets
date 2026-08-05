@@ -1,0 +1,38 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomCommandPalette Example"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Onyx",
+          "Default-Theme": true,
+          "Background-color": "#0f1117",
+          "Text-color": "#e8ecf1",
+          "Accent-color": "#7AB3F0",
+          "Icons-color": "#9ca3af",
+          "Other-variables": {
+            "SCRIM_R": "0",
+            "SCRIM_G": "0",
+            "SCRIM_B": "0"
+          }
+        },
+        {
+          "Theme-name": "Paper",
+          "Default-Theme": false,
+          "Background-color": "#f8f9fc",
+          "Text-color": "#1a1d27",
+          "Accent-color": "#4A90D9",
+          "Icons-color": "#6b7280",
+          "Other-variables": {
+            "SCRIM_R": "15",
+            "SCRIM_G": "17",
+            "SCRIM_B": "23"
+          }
+        }
+      ]
+    }
+  }
+}

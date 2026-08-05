@@ -5,6 +5,13 @@ import os
 import sys
 import __main__
 
+# Must run before anything below imports a widget by its flat name. The widget
+# implementations now live in subpackages, but Custom_Widgets.<Module> stays
+# published API — it is baked into every Designer-authored .ui file as
+# <header>Custom_Widgets.QCustomX</header>. See _legacy_paths.py.
+from Custom_Widgets import _legacy_paths as _legacy_paths
+_legacy_paths.install()
+
 
 from qtpy.QtCore import QCoreApplication, Qt, QSettings, QPoint, QSize, Signal, QEvent
 from qtpy.QtGui import QCursor, QPaintEvent,QColor, QMouseEvent, QPainter, QIcon
@@ -13,17 +20,25 @@ from qtpy.QtWidgets import QPushButton, QLabel, QTabWidget, QCheckBox, QMainWind
 import re
 
 from Custom_Widgets.JSonStyles import loadJsonStyle
+from Custom_Widgets.HotReload import enable_hot_reload
 from Custom_Widgets.QCustomTheme import QCustomTheme
-from Custom_Widgets.Utils import is_in_designer, SharedData
+from Custom_Widgets.Utils import (is_in_designer, SharedData, recolor_icon,
+                                  themed_icon, resolve_icon_path, set_state)
+from Custom_Widgets.ImageLoader import load_image, rounded_pixmap, ImageLoader
 
 from Custom_Widgets.Log import *
 from Custom_Widgets.QCustomComponentLoader import QCustomComponentLoader
 from Custom_Widgets.QCustomHamburgerMenu import QCustomHamburgerMenu
 from Custom_Widgets.FileMonitor import QSsFileMonitor
 
-script_dir = os.path.dirname(os.path.abspath(sys.argv[0])).replace("\\", "/")
+from Custom_Widgets.Project import projectRoot, setProjectRoot  # noqa: E402
+script_dir = projectRoot().replace("\\", "/")
 
-class QMainWindow(QMainWindow):
+class QCustomMainWindow(QMainWindow):
+    """Frameless-capable main window with the Custom_Widgets theme engine,
+    drag/resize, side drawers and live QSS. v3 rename: this class used to
+    SHADOW Qt's QMainWindow when star-importing Custom_Widgets - subclass
+    QCustomMainWindow explicitly instead."""
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -32,9 +47,9 @@ class QMainWindow(QMainWindow):
         self.iconsWorker = None
         self.allIconsWorker = None
         
-        self.orginazationName = ""
+        self.organizationName = ""
         self.applicationName = ""
-        self.orginazationDomain = ""
+        self.organizationDomain = ""
 
         self._border_width = 5 #for resizing
         self.borderWidth = self._border_width
@@ -151,7 +166,7 @@ class QMainWindow(QMainWindow):
     def restore_or_maximize_window(self):
         self.toggleWindowSize("")
 
-    # Function to Move window on mouse drag event on the tittle bar
+    # Function to Move window on mouse drag event on the title bar
     def moveWindow(self, e):
         # Detect if the window is  normal size
         if not self.isMaximized(): #Not maximized

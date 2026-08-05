@@ -1,0 +1,16 @@
+Font Awesome Free
+=================
+
+These icons are from Font Awesome Free (https://fontawesome.com).
+
+  Icons  — CC BY 4.0 License (https://creativecommons.org/licenses/by/4.0/)
+  Fonts  — SIL OFL 1.1 License (https://scripts.sil.org/OFL)
+  Code   — MIT License (https://opensource.org/licenses/MIT)
+
+Copyright © Fonticons, Inc.
+
+Attribution (required by CC BY 4.0):
+  "Icons by Font Awesome — https://fontawesome.com, licensed under CC BY 4.0."
+
+The icons may have been recoloured or resized for use as themed Qt icons.
+Full license text: ../../../licenses/CC-BY-4.0.txt

@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>500</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QCustomQToolTip Tail Position Test</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="rootLayout">
+    <property name="spacing">
+     <number>14</number>
+    </property>
+    <property name="leftMargin">
+     <number>20</number>
+    </property>
+    <property name="topMargin">
+     <number>20</number>
+    </property>
+    <property name="rightMargin">
+     <number>20</number>
+    </property>
+    <property name="bottomMargin">
+     <number>20</number>
+    </property>
+    <item>
+     <widget class="QPushButton" name="tipBtn1">
+      <property name="text">
+       <string>HOVER: Auto-positioned Tool-Tip</string>
+      </property>
+      <property name="toolTip">
+       <string>Testing Auto-positioned Tool-Tip.  Try resizing the window then hover again!</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QWidget" name="tipRow" native="true">
+      <layout class="QHBoxLayout" name="tipRowLayout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QPushButton" name="tipBtn2">
+         <property name="text">
+          <string>HOVER: Auto-positioned Tool-Tip</string>
+         </property>
+         <property name="toolTip">
+          <string>Testing Auto-positioned Tool-Tip.  Try resizing the window then hover again!</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="tipBtn3">
+         <property name="text">
+          <string>HOVER: Auto-positioned Tool-Tip</string>
+         </property>
+         <property name="toolTip">
+          <string>Testing Auto-positioned Tool-Tip.  Try resizing the window then hover again!</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="tipBtn4">
+      <property name="text">
+       <string>HOVER: Auto-positioned Tool-Tip</string>
+      </property>
+      <property name="toolTip">
+       <string>Testing Auto-positioned Tool-Tip.  Try resizing the window then hover again!</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="bottomSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets><customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>

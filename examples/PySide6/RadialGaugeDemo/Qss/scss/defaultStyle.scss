@@ -1,0 +1,53 @@
+// QCustomRadialGauge demo — chrome styles. Tokens ONLY (no hard-coded hex):
+// $COLOR_BACKGROUND_1..6, $COLOR_TEXT_1..4, $COLOR_ACCENT_1..4.
+// BG_1 is the base (card surface); higher numbers get darker, so the window
+// band behind the cards is BG_2. Zone / gradient hues are painted in main.py
+// from the token-driven ChartPalette in json-styles/style.json.
+
+#MainWindow,
+#centralwidget {
+    background-color: $COLOR_BACKGROUND_2;
+}
+
+#threatCard1,
+#threatCard2,
+#threatCard3,
+#speedCard,
+#usageCard,
+#timerCard {
+    background-color: $COLOR_BACKGROUND_1;
+    border: 1px solid $COLOR_BACKGROUND_3;
+    border-radius: 18px;
+}
+
+#threatCard1Title,
+#threatCard2Title,
+#threatCard3Title,
+#speedCardTitle,
+#usageCardTitle,
+#timerCardTitle {
+    background: transparent;
+    color: $COLOR_TEXT_1;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+#threatCard1Sub,
+#threatCard2Sub,
+#threatCard3Sub,
+#speedCardSub,
+#usageCardSub,
+#timerCardSub {
+    background: transparent;
+    color: $COLOR_TEXT_3;
+    font-size: 11px;
+}
+
+#threatGauge1,
+#threatGauge2,
+#threatGauge3,
+#speedGauge,
+#usageGauge,
+#timerGauge {
+    background: transparent;
+}

@@ -1,0 +1,28 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomHeaderNav Example"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "NavMidnight",
+          "Default-Theme": true,
+          "Background-color": "#101321",
+          "Text-color": "#e7e9f2",
+          "Accent-color": "#7c8cf8",
+          "Icons-color": "#9aa1b5"
+        },
+        {
+          "Theme-name": "NavDaylight",
+          "Default-Theme": false,
+          "Background-color": "#f5f6fa",
+          "Text-color": "#1c1f2e",
+          "Accent-color": "#4756d6",
+          "Icons-color": "#6b7280"
+        }
+      ]
+    }
+  }
+}

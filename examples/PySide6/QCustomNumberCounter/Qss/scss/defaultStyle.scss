@@ -1,0 +1,30 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#usersHeading, #revenueHeading, #uptimeHeading {
+  color: $COLOR_TEXT_2;
+  font-size: 14px;
+}
+
+/* ---- counter digits come from the widget's typed colour property ---- */
+QCustomNumberCounter {
+  qproperty-textColor: $COLOR_ACCENT_1;
+}
+
+#countUpButton, #differentButton, #resetButton, #themeButton {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 6px;
+  padding: 5px 14px;
+}
+
+#countUpButton:hover, #differentButton:hover, #resetButton:hover, #themeButton:hover {
+  background: $COLOR_BACKGROUND_3;
+}
+
+#countUpButton:pressed, #differentButton:pressed, #resetButton:pressed, #themeButton:pressed {
+  background: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+}

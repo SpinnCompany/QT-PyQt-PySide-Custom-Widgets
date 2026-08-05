@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DeviceHero</class>
+ <widget class="QWidget" name="DeviceHero">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>520</width><height>320</height></rect></property>
+  <layout class="QVBoxLayout" name="heroRoot">
+   <property name="leftMargin"><number>0</number></property><property name="topMargin"><number>0</number></property>
+   <property name="rightMargin"><number>0</number></property><property name="bottomMargin"><number>0</number></property>
+   <property name="spacing"><number>0</number></property>
+   <item>
+    <widget class="QCustomGlassFrame" name="heroGlass">
+     <property name="backdropSource" stdset="0"><string>wallpaper</string></property>
+     <property name="cornerRadius" stdset="0"><number>26</number></property>
+     <property name="liquidEdge" stdset="0"><bool>true</bool></property>
+     <property name="edgeIntensity" stdset="0"><double>0.4</double></property>
+     <layout class="QHBoxLayout" name="heroLayout">
+      <property name="leftMargin"><number>20</number></property><property name="topMargin"><number>18</number></property>
+      <property name="rightMargin"><number>20</number></property><property name="bottomMargin"><number>18</number></property>
+      <property name="spacing"><number>18</number></property>
+      <item alignment="Qt::AlignVCenter">
+       <widget class="QCustomQLabel" name="lampImage">
+        <property name="minimumSize"><size><width>128</width><height>216</height></size></property>
+        <property name="maximumSize"><size><width>128</width><height>216</height></size></property>
+        <property name="imageSource" stdset="0"><string>https://picsum.photos/seed/glasslamp/256/432</string></property>
+        <property name="imageCornerRadius" stdset="0"><number>18</number></property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="heroBody">
+        <property name="spacing"><number>12</number></property>
+        <item>
+         <layout class="QHBoxLayout" name="heroHeader">
+          <property name="spacing"><number>10</number></property>
+          <item>
+           <layout class="QVBoxLayout" name="heroTitles">
+            <property name="spacing"><number>4</number></property>
+            <item>
+             <widget class="QLabel" name="heroKicker">
+              <property name="text"><string>Device</string></property>
+              <property name="role" stdset="0"><string>kicker</string></property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="heroTitle">
+              <property name="text"><string>Luminens LED Modern Standing Lamp</string></property>
+              <property name="wordWrap"><bool>true</bool></property>
+              <property name="role" stdset="0"><string>heroTitle</string></property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item alignment="Qt::AlignTop">
+           <widget class="QCustomQLabel" name="heroApps">
+            <property name="minimumSize"><size><width>26</width><height>26</height></size></property>
+            <property name="maximumSize"><size><width>26</width><height>26</height></size></property>
+            <property name="iconName" stdset="0"><string>material_design/apps</string></property>
+            <property name="role" stdset="0"><string>appsIcon</string></property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QCustomGlassFrame" name="heroStats">
+          <property name="backdropSource" stdset="0"><string>wallpaper</string></property>
+          <property name="cornerRadius" stdset="0"><number>18</number></property>
+          <layout class="QHBoxLayout" name="heroStatsLayout">
+           <property name="leftMargin"><number>18</number></property><property name="topMargin"><number>14</number></property>
+           <property name="rightMargin"><number>18</number></property><property name="bottomMargin"><number>14</number></property>
+           <property name="spacing"><number>20</number></property>
+           <item>
+            <layout class="QVBoxLayout" name="timeCol">
+             <property name="spacing"><number>3</number></property>
+             <item>
+              <widget class="QLabel" name="timeValue">
+               <property name="text"><string>4H 20M</string></property>
+               <property name="role" stdset="0"><string>statValueSm</string></property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="timeLabel">
+               <property name="text"><string>Time Usage</string></property>
+               <property name="role" stdset="0"><string>mutedSm</string></property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QFrame" name="statsDivider">
+             <property name="frameShape"><enum>QFrame::VLine</enum></property>
+             <property name="maximumSize"><size><width>1</width><height>16777215</height></size></property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="energyCol">
+             <property name="spacing"><number>3</number></property>
+             <item>
+              <widget class="QLabel" name="energyValue">
+               <property name="text"><string>72W</string></property>
+               <property name="role" stdset="0"><string>statValueSm</string></property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="energyLabel">
+               <property name="text"><string>Energy Consumption</string></property>
+               <property name="role" stdset="0"><string>mutedSm</string></property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <spacer name="heroStatsSpacer">
+             <property name="orientation"><enum>Qt::Horizontal</enum></property>
+             <property name="sizeHint" stdset="0"><size><width>10</width><height>10</height></size></property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="heroPills">
+          <property name="spacing"><number>12</number></property>
+          <item>
+           <widget class="QCustomQPushButton" name="onPill">
+            <property name="minimumSize"><size><width>0</width><height>40</height></size></property>
+            <property name="text"><string>On from 06:00 PM</string></property>
+            <property name="iconSize"><size><width>14</width><height>14</height></size></property>
+            <property name="iconName" stdset="0"><string>feather/chevron-down</string></property>
+            <property name="role" stdset="0"><string>pill</string></property>
+            <property name="layoutDirection"><enum>Qt::RightToLeft</enum></property>
+            <property name="sizePolicy"><sizepolicy hsizetype="Expanding" vsizetype="Fixed"><horstretch>0</horstretch><verstretch>0</verstretch></sizepolicy></property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCustomQPushButton" name="offPill">
+            <property name="minimumSize"><size><width>0</width><height>40</height></size></property>
+            <property name="text"><string>Off at 05:00 AM</string></property>
+            <property name="iconSize"><size><width>14</width><height>14</height></size></property>
+            <property name="iconName" stdset="0"><string>feather/chevron-down</string></property>
+            <property name="role" stdset="0"><string>pill</string></property>
+            <property name="layoutDirection"><enum>Qt::RightToLeft</enum></property>
+            <property name="sizePolicy"><sizepolicy hsizetype="Expanding" vsizetype="Fixed"><horstretch>0</horstretch><verstretch>0</verstretch></sizepolicy></property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="brightRow">
+          <property name="spacing"><number>12</number></property>
+          <item>
+           <widget class="QCustomQLabel" name="brightIcon">
+            <property name="minimumSize"><size><width>22</width><height>22</height></size></property>
+            <property name="maximumSize"><size><width>22</width><height>22</height></size></property>
+            <property name="iconName" stdset="0"><string>feather/sun</string></property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSlider" name="brightSlider">
+            <property name="orientation"><enum>Qt::Horizontal</enum></property>
+            <property name="minimum"><number>0</number></property>
+            <property name="maximum"><number>100</number></property>
+            <property name="value"><number>72</number></property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget><class>QCustomGlassFrame</class><extends>QFrame</extends><header>Custom_Widgets.QCustomGlassFrame</header><container>1</container></customwidget>
+  <customwidget><class>QCustomQPushButton</class><extends>QPushButton</extends><header>Custom_Widgets.QCustomQPushButton</header><container>0</container></customwidget>
+  <customwidget><class>QCustomQLabel</class><extends>QLabel</extends><header>Custom_Widgets.QCustomQLabel</header><container>0</container></customwidget>
+ </customwidgets>
+ <connections/>
+</ui>

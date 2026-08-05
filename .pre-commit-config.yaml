@@ -1,0 +1,16 @@
+# Pre-commit hooks for QT-PyQt-PySide Custom Widgets.
+#   pip install pre-commit && pre-commit install
+# Runs the shipped design-rule linter on changed .py/.ui files so glyph-icon /
+# hardcoded-hex / drop-shadow violations are caught before they land.
+repos:
+  - repo: local
+    hooks:
+      - id: custom-widgets-design-lint
+        name: Custom Widgets design rules
+        entry: python -m Custom_Widgets.lint
+        language: system
+        pass_filenames: true
+        files: \.(py|ui)$
+        # The linter reads pyproject config + the repo baseline itself, so it
+        # only fails on NEW violations in the staged files.
+        require_serial: true

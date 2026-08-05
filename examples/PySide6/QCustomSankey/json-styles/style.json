@@ -1,0 +1,30 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomSankey Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Sankey-Dark",
+          "Default-Theme": true,
+          "Create-icons": false,
+          "Background-color": "#101418",
+          "Text-color": "#e9edf1",
+          "Accent-color": "#34d399",
+          "Icons-color": "#9ca3af"
+        },
+        {
+          "Theme-name": "Sankey-Light",
+          "Default-Theme": false,
+          "Create-icons": false,
+          "Background-color": "#f6f8f9",
+          "Text-color": "#17202a",
+          "Accent-color": "#059669",
+          "Icons-color": "#6b7280"
+        }
+      ]
+    }
+  }
+}

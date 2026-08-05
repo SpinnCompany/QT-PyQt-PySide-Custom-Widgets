@@ -47,7 +47,7 @@
        </property>
        <property name="icon">
         <iconset resource="../Qss/icons/_icons.qrc">
-         <normaloff>:/feather/Icons/feather/airplay.png</normaloff>:/feather/Icons/feather/airplay.png</iconset>
+         <normaloff>:/feather/icons/feather/airplay.svg</normaloff>:/feather/icons/feather/airplay.svg</iconset>
        </property>
        <property name="iconSize">
         <size>

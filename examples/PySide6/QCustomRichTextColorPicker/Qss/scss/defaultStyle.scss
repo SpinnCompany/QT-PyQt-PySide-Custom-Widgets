@@ -1,0 +1,77 @@
+//===================================================//
+// QCustomRichTextEditor + QCustomColorPicker showcase.
+// All chrome lives here; hues come from json-styles/style.json.
+//===================================================//
+
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+// -- rich text editor (its children keep their library objectNames) ------
+#rteToolbar {
+  background: $COLOR_BACKGROUND_2;
+  border: 1px solid $COLOR_BACKGROUND_3;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+#rteToolbar QPushButton {
+  background: transparent;
+  color: $COLOR_TEXT_2;
+  border-radius: 4px;
+  padding: 4px 8px;
+  min-width: 22px;
+}
+
+#rteToolbar QPushButton:hover {
+  background: $COLOR_BACKGROUND_3;
+  color: $COLOR_TEXT_1;
+}
+
+#rteToolbar QPushButton:checked {
+  background: $COLOR_ACCENT_3;
+  color: $COLOR_TEXT_1;
+}
+
+#rteEditor {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_3;
+  border-top: none;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  padding: 8px;
+}
+
+// -- colour picker row ---------------------------------------------------
+#accentLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+#colorHex {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_3;
+  border-radius: 6px;
+  padding: 4px 8px;
+  max-width: 90px;
+}
+
+#colorPopup {
+  background: $COLOR_BACKGROUND_2;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 8px;
+}
+
+#colorCustomBtn {
+  background: $COLOR_BACKGROUND_3;
+  color: $COLOR_TEXT_2;
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+#colorCustomBtn:hover {
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_ACCENT_1;
+}

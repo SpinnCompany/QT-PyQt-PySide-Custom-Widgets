@@ -1,0 +1,282 @@
+"""The flat `Custom_Widgets.<Module>` paths must survive the regrouping.
+
+They are published API in two places: user imports, and the
+`<header>Custom_Widgets.QCustomX</header>` that Qt Designer bakes into every
+.ui file it writes. Breaking them surfaces as a .ui load failure pointing at
+the user's form rather than at the rename that caused it.
+"""
+import importlib
+import os
+import sys
+
+import pytest
+
+REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+class TestAliasTable:
+    def test_aliases_cover_moved_modules(self, qapp):
+        from Custom_Widgets import _legacy_paths
+        aliases = _legacy_paths.build_aliases()
+        assert "Custom_Widgets.QCustomRadioButton" in aliases
+        assert aliases["Custom_Widgets.QCustomRadioButton"] == \
+            "Custom_Widgets.widgets.input.QCustomRadioButton"
+
+    def test_alias_table_is_derived_not_hardcoded(self, qapp):
+        """Every alias must point at a file that actually exists."""
+        from Custom_Widgets import _legacy_paths
+        for legacy, real in _legacy_paths.build_aliases().items():
+            rel = real.split(".", 1)[1].replace(".", os.sep) + ".py"
+            assert os.path.isfile(os.path.join(REPO, "Custom_Widgets", rel)), \
+                "%s -> %s has no file" % (legacy, real)
+
+    def test_duplicate_basenames_are_rejected(self, qapp, tmp_path, monkeypatch):
+        """An ambiguous flat alias must fail loudly, not pick one at random."""
+        from Custom_Widgets import _legacy_paths
+        root = tmp_path / "pkg"
+        for group in ("widgets", "tools"):
+            d = root / group
+            d.mkdir(parents=True)
+            (d / "__init__.py").write_text("")
+            (d / "Clash.py").write_text("")
+        monkeypatch.setattr(_legacy_paths, "_ROOT", str(root))
+        with pytest.raises(ImportError, match="ambiguous"):
+            _legacy_paths.build_aliases()
+
+
+class TestLegacyImports:
+    @pytest.mark.parametrize("name", [
+        "QCustomRadioButton", "QCustomRadioGroup", "QCustomTextArea",
+        "QCustomVerificationCode", "QCustomSwitch", "QCustomNumberInput",
+        "QCustomInput", "QCustomButtonGroup",
+    ])
+    def test_flat_path_still_imports(self, qapp, name):
+        module = importlib.import_module("Custom_Widgets.%s" % name)
+        assert hasattr(module, name)
+
+    def test_flat_and_real_paths_are_the_same_module(self, qapp):
+        """Not a copy — a second execution would re-register Designer widgets."""
+        legacy = importlib.import_module("Custom_Widgets.QCustomSwitch")
+        real = importlib.import_module("Custom_Widgets.widgets.input.QCustomSwitch")
+        assert legacy is real
+        assert legacy.QCustomSwitch is real.QCustomSwitch
+
+    def test_from_import_works(self, qapp):
+        from Custom_Widgets.QCustomRadioGroup import QCustomRadioGroup
+        assert QCustomRadioGroup(options=["a", "b"]).count() == 2
+
+    def test_widget_module_constant_stays_public(self, qapp):
+        """Designer writes WIDGET_MODULE into .ui files, so it must not move."""
+        from Custom_Widgets.QCustomRadioButton import QCustomRadioButton
+        from Custom_Widgets.QCustomTextArea import QCustomTextArea
+        assert QCustomRadioButton.WIDGET_MODULE == "Custom_Widgets.QCustomRadioButton"
+        assert QCustomTextArea.WIDGET_MODULE == "Custom_Widgets.QCustomTextArea"
+
+    def test_unknown_module_still_raises(self, qapp):
+        """The finder must only fill gaps, never swallow real import errors."""
+        with pytest.raises(ImportError):
+            importlib.import_module("Custom_Widgets.QCustomDefinitelyNotAWidget")
+
+    def test_real_modules_win_over_aliases(self, qapp):
+        """A module genuinely at the top level resolves to itself.
+
+        The finder is appended to sys.meta_path rather than prepended, so it
+        only ever fills gaps. _resources is one of the three modules that stay
+        at the package root, because they are the machinery the alias layer is
+        built from and cannot be aliased by it.
+        """
+        mod = importlib.import_module("Custom_Widgets._resources")
+        assert mod.__name__ == "Custom_Widgets._resources"
+
+
+class TestAliasedPackages:
+    """Whole packages moved under widgets/ keep their old prefix working."""
+
+    @pytest.mark.parametrize("legacy,real", [
+        ("Custom_Widgets.ProgressBars", "Custom_Widgets.widgets.progressbars"),
+        ("Custom_Widgets.LoadingIndicators", "Custom_Widgets.widgets.loading"),
+        ("Custom_Widgets.QCustomCharts", "Custom_Widgets.widgets.charts.qtcharts"),
+    ])
+    def test_package_prefix_resolves(self, qapp, legacy, real):
+        assert importlib.import_module(legacy) is importlib.import_module(real)
+
+    def test_submodule_under_an_aliased_package(self, qapp):
+        legacy = importlib.import_module(
+            "Custom_Widgets.QCustomCharts.QCustomLineChart")
+        real = importlib.import_module(
+            "Custom_Widgets.widgets.charts.qtcharts.QCustomLineChart")
+        assert legacy is real
+
+    def test_one_class_object_per_file(self, qapp):
+        """The invariant that makes isinstance work across import paths.
+
+        Two things broke this while the move was being done, both silently:
+        importlib rewriting __name__ on the real module when the alias loader
+        returned it from create_module, and the stdlib PathFinder re-importing
+        submodules under the legacy name once the aliased package had a real
+        __path__. Either produced two classes for one file.
+        """
+        from Custom_Widgets.QCustomCharts.QCustomLineChart import QCustomLineChart as viaLegacy
+        from Custom_Widgets.widgets.charts.qtcharts.QCustomLineChart import QCustomLineChart as viaReal
+        assert viaLegacy is viaReal
+
+        from Custom_Widgets.QCustomRadioButton import QCustomRadioButton as flatLegacy
+        from Custom_Widgets.widgets.input.QCustomRadioButton import QCustomRadioButton as flatReal
+        assert flatLegacy is flatReal
+
+    def test_real_module_keeps_its_own_name(self, qapp):
+        """A rewritten __name__ silently retargets the package's own relative
+        imports, which is how `from .X import Y` starts binding the module."""
+        real = importlib.import_module(
+            "Custom_Widgets.widgets.charts.qtcharts.QCustomChartConstants")
+        assert real.__name__ == \
+            "Custom_Widgets.widgets.charts.qtcharts.QCustomChartConstants"
+
+    def test_no_internal_use_of_legacy_package_paths(self, qapp):
+        """Package code addresses other packages by their real path.
+
+        Going through the legacy alias from inside the package tree round-trips
+        the import machinery and, when the target is the package doing the
+        importing, re-enters it mid-initialisation. The aliases exist for
+        callers outside the tree, not for us.
+        """
+        base = os.path.join(REPO, "Custom_Widgets", "widgets")
+        offenders = []
+        for dirpath, dirnames, filenames in os.walk(base):
+            dirnames[:] = [d for d in dirnames if d != "__pycache__"]
+            for filename in filenames:
+                if not filename.endswith(".py"):
+                    continue
+                path = os.path.join(dirpath, filename)
+                text = open(path, encoding="utf-8", errors="ignore").read()
+                for legacy in ("Custom_Widgets.QCustomCharts.",
+                               "Custom_Widgets.ProgressBars.",
+                               "Custom_Widgets.LoadingIndicators."):
+                    if "from %s" % legacy in text or "import %s" % legacy in text:
+                        offenders.append(os.path.relpath(path, REPO))
+        assert not offenders, ("these import their own package by its legacy "
+                               "public path; use a relative import: %s"
+                               % ", ".join(sorted(set(offenders))))
+
+
+class TestToolingSeesMovedWidgets:
+    """The move must not make a widget invisible to the tooling.
+
+    Every discovery path here used a top-level-only glob, so a moved widget
+    vanished silently — no error, just a shorter list.
+    """
+
+    def test_mcp_discovery_includes_moved_widgets(self, qapp):
+        from Custom_Widgets.mcp.server import _discover_widgets
+        found = _discover_widgets()
+        for name in ("QCustomMultiSelect", "QCustomRadioGroup",
+                     "QCustomTextArea", "QCustomSwitch"):
+            assert name in found, "%s dropped out of MCP discovery" % name
+
+    def test_discovered_module_is_the_public_path(self, qapp):
+        """MCP hands this to callers as an import path; it must be the stable one."""
+        from Custom_Widgets.mcp.server import _discover_widgets
+        found = _discover_widgets()
+        assert found["QCustomSwitch"]["module"] == "Custom_Widgets.QCustomSwitch"
+
+    def test_stubs_live_at_the_flat_public_path(self, qapp):
+        """Type checkers do not run our meta-path finder.
+
+        A stub at Custom_Widgets/QCustomX.pyi is what makes the path users
+        actually import resolve for mypy/pyright; a stub next to the moved
+        implementation would only type the private location.
+        """
+        for name in ("QCustomMultiSelect", "QCustomRadioButton",
+                     "QCustomSwitch", "QCustomTextArea"):
+            flat = os.path.join(REPO, "Custom_Widgets", name + ".pyi")
+            assert os.path.isfile(flat), "%s has no stub at the public path" % name
+
+    def test_scan_widgets_covers_moved_widgets(self, qapp):
+        manifest = os.path.join(REPO, "docs", "design", "tiering-manifest.md")
+        text = open(manifest, encoding="utf-8").read()
+        for name in ("QCustomRadioGroup", "QCustomTextArea", "QCustomSwitch"):
+            assert "`%s`" % name in text, "%s missing from the launch gate" % name
+
+
+class TestBundledResourcePaths:
+    """Widget modules must anchor bundled data on the package root.
+
+    components/, Qss/, fonts/ and the CodeEditor* directories all live at
+    Custom_Widgets/. A module in Custom_Widgets/widgets/<group>/ that resolves
+    them from its own __file__ lands one or more directories too deep — which
+    is exactly how the regrouping broke every icon and theme lookup at once.
+    """
+
+    def test_no_module_local_file_anchoring(self, qapp):
+        import re
+        pattern = re.compile(
+            r"dirname\(\s*os\.path\.(realpath|abspath)\(\s*__file__|"
+            r"dirname\(\s*__file__|"
+            r"Path\(\s*__file__\s*\)\.parents?")
+        offenders = []
+        # Every grouped subpackage, not just widgets/: tools, designer and
+        # theming moved too, and they load Qss/ and components/ the same way.
+        for group in ("widgets", "tools", "designer", "theming"):
+            base = os.path.join(REPO, "Custom_Widgets", group)
+            for dirpath, dirnames, filenames in os.walk(base):
+                dirnames[:] = [d for d in dirnames if d != "__pycache__"]
+                for filename in filenames:
+                    if not filename.endswith(".py"):
+                        continue
+                    path = os.path.join(dirpath, filename)
+                    text = open(path, encoding="utf-8", errors="ignore").read()
+                    if pattern.search(text):
+                        offenders.append(os.path.relpath(path, REPO))
+        assert not offenders, (
+            "these resolve bundled data from their own __file__ and will break "
+            "when moved — use Custom_Widgets._resources.packageDir(): %s"
+            % ", ".join(sorted(offenders)))
+
+    def test_package_dir_points_at_the_package_root(self, qapp):
+        from Custom_Widgets._resources import packageDir, resourcePath
+        assert os.path.isdir(os.path.join(packageDir(), "components"))
+        assert os.path.isdir(resourcePath("Qss"))
+
+    def test_a_moved_widget_still_finds_its_resources(self, qapp):
+        """AnalogGaugeWidget reads a JSON theme file; it moved two levels."""
+        from Custom_Widgets.AnalogGaugeWidget import AnalogGaugeWidget
+        gauge = AnalogGaugeWidget()
+        gauge.resize(160, 160)
+        gauge.grab()                       # would raise FileNotFoundError
+
+
+class TestUiHeadersResolve:
+    def test_every_ui_header_in_repo_is_importable(self, qapp):
+        """Walk the .ui files and import each Custom_Widgets header they name.
+
+        This is the regression that would otherwise reach users first.
+        """
+        import re
+        pattern = re.compile(r"<header>(Custom_Widgets[^<]*)</header>")
+        headers = set()
+        for dirpath, dirnames, filenames in os.walk(REPO):
+            dirnames[:] = [d for d in dirnames
+                           if d not in (".git", "__pycache__", ".claude")]
+            for filename in filenames:
+                if not filename.endswith(".ui"):
+                    continue
+                path = os.path.join(dirpath, filename)
+                try:
+                    text = open(path, encoding="utf-8", errors="ignore").read()
+                except OSError:
+                    continue
+                headers.update(pattern.findall(text))
+
+        assert headers, "no .ui headers found — the guard would be vacuous"
+        broken = []
+        for header in sorted(headers):
+            # Some older example forms carry a C++-style "<module>.h" header,
+            # which is what Designer writes for C++ widgets. The Python loaders
+            # ignore the suffix, so check the module that actually gets
+            # imported rather than failing on the spelling.
+            module = header[:-2] if header.endswith(".h") else header
+            try:
+                importlib.import_module(module)
+            except Exception as exc:                # noqa: BLE001 - report all
+                broken.append("%s (%s)" % (header, exc.__class__.__name__))
+        assert not broken, "unimportable .ui headers: %s" % ", ".join(broken)

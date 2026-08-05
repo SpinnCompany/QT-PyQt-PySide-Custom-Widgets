@@ -1,0 +1,80 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#dateLabel, #timeLabel, #rangeLabel, #resultCaption {
+  color: $COLOR_TEXT_2;
+  font-size: 14px;
+}
+
+#resultLabel {
+  color: $COLOR_ACCENT_1;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* ---- date / time fields ---- */
+QCustomDateEdit, QCustomTimeEdit {
+  background-color: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+QCustomDateEdit:focus, QCustomTimeEdit:focus {
+  border: 2px solid $COLOR_ACCENT_1;
+}
+
+QCustomDateEdit::drop-down, QCustomTimeEdit::drop-down {
+  border: none;
+  width: 22px;
+  subcontrol-origin: padding;
+  subcontrol-position: center right;
+}
+
+QCustomDateRangeEdit {
+  background: transparent;
+}
+
+QCustomDateRangeEdit #dateRangeSep {
+  color: $COLOR_TEXT_3;
+}
+
+/* ---- calendar popup (scoped by objectName) ---- */
+#customCalendar {
+  background-color: $COLOR_BACKGROUND_2;
+}
+
+#customCalendar QWidget#qt_calendar_navigationbar {
+  background-color: $COLOR_BACKGROUND_3;
+}
+
+#customCalendar QToolButton {
+  color: $COLOR_TEXT_1;
+  background-color: transparent;
+  border: none;
+  padding: 4px;
+}
+
+#customCalendar QToolButton:hover {
+  background-color: $COLOR_BACKGROUND_3;
+}
+
+#customCalendar QMenu {
+  background-color: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+}
+
+#customCalendar QAbstractItemView {
+  background-color: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  outline: 0;
+  selection-background-color: $COLOR_ACCENT_1;
+  selection-color: $COLOR_BACKGROUND_1;
+}
+
+#customCalendar QAbstractItemView:disabled {
+  color: $COLOR_TEXT_4;
+}

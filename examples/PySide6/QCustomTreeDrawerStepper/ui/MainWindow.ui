@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>560</width>
+    <height>520</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Tree / Drawer / Stepper</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="rootLayout">
+    <property name="spacing">
+     <number>12</number>
+    </property>
+    <property name="leftMargin">
+     <number>20</number>
+    </property>
+    <property name="topMargin">
+     <number>20</number>
+    </property>
+    <property name="rightMargin">
+     <number>20</number>
+    </property>
+    <property name="bottomMargin">
+     <number>20</number>
+    </property>
+    <item>
+     <widget class="QCustomStepper" name="stepper" native="true"/>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="navRow">
+      <item>
+       <widget class="QCustomQPushButton" name="backBtn">
+        <property name="text">
+         <string>Back</string>
+        </property>
+        <property name="variant" stdset="0">
+         <string>outline</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="navSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QCustomQPushButton" name="nextBtn">
+        <property name="text">
+         <string>Next</string>
+        </property>
+        <property name="variant" stdset="0">
+         <string>primary</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QCustomTreeWidget" name="tree">
+      <attribute name="headerVisible">
+       <bool>false</bool>
+      </attribute>
+      <column>
+       <property name="text">
+        <string notr="true">1</string>
+       </property>
+      </column>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCustomQPushButton" name="openDrawerBtn">
+      <property name="text">
+       <string>Open drawer</string>
+      </property>
+      <property name="variant" stdset="0">
+       <string>secondary</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomStepper</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomStepper</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomTreeWidget</class>
+   <extends>QTreeWidget</extends>
+   <header>Custom_Widgets.QCustomTreeWidget</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomQPushButton</class>
+   <extends>QPushButton</extends>
+   <header>Custom_Widgets.QCustomQPushButton</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

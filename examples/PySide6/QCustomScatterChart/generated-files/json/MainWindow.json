@@ -1,0 +1,21 @@
+{
+  "QComboBox": [
+    {
+      "name": "shapeCombo",
+      "items": [
+        {
+          "name": "circle"
+        },
+        {
+          "name": "square"
+        },
+        {
+          "name": "diamond"
+        },
+        {
+          "name": "triangle"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+    "QtBinding": "PySide6",
+    "QMainWindow": {
+        "title": "QCustomCompass — preview"
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "CompassDemo"
+        },
+        "ThemeSettings": {
+            "CustomThemes": [
+                {
+                    "Theme-name": "Compass Dark",
+                    "Default-Theme": true,
+                    "Create-icons": false,
+                    "Background-color": "#0e1016",
+                    "Text-color": "#e7e9ef",
+                    "Accent-color": "#3aa0ff",
+                    "Icons-color": "#9aa1b2",
+                    "Other-variables": {
+                        "CARD_BG": "#171a22",
+                        "CARD_BORDER": "#232833",
+                        "CARD_TITLE": "#f4f6fb",
+                        "CARD_SUB": "#6b7280",
+                        "COMPASS_GOLD": "#ffb703",
+                        "COMPASS_BLUE": "#3aa0ff",
+                        "COMPASS_RING": "#233043"
+                    }
+                },
+                {
+                    "Theme-name": "Compass Light",
+                    "Default-Theme": false,
+                    "Create-icons": false,
+                    "Background-color": "#eef1f5",
+                    "Text-color": "#1c2430",
+                    "Accent-color": "#2b7fd4",
+                    "Icons-color": "#6b7280",
+                    "Other-variables": {
+                        "CARD_BG": "#ffffff",
+                        "CARD_BORDER": "#dfe3ea",
+                        "CARD_TITLE": "#10151d",
+                        "CARD_SUB": "#7b8494",
+                        "COMPASS_GOLD": "#e09a00",
+                        "COMPASS_BLUE": "#2b7fd4",
+                        "COMPASS_RING": "#c8d2e0"
+                    }
+                }
+            ]
+        }
+    }
+}

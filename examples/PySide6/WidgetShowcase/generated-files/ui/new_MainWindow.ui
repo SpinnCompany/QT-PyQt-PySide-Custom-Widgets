@@ -1,0 +1,944 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Custom Widgets Showcase — Complete Library</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="rootLayout">
+    <property name="spacing">
+     <number>12</number>
+    </property>
+    <property name="leftMargin">
+     <number>20</number>
+    </property>
+    <property name="topMargin">
+     <number>20</number>
+    </property>
+    <property name="rightMargin">
+     <number>20</number>
+    </property>
+    <property name="bottomMargin">
+     <number>20</number>
+    </property>
+    <item>
+     <widget class="QLabel" name="headerTitle">
+      <property name="text">
+       <string>Custom Widgets — Complete Release Showcase</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="themeBar">
+      <property name="spacing">
+       <number>10</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="themeLabel">
+        <property name="text">
+         <string>Theme:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="themeGroupHost" native="true">
+        <layout class="QHBoxLayout" name="themeGroupHostLayout">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <spacer name="themeSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QTabWidget" name="tabs">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="inputsTab">
+       <attribute name="title">
+        <string>Inputs &amp;&amp; Forms</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="inputsTabLayout">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QScrollArea" name="inputsScroll">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <widget class="QWidget" name="inputsContent">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1100</width>
+             <height>640</height>
+            </rect>
+           </property>
+           <layout class="QVBoxLayout" name="inputsLayout">
+            <property name="spacing">
+             <number>16</number>
+            </property>
+            <property name="leftMargin">
+             <number>12</number>
+            </property>
+            <property name="topMargin">
+             <number>12</number>
+            </property>
+            <property name="rightMargin">
+             <number>12</number>
+            </property>
+            <property name="bottomMargin">
+             <number>12</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="formsSectionLabel">
+              <property name="text">
+               <string>Forms &amp; Validation</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QFrame" name="formCard">
+              <property name="frameShape">
+               <enum>QFrame::StyledPanel</enum>
+              </property>
+              <layout class="QVBoxLayout" name="formCardLayout">
+               <item>
+                <widget class="QCustomForm" name="showcaseForm" native="true" />
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="groupSectionLabel">
+              <property name="text">
+               <string>Selection Buttons</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="prefGroupHost" native="true">
+              <layout class="QHBoxLayout" name="prefGroupHostLayout">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCustomCheckBox" name="agreeCheck">
+              <property name="text">
+               <string>I agree to the terms</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="rangeSectionLabel">
+              <property name="text">
+               <string>Range Selector</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCustomRangeSlider" name="rangeSlider" native="true">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>32</height>
+               </size>
+              </property>
+              <property name="minimum" stdset="0">
+               <number>0</number>
+              </property>
+              <property name="maximum" stdset="0">
+               <number>100</number>
+              </property>
+              <property name="lowerValue" stdset="0">
+               <number>20</number>
+              </property>
+              <property name="upperValue" stdset="0">
+               <number>80</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="switchSectionLabel">
+              <property name="text">
+               <string>Toggles</string>
+              </property>
+             </widget>
+            </item>
+            <item alignment="Qt::AlignLeft">
+             <widget class="QCustomSwitch" name="notifySwitch" native="true">
+              <property name="checked" stdset="0">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="inputsSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="dataTab">
+       <attribute name="title">
+        <string>Data &amp;&amp; Visualization</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="dataTabLayout">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QScrollArea" name="dataScroll">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <widget class="QWidget" name="dataContent">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1100</width>
+             <height>640</height>
+            </rect>
+           </property>
+           <layout class="QVBoxLayout" name="dataLayout">
+            <property name="spacing">
+             <number>16</number>
+            </property>
+            <property name="leftMargin">
+             <number>12</number>
+            </property>
+            <property name="topMargin">
+             <number>12</number>
+            </property>
+            <property name="rightMargin">
+             <number>12</number>
+            </property>
+            <property name="bottomMargin">
+             <number>12</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="kpiSectionLabel">
+              <property name="text">
+               <string>KPI Statistics</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="kpiRow">
+              <property name="spacing">
+               <number>12</number>
+              </property>
+              <item>
+               <widget class="QCustomStatCard" name="statRevenue" native="true">
+                <property name="label" stdset="0">
+                 <string>Revenue</string>
+                </property>
+                <property name="value" stdset="0">
+                 <string>$12.5K</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCustomStatCard" name="statUsers" native="true">
+                <property name="label" stdset="0">
+                 <string>Users</string>
+                </property>
+                <property name="value" stdset="0">
+                 <string>1,234</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCustomStatCard" name="statRetention" native="true">
+                <property name="label" stdset="0">
+                 <string>Retention</string>
+                </property>
+                <property name="value" stdset="0">
+                 <string>92%</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QLabel" name="progressSectionLabel">
+              <property name="text">
+               <string>Progress Indicators</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="progressRow">
+              <property name="spacing">
+               <number>20</number>
+              </property>
+              <item>
+               <layout class="QVBoxLayout" name="cpuColumn">
+                <item alignment="Qt::AlignHCenter">
+                 <widget class="QCustomProgressRing" name="ringCpu" native="true">
+                  <property name="minimumSize">
+                   <size>
+                    <width>96</width>
+                    <height>96</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+                <item alignment="Qt::AlignHCenter">
+                 <widget class="QLabel" name="cpuLabel">
+                  <property name="text">
+                   <string>CPU</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QVBoxLayout" name="memoryColumn">
+                <item alignment="Qt::AlignHCenter">
+                 <widget class="QCustomProgressRing" name="ringMemory" native="true">
+                  <property name="minimumSize">
+                   <size>
+                    <width>96</width>
+                    <height>96</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+                <item alignment="Qt::AlignHCenter">
+                 <widget class="QLabel" name="memoryLabel">
+                  <property name="text">
+                   <string>Memory</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QVBoxLayout" name="diskColumn">
+                <item alignment="Qt::AlignHCenter">
+                 <widget class="QCustomProgressRing" name="ringDisk" native="true">
+                  <property name="minimumSize">
+                   <size>
+                    <width>96</width>
+                    <height>96</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+                <item alignment="Qt::AlignHCenter">
+                 <widget class="QLabel" name="diskLabel">
+                  <property name="text">
+                   <string>Disk</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <spacer name="progressSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QLabel" name="ratingSectionLabel">
+              <property name="text">
+               <string>User Rating</string>
+              </property>
+             </widget>
+            </item>
+            <item alignment="Qt::AlignLeft">
+             <widget class="QCustomRating" name="userRating" native="true">
+              <property name="maximum" stdset="0">
+               <number>5</number>
+              </property>
+              <property name="value" stdset="0">
+               <number>4</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="badgeSectionLabel">
+              <property name="text">
+               <string>Status Indicators</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="badgeRow">
+              <property name="spacing">
+               <number>8</number>
+              </property>
+              <item>
+               <widget class="QCustomBadge" name="badgeActive">
+                <property name="text">
+                 <string>Active</string>
+                </property>
+                <property name="variant" stdset="0">
+                 <string>primary</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCustomBadge" name="badgeApproved">
+                <property name="text">
+                 <string>Approved</string>
+                </property>
+                <property name="variant" stdset="0">
+                 <string>success</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCustomBadge" name="badgePending">
+                <property name="text">
+                 <string>Pending</string>
+                </property>
+                <property name="variant" stdset="0">
+                 <string>warning</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCustomBadge" name="badgeFailed">
+                <property name="text">
+                 <string>Failed</string>
+                </property>
+                <property name="variant" stdset="0">
+                 <string>destructive</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="badgeSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <spacer name="dataSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="feedbackTab">
+       <attribute name="title">
+        <string>Feedback &amp;&amp; Status</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="feedbackTabLayout">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QScrollArea" name="feedbackScroll">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <widget class="QWidget" name="feedbackContent">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1100</width>
+             <height>640</height>
+            </rect>
+           </property>
+           <layout class="QVBoxLayout" name="feedbackLayout">
+            <property name="spacing">
+             <number>16</number>
+            </property>
+            <property name="leftMargin">
+             <number>12</number>
+            </property>
+            <property name="topMargin">
+             <number>12</number>
+            </property>
+            <property name="rightMargin">
+             <number>12</number>
+            </property>
+            <property name="bottomMargin">
+             <number>12</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="alertsSectionLabel">
+              <property name="text">
+               <string>Alert Messages</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCustomAlert" name="alertInfo" native="true">
+              <property name="title" stdset="0">
+               <string>Information</string>
+              </property>
+              <property name="text" stdset="0">
+               <string>This is an informational alert.</string>
+              </property>
+              <property name="variant" stdset="0">
+               <string>info</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCustomAlert" name="alertSuccess" native="true">
+              <property name="title" stdset="0">
+               <string>Success</string>
+              </property>
+              <property name="text" stdset="0">
+               <string>Operation completed successfully.</string>
+              </property>
+              <property name="variant" stdset="0">
+               <string>success</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCustomAlert" name="alertWarning" native="true">
+              <property name="title" stdset="0">
+               <string>Warning</string>
+              </property>
+              <property name="text" stdset="0">
+               <string>Please review this warning carefully.</string>
+              </property>
+              <property name="variant" stdset="0">
+               <string>warning</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCustomAlert" name="alertError" native="true">
+              <property name="title" stdset="0">
+               <string>Error</string>
+              </property>
+              <property name="text" stdset="0">
+               <string>An error has occurred.</string>
+              </property>
+              <property name="variant" stdset="0">
+               <string>destructive</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="toastSectionLabel">
+              <property name="text">
+               <string>Notifications (Toast)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="toastRow">
+              <property name="spacing">
+               <number>10</number>
+              </property>
+              <item>
+               <widget class="QCustomQPushButton" name="toastInfoBtn">
+                <property name="text">
+                 <string>Info</string>
+                </property>
+                <property name="variant" stdset="0">
+                 <string>outline</string>
+                </property>
+                <property name="sizeVariant" stdset="0">
+                 <string>md</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCustomQPushButton" name="toastSuccessBtn">
+                <property name="text">
+                 <string>Success</string>
+                </property>
+                <property name="variant" stdset="0">
+                 <string>outline</string>
+                </property>
+                <property name="sizeVariant" stdset="0">
+                 <string>md</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCustomQPushButton" name="toastWarningBtn">
+                <property name="text">
+                 <string>Warning</string>
+                </property>
+                <property name="variant" stdset="0">
+                 <string>outline</string>
+                </property>
+                <property name="sizeVariant" stdset="0">
+                 <string>md</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCustomQPushButton" name="toastErrorBtn">
+                <property name="text">
+                 <string>Error</string>
+                </property>
+                <property name="variant" stdset="0">
+                 <string>outline</string>
+                </property>
+                <property name="sizeVariant" stdset="0">
+                 <string>md</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="toastSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <spacer name="feedbackSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="advancedTab">
+       <attribute name="title">
+        <string>Advanced Components</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="advancedTabLayout">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QScrollArea" name="advancedScroll">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <widget class="QWidget" name="advancedContent">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1100</width>
+             <height>640</height>
+            </rect>
+           </property>
+           <layout class="QVBoxLayout" name="advancedLayout">
+            <property name="spacing">
+             <number>16</number>
+            </property>
+            <property name="leftMargin">
+             <number>12</number>
+            </property>
+            <property name="topMargin">
+             <number>12</number>
+            </property>
+            <property name="rightMargin">
+             <number>12</number>
+            </property>
+            <property name="bottomMargin">
+             <number>12</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="cardSectionLabel">
+              <property name="text">
+               <string>Card Containers</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCustomCard" name="featureCard" native="true">
+              <property name="title" stdset="0">
+               <string>Feature Card</string>
+              </property>
+              <property name="subtitle" stdset="0">
+               <string>Reusable content container</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="cardContentHolder" native="true">
+              <layout class="QVBoxLayout" name="cardContentLayout">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="cardDescLabel">
+                 <property name="text">
+                  <string>This demonstrates the QCustomCard container with nested content.</string>
+                 </property>
+                 <property name="wordWrap">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="accordionSectionLabel">
+              <property name="text">
+               <string>Collapsible Content</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCustomAccordion" name="accordion" native="true" />
+            </item>
+            <item>
+             <spacer name="advancedSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomForm</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomForm</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>Custom_Widgets.QCustomCheckBox</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomRangeSlider</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomRangeSlider</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomSwitch</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomSwitch</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomStatCard</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomStatCard</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomProgressRing</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomProgressRing</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomRating</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomRating</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomBadge</class>
+   <extends>QLabel</extends>
+   <header>Custom_Widgets.QCustomBadge</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomAlert</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomAlert</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomQPushButton</class>
+   <extends>QPushButton</extends>
+   <header>Custom_Widgets.QCustomQPushButton</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomCard</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomCard</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomAccordion</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomAccordion</header>
+  </customwidget>
+ <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>

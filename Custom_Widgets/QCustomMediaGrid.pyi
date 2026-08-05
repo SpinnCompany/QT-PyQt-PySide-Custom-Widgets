@@ -1,0 +1,19 @@
+# Auto-generated type stub — DO NOT EDIT.
+# Regenerate with:  python -m Custom_Widgets.mcp.stubgen --write
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QWidget
+from typing import Any, ClassVar
+
+
+class QCustomMediaGrid(QWidget):
+    tileClicked: ClassVar[Signal]
+    columns: int
+    spacing: int
+    tileRadius: int
+    tileHeight: int
+    def __init__(self, parent = ...) -> None: ...
+    def setImages(self, images) -> None: ...
+    def setPlaceholders(self, pairs) -> None: ...
+    def setImageAt(self, index, pm) -> None: ...
+    def count(self): ...
+    def pixmaps(self): ...

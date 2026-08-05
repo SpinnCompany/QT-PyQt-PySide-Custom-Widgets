@@ -1,0 +1,70 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCard Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Card Night",
+          "Default-Theme": true,
+          "Background-color": "#1f232a",
+          "Text-color": "#e8eaf2",
+          "Accent-color": "#7aa2f7",
+          "Icons-color": "#9aa0b0",
+          "Other-variables": {
+            "CARD_BG": "#222638",
+            "CARD_GLOW": "#ffffff",
+            "CARD_SHADE": "#555555"
+          }
+        },
+        {
+          "Theme-name": "Card Day",
+          "Default-Theme": false,
+          "Background-color": "#eef0f5",
+          "Text-color": "#20242e",
+          "Accent-color": "#3b6ad6",
+          "Icons-color": "#5b6270",
+          "Other-variables": {
+            "CARD_BG": "#ffffff",
+            "CARD_GLOW": "#c3cadb",
+            "CARD_SHADE": "#9aa2b4"
+          }
+        }
+      ]
+    }
+  },
+  "QCard": [
+    {
+      "cards": [
+        "card1",
+        "card2",
+        "card3"
+      ],
+      "shadow": [
+        {
+          "color": "#fff",
+          "blurRadius": 10,
+          "xOffset": 0,
+          "yOffset": 0
+        }
+      ]
+    },
+    {
+      "cards": [
+        "card4",
+        "card5",
+        "card6"
+      ],
+      "shadow": [
+        {
+          "color": "#555",
+          "blurRadius": 20,
+          "xOffset": 5,
+          "yOffset": 5
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#titleLabel {
+  color: $COLOR_TEXT_1;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+#gradientCard, #sparkleCard, #rainbowCard, #ringCard {
+  background: $COLOR_BACKGROUND_2;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+#gradientCaption, #sparkleCaption, #rainbowCaption, #ringCaption {
+  color: $COLOR_TEXT_3;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+#sparklesText {
+  qproperty-textColor: $COLOR_TEXT_1;
+}
+
+#launchLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+#rainbowButton {
+  qproperty-surfaceColor: $COLOR_BACKGROUND_2;
+  qproperty-textColor: $COLOR_TEXT_1;
+}
+
+#numberCounter {
+  qproperty-textColor: $COLOR_ACCENT_1;
+}
+
+#progressRing {
+  qproperty-ringColor: $COLOR_ACCENT_1;
+  qproperty-trackColor: $COLOR_BACKGROUND_4;
+  qproperty-textColor: $COLOR_TEXT_1;
+}
+
+#driveSlider::groove:horizontal {
+  height: 6px;
+  border-radius: 3px;
+  background: $COLOR_BACKGROUND_4;
+}
+
+#driveSlider::handle:horizontal {
+  width: 14px;
+  margin: -5px 0;
+  border-radius: 7px;
+  background: $COLOR_ACCENT_1;
+}
+
+#driveSlider::sub-page:horizontal {
+  border-radius: 3px;
+  background: $COLOR_ACCENT_2;
+}
+
+#themeButton {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_2;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 6px;
+  padding: 6px 14px;
+}
+
+#themeButton:hover {
+  background: $COLOR_BACKGROUND_3;
+  color: $COLOR_TEXT_1;
+}
+
+#themeButton:pressed {
+  background: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+}

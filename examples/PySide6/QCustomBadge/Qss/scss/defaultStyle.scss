@@ -1,0 +1,104 @@
+/* QCustomBadge showcase — badge variant/size QSS driven by theme tokens.
+   (loadJsonStyle does not ship the token-widget QSS, so the badge variants
+   are restyled here from $TOKENS + theme Other-variables.) */
+
+#MainWindow,
+#centralwidget {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#sectionVariants,
+#sectionSizes,
+#sectionCount,
+#sectionOverlay {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#minusButton,
+#plusButton,
+#inboxButton {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER_COLOR;
+  border-radius: 8px;
+  padding: 6px 18px;
+}
+
+#minusButton:hover,
+#plusButton:hover,
+#inboxButton:hover {
+  background: $COLOR_BACKGROUND_3;
+  border-color: $COLOR_ACCENT_1;
+}
+
+/* ---- QCustomBadge core ---- */
+QCustomBadge {
+  border-radius: 10px;
+  padding: 1px 8px;
+  font-weight: 500;
+  font-size: 12px;
+  background-color: $SURFACE_MUTED;
+  color: $COLOR_TEXT_1;
+}
+
+QCustomBadge[variant="primary"] {
+  background-color: $COLOR_ACCENT_1;
+  color: $ON_FILL;
+}
+
+QCustomBadge[variant="secondary"] {
+  background-color: $SURFACE_SECONDARY;
+  color: $COLOR_TEXT_1;
+}
+
+QCustomBadge[variant="success"] {
+  background-color: $SUCCESS;
+  color: $ON_FILL;
+}
+
+QCustomBadge[variant="warning"] {
+  background-color: $WARNING;
+  color: $ON_FILL;
+}
+
+QCustomBadge[variant="destructive"] {
+  background-color: $DESTRUCTIVE;
+  color: $ON_FILL;
+}
+
+QCustomBadge[variant="info"] {
+  background-color: $INFO;
+  color: $ON_FILL;
+}
+
+QCustomBadge[variant="outline"] {
+  background-color: transparent;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER_COLOR;
+}
+
+QCustomBadge[sizeVariant="sm"] {
+  padding: 0 4px;
+  font-size: 11px;
+}
+
+QCustomBadge[sizeVariant="lg"] {
+  padding: 2px 10px;
+  font-size: 14px;
+}
+
+QCustomBadge[dot="true"] {
+  padding: 0;
+  min-width: 0;
+  border-radius: 5px;
+}
+
+QCustomBadge[dot="true"][sizeVariant="sm"] {
+  border-radius: 4px;
+}
+
+QCustomBadge[dot="true"][sizeVariant="lg"] {
+  border-radius: 6px;
+}

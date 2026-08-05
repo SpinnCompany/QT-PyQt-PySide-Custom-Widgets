@@ -1,0 +1,39 @@
+/* QCustomToolTip demo — all chrome lives here ($TOKENS only). */
+
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+/* ── Hover-target buttons ── */
+#centralwidget QPushButton {
+  background-color: $COLOR_ACCENT_1;
+  color: $ON_ACCENT;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+}
+#centralwidget QPushButton:hover {
+  background-color: $COLOR_ACCENT_2;
+}
+#centralwidget QPushButton:pressed {
+  background-color: $COLOR_ACCENT_3;
+}
+
+#tipRow {
+  background: transparent;
+}
+
+/* ── Custom tooltip (created at runtime by the app-wide event filter) ── */
+QCustomQToolTip {
+  color: $COLOR_TEXT_1;
+}
+QCustomQToolTip #frame {
+  background-color: transparent;
+}
+QCustomQToolTip #titlelabel {
+  color: $COLOR_TEXT_1;
+  background-color: transparent;
+}
+QCustomQToolTip #iconlabel {
+  background-color: transparent;
+}

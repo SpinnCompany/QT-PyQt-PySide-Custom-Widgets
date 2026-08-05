@@ -1,0 +1,45 @@
+// QCustomLiquidGauge demo — chrome styles. Tokens ONLY (no hard-coded hex):
+// $COLOR_BACKGROUND_1..6, $COLOR_TEXT_1..4, $COLOR_ACCENT_1..4.
+// BG_1 is the base (card surface); higher numbers get darker, so the window
+// band behind the cards is BG_2. Gauge fill / badge hues are painted in
+// main.py from the token-driven ChartPalette in json-styles/style.json.
+
+#MainWindow,
+#centralwidget {
+    background-color: $COLOR_BACKGROUND_2;
+}
+
+#fuelCard,
+#batteryCard,
+#tankCard,
+#humidityCard {
+    background-color: $COLOR_BACKGROUND_1;
+    border: 1px solid $COLOR_BACKGROUND_3;
+    border-radius: 18px;
+}
+
+#fuelTitle,
+#batteryTitle,
+#tankTitle,
+#humidityTitle {
+    background: transparent;
+    color: $COLOR_TEXT_1;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+#fuelSub,
+#batterySub,
+#tankSub,
+#humiditySub {
+    background: transparent;
+    color: $COLOR_TEXT_3;
+    font-size: 11px;
+}
+
+#fuelGauge,
+#batteryGauge,
+#tankGauge,
+#humidityGauge {
+    background: transparent;
+}

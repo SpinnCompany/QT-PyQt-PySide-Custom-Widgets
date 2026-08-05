@@ -1,0 +1,16 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#group1Caption, #group2Caption {
+  color: $COLOR_TEXT_2;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#group1Frame, #group2Frame {
+  background: $COLOR_BACKGROUND_2;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 10px;
+  padding: 6px;
+}

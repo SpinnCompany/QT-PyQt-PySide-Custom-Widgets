@@ -1,0 +1,69 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+/* native QWidget holders must not paint the palette background */
+#gauge, #gauge_container, #rightPanel,
+#widget_2, #widget_3, #widget_4, #widget_5, #widget_6, #widget_7,
+#widget_8, #widget_9, #widget_10, #widget_11, #widget_12, #widget_13,
+#widget_14, #widget_15,
+#scrollAreaWidgetContents, #scrollAreaWidgetContents_2, #scrollAreaWidgetContents_3 {
+  background: transparent;
+}
+
+#label_28 {
+  color: $COLOR_TEXT_1;
+}
+
+#frame_2 {
+  background: $COLOR_BACKGROUND_2;
+  border-radius: 12px;
+  padding: 4px 18px;
+}
+
+QLabel {
+  color: $COLOR_TEXT_2;
+}
+
+QCheckBox {
+  color: $COLOR_TEXT_1;
+  spacing: 6px;
+}
+
+QLCDNumber {
+  color: $COLOR_ACCENT_1;
+  background: transparent;
+}
+
+QComboBox {
+  background: $COLOR_BACKGROUND_3;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_5;
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+
+QScrollArea {
+  background: transparent;
+  border: none;
+}
+
+QTabWidget::pane {
+  background: $COLOR_BACKGROUND_2;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 8px;
+}
+
+QTabBar::tab {
+  background: $COLOR_BACKGROUND_3;
+  color: $COLOR_TEXT_2;
+  padding: 6px 16px;
+  margin-right: 2px;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+QTabBar::tab:selected {
+  background: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+}

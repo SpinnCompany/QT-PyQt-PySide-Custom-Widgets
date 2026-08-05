@@ -1,0 +1,107 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "QT-PyQt-PySide-Custom-Widgets"
+version = "2.3.0"
+description = "A comprehensive library of custom Qt widgets, animations, and UI components for PySide and PyQt desktop applications."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "GPL-3.0-only" }
+authors = [{ name = "Khamisi Kibet", email = "kibetkhamisi@gmail.com" }]
+keywords = [
+    "PySide", "PyQt", "Qt", "Custom Widgets", "Animations", "Desktop GUI",
+    "Designer", "Python GUI", "Modern UI", "Component Library",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+# Core install: widgets + SCSS theming + tooling. A Qt binding (PySide6 or
+# PyQt6) must be installed separately; Designer integration needs PySide6.
+dependencies = [
+    "qtpy",
+    "qtsass",
+    "termcolor",
+    "lxml",
+    "rich",
+    "kids-cache",
+]
+
+[project.optional-dependencies]
+# Niche widgets pull their heavy stacks on demand:
+qr = ["qrcode>=8.0", "Pillow"]              # QCustomQRGenerator
+acrylic = ["numpy", "colorthief", "Pillow"] # AcrylicEffect blur (scipy optional upgrade)
+acrylic-hq = ["scipy"]                      # higher-quality acrylic blur
+loaders = ["perlin_noise"]                  # QCustomPerlinLoader
+mcp = ["mcp"]                               # Custom_Widgets-mcp server
+# QCustomMapView. Deliberately optional: a map drags in a mapping engine,
+# tile providers, API keys and provider ToS, which the core LGPL library
+# should not carry (docs/design/qcustommapview-project-plan.md). The
+# shipped backend uses QtLocation's osm plugin from PySide6-Addons — no
+# Chromium and no API key.
+map = ["PySide6-Addons"]                    # QCustomMapView (QtLocation)
+# Type-checking the generated widget stubs + regenerating them (needs PySide6
+# for base resolution and mcp for the catalog the generator reads).
+dev = [
+    "mypy>=1.10",
+    "PySide6",
+    "mcp",
+    "build",
+    "pytest",
+]
+all = [
+    "qrcode>=8.0", "Pillow", "numpy", "colorthief", "scipy",
+    "perlin_noise", "mcp",
+]
+
+[project.urls]
+Homepage = "https://github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets"
+Documentation = "https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/"
+Issues = "https://github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets/issues"
+
+[project.scripts]
+Custom_Widgets = "Custom_Widgets.CMD:run_command"
+Custom_Widgets-mcp = "Custom_Widgets.mcp:main"
+Custom_Widgets-lint = "Custom_Widgets.lint.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["Custom_Widgets*"]
+
+[tool.setuptools]
+include-package-data = true
+
+# include-package-data sweeps the whole package, which otherwise drags stale
+# __pycache__/*.pyc from the working tree into the wheel — bytecode built for
+# whichever interpreter last ran here, shipped to users on other versions.
+[tool.setuptools.exclude-package-data]
+"*" = ["__pycache__/*", "*.py[cod]"]
+
+[tool.custom_widgets_lint]
+# Design-rule linter (Custom_Widgets.lint) — enforces the *visual* rules a type
+# checker can't: no unicode-glyph icons, no hardcoded hex in chrome, no
+# unjustified drop shadows. Run: `python -m Custom_Widgets.lint` (or the
+# `Custom_Widgets-lint` script / the `design_lint` MCP tool). Ships with the
+# library so downstream apps get the same guardrails.
+paths = ["Custom_Widgets", "examples"]
+# glyph-icons is an error (fails CI); hardcoded-hex + drop-shadow stay warnings.
+# strict = true   # uncomment to also fail on warnings
+
+[tool.mypy]
+# Scoped type-checking for the GENERATED widget stubs (Custom_Widgets/mcp/
+# stubgen.py) and the typing smoke-test. The hand-written .py sources are not
+# yet mypy-clean, so we validate the .pyi stubs + downstream resolution rather
+# than the whole package; imports are followed silently so a stub's base
+# (re-rooted to the typed PySide6 class) is resolved without failing CI on
+# source-level noise. Run: `mypy` (uses this config).
+files = ["Custom_Widgets/*.pyi", "tests/typing"]
+follow_imports = "silent"
+ignore_missing_imports = true

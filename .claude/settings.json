@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "_comment": "Shared, committed settings. Enforces the Custom_Widgets design rules on every edit so any inherited session picks them up. See docs/design/design-rules.md.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/design_lint_hook.py\""
+          }
+        ]
+      }
+    ]
+  }
+}

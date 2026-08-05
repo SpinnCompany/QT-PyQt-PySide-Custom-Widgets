@@ -5,17 +5,18 @@ import re
 import sys
 import warnings
 
-from qtpy.QtCore import QThreadPool, QSettings, Qt
+from qtpy.QtCore import QCoreApplication, QThreadPool, QSettings, Qt
 from qtpy.QtGui import QColor, QFontDatabase, QIcon, QFont
-from qtpy.QtWidgets import QGraphicsDropShadowEffect, QPushButton, QSizeGrip
+from qtpy.QtWidgets import QGraphicsDropShadowEffect, QPushButton, QSizeGrip, QApplication
 
 from Custom_Widgets.FileMonitor import QSsFileMonitor
 from Custom_Widgets.QCustomQPushButtonGroup import QCustomQPushButtonGroup
 from Custom_Widgets.QCustomQPushButton import applyAnimationThemeStyle, applyButtonShadow, iconify, applyCustomAnimationThemeStyle, applyStylesFromColor
 from Custom_Widgets.QPropertyAnimation import returnAnimationEasingCurve, returnQtDirection
 
+from Custom_Widgets.Project import projectRoot
 from Custom_Widgets.Log import *
-from Custom_Widgets.Utils import replace_url_prefix, SharedData, is_in_designer
+from Custom_Widgets.Utils import replace_url_prefix, SharedData, is_in_designer, download_font
 
 ## Read JSON stylesheet
 def loadJsonStyle(self, update = False, **jsonFiles):
@@ -37,8 +38,8 @@ def loadJsonStyle(self, update = False, **jsonFiles):
             # Check if the path is absolute
             if not os.path.isabs(file_path):
                 # If the path is relative, construct the absolute path based on the current script's directory
-                current_script = os.path.dirname(os.path.realpath(sys.argv[0]))
-                jsonFile = os.path.abspath(os.path.join(os.getcwd(), file_path))
+                current_script = projectRoot()
+                jsonFile = os.path.abspath(os.path.join(projectRoot(), file_path))
                 # jsonFile = os.path.abspath(os.path.join(json_file_path, file_path))
             else:
                 # If the path is already absolute, use it as is
@@ -101,7 +102,12 @@ def configure_custom_widgets(self, data, update: bool = False):
             if not hasattr(self, 'qss_watcher') and not hasattr(self, 'liveCompileQss'):
                 self.liveCompileQss = True
                 try:
-                    QSsFileMonitor.start_qss_file_listener(self)
+                    # start_qss_file_listener is an instance method on the
+                    # QSsFileMonitor singleton and needs the theme engine;
+                    # calling it on the class with just `self` dropped the
+                    # theme_engine argument.
+                    QSsFileMonitor.instance().start_qss_file_listener(
+                        getattr(self, "themeEngine", None))
                 except Exception as e:
                     logError("Failed to start live file listener: "+str(e))
             
@@ -120,20 +126,33 @@ def configure_settings(self, data, update: bool = False):
         settings = data['QSettings']  # Directly access the dictionary
         if "AppSettings" in settings:
             appSettings = settings['AppSettings']
-            if "OrginizationName" in appSettings and len(str(appSettings["OrginizationName"])) > 0:
-                self.themeEngine.orginazationName = str(appSettings["OrginizationName"])
+            if "OrganizationName" in appSettings and len(str(appSettings["OrganizationName"])) > 0:
+                self.themeEngine.organizationName = str(appSettings["OrganizationName"])
             else:
-                self.themeEngine.orginazationName = ""
+                self.themeEngine.organizationName = ""
 
             if "ApplicationName" in appSettings and len(str(appSettings["ApplicationName"])) > 0:
                 self.themeEngine.applicationName = str(appSettings["ApplicationName"])
             else:
                 self.themeEngine.applicationName = ""
 
-            if "OrginizationDormain" in appSettings and len(str(appSettings["OrginizationDormain"])) > 0:
-                self.themeEngine.orginazationDomain = str(appSettings["OrginizationDormain"]).replace(" ", "")
+            if "OrganizationDomain" in appSettings and len(str(appSettings["OrganizationDomain"])) > 0:
+                self.themeEngine.organizationDomain = str(appSettings["OrganizationDomain"]).replace(" ", "")
             else:
-                self.themeEngine.orginazationDomain = ""
+                self.themeEngine.organizationDomain = ""
+
+            # Apply the app identity NOW, before any QSettings() below.
+            # Without this, the reads resolve to the shared pre-identity
+            # store (~/.config/Unknown Organization/main.py.conf — every app
+            # whose entry file is main.py shares it), and one app's stale
+            # THEME key neutralized Default-Theme for every other app's
+            # first run on the machine.
+            if self.themeEngine.organizationName:
+                QCoreApplication.setOrganizationName(self.themeEngine.organizationName)
+            if self.themeEngine.applicationName:
+                QCoreApplication.setApplicationName(self.themeEngine.applicationName)
+            if self.themeEngine.organizationDomain:
+                QCoreApplication.setOrganizationDomain(self.themeEngine.organizationDomain)
 
         if "ThemeSettings" in settings:
             setngs = QSettings()
@@ -145,6 +164,13 @@ def configure_settings(self, data, update: bool = False):
 
             if "CustomThemes" in settings['ThemeSettings']: #NOTE: Updated from "CustomTheme" to "CustomThemes"
                 customThemes = settings['ThemeSettings']['CustomThemes']
+                # A persisted THEME only outranks Default-Theme when it names
+                # a theme this file actually defines — a foreign or renamed
+                # value must not strip the default flag.
+                storedTheme = setngs.value("THEME")
+                knownThemeNames = {str(t.get("Theme-name", ""))
+                                   for t in customThemes if isinstance(t, dict)}
+                respectStoredTheme = bool(storedTheme) and str(storedTheme) in knownThemeNames
                 for customTheme in customThemes:
                     if "Theme-name" in customTheme and len(str(customTheme['Theme-name'])) > 0:
                         theme_name = str(customTheme['Theme-name'])
@@ -157,7 +183,7 @@ def configure_settings(self, data, update: bool = False):
 
                         # Determine if this is the default theme
                         is_default_theme = customTheme.get("Default-Theme", False)
-                        if is_default_theme and setngs.contains("THEME") and setngs.contains("THEME") is not None:
+                        if is_default_theme and respectStoredTheme:
                             default_theme = False
                         else:
                             default_theme = is_default_theme
@@ -184,31 +210,68 @@ def configure_settings(self, data, update: bool = False):
                 # Load fonts from "LoadFonts"
                 if "LoadFonts" in fonts_data:
                     for font in fonts_data["LoadFonts"]:
+                        # Each entry may load a LOCAL file ("path") or a REMOTE
+                        # font ("url", downloaded + cached). A local path wins if
+                        # it exists; otherwise the url is fetched. Both are
+                        # optional so existing path-only configs keep working.
                         font_name = font.get("name", "")
                         font_path = font.get("path", "")
-                        if font_name and font_path:
-                            font_path_abs = os.path.join(os.getcwd(), font_path)  # Construct absolute path
-                            if os.path.isfile(font_path_abs):
-                                font_id = QFontDatabase.addApplicationFont(font_path_abs)
-                                if font_id == -1:
-                                    logError(f"Error loading font: {font_name} from {font_path}")
-                                else:
-                                    # Set the font name to the font loaded
-                                    self._fontName = QFontDatabase.applicationFontFamilies(font_id)[0]
-                                    logInfo(f" Loaded font: {self._fontName} from {font_path_abs}")
+                        font_url = font.get("url", "")
+                        font_file = None
+                        if font_path:
+                            candidate = os.path.join(projectRoot(), font_path)  # Construct absolute path
+                            if os.path.isfile(candidate):
+                                font_file = candidate
                             else:
                                 logError(f"Font file does not exist: {font_path}")
-                
-                # Set the default font
+                        if font_file is None and font_url:
+                            font_file = download_font(font_url)   # cached, non-fatal on failure
+                        if font_file:
+                            font_id = QFontDatabase.addApplicationFont(font_file)
+                            if font_id == -1:
+                                logError(f"Error loading font: {font_name or font_url or font_path}")
+                            else:
+                                fams = QFontDatabase.applicationFontFamilies(font_id)
+                                self._fontName = fams[0] if fams else font_name
+                                logInfo(f" Loaded font: {self._fontName} from {font_file}")
+
+                # Set the default font (applied app-wide so every widget, even
+                # ones created later, inherits it).
                 if "DefaultFont" in fonts_data:
                     default_font_name = fonts_data["DefaultFont"].get("name", "")
 
                     if default_font_name:
-                        # Check if the default font exists in the font database
-                        if default_font_name in QFontDatabase.families():  # Changed here
-                            self._fontName = QFont(default_font_name)
-                            logInfo(f" Set default font to: {self._fontName}")
-                            self.setFont(self._fontName)
+                        # Resolve the family tolerantly: exact, else case-insensitive
+                        # / prefix (a variable TTF may register as "Inter" or
+                        # "Inter Variable"), else fall back to the family just
+                        # loaded above via LoadFonts.
+                        fams = QFontDatabase.families()
+                        resolved = None
+                        if default_font_name in fams:
+                            resolved = default_font_name
+                        else:
+                            low = default_font_name.lower()
+                            for fam in fams:
+                                if fam.lower() == low or fam.lower().startswith(low):
+                                    resolved = fam
+                                    break
+                        if resolved is None and isinstance(getattr(self, "_fontName", None), str):
+                            resolved = self._fontName
+                        if resolved:
+                            appFont = QFont(resolved)
+                            _sz = fonts_data["DefaultFont"].get("size")
+                            if _sz:
+                                try:
+                                    appFont.setPointSize(int(_sz))
+                                except Exception:
+                                    pass
+                            self._fontName = appFont
+                            _app = QApplication.instance()
+                            if _app is not None:
+                                _app.setFont(appFont)
+                            else:
+                                self.setFont(appFont)
+                            logInfo(f" Set default app font to: {resolved}")
                         else:
                             logError(f"Default font not found: {default_font_name}")
                         
@@ -308,7 +371,7 @@ def configure_button_group(self, data, update: bool = False):
             if "Style" in QPushButtonGroup:
                 try:
                     style = QPushButtonGroup["Style"][0]  # Styles are in the first dictionary in the list
-                except:
+                except Exception:
                     style = QPushButtonGroup["Style"]
 
                 # Process the 'Active' and 'NotActive' styles for the group
@@ -324,7 +387,7 @@ def configure_button_group(self, data, update: bool = False):
 
                 try:
                     self.checkButtonGroup(button=btn)
-                except:
+                except Exception:
                     pass
 
 def configure_analog_gauge(self, data, update: bool = False):
@@ -729,10 +792,10 @@ def configure_main_window(self, data, update: bool = False):
         qmainwindow = data.get("QMainWindow", {})
 
         self.customSideDrawers = qmainwindow.get("customSideDrawers", "")
-        title = qmainwindow.get("tittle", "")
+        title = qmainwindow.get("title", "")
         icon = qmainwindow.get("icon", "")
         frameless = qmainwindow.get("frameless", False)
-        translucent_bg = qmainwindow.get("transluscentBg", False)
+        translucent_bg = qmainwindow.get("translucentBg", False)
         size_grip = qmainwindow.get("sizeGrip", "")
         border_radius = qmainwindow.get("borderRadius", 0)
         self.borderRadius = border_radius
@@ -757,7 +820,7 @@ def configure_main_window(self, data, update: bool = False):
         restore_maximized_icon = restore.get("maximizedIcon", "")
 
         move_window = navigation.get("moveWindow", "")
-        title_bar = navigation.get("tittleBar", "")
+        title_bar = navigation.get("titleBar", "")
 
         # Add customSideDrawers support
         if "customSideDrawers" in qmainwindow:
@@ -781,7 +844,7 @@ def configure_main_window(self, data, update: bool = False):
             if translucent_bg:
                 # Set main background to transparent
                 self.setAttribute(Qt.WA_TranslucentBackground)
-        except:
+        except Exception:
             pass
 
         if size_grip:
@@ -825,7 +888,7 @@ def configure_main_window(self, data, update: bool = False):
         if restore_button_name:
             try:
                 prevbtn = self.restoreBtn
-            except:
+            except Exception:
                 prevbtn = None
 
             try:
@@ -1201,7 +1264,7 @@ def configure_custom_check_box(self, data, update: bool = False):
                             containerWidget.customizeQCustomCheckBox(activeColor=containerWidget.activeColor)
 
                         if "animationEasingCurve" in QCustomCheckBox:
-                            containerWidget.animationEasingCurve = self.returnAnimationEasingCurve(str(QCustomCheckBox["animationEasingCurve"]))
+                            containerWidget.animationEasingCurve = returnAnimationEasingCurve(str(QCustomCheckBox["animationEasingCurve"]))
                             containerWidget.customizeQCustomCheckBox(animationEasingCurve=containerWidget.animationEasingCurve)
 
                         if "animationDuration" in QCustomCheckBox:
@@ -1332,7 +1395,7 @@ def configure_qr_generator(self, data, update: bool = False):
                     embedded_image_path = str(qr_config["embeddedImagePath"])
                     # Handle relative paths by joining with current working directory
                     if not os.path.isabs(embedded_image_path):
-                        embedded_image_path = os.path.join(os.getcwd(), embedded_image_path)
+                        embedded_image_path = os.path.join(projectRoot(), embedded_image_path)
                     
                     if os.path.isfile(embedded_image_path):
                         qr_widget.embeddedImageIcon = QIcon(embedded_image_path)

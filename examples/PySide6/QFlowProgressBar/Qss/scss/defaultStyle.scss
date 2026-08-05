@@ -1,0 +1,40 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#titleLabel {
+  color: $COLOR_TEXT_1;
+  font-size: 20px;
+  font-weight: bold;
+  padding-bottom: 4px;
+}
+
+#circularCard, #flatCard, #squareCard {
+  background: $COLOR_BACKGROUND_2;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+#circularLabel, #flatLabel, #squareLabel {
+  color: $COLOR_TEXT_3;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+#nextButton, #prevButton {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_2;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 6px;
+  padding: 8px 18px;
+}
+
+#nextButton:hover, #prevButton:hover {
+  background: $COLOR_BACKGROUND_3;
+  color: $COLOR_TEXT_1;
+}
+
+#nextButton:pressed, #prevButton:pressed {
+  background: $COLOR_ACCENT_1;
+  color: $COLOR_BACKGROUND_1;
+}

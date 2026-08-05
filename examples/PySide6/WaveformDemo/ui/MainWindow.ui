@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>960</width>
+    <height>620</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QCustomWaveform — Demo</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="mainGrid">
+    <property name="leftMargin">
+     <number>24</number>
+    </property>
+    <property name="topMargin">
+     <number>24</number>
+    </property>
+    <property name="rightMargin">
+     <number>24</number>
+    </property>
+    <property name="bottomMargin">
+     <number>24</number>
+    </property>
+    <property name="horizontalSpacing">
+     <number>20</number>
+    </property>
+    <property name="verticalSpacing">
+     <number>20</number>
+    </property>
+    <item row="0" column="0">
+     <widget class="QFrame" name="ecgCard">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <layout class="QVBoxLayout" name="ecgCardLayout" stretch="0,0,0,1">
+       <property name="leftMargin">
+        <number>20</number>
+       </property>
+       <property name="topMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
+        <number>20</number>
+       </property>
+       <property name="bottomMargin">
+        <number>16</number>
+       </property>
+       <property name="spacing">
+        <number>2</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="ecgCardTitle">
+         <property name="text">
+          <string>Heart rate</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="ecgCardSub">
+         <property name="text">
+          <string>110 bpm · live</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="ecgCardSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>8</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QCustomWaveform" name="ecgWave" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="mode" stdset="0">
+          <string>line</string>
+         </property>
+         <property name="capacity" stdset="0">
+          <number>90</number>
+         </property>
+         <property name="lineWidth" stdset="0">
+          <double>2.2</double>
+         </property>
+         <property name="showGrid" stdset="0">
+          <bool>true</bool>
+         </property>
+         <property name="animated" stdset="0">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QFrame" name="waterCard">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <layout class="QVBoxLayout" name="waterCardLayout" stretch="0,0,0,1">
+       <property name="leftMargin">
+        <number>20</number>
+       </property>
+       <property name="topMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
+        <number>20</number>
+       </property>
+       <property name="bottomMargin">
+        <number>16</number>
+       </property>
+       <property name="spacing">
+        <number>2</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="waterCardTitle">
+         <property name="text">
+          <string>Water</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="waterCardSub">
+         <property name="text">
+          <string>Recording…</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="waterCardSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>8</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QCustomWaveform" name="waterWave" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="mode" stdset="0">
+          <string>bars</string>
+         </property>
+         <property name="capacity" stdset="0">
+          <number>40</number>
+         </property>
+         <property name="barGap" stdset="0">
+          <double>3.0</double>
+         </property>
+         <property name="cornerRadius" stdset="0">
+          <number>3</number>
+         </property>
+         <property name="animated" stdset="0">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QFrame" name="voiceCard">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <layout class="QVBoxLayout" name="voiceCardLayout" stretch="0,0,0,1">
+       <property name="leftMargin">
+        <number>20</number>
+       </property>
+       <property name="topMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
+        <number>20</number>
+       </property>
+       <property name="bottomMargin">
+        <number>16</number>
+       </property>
+       <property name="spacing">
+        <number>2</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="voiceCardTitle">
+         <property name="text">
+          <string>Voice message</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="voiceCardSub">
+         <property name="text">
+          <string>0:14</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="voiceCardSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>8</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QCustomWaveform" name="voiceWave" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="mode" stdset="0">
+          <string>bars</string>
+         </property>
+         <property name="mirror" stdset="0">
+          <bool>true</bool>
+         </property>
+         <property name="barGap" stdset="0">
+          <double>4.0</double>
+         </property>
+         <property name="cornerRadius" stdset="0">
+          <number>4</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QFrame" name="neonCard">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <layout class="QVBoxLayout" name="neonCardLayout" stretch="0,0,0,1">
+       <property name="leftMargin">
+        <number>20</number>
+       </property>
+       <property name="topMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
+        <number>20</number>
+       </property>
+       <property name="bottomMargin">
+        <number>16</number>
+       </property>
+       <property name="spacing">
+        <number>2</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="neonCardTitle">
+         <property name="text">
+          <string>Spectrum</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="neonCardSub">
+         <property name="text">
+          <string>Live · neon glow</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="neonCardSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>8</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QCustomWaveform" name="neonWave" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="mode" stdset="0">
+          <string>bars</string>
+         </property>
+         <property name="capacity" stdset="0">
+          <number>44</number>
+         </property>
+         <property name="glow" stdset="0">
+          <bool>true</bool>
+         </property>
+         <property name="glowStrength" stdset="0">
+          <double>0.9</double>
+         </property>
+         <property name="barGap" stdset="0">
+          <double>3.0</double>
+         </property>
+         <property name="animated" stdset="0">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomWaveform</class>
+   <extends>QWidget</extends>
+   <header>Custom_Widgets.QCustomWaveform</header>
+   <container>0</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

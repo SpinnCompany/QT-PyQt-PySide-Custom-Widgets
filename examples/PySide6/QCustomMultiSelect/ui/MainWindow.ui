@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>520</width>
+    <height>520</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QCustomMultiSelect</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>16</number>
+    </property>
+    <property name="leftMargin">
+     <number>24</number>
+    </property>
+    <property name="topMargin">
+     <number>24</number>
+    </property>
+    <property name="rightMargin">
+     <number>24</number>
+    </property>
+    <property name="bottomMargin">
+     <number>24</number>
+    </property>
+    <item>
+     <widget class="QLabel" name="coloursHeading">
+      <property name="font">
+       <font>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Colours</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCustomMultiSelect" name="coloursSelect">
+      <property name="optionsCsv" stdset="0">
+       <string>Red,Green,Blue</string>
+      </property>
+      <property name="placeholderText" stdset="0">
+       <string>Choose colours</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="languagesHeading">
+      <property name="font">
+       <font>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Languages (searchable)</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCustomMultiSelect" name="languagesSelect">
+      <property name="optionsCsv" stdset="0">
+       <string>py=Python,js=JavaScript,rs=Rust,go=Go,cpp=C++,rb=Ruby,kt=Kotlin,swift=Swift,ts=TypeScript</string>
+      </property>
+      <property name="placeholderText" stdset="0">
+       <string>Search and pick</string>
+      </property>
+      <property name="searchable" stdset="0">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="cappedHeading">
+      <property name="font">
+       <font>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Pick at most 3</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCustomMultiSelect" name="cappedSelect">
+      <property name="optionsCsv" stdset="0">
+       <string>py=Python,js=JavaScript,rs=Rust,go=Go,cpp=C++,rb=Ruby,kt=Kotlin,swift=Swift,ts=TypeScript</string>
+      </property>
+      <property name="placeholderText" stdset="0">
+       <string>Up to three</string>
+      </property>
+      <property name="maxSelection" stdset="0">
+       <number>3</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="collapsedHeading">
+      <property name="font">
+       <font>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Collapses past 2 chips</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCustomMultiSelect" name="collapsedSelect">
+      <property name="optionsCsv" stdset="0">
+       <string>py=Python,js=JavaScript,rs=Rust,go=Go,cpp=C++,rb=Ruby,kt=Kotlin,swift=Swift,ts=TypeScript</string>
+      </property>
+      <property name="selectedCsv" stdset="0">
+       <string>py,js,rs,go</string>
+      </property>
+      <property name="maxChips" stdset="0">
+       <number>2</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="controlsRow">
+      <item>
+       <widget class="QPushButton" name="clearButton">
+        <property name="text">
+         <string>Clear colours</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="selectAllButton">
+        <property name="text">
+         <string>Select all languages</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="themeButton">
+        <property name="text">
+         <string>Light / dark</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="controlsSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="statusLabel">
+      <property name="text">
+       <string>Nothing selected yet</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomMultiSelect</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomMultiSelect.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

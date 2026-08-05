@@ -1,0 +1,40 @@
+/* QCustomCandlestickChart showcase — the painted chart reads its colours from
+   qproperty-* values, so they flip with the theme via Other-variables. */
+
+#MainWindow,
+#centralwidget {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#readoutLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+}
+
+#hollowButton,
+#gridButton,
+#tooltipButton,
+#themeButton {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER_COLOR;
+  border-radius: 8px;
+  padding: 6px 14px;
+}
+
+#hollowButton:hover,
+#gridButton:hover,
+#tooltipButton:hover,
+#themeButton:hover {
+  background: $COLOR_BACKGROUND_3;
+  border-color: $COLOR_ACCENT_1;
+}
+
+QCustomCandlestickChart {
+  background: transparent;
+  qproperty-upColor: $UP_COLOR;
+  qproperty-downColor: $DOWN_COLOR;
+  qproperty-wickColor: $WICK_COLOR;
+  qproperty-gridColor: $GRID_COLOR;
+  qproperty-axisTextColor: $COLOR_TEXT_2;
+}

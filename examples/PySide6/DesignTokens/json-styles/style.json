@@ -1,0 +1,35 @@
+{
+    "QtBinding": "PySide6",
+    "QMainWindow": {
+        "title": "Design Tokens - variant / size"
+    },
+    "QSettings": {
+        "AppSettings": {
+            "OrganizationName": "Custom Widgets",
+            "ApplicationName": "DesignTokensDemo"
+        },
+        "ThemeSettings": {
+            "CustomThemes": [
+                {
+                    "Theme-name": "Tokens Light",
+                    "Default-Theme": true,
+                    "Create-icons": false,
+                    "Background-color": "#ffffff",
+                    "Text-color": "#0f172a",
+                    "Accent-color": "#2563eb",
+                    "Icons-color": "#64748b"
+                },
+                {
+                    "Theme-name": "Tokens Dark",
+                    "Default-Theme": false,
+                    "Create-icons": false,
+                    "Background-color": "#0f172a",
+                    "Text-color": "#f1f5f9",
+                    "Accent-color": "#3b82f6",
+                    "Icons-color": "#94a3b8"
+                }
+            ]
+        }
+    },
+    "_comment": "Theme colors mirror DesignTokens(theme=...) surface / on-surface roles so the json-styles chrome and the token-styled buttons flip together."
+}

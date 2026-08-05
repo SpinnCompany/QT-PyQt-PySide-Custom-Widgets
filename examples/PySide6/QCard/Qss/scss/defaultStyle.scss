@@ -1,0 +1,33 @@
+/* QCard showcase — all chrome from theme tokens (see json-styles/style.json). */
+
+#MainWindow,
+#centralwidget {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#cardRowTop,
+#cardRowBottom {
+  background: transparent;
+}
+
+#card1,
+#card2,
+#card3,
+#card4,
+#card5,
+#card6 {
+  background: $CARD_BG;
+  border-radius: 30px;
+}
+
+#cardLabel1,
+#cardLabel2,
+#cardLabel3,
+#cardLabel4,
+#cardLabel5,
+#cardLabel6 {
+  background: transparent;
+  color: $COLOR_TEXT_1;
+  font-size: 15px;
+  font-weight: 600;
+}

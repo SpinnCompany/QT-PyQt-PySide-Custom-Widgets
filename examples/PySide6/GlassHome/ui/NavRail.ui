@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>NavRail</class>
+ <widget class="QWidget" name="NavRail">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>84</width><height>620</height></rect></property>
+  <layout class="QVBoxLayout" name="navRoot">
+   <property name="leftMargin"><number>0</number></property><property name="topMargin"><number>0</number></property>
+   <property name="rightMargin"><number>0</number></property><property name="bottomMargin"><number>0</number></property>
+   <property name="spacing"><number>0</number></property>
+   <item>
+    <spacer name="navTopStretch">
+     <property name="orientation"><enum>Qt::Vertical</enum></property>
+     <property name="sizeHint" stdset="0"><size><width>10</width><height>20</height></size></property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QCustomGlassFrame" name="navGlass">
+     <property name="sizePolicy"><sizepolicy hsizetype="Expanding" vsizetype="Maximum"><horstretch>0</horstretch><verstretch>0</verstretch></sizepolicy></property>
+     <property name="backdropSource" stdset="0"><string>wallpaper</string></property>
+     <property name="cornerRadius" stdset="0"><number>30</number></property>
+     <layout class="QVBoxLayout" name="navLayout">
+      <property name="leftMargin"><number>14</number></property><property name="topMargin"><number>20</number></property>
+      <property name="rightMargin"><number>14</number></property><property name="bottomMargin"><number>18</number></property>
+      <property name="spacing"><number>14</number></property>
+      <item alignment="Qt::AlignHCenter">
+       <widget class="QCustomQPushButton" name="navDashboard">
+        <property name="minimumSize"><size><width>46</width><height>46</height></size></property>
+        <property name="maximumSize"><size><width>46</width><height>46</height></size></property>
+        <property name="checkable"><bool>true</bool></property>
+        <property name="checked"><bool>true</bool></property>
+        <property name="autoExclusive"><bool>true</bool></property>
+        <property name="iconSize"><size><width>21</width><height>21</height></size></property>
+        <property name="iconName" stdset="0"><string>feather/grid</string></property>
+        <property name="role" stdset="0"><string>navBtn</string></property>
+       </widget>
+      </item>
+      <item alignment="Qt::AlignHCenter">
+       <widget class="QCustomQPushButton" name="navDevices">
+        <property name="minimumSize"><size><width>46</width><height>46</height></size></property>
+        <property name="maximumSize"><size><width>46</width><height>46</height></size></property>
+        <property name="checkable"><bool>true</bool></property>
+        <property name="autoExclusive"><bool>true</bool></property>
+        <property name="iconSize"><size><width>21</width><height>21</height></size></property>
+        <property name="iconName" stdset="0"><string>feather/cpu</string></property>
+        <property name="role" stdset="0"><string>navBtn</string></property>
+       </widget>
+      </item>
+      <item alignment="Qt::AlignHCenter">
+       <widget class="QCustomQPushButton" name="navStats">
+        <property name="minimumSize"><size><width>46</width><height>46</height></size></property>
+        <property name="maximumSize"><size><width>46</width><height>46</height></size></property>
+        <property name="checkable"><bool>true</bool></property>
+        <property name="autoExclusive"><bool>true</bool></property>
+        <property name="iconSize"><size><width>21</width><height>21</height></size></property>
+        <property name="iconName" stdset="0"><string>feather/bar-chart-2</string></property>
+        <property name="role" stdset="0"><string>navBtn</string></property>
+       </widget>
+      </item>
+      <item alignment="Qt::AlignHCenter">
+       <widget class="QCustomQPushButton" name="navAdd">
+        <property name="minimumSize"><size><width>46</width><height>46</height></size></property>
+        <property name="maximumSize"><size><width>46</width><height>46</height></size></property>
+        <property name="checkable"><bool>true</bool></property>
+        <property name="autoExclusive"><bool>true</bool></property>
+        <property name="iconSize"><size><width>21</width><height>21</height></size></property>
+        <property name="iconName" stdset="0"><string>feather/plus</string></property>
+        <property name="role" stdset="0"><string>navBtn</string></property>
+       </widget>
+      </item>
+      <item alignment="Qt::AlignHCenter">
+       <widget class="QCustomQPushButton" name="navAutomation">
+        <property name="minimumSize"><size><width>46</width><height>46</height></size></property>
+        <property name="maximumSize"><size><width>46</width><height>46</height></size></property>
+        <property name="checkable"><bool>true</bool></property>
+        <property name="autoExclusive"><bool>true</bool></property>
+        <property name="iconSize"><size><width>21</width><height>21</height></size></property>
+        <property name="iconName" stdset="0"><string>feather/sliders</string></property>
+        <property name="role" stdset="0"><string>navBtn</string></property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="navSpacer">
+        <property name="orientation"><enum>Qt::Vertical</enum></property>
+        <property name="sizeType"><enum>QSizePolicy::Fixed</enum></property>
+        <property name="sizeHint" stdset="0"><size><width>20</width><height>30</height></size></property>
+       </spacer>
+      </item>
+      <item alignment="Qt::AlignHCenter">
+       <widget class="QCustomThemeDarkLightToggle" name="navThemeToggle">
+        <property name="minimumSize"><size><width>46</width><height>46</height></size></property>
+        <property name="maximumSize"><size><width>46</width><height>46</height></size></property>
+        <property name="updateLabelText" stdset="0"><bool>false</bool></property>
+        <property name="updateButtonIcon" stdset="0"><bool>false</bool></property>
+        <property name="darkTheme" stdset="0"><string>Glass Dusk</string></property>
+        <property name="lightTheme" stdset="0"><string>Glass Day</string></property>
+        <property name="iconSize"><size><width>20</width><height>20</height></size></property>
+        <property name="role" stdset="0"><string>navBtn</string></property>
+       </widget>
+      </item>
+      <item alignment="Qt::AlignHCenter">
+       <widget class="QCustomAvatar" name="navAvatar">
+        <property name="minimumSize"><size><width>46</width><height>46</height></size></property>
+        <property name="maximumSize"><size><width>46</width><height>46</height></size></property>
+        <property name="text"><string>K</string></property>
+        <property name="showStatus" stdset="0"><bool>false</bool></property>
+        <property name="ringWidth" stdset="0"><number>2</number></property>
+        <property name="imageSource" stdset="0"><string>https://i.pravatar.cc/96?img=12</string></property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="navBottomStretch">
+     <property name="orientation"><enum>Qt::Vertical</enum></property>
+     <property name="sizeHint" stdset="0"><size><width>10</width><height>20</height></size></property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget><class>QCustomGlassFrame</class><extends>QFrame</extends><header>Custom_Widgets.QCustomGlassFrame</header><container>1</container></customwidget>
+  <customwidget><class>QCustomQPushButton</class><extends>QPushButton</extends><header>Custom_Widgets.QCustomQPushButton</header><container>0</container></customwidget>
+  <customwidget><class>QCustomThemeDarkLightToggle</class><extends>QPushButton</extends><header>Custom_Widgets.QCustomThemeDarkLightToggle</header><container>0</container></customwidget>
+  <customwidget><class>QCustomAvatar</class><extends>QWidget</extends><header>Custom_Widgets.QCustomAvatar</header><container>0</container></customwidget>
+ </customwidgets>
+ <connections/>
+</ui>

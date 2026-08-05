@@ -1,0 +1,56 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "Widget Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Showcase Night",
+          "Default-Theme": true,
+          "Create-icons": false,
+          "Background-color": "#131722",
+          "Text-color": "#e8ecf4",
+          "Accent-color": "#7aa2f7",
+          "Icons-color": "#9aa3b5",
+          "Other-variables": {
+            "CARD": "#1b2130",
+            "MUTED": "#242c3e",
+            "BORDER": "#2e3750",
+            "SUCCESS": "#34d399",
+            "WARNING": "#fbbf24",
+            "DANGER": "#f87171",
+            "INFO": "#7aa2f7",
+            "ON_ACCENT": "#0d1117",
+            "TREND_UP": "#34d399",
+            "TREND_DOWN": "#f87171",
+            "KNOB": "#f2f5fb"
+          }
+        },
+        {
+          "Theme-name": "Showcase Day",
+          "Default-Theme": false,
+          "Create-icons": false,
+          "Background-color": "#f4f6fb",
+          "Text-color": "#1c2333",
+          "Accent-color": "#3b6fd4",
+          "Icons-color": "#5f6b80",
+          "Other-variables": {
+            "CARD": "#ffffff",
+            "MUTED": "#e8edf6",
+            "BORDER": "#d5dcea",
+            "SUCCESS": "#15803d",
+            "WARNING": "#b45309",
+            "DANGER": "#dc2626",
+            "INFO": "#3b6fd4",
+            "ON_ACCENT": "#ffffff",
+            "TREND_UP": "#15803d",
+            "TREND_DOWN": "#dc2626",
+            "KNOB": "#ffffff"
+          }
+        }
+      ]
+    }
+  }
+}

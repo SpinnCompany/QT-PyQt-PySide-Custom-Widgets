@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>620</width>
+    <height>560</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QCustomFunnelChart</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="mainLayout">
+    <property name="spacing">
+     <number>14</number>
+    </property>
+    <property name="leftMargin">
+     <number>20</number>
+    </property>
+    <property name="topMargin">
+     <number>20</number>
+    </property>
+    <property name="rightMargin">
+     <number>20</number>
+    </property>
+    <property name="bottomMargin">
+     <number>20</number>
+    </property>
+    <item>
+     <widget class="QCustomFunnelChart" name="funnelChart">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>300</height>
+       </size>
+      </property>
+      <property name="showPercent" stdset="0">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="controlsRow" stretch="0,0,0,0,0,0,0,1,0">
+      <property name="spacing">
+       <number>8</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="shapeCaption">
+        <property name="text">
+         <string>Shape</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="shapeCombo">
+        <item>
+         <property name="text">
+          <string>funnel</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>pyramid</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="orientCaption">
+        <property name="text">
+         <string>Orientation</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="orientCombo">
+        <item>
+         <property name="text">
+          <string>vertical</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>horizontal</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="basisCaption">
+        <property name="text">
+         <string>% of</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="basisCombo">
+        <item>
+         <property name="text">
+          <string>first</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>previous</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="neckCaption">
+        <property name="text">
+         <string>Neck</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSlider" name="neckSlider">
+        <property name="maximum">
+         <number>80</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="themeBtn">
+        <property name="text">
+         <string>Light / dark</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="statusLabel">
+      <property name="text">
+       <string>Hover a stage for its conversion</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomFunnelChart</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomFunnelChart.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

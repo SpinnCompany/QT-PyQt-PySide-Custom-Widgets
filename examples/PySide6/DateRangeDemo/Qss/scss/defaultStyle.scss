@@ -1,0 +1,67 @@
+// DateRangeDemo chrome — everything themed via $TOKENS + theme Other-variables.
+// New style files are @import-ed here automatically.
+
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#centralwidget {
+  font-family: 'Segoe UI', 'Inter', sans-serif;
+  color: $COLOR_TEXT_1;
+}
+
+#lightCard {
+  background: $CARD_BG;
+  border-radius: 22px;
+}
+
+#lightTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: $COLOR_TEXT_1;
+  background: transparent;
+}
+
+#startField, #endField {
+  background: $FIELD_BG;
+  border: 1px solid $FIELD_BORDER;
+  border-radius: 12px;
+}
+
+#startCap, #endCap {
+  font-size: 11px;
+  color: $FIELD_CAP;
+  background: transparent;
+}
+
+#startVal, #endVal {
+  font-size: 15px;
+  font-weight: 600;
+  color: $FIELD_VAL;
+  background: transparent;
+}
+
+#saveButton {
+  background: $COLOR_ACCENT_1;
+  color: $SAVE_TEXT;
+  border: none;
+  border-radius: 20px;
+  padding: 12px 28px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#saveButton:hover {
+  background: $SAVE_HOVER;
+}
+
+// The inline dual-month range picker — hues follow the active theme
+#picker {
+  background: transparent;
+  qproperty-accentColor: $COLOR_ACCENT_1;
+  qproperty-todayColor: $COLOR_ACCENT_1;
+  qproperty-rangeBandColor: $PICKER_BAND;
+  qproperty-textColor: $PICKER_TEXT;
+  qproperty-headerColor: $PICKER_TEXT;
+  qproperty-mutedColor: $PICKER_MUTED;
+}

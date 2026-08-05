@@ -11,10 +11,7 @@ import qtpy
 
 from qtpy import QtCore, QtGui, QtSvg, QtWidgets, QtXml
 
-if 'pyside2' in qtpy.API:
-    qtlib = 'pyside2'
-elif 'pyside6' in qtpy.API:
-    qtlib = 'pyside6'
+qtlib = qtpy.API  # e.g. 'pyside6' or 'pyqt6'
 
 
 _IMPORT_ERROR_MESSAGE = \

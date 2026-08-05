@@ -1,0 +1,37 @@
+/* QCustomCodeEditor showcase — window chrome from theme tokens; the editor
+   panes themselves are painted by the widget's own named themes (setTheme). */
+
+#MainWindow,
+#centralwidget {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#editor1Label,
+#editor2Label {
+  color: $COLOR_TEXT_2;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#themeDefaultButton,
+#themeOneLightButton,
+#themeOneDarkButton,
+#themeMonokaiButton,
+#themeOceanicButton,
+#themeZenburnButton {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $BORDER_COLOR;
+  border-radius: 8px;
+  padding: 6px 12px;
+}
+
+#themeDefaultButton:hover,
+#themeOneLightButton:hover,
+#themeOneDarkButton:hover,
+#themeMonokaiButton:hover,
+#themeOceanicButton:hover,
+#themeZenburnButton:hover {
+  background: $COLOR_BACKGROUND_3;
+  border-color: $COLOR_ACCENT_1;
+}

@@ -1,0 +1,94 @@
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#kbdSectionLabel, #splitterSectionLabel, #carouselSectionLabel {
+  color: $COLOR_TEXT_2;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#paletteLabel, #saveLabel, #closeLabel {
+  color: $COLOR_TEXT_3;
+  font-size: 13px;
+}
+
+/* ---- keycaps ---- */
+QCustomKbd #kbdKey {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 4px;
+  /* 4px sides (not the tokens' 8px): at 720px the kbd row is width-tight and
+     QLabel compresses below its styled sizeHint, clipping the cap text */
+  padding: 1px 4px;
+  min-width: 16px;
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+QCustomKbd #kbdPlus {
+  color: $COLOR_TEXT_4;
+  background: transparent;
+  font-size: 12px;
+}
+
+/* ---- splitter panels + slide cards ---- */
+#sidebarPanel, #editorPanel, #previewPanel, #slideCard {
+  background: $COLOR_BACKGROUND_2;
+  border-radius: 10px;
+}
+
+#sidebarTitle, #editorTitle, #previewTitle, #slideTitle {
+  color: $COLOR_TEXT_1;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+#sidebarBody, #editorBody, #previewBody, #slideBody {
+  color: $COLOR_TEXT_3;
+  font-size: 13px;
+}
+
+/* ---- splitter handle: subtle, accents on hover ---- */
+QCustomSplitter::handle {
+  background: $COLOR_BACKGROUND_3;
+  border-radius: 3px;
+}
+
+QCustomSplitter::handle:hover {
+  background: $COLOR_ACCENT_1;
+}
+
+QCustomSplitter::handle:pressed {
+  background: $COLOR_ACCENT_1;
+}
+
+/* ---- carousel nav + dots ---- */
+QCustomCarousel #carouselNav {
+  background: $COLOR_BACKGROUND_2;
+  color: $COLOR_TEXT_1;
+  border: 1px solid $COLOR_BACKGROUND_4;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+QCustomCarousel #carouselNav:hover {
+  background: $COLOR_BACKGROUND_3;
+}
+
+QCustomCarousel #carouselNav:disabled {
+  color: $COLOR_TEXT_4;
+}
+
+QCustomCarousel #carouselDot {
+  background: $COLOR_TEXT_4;
+  border: none;
+  border-radius: 5px;
+}
+
+QCustomCarousel #carouselDot[active="true"] {
+  background: $COLOR_ACCENT_1;
+}

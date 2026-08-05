@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>520</width>
+    <height>420</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Design Tokens - variant / size</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="outerLayout">
+    <item>
+     <layout class="QHBoxLayout" name="topRow">
+      <item>
+       <widget class="QLabel" name="themeLabel">
+        <property name="text">
+         <string>Theme:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCustomQPushButton" name="toggleButton">
+        <property name="text">
+         <string>Switch to dark</string>
+        </property>
+        <property name="variant" stdset="0">
+         <string>outline</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="topSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QGridLayout" name="variantGrid">
+    <item row="0" column="0">
+     <widget class="QLabel" name="cornerLabel">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLabel" name="colLabelSm">
+      <property name="text">
+       <string>&lt;b&gt;sm&lt;/b&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QLabel" name="colLabelMd">
+      <property name="text">
+       <string>&lt;b&gt;md&lt;/b&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="3">
+     <widget class="QLabel" name="colLabelLg">
+      <property name="text">
+       <string>&lt;b&gt;lg&lt;/b&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="rowLabelPrimary">
+      <property name="text">
+       <string>&lt;b&gt;primary&lt;/b&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QCustomQPushButton" name="btnPrimarySm">
+      <property name="text">
+       <string>Primary</string>
+      </property>
+      <property name="variant" stdset="0">
+       <string>primary</string>
+      </property>
+      <property name="sizeVariant" stdset="0">
+       <string>sm</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QCustomQPushButton" name="btnPrimaryMd">
+      <property name="text">
+       <string>Primary</string>
+      </property>
+      <property name="variant" stdset="0">
+       <string>primary</string>
+      </property>
+      <property name="sizeVariant" stdset="0">
+       <string>md</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="3">
+     <widget class="QCustomQPushButton" name="btnPrimaryLg">
+      <property name="text">
+       <string>Primary</string>
+      </property>
+      <property name="variant" stdset="0">
+       <string>primary</string>
+      </property>
+      <property name="sizeVariant" stdset="0">
+       <string>lg</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="rowLabelSecondary">
+      <property name="text">
+       <string>&lt;b&gt;secondary&lt;/b&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QCustomQPushButton" name="btnSecondarySm">
+      <property name="text">
+       <string>Secondary</string>
+      </property>
+      <property name="variant" stdset="0">
+       <string>secondary</string>
+      </property>
+      <property name="sizeVariant" stdset="0">
+       <string>sm</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="2">
+     <widget class="QCustomQPushButton" name="btnSecondaryMd">
+      <property name="text">
+       <string>Secondary</string>
+      </property>
+      <property name="variant" stdset="0">
+       <string>secondary</string>
+      </property>
+      <property name="sizeVariant" stdset="0">
+       <string>md</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="3">
+     <widget class="QCustomQPushButton" name="btnSecondaryLg">
+      <property name="text">
+       <string>Secondary</string>
+      </property>
+      <property name="variant" stdset="0">
+       <string>secondary</string>
+      </property>
+      <property name="sizeVariant" stdset="0">
+       <string>lg</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="rowLabelOutline">
+      <property name="text">
+       <string>&lt;b&gt;outline&lt;/b&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QCustomQPushButton" name="btnOutlineSm">
+      <property name="text">
+       <string>Outline</string>
+      </property>
+      <property name="variant" stdset="0">
+       <string>outline</string>
+      </property>
+      <property name="sizeVariant" stdset="0">
+       <string>sm</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="2">
+     <widget class="QCustomQPushButton" name="btnOutlineMd">
+      <property name="text">
+       <string>Outline</string>
+      </property>
+      <property name="variant" stdset="0">
+       <string>outline</string>
+      </property>
+      <property name="sizeVariant" stdset="0">
+       <string>md</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="3">
+     <widget class="QCustomQPushButton" name="btnOutlineLg">
+      <property name="text">
+       <string>Outline</string>
+      </property>
+      <property name="variant" stdset="0">
+       <string>outline</string>
+      </property>
+      <property name="sizeVariant" stdset="0">
+       <string>lg</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="rowLabelGhost">
+      <property name="text">
+       <string>&lt;b&gt;ghost&lt;/b&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QCustomQPushButton" name="btnGhostSm">
+      <property name="text">
+       <string>Ghost</string>
+      </property>
+      <property name="variant" stdset="0">
+       <string>ghost</string>
+      </property>
+      <property name="sizeVariant" stdset="0">
+       <string>sm</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="2">
+     <widget class="QCustomQPushButton" name="btnGhostMd">
+      <property name="text">
+       <string>Ghost</string>
+      </property>
+      <property name="variant" stdset="0">
+       <string>ghost</string>
+      </property>
+      <property name="sizeVariant" stdset="0">
+       <string>md</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="3">
+     <widget class="QCustomQPushButton" name="btnGhostLg">
+      <property name="text">
+       <string>Ghost</string>
+      </property>
+      <property name="variant" stdset="0">
+       <string>ghost</string>
+      </property>
+      <property name="sizeVariant" stdset="0">
+       <string>lg</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="rowLabelDestructive">
+      <property name="text">
+       <string>&lt;b&gt;destructive&lt;/b&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QCustomQPushButton" name="btnDestructiveSm">
+      <property name="text">
+       <string>Destructive</string>
+      </property>
+      <property name="variant" stdset="0">
+       <string>destructive</string>
+      </property>
+      <property name="sizeVariant" stdset="0">
+       <string>sm</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="2">
+     <widget class="QCustomQPushButton" name="btnDestructiveMd">
+      <property name="text">
+       <string>Destructive</string>
+      </property>
+      <property name="variant" stdset="0">
+       <string>destructive</string>
+      </property>
+      <property name="sizeVariant" stdset="0">
+       <string>md</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="3">
+     <widget class="QCustomQPushButton" name="btnDestructiveLg">
+      <property name="text">
+       <string>Destructive</string>
+      </property>
+      <property name="variant" stdset="0">
+       <string>destructive</string>
+      </property>
+      <property name="sizeVariant" stdset="0">
+       <string>lg</string>
+      </property>
+     </widget>
+    </item>
+     </layout>
+    </item>
+    <item>
+     <spacer name="bottomSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomQPushButton</class>
+   <extends>QPushButton</extends>
+   <header location="global">Custom_Widgets.QCustomQPushButton.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

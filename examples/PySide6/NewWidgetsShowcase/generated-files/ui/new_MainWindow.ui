@@ -1,0 +1,335 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1300</width>
+    <height>860</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>New Widgets Release — Input Layer + Data Viz</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>14</number>
+    </property>
+    <property name="leftMargin">
+     <number>20</number>
+    </property>
+    <property name="topMargin">
+     <number>20</number>
+    </property>
+    <property name="rightMargin">
+     <number>20</number>
+    </property>
+    <property name="bottomMargin">
+     <number>20</number>
+    </property>
+    <item>
+     <widget class="QLabel" name="headerLabel">
+      <property name="text">
+       <string>Release Ready: New Widgets Showcase</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="splitRow">
+      <property name="spacing">
+     <number>16</number>
+    </property>
+      <item>
+       <widget class="QScrollArea" name="leftScroll">
+        <property name="widgetResizable">
+         <bool>true</bool>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <widget class="QWidget" name="leftContent">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>610</width>
+           <height>720</height>
+          </rect>
+         </property>
+         <layout class="QVBoxLayout" name="leftLayout">
+          <property name="spacing">
+     <number>12</number>
+    </property>
+          <item>
+           <widget class="QLabel" name="formTitle">
+            <property name="text">
+             <string>Form Input Layer</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="formCard">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <layout class="QVBoxLayout" name="formCardLayout">
+             <item>
+              <widget class="QCustomForm" name="showcaseForm" />
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="groupsTitle">
+            <property name="text">
+             <string>Selection Buttons (Variants)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="groupsCard">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <layout class="QVBoxLayout" name="groupsHostLayout">
+             <property name="spacing">
+     <number>8</number>
+    </property>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <spacer name="leftSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+      <item>
+       <widget class="QScrollArea" name="rightScroll">
+        <property name="widgetResizable">
+         <bool>true</bool>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <widget class="QWidget" name="rightContent">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>610</width>
+           <height>720</height>
+          </rect>
+         </property>
+         <layout class="QVBoxLayout" name="rightLayout">
+          <property name="spacing">
+     <number>12</number>
+    </property>
+          <item>
+           <widget class="QLabel" name="vizTitle">
+            <property name="text">
+             <string>Data Visualization Widgets</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="gaugeSectionLabel">
+            <property name="text">
+             <string>Gauges</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QGridLayout" name="gaugeGrid">
+            <property name="spacing">
+     <number>8</number>
+    </property>
+            <item row="0" column="0">
+             <widget class="QLabel" name="radialCaption">
+              <property name="text">
+               <string>Radial Gauge</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLabel" name="liquidCaption">
+              <property name="text">
+               <string>Liquid Gauge</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QCustomRadialGauge" name="radialGauge">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>180</height>
+               </size>
+              </property>
+              <property name="value" stdset="0">
+               <double>65.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QCustomLiquidGauge" name="liquidGauge">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>180</height>
+               </size>
+              </property>
+              <property name="value" stdset="0">
+               <double>72.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QLabel" name="rulerCaption">
+            <property name="text">
+             <string>Ruler Picker</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCustomRulerPicker" name="rulerPicker">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>80</height>
+             </size>
+            </property>
+            <property name="value" stdset="0">
+             <double>50.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="waveformCaption">
+            <property name="text">
+             <string>Waveform</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCustomWaveform" name="waveform">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>100</height>
+             </size>
+            </property>
+            <property name="mode" stdset="0">
+             <string>bars</string>
+            </property>
+            <property name="animated" stdset="0">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="heatmapCaption">
+            <property name="text">
+             <string>Heatmap (Activity Grid)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCustomHeatmap" name="heatmap">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>120</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="rightSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="actionBar">
+      <item>
+       <spacer name="actionSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QCustomQPushButton" name="submitBtn">
+        <property name="text">
+         <string>Submit Form</string>
+        </property>
+        <property name="variant" stdset="0">
+         <string>primary</string>
+        </property>
+        <property name="sizeVariant" stdset="0">
+         <string>md</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomForm</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomForm.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomQPushButton</class>
+   <extends>QPushButton</extends>
+   <header location="global">Custom_Widgets.QCustomQPushButton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomRadialGauge</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomRadialGauge.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomLiquidGauge</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomLiquidGauge.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomRulerPicker</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomRulerPicker.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomWaveform</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomWaveform.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomHeatmap</class>
+   <extends>QWidget</extends>
+   <header location="global">Custom_Widgets.QCustomHeatmap.h</header>
+  </customwidget>
+ <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>

@@ -1,0 +1,42 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomModals Example"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "ModalNight",
+          "Default-Theme": true,
+          "Background-color": "#0e1115",
+          "Text-color": "#ebeef2",
+          "Accent-color": "#4b9fea",
+          "Icons-color": "#9ca3af",
+          "Other-variables": {
+            "MODAL_INFO": "#2799be",
+            "MODAL_SUCCESS": "#29b328",
+            "MODAL_WARNING": "#bb8128",
+            "MODAL_ERROR": "#bb221d",
+            "MODAL_CUSTOM": "#1a212b"
+          }
+        },
+        {
+          "Theme-name": "ModalDay",
+          "Default-Theme": false,
+          "Background-color": "#f0f2f5",
+          "Text-color": "#16181d",
+          "Accent-color": "#1d78c9",
+          "Icons-color": "#4b5563",
+          "Other-variables": {
+            "MODAL_INFO": "#E6F7FF",
+            "MODAL_SUCCESS": "#C8E6C9",
+            "MODAL_WARNING": "#FFF9E1",
+            "MODAL_ERROR": "#FFEBEE",
+            "MODAL_CUSTOM": "#FFFFFF"
+          }
+        }
+      ]
+    }
+  }
+}

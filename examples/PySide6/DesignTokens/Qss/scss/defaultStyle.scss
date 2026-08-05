@@ -1,0 +1,18 @@
+// DesignTokens demo chrome — window/background only. The buttons themselves
+// are styled by the DesignTokens system (applyDesignTokens in main.py):
+// that IS the teaching point of this demo, so no button rules live here.
+
+#MainWindow {
+  background: $COLOR_BACKGROUND_1;
+}
+
+#centralwidget {
+  color: $COLOR_TEXT_1;
+}
+
+#themeLabel, #cornerLabel, #colLabelSm, #colLabelMd, #colLabelLg,
+#rowLabelPrimary, #rowLabelSecondary, #rowLabelOutline, #rowLabelGhost,
+#rowLabelDestructive {
+  color: $COLOR_TEXT_1;
+  background: transparent;
+}

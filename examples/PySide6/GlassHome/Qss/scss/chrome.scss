@@ -1,0 +1,280 @@
+/* ==================================================================
+   GlassHome chrome — every colour from $TOKENS / theme Other-variables.
+   Geometry lives in the .ui; glass frames are tinted here via
+   qproperty-tintColor (NEVER a background-color rule — it would paint
+   over the glass).
+   ================================================================== */
+
+#shell { background-color: $COLOR_BACKGROUND_1; }
+#overlay { background: transparent; }
+
+/* component containers, loaders, component roots AND the glass frames
+   themselves must never inherit the base `QWidget { background-color }`
+   erase — it fills their square rect with the window colour underneath the
+   rounded glass painting (the "black corners") */
+QCustomComponentContainer, QCustomComponentLoader,
+QCustomGlassFrame { background: transparent; }
+#ThermostatPanel, #ModeRow, #PlayerCard, #NavRail, #DeviceHero, #PowerChart,
+#StatCard, #DeviceTile, #RoomTabs { background: transparent; }
+
+QLabel { color: $TXT_ON_GLASS; background: transparent; }
+
+/* offline / not-yet-loaded wallpaper: a THEMED gradient, not a grey box */
+#wallpaper {
+  qproperty-fallbackTop: $WALL_TOP;
+  qproperty-fallbackMid: $WALL_MID;
+  qproperty-fallbackBottom: $WALL_BOTTOM;
+}
+
+/* ---- shared role chrome ------------------------------------------ */
+QLabel[role="kicker"]      { font-size: 12px; color: $TXT_MUTED; }
+QLabel[role="heroTitle"]   { font-size: 17px; font-weight: 600; }
+QLabel[role="cardTitle"]   { font-size: 15px; font-weight: 600; }
+QLabel[role="mutedSm"]     { font-size: 12px; color: $TXT_MUTED; }
+QLabel[role="statValue"]   { font-size: 24px; font-weight: 700; }
+QLabel[role="statValueSm"] { font-size: 15px; font-weight: 700; }
+QLabel[role="tileName"]    { font-size: 14px; font-weight: 600; }
+QLabel[role="clock"]       { font-size: 30px; font-weight: 300; }
+
+QCustomQLabel[role="appsIcon"] { qproperty-iconColor: $TXT_MUTED; }
+
+/* ---- main sheet + right column glass ----------------------------- */
+/* Radii are QSS-driven: qproperty-cornerRadius is the glass frame's
+   border-radius (a painted rounded path — a QSS border-radius rule can't
+   clip custom painting). */
+#sheetGlass {
+  qproperty-tintColor: $GLASS_SHEET;
+  qproperty-borderColor: $GLASS_BORDER;
+  qproperty-cornerRadius: 34;
+}
+#rightGlass {
+  qproperty-tintColor: $GLASS_DENSE;
+  qproperty-borderColor: $GLASS_BORDER_SOFT;
+  qproperty-cornerRadius: 26;
+}
+
+/* ---- floating nav rail ------------------------------------------- */
+#NavRail {
+  #navGlass {
+    qproperty-tintColor: $GLASS_PILL;
+    qproperty-borderColor: $GLASS_BORDER;
+    qproperty-cornerRadius: 30;
+  }
+  QCustomQPushButton[role="navBtn"] {
+    background: transparent;
+    border: none;
+    border-radius: 23px;
+    qproperty-iconColor: $TXT_MUTED;
+    qproperty-iconColorActive: $TXT_ON_GLASS;
+    &:hover   { background-color: $CHIP; }
+    &:checked { background-color: $CHIP; }
+  }
+  #navDashboard  { qproperty-icon: url($PATH_RESOURCES+'feather/grid.svg'); }
+  #navDevices    { qproperty-icon: url($PATH_RESOURCES+'feather/cpu.svg'); }
+  #navStats      { qproperty-icon: url($PATH_RESOURCES+'feather/bar-chart-2.svg'); }
+  #navAdd        { qproperty-icon: url($PATH_RESOURCES+'feather/plus.svg'); }
+  #navAutomation { qproperty-icon: url($PATH_RESOURCES+'feather/sliders.svg'); }
+  #navThemeToggle {
+    background: transparent;
+    border: none;
+    border-radius: 23px;
+    qproperty-icon: url($PATH_RESOURCES+'feather/moon.svg');
+    &:hover { background-color: $CHIP; }
+  }
+  QCustomAvatar {
+    qproperty-bgColor: $CHIP;
+    qproperty-textColor: $TXT_ON_GLASS;
+    qproperty-ringColor: $COLOR_ACCENT_1;
+  }
+}
+
+/* ---- device hero ------------------------------------------------- */
+#DeviceHero {
+  #heroGlass {
+    qproperty-tintColor: $GLASS_LIGHT;
+    qproperty-brightness: 1.08;
+    qproperty-borderColor: $GLASS_BORDER;
+    qproperty-cornerRadius: 26;
+  }
+  /* dark text over the LIGHT hero glass… */
+  QLabel { color: $HERO_TEXT; }
+  QLabel[role="kicker"] { color: $HERO_MUTED; }
+  #heroApps { qproperty-pixmap: url($PATH_RESOURCES+'material_design/apps.svg'); qproperty-iconColor: $HERO_MUTED; }
+  #heroStats {
+    qproperty-tintColor: $GLASS_INSET;
+    qproperty-borderColor: $GLASS_BORDER_SOFT;
+    qproperty-cornerRadius: 18;
+    /* …but the stats INSET is dense glass again */
+    QLabel { color: $INSET_TEXT; }
+    QLabel[role="mutedSm"] { color: $INSET_MUTED; }
+  }
+  #statsDivider { border: none; background-color: $GLASS_BORDER; }
+  QCustomQPushButton[role="pill"] {
+    background-color: $HERO_CHIP;
+    color: $HANDLE;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 12px;
+    text-align: left;
+    qproperty-icon: url($PATH_RESOURCES+'feather/chevron-down.svg');
+    qproperty-iconColor: $HANDLE;
+    &:hover { background-color: $TRACK; }
+  }
+  #brightIcon { qproperty-pixmap: url($PATH_RESOURCES+'feather/sun.svg'); qproperty-iconColor: $HERO_TEXT; }
+  /* brightness range — the bare QSlider otherwise paints its PALETTE
+     background as a dark strip behind the groove */
+  QSlider { background: transparent; border: none; min-height: 24px; }
+  QSlider::groove:horizontal {
+    height: 8px; border-radius: 4px; border: none;
+    background-color: $TRACK;
+  }
+  QSlider::sub-page:horizontal {
+    height: 8px; border-radius: 4px; border: none;
+    background-color: $HANDLE;
+  }
+  QSlider::add-page:horizontal {
+    height: 8px; border-radius: 4px; border: none;
+    background-color: $TRACK;
+  }
+  QSlider::handle:horizontal {
+    width: 18px; height: 18px; margin: -5px 0;
+    border-radius: 9px; border: none;
+    background-color: $HANDLE;
+  }
+}
+
+/* ---- power consumption chart ------------------------------------- */
+#PowerChart {
+  #powerGlass {
+    qproperty-tintColor: $GLASS_SHEET;
+    qproperty-borderColor: $GLASS_BORDER_SOFT;
+    qproperty-cornerRadius: 26;
+  }
+  #powerMenu { qproperty-pixmap: url($PATH_RESOURCES+'feather/more-horizontal.svg'); qproperty-iconColor: $TXT_MUTED; }
+  #powerBars {
+    qproperty-barColor: $TRACK;
+    qproperty-idleColor: $TRACK;
+    qproperty-highlightColor: $COLOR_ACCENT_1;
+    qproperty-labelColor: $TXT_MUTED;
+    qproperty-yLabelColor: $TXT_MUTED;
+    qproperty-calloutBg: $CALLOUT_BG;
+    qproperty-calloutTextColor: $CALLOUT_TEXT;
+  }
+}
+
+/* ---- stat cards --------------------------------------------------- */
+#StatCard {
+  #statGlass {
+    qproperty-tintColor: $GLASS_SHEET;
+    qproperty-borderColor: $GLASS_BORDER_SOFT;
+    qproperty-cornerRadius: 22;
+  }
+}
+
+/* ---- device tiles -------------------------------------------------- */
+#DeviceTile {
+  #tileApps { qproperty-pixmap: url($PATH_RESOURCES+'material_design/apps.svg'); qproperty-iconColor: $TXT_MUTED; }
+  #tileGlass {
+    qproperty-tintColor: $GLASS_SHEET;
+    qproperty-borderColor: $GLASS_BORDER_SOFT;
+    qproperty-cornerRadius: 22;
+  }
+  #tileGlass[active="true"] {
+    qproperty-tintColor: $GLASS_LIGHT;
+    qproperty-brightness: 1.08;
+    qproperty-borderColor: $GLASS_BORDER;
+    /* dark text + icon over the light ACTIVE glass */
+    QLabel { color: $HERO_TEXT; }
+    QLabel[role="mutedSm"] { color: $HERO_MUTED; }
+    #tileApps { qproperty-iconColor: $HERO_MUTED; }
+  }
+}
+
+/* ---- room tabs pill ------------------------------------------------ */
+#RoomTabs {
+  #tabsGlass {
+    qproperty-tintColor: $GLASS_PILL;
+    qproperty-borderColor: $GLASS_BORDER;
+    qproperty-cornerRadius: 27;
+  }
+  #roomSegments {
+    background: transparent;
+    QPushButton#segmentButton {
+      background: transparent;
+      color: $TXT_MUTED;
+      border: none;
+      /* Qt paints a SQUARE when border-radius > height/2 (no clamping) —
+         the chip is ~34px tall, so 14px keeps the pill */
+      border-radius: 14px;
+      padding: 9px 18px;
+      font-size: 13px;
+      &:hover   { color: $TXT_ON_GLASS; }
+      &:checked { background-color: $HERO_CHIP; color: $HANDLE; }
+    }
+  }
+  QCustomQPushButton[role="addBtn"] {
+    background-color: $COLOR_ACCENT_1;
+    border: none;
+    border-radius: 20px;
+    qproperty-icon: url($PATH_RESOURCES+'feather/plus.svg');
+    qproperty-iconColor: $HANDLE;
+    &:hover { background-color: $ACCENT_SOFT; }
+  }
+  #roomDots {
+    qproperty-dotColor: $TRACK;
+    qproperty-activeColor: $TXT_ON_GLASS;
+  }
+}
+
+/* ---- thermostat panel (sits on rightGlass) ------------------------- */
+#ThermostatPanel {
+  #clockDivider { border: none; background-color: $GLASS_BORDER_SOFT; }
+  #thermoGauge {
+    qproperty-trackColor: $TRACK;
+    qproperty-gradientStart: $GAUGE_START;
+    qproperty-gradientEnd: $GAUGE_END;
+    qproperty-handleColor: $HANDLE;
+    qproperty-centerTextColor: $TXT_ON_GLASS;
+    qproperty-scaleColor: $TXT_MUTED;
+    qproperty-statusColor: $TXT_MUTED;
+  }
+  QCustomQPushButton[role="roundBtn"] {
+    background-color: $CHIP;
+    border: 1px solid $GLASS_BORDER_SOFT;
+    border-radius: 20px;
+    qproperty-iconColor: $TXT_ON_GLASS;
+    &:hover { background-color: $TRACK; }
+  }
+  #thermoMinus { qproperty-icon: url($PATH_RESOURCES+'feather/minus.svg'); }
+  #thermoPlus  { qproperty-icon: url($PATH_RESOURCES+'feather/plus.svg'); }
+}
+
+/* ---- hvac mode row -------------------------------------------------- */
+#ModeRow {
+  QCustomTileButton {
+    qproperty-bgColor: $CHIP;
+    qproperty-iconColor: $TXT_MUTED;
+    qproperty-activeColor: $HANDLE;
+    qproperty-gradientStart: $COLOR_ACCENT_1;
+    qproperty-gradientEnd: $ACCENT_SOFT;
+  }
+}
+
+/* ---- player card ----------------------------------------------------- */
+#PlayerCard {
+  #playerGlass {
+    qproperty-tintColor: $GLASS_INSET;
+    qproperty-borderColor: $GLASS_BORDER_SOFT;
+    qproperty-cornerRadius: 22;
+  }
+  #player {
+    qproperty-barColor: #00000000;
+    qproperty-accentColor: $COLOR_ACCENT_1;
+    qproperty-textColor: $TXT_ON_GLASS;
+    qproperty-subTextColor: $TXT_MUTED;
+    qproperty-iconColor: $TXT_MUTED;
+    qproperty-trackColor: $TRACK;
+    qproperty-playBtnColor: $HANDLE;
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "QCustomQPushButton": [
+    {
+      "name": "customThemeButton",
+      "icon": "ui/theme-icons:icons/feather/settings.svg"
+    },
+    {
+      "name": "shadowThemeButton",
+      "icon": "ui/theme-icons:icons/feather/loader.svg"
+    },
+    {
+      "name": "borderThemeButton",
+      "icon": "ui/theme-icons:icons/feather/shopping-cart.svg"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+# Auto-generated type stub — DO NOT EDIT.
+# Regenerate with:  python -m Custom_Widgets.mcp.stubgen --write
+from Custom_Widgets.widgets.input.QCustomDateTimeEdit import _VariantMixin
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QDateEdit, QTimeEdit, QWidget
+from typing import Any, ClassVar
+
+
+class _VariantMixin(object):
+    variant: Any
+    sizeVariant: Any
+
+
+class QCustomDateEdit(_VariantMixin, QDateEdit):
+    def __init__(self, parent = ...) -> None: ...
+
+
+class QCustomTimeEdit(_VariantMixin, QTimeEdit):
+    def __init__(self, parent = ...) -> None: ...
+
+
+class QCustomDateRangeEdit(QWidget):
+    rangeChanged: ClassVar[Signal]
+    def __init__(self, parent = ...) -> None: ...
+    def startDate(self): ...
+    def endDate(self): ...
+    def dateRange(self): ...
+    def setDateRange(self, start, end) -> None: ...
+    def startEdit(self): ...
+    def endEdit(self): ...

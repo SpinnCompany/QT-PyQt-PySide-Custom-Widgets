@@ -1,0 +1,168 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>640</width>
+    <height>480</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QCustomQDialog Showcase</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="rootLayout">
+    <property name="spacing"><number>0</number></property>
+    <property name="leftMargin"><number>0</number></property>
+    <property name="topMargin"><number>0</number></property>
+    <property name="rightMargin"><number>0</number></property>
+    <property name="bottomMargin"><number>0</number></property>
+    <item>
+     <widget class="QFrame" name="header">
+      <property name="minimumSize">
+       <size><width>0</width><height>120</height></size>
+      </property>
+      <property name="maximumSize">
+       <size><width>16777215</width><height>120</height></size>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
+      </property>
+      <layout class="QVBoxLayout" name="headerLayout">
+       <property name="spacing"><number>8</number></property>
+       <property name="leftMargin"><number>32</number></property>
+       <property name="topMargin"><number>32</number></property>
+       <property name="rightMargin"><number>32</number></property>
+       <property name="bottomMargin"><number>24</number></property>
+       <item>
+        <widget class="QLabel" name="title">
+         <property name="text"><string>Dialog Showcase</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="subtitle">
+         <property name="text"><string>Click a button to trigger a styled dialog with animations and feedback</string></property>
+         <property name="wordWrap"><bool>true</bool></property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QFrame" name="content">
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
+      </property>
+      <layout class="QVBoxLayout" name="contentLayout">
+       <property name="spacing"><number>16</number></property>
+       <property name="leftMargin"><number>32</number></property>
+       <property name="topMargin"><number>24</number></property>
+       <property name="rightMargin"><number>32</number></property>
+       <property name="bottomMargin"><number>32</number></property>
+       <item>
+        <widget class="QFrame" name="card">
+         <property name="frameShape">
+          <enum>QFrame::Shape::StyledPanel</enum>
+         </property>
+         <layout class="QVBoxLayout" name="cardLayout">
+          <property name="spacing"><number>12</number></property>
+          <property name="leftMargin"><number>20</number></property>
+          <property name="topMargin"><number>20</number></property>
+          <property name="rightMargin"><number>20</number></property>
+          <property name="bottomMargin"><number>20</number></property>
+          <item>
+           <widget class="QLabel" name="cardTitle">
+            <property name="text"><string>Dialog Types</string></property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QGridLayout" name="buttonGrid">
+            <property name="spacing"><number>12</number></property>
+            <item row="0" column="0">
+             <widget class="QCustomQPushButton" name="infoBtn">
+              <property name="text"><string>Info</string></property>
+              <property name="variant" stdset="0"><string>primary</string></property>
+              <property name="iconSize">
+               <size><width>18</width><height>18</height></size>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QCustomQPushButton" name="confirmBtn">
+              <property name="text"><string>Confirm</string></property>
+              <property name="iconSize">
+               <size><width>18</width><height>18</height></size>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QCustomQPushButton" name="warningBtn">
+              <property name="text"><string>Warning</string></property>
+              <property name="sizeVariant" stdset="0"><string>md</string></property>
+              <property name="iconSize">
+               <size><width>18</width><height>18</height></size>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QCustomQPushButton" name="errorBtn">
+              <property name="text"><string>Error</string></property>
+              <property name="iconSize">
+               <size><width>18</width><height>18</height></size>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QFrame" name="statusCard">
+         <property name="frameShape">
+          <enum>QFrame::Shape::StyledPanel</enum>
+         </property>
+         <layout class="QHBoxLayout" name="statusLayout">
+          <property name="spacing"><number>12</number></property>
+          <property name="leftMargin"><number>16</number></property>
+          <property name="topMargin"><number>12</number></property>
+          <property name="rightMargin"><number>16</number></property>
+          <property name="bottomMargin"><number>12</number></property>
+          <item>
+           <widget class="QLabel" name="statusIcon">
+            <property name="minimumSize">
+             <size><width>8</width><height>8</height></size>
+            </property>
+            <property name="maximumSize">
+             <size><width>8</width><height>8</height></size>
+            </property>
+            <property name="text"><string />
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="statusLabel">
+            <property name="text"><string>Click a dialog type above</string></property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomQPushButton</class>
+   <extends>QPushButton</extends>
+   <header>Custom_Widgets.QCustomQPushButton</header>
+  </customwidget>
+ <customwidget><class>QPushButton</class><extends>QPushButton</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget><customwidget><class>QLabel</class><extends>QLabel</extends><header location="global">Custom_Widgets.Theme.h</header><container>1</container></customwidget></customwidgets>
+ <connections />
+</ui>

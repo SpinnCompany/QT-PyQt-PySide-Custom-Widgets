@@ -1,0 +1,2964 @@
+{
+ "_comment": "Custom_Widgets design-lint baseline \u2014 grandfathered violations. Only NEW violations fail. Regenerate with `Custom_Widgets-lint --generate-baseline`.",
+ "count": 493,
+ "fingerprints": [
+  [
+   "camelcase-api",
+   "Custom_Widgets/__init__.py",
+   "restore_or_maximize_window",
+   "def restore_or_maximize_window(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/_legacy_paths.py",
+   "create_module",
+   "def create_module(self, spec):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/_legacy_paths.py",
+   "exec_module",
+   "def exec_module(self, module):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/_legacy_paths.py",
+   "find_spec",
+   "def find_spec(self, fullname, path=None, target=None):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/lint/config.py",
+   "with_overrides",
+   "def with_overrides(self, **kw) -> \"Config\":"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/mcp/workspace.py",
+   "default_dir",
+   "def default_dir(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/tools/AcrylicEffect.py",
+   "detect_platform",
+   "def detect_platform():"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/tools/DevServer.py",
+   "convert_ui",
+   "def convert_ui(self, ui_file):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/tools/DevServer.py",
+   "restart_app",
+   "def restart_app(self, reason):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/tools/DevServer.py",
+   "start_app",
+   "def start_app(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/tools/DevServer.py",
+   "stop_app",
+   "def stop_app(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/tools/FileMonitor.py",
+   "monitor_files",
+   "def monitor_files(self, files_to_monitor):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/tools/FileMonitor.py",
+   "monitor_folders",
+   "def monitor_folders(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/tools/FileMonitor.py",
+   "on_file_change",
+   "def on_file_change(self, path):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/tools/FileMonitor.py",
+   "on_folder_change",
+   "def on_folder_change(self, path):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/tools/FileMonitor.py",
+   "qss_file_changed",
+   "def qss_file_changed(self, file_path, live_compile=False):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/tools/FileMonitor.py",
+   "start_qss_file_listener",
+   "def start_qss_file_listener(self, theme_engine):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/tools/FileMonitor.py",
+   "stop_qss_file_listener",
+   "def stop_qss_file_listener(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/tools/FileMonitor.py",
+   "update_file_list",
+   "def update_file_list(self, fresh=False):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/tools/Utils.py",
+   "add_file_url",
+   "def add_file_url(self, file_url):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/tools/Utils.py",
+   "clear_file_urls",
+   "def clear_file_urls(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/tools/Utils.py",
+   "get_file_urls",
+   "def get_file_urls(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/tools/Utils.py",
+   "url_exists",
+   "def url_exists(self, file_url):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/tools/WidgetsWorker.py",
+   "print_output",
+   "def print_output(s):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/tools/WidgetsWorker.py",
+   "progress_fn",
+   "def progress_fn(n):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/tools/WidgetsWorker.py",
+   "thread_complete",
+   "def thread_complete():"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/buttons/QCustomThemeDarkLightToggle.py",
+   "toggle_theme",
+   "def toggle_theme(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/buttons/QCustomThemeDarkLightToggle.py",
+   "update_button_icon",
+   "def update_button_icon(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/buttons/QCustomThemeDarkLightToggle.py",
+   "update_button_text",
+   "def update_button_text(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/containers/QCustomCarousel.py",
+   "currentIndex_",
+   "def currentIndex_(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/data/QCustomCodeEditor.py",
+   "match_multiline",
+   "def match_multiline(self, text, delimiter, in_state, style):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/display/AnalogGaugeWidget.py",
+   "center_horizontal",
+   "def center_horizontal(self, value):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/display/AnalogGaugeWidget.py",
+   "center_vertical",
+   "def center_vertical(self, value):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/display/AnalogGaugeWidget.py",
+   "change_value_needle_style",
+   "def change_value_needle_style(self, design):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/display/AnalogGaugeWidget.py",
+   "create_fine_scaled_marker",
+   "def create_fine_scaled_marker(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/display/AnalogGaugeWidget.py",
+   "create_polygon_pie",
+   "def create_polygon_pie(self, outer_radius, inner_raduis, start, lenght, bar_graph = True):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/display/AnalogGaugeWidget.py",
+   "create_scale_marker_values_text",
+   "def create_scale_marker_values_text(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/display/AnalogGaugeWidget.py",
+   "create_units_text",
+   "def create_units_text(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/display/AnalogGaugeWidget.py",
+   "create_values_text",
+   "def create_values_text(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/display/AnalogGaugeWidget.py",
+   "draw_big_needle_center_point",
+   "def draw_big_needle_center_point(self, diameter=30):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/display/AnalogGaugeWidget.py",
+   "draw_big_scaled_marker",
+   "def draw_big_scaled_marker(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/display/AnalogGaugeWidget.py",
+   "draw_filled_polygon",
+   "def draw_filled_polygon(self, outline_pen_with=0):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/display/AnalogGaugeWidget.py",
+   "draw_icon_image",
+   "def draw_icon_image(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/display/AnalogGaugeWidget.py",
+   "draw_needle",
+   "def draw_needle(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/display/AnalogGaugeWidget.py",
+   "draw_outer_circle",
+   "def draw_outer_circle(self, diameter=30):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/display/AnalogGaugeWidget.py",
+   "rescale_method",
+   "def rescale_method(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/display/QCustomToast.py",
+   "show_toast",
+   "def show_toast(cls, parent, message, variant=\"info\", **kw):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/input/QCustomCheckBox.py",
+   "setup_animation",
+   "def setup_animation(self, value):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/input/QCustomEmojiPicker.py",
+   "on_input",
+   "def on_input(self, text: str):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/input/QCustomForm.py",
+   "add_field",
+   "def add_field(self, field):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/input/QCustomForm.py",
+   "error_text",
+   "def error_text(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/input/QCustomForm.py",
+   "is_valid",
+   "def is_valid(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/input/QCustomForm.py",
+   "set_required",
+   "def set_required(self, required):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/input/QCustomForm.py",
+   "set_validator",
+   "def set_validator(self, validator):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/input/QCustomForm.py",
+   "set_value",
+   "def set_value(self, value):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/input/QCustomThemeList.py",
+   "check_theme_updates",
+   "def check_theme_updates(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/input/QCustomThemeList.py",
+   "get_filtered_themes",
+   "def get_filtered_themes(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/input/QCustomThemeList.py",
+   "on_theme_changed",
+   "def on_theme_changed(self, index):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/input/QCustomThemeList.py",
+   "populate_themes",
+   "def populate_themes(self, new_theme_names):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/loading/QCustomPerlinLoader.py",
+   "draw_deformed_circles",
+   "def draw_deformed_circles(self, painter: QPainter) -> None:"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/loading/QCustomPerlinLoader.py",
+   "draw_message",
+   "def draw_message(self, painter: QPainter) -> None:"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/loading/QCustomPerlinLoader.py",
+   "get_deformed_point",
+   "def get_deformed_point(self, angle: float, noise_generator: Noise) -> QPointF:"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/loading/QCustomPerlinLoader.py",
+   "start_animation",
+   "def start_animation(self) -> None:"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/loading/QCustomPerlinLoader.py",
+   "update_start_angle",
+   "def update_start_angle(self, new_value: float) -> None:"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/navigation/QCustomSidebar.py",
+   "convert_to_int",
+   "def convert_to_int(self, s):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/navigation/QCustomSidebarLabel.py",
+   "connect_to_parent",
+   "def connect_to_parent(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/navigation/QCustomSidebarLabel.py",
+   "on_animation_finished",
+   "def on_animation_finished(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/navigation/QCustomSidebarLabel.py",
+   "start_hide_animation",
+   "def start_hide_animation(self):"
+  ],
+  [
+   "camelcase-api",
+   "Custom_Widgets/widgets/navigation/QCustomSidebarLabel.py",
+   "start_show_animation",
+   "def start_show_animation(self):"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/JSonStyles/__init__.py",
+   "",
+   "cardWidget.setGraphicsEffect(effect)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/JSonStyles/__init__.py",
+   "",
+   "effect = QGraphicsDropShadowEffect(cardWidget)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/__init__.py",
+   "",
+   "self.centralWidget().setGraphicsEffect(None)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/__init__.py",
+   "",
+   "self.centralWidget().setGraphicsEffect(self.shadow)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/__init__.py",
+   "",
+   "self.shadow = QGraphicsDropShadowEffect(self)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/buttons/QCustomQPushButton.py",
+   "",
+   "buttonObject.setGraphicsEffect(buttonObject.shadow)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/buttons/QCustomQPushButton.py",
+   "",
+   "buttonObject.shadow = QGraphicsDropShadowEffect(buttonObject)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/buttons/QCustomQPushButton.py",
+   "",
+   "self.setGraphicsEffect(self.shadow)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/containers/QCustomEmbeddedWindow.py",
+   "",
+   "self.setGraphicsEffect(opacityEffect)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/containers/QCustomEmbeddedWindow.py",
+   "",
+   "self.setGraphicsEffect(self.shadow)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/containers/QCustomEmbeddedWindow.py",
+   "",
+   "self.shadow = QGraphicsDropShadowEffect(self)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/containers/QCustomQDialog.py",
+   "",
+   "self.setGraphicsEffect(None)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/containers/QCustomQDialog.py",
+   "",
+   "self.setGraphicsEffect(opacityEffect)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/containers/QCustomQDialog.py",
+   "",
+   "self.widget.setGraphicsEffect(shadowEffect)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/containers/QCustomQDialog.py",
+   "",
+   "shadowEffect = QGraphicsDropShadowEffect(self.widget)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/containers/QCustomQStackedWidget.py",
+   "",
+   "current_widget.setGraphicsEffect(fade_out_effect)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/containers/QCustomQStackedWidget.py",
+   "",
+   "next_widget.setGraphicsEffect(fade_in_effect)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/containers/QCustomQStackedWidget.py",
+   "",
+   "widget.setGraphicsEffect(effect)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/display/QCustomModals.py",
+   "",
+   "self.setGraphicsEffect(None)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/display/QCustomModals.py",
+   "",
+   "self.setGraphicsEffect(self.opacityEffect)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/display/QCustomQToolTip.py",
+   "",
+   "self.effect = QGraphicsDropShadowEffect(self)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/display/QCustomQToolTip.py",
+   "",
+   "self.setGraphicsEffect(None)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/display/QCustomQToolTip.py",
+   "",
+   "self.setGraphicsEffect(self.effect)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/display/QCustomQToolTip.py",
+   "",
+   "self.setGraphicsEffect(self.opacity_effect)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/display/QCustomTipOverlay.py",
+   "",
+   "self.effect = QGraphicsDropShadowEffect(self)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/display/QCustomTipOverlay.py",
+   "",
+   "self.setGraphicsEffect(None)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/display/QCustomTipOverlay.py",
+   "",
+   "self.setGraphicsEffect(self.effect)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/display/QCustomTipOverlay.py",
+   "",
+   "self.setGraphicsEffect(self.opacity_effect)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/display/QCustomToast.py",
+   "",
+   "self.setGraphicsEffect(self._opacity)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/navigation/QCustomCommandPalette.py",
+   "",
+   "self.setGraphicsEffect(self._opacity)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/navigation/QCustomDrawer.py",
+   "",
+   "self.setGraphicsEffect(self._opacity)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/navigation/QCustomHamburgerMenu.py",
+   "",
+   "self.setGraphicsEffect(None)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/navigation/QCustomHamburgerMenu.py",
+   "",
+   "self.setGraphicsEffect(self.shadow)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/navigation/QCustomHamburgerMenu.py",
+   "",
+   "self.shadow = QGraphicsDropShadowEffect()"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/navigation/QCustomSidebarButton.py",
+   "",
+   "self._floatingButton.setGraphicsEffect(shadow)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/navigation/QCustomSidebarButton.py",
+   "",
+   "self._floatingWidget.setGraphicsEffect(self._opacityEffect)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/navigation/QCustomSidebarButton.py",
+   "",
+   "shadow = QGraphicsDropShadowEffect(self._floatingButton)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/navigation/QCustomSidebarContainer.py",
+   "",
+   "self.setGraphicsEffect(self.opacityEffect)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/navigation/QCustomSidebarLabel.py",
+   "",
+   "self.setGraphicsEffect(self.opacity_effect)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/navigation/QCustomSlideMenu.py",
+   "",
+   "self.setGraphicsEffect(None)  # Clear existing effect"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/navigation/QCustomSlideMenu.py",
+   "",
+   "self.setGraphicsEffect(self.shadow_effect)"
+  ],
+  [
+   "drop-shadow",
+   "Custom_Widgets/widgets/navigation/QCustomSlideMenu.py",
+   "",
+   "self.shadow_effect = QGraphicsDropShadowEffect(self)"
+  ],
+  [
+   "drop-shadow",
+   "examples/PySide6/AuroraCommandDeck/deck_pro.py",
+   "",
+   "self.setGraphicsEffect(self._eff)"
+  ],
+  [
+   "drop-shadow",
+   "examples/PySide6/AuroraDeckPro/gui/GuiFunctions.py",
+   "",
+   "eff = QGraphicsDropShadowEffect(w)"
+  ],
+  [
+   "drop-shadow",
+   "examples/PySide6/AuroraDeckPro/gui/GuiFunctions.py",
+   "",
+   "w.setGraphicsEffect(eff)"
+  ],
+  [
+   "drop-shadow",
+   "examples/PySide6/QCustomEmojiPicker/main.py",
+   "",
+   "effect = QGraphicsDropShadowEffect(emoji_picker)"
+  ],
+  [
+   "drop-shadow",
+   "examples/PySide6/QCustomEmojiPicker/main.py",
+   "",
+   "emoji_picker.setGraphicsEffect(effect)"
+  ],
+  [
+   "drop-shadow",
+   "examples/PySide6/QCustomModals/main.py",
+   "",
+   "modal.setGraphicsEffect(shadow_effect)"
+  ],
+  [
+   "drop-shadow",
+   "examples/PySide6/QCustomModals/main.py",
+   "",
+   "shadow_effect = QGraphicsDropShadowEffect(modal)"
+  ],
+  [
+   "drop-shadow",
+   "examples/PySide6/QCustomTipOverlay/main.py",
+   "",
+   "effect = QGraphicsDropShadowEffect(widget)"
+  ],
+  [
+   "drop-shadow",
+   "examples/PySide6/QCustomTipOverlay/main.py",
+   "",
+   "widget.setGraphicsEffect(effect)"
+  ],
+  [
+   "drop-shadow",
+   "examples/PySide6/QCustomToolTip/main.py",
+   "",
+   "effect = QGraphicsDropShadowEffect(widget)"
+  ],
+  [
+   "drop-shadow",
+   "examples/PySide6/QCustomToolTip/main.py",
+   "",
+   "widget.setGraphicsEffect(effect)"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\u21bb",
+   "restart_act = bar.addAction(\"\u21bb Restart\")"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\u23f9",
+   "stop_act = bar.addAction(\"\u23f9 Stop\")"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\u25b6",
+   "run_act = bar.addAction(\"\u25b6 Run\")"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\u25b6",
+   "self._applyAct = _mk(\"\u25b6  Apply\", self._apply, \"Ctrl+Return\","
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\u25cb",
+   "state = QLabel(\" \u25cb app stopped \")"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\u25cb",
+   "state.setText(\" \u25cf app running \" if running else \" \u25cb app stopped \")"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\u25cf",
+   "state.setText(\" \u25cf app running \" if running else \" \u25cb app stopped \")"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\u26a0",
+   "errors_btn.setText(\"\u26a0 0  \u2715 0\")"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\u26a0",
+   "errors_btn.setText(f\"\u26a0 {_tools['logs']._warnings}  \u2715 {_tools['logs']._errors}\")"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\u26a0",
+   "self._counts.setText(f\"\u26a0 {self._warnings}  \u2715 {self._errors}\")"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\u270e",
+   "if self._read_only else (\"\u270e \" + rel))"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\u270e",
+   "item = QListWidgetItem((\"\ud83d\udd12 \" if ro else \"\u270e \") + name)"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\u270e",
+   "self._fileLabel.setText(\"\u270e \" + rel)"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\u2713",
+   "self._checkAct = _mk(\"\u2713  Check\", self._check, None,"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\u2715",
+   "errors_btn.setText(f\"\u26a0 {_tools['logs']._warnings}  \u2715 {_tools['logs']._errors}\")"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\u2715",
+   "self._counts.setText(f\"\u26a0 {self._warnings}  \u2715 {self._errors}\")"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\u271a",
+   "self._newAct = _mk(\"\u271a  New Style\u2026\", self._newStyleFile, \"Ctrl+N\","
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\ud83c\udfa8",
+   "qss_btn.setText(\"\ud83c\udfa8 QSS Editor\")"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\ud83c\udfa8",
+   "self._repaintDesigner = QAction(\"\ud83c\udfa8  Paint entire Designer\", self)"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\ud83d\udcbe",
+   "self._saveAct = _mk(\"\ud83d\udcbe  Save\", self._save, \"Ctrl+S\", \"Save the file\")"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\ud83d\udcc1",
+   "else \"\ud83d\udcc1 \" + self._folder)"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\ud83d\udcc1",
+   "self._folderLabel.setText(\"\ud83d\udcc1 \" + os.path.relpath(self._folder, self._project_dir)"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\ud83d\udcc2",
+   "self._openAct = _mk(\"\ud83d\udcc2  Open\u2026\", self._open, \"Ctrl+O\","
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\ud83d\udcc2",
+   "ws_label = QLabel(f\" \ud83d\udcc2 {os.path.basename(projectRoot())} \")"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\ud83d\udcc2",
+   "ws_label.setText(f\" \ud83d\udcc2 {os.path.basename(root)} \")"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\ud83d\udd12",
+   "item = QListWidgetItem((\"\ud83d\udd12 \" if ro else \"\u270e \") + name)"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "\ud83d\udd12",
+   "self._fileLabel.setText((\"\ud83d\udd12 \" + rel + \"   \u2014   read-only (preview)\")"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/tools/FileMonitor.py",
+   "\u23f3",
+   "logInfo(\"\u23f3 Waiting for file changes...\")"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/widgets/containers/QCustomAccordion.py",
+   "\u25b8",
+   "self._header.setText(\"\u25b8  \" + title)      # collapsed glyph"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/widgets/containers/QCustomAccordion.py",
+   "\u25b8",
+   "self._header.setText((\"\u25be  \" if expanded else \"\u25b8  \") + self._title)"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/widgets/containers/QCustomAccordion.py",
+   "\u25be",
+   "self._header.setText((\"\u25be  \" if expanded else \"\u25b8  \") + self._title)"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/widgets/data/QCustomRichTextEditor.py",
+   "\u232b",
+   "self._push(bar, \"\u232b\", self._clearFormat)"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/widgets/data/QCustomRichTextEditor.py",
+   "\u2bc7",
+   "self._push(bar, \"\u2bc7\", lambda: self._edit.setAlignment(Qt.AlignLeft))"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/widgets/data/QCustomRichTextEditor.py",
+   "\u2bc8",
+   "self._push(bar, \"\u2bc8\", lambda: self._edit.setAlignment(Qt.AlignRight))"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/widgets/data/QCustomTableToolbar.py",
+   "\u2715",
+   "self._close.setText(\"\u2715\")"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/widgets/display/QCustomAlert.py",
+   "\u26a0",
+   "_GLYPHS = {\"info\": \"\u2139\", \"success\": \"\u2713\", \"warning\": \"\u26a0\", \"destructive\": \"\u2715\"}"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/widgets/display/QCustomAlert.py",
+   "\u2713",
+   "_GLYPHS = {\"info\": \"\u2139\", \"success\": \"\u2713\", \"warning\": \"\u26a0\", \"destructive\": \"\u2715\"}"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/widgets/display/QCustomAlert.py",
+   "\u2715",
+   "_GLYPHS = {\"info\": \"\u2139\", \"success\": \"\u2713\", \"warning\": \"\u26a0\", \"destructive\": \"\u2715\"}"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/widgets/display/QCustomAlert.py",
+   "\u2715",
+   "self._close = QPushButton(\"\u2715\", self)"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/widgets/display/QCustomChip.py",
+   "\u2715",
+   "self._close = QPushButton(\"\u2715\", self)"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/widgets/display/QCustomStatCard.py",
+   "\u25b2",
+   "_ARROWS = {\"up\": \"\u25b2\", \"down\": \"\u25bc\", \"flat\": \"\"}"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/widgets/display/QCustomStatCard.py",
+   "\u25bc",
+   "_ARROWS = {\"up\": \"\u25b2\", \"down\": \"\u25bc\", \"flat\": \"\"}"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/widgets/display/QCustomToast.py",
+   "\u2713",
+   "_GLYPHS = {\"success\": \"\u2713\", \"error\": \"\u2715\", \"warning\": \"!\", \"info\": \"i\"}"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/widgets/display/QCustomToast.py",
+   "\u2715",
+   "_GLYPHS = {\"success\": \"\u2713\", \"error\": \"\u2715\", \"warning\": \"!\", \"info\": \"i\"}"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/widgets/display/QCustomToast.py",
+   "\u2715",
+   "self._close = QPushButton(\"\u2715\", self)"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/widgets/input/QCustomRating.py",
+   "\u2605",
+   "star.setText(\"\u2605\" if filled else \"\u2606\")"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/widgets/input/QCustomRating.py",
+   "\u2606",
+   "star.setText(\"\u2605\" if filled else \"\u2606\")"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/widgets/input/QCustomTagEdit.py",
+   "\u2715",
+   "'\u2715')"
+  ],
+  [
+   "glyph-icons",
+   "Custom_Widgets/widgets/navigation/QCustomStepper.py",
+   "\u2713",
+   "circle.setText(\"\u2713\" if state == \"completed\" else str(i + 1))"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/AuroraCommandDeck/deck_pro.py",
+   "\u2318",
+   "for keys in (\"Ctrl+K\", \"Ctrl+Shift+P\", \"\u2318+S\"):"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/AuroraCommandDeck/deck_pro.py",
+   "\u25a4",
+   "NAV = [(\"\u25c9\", \"Overview\"), (\"\u25a4\", \"Stations\"), (\"\u25c8\", \"Forecast\"),"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/AuroraCommandDeck/deck_pro.py",
+   "\u25c8",
+   "NAV = [(\"\u25c9\", \"Overview\"), (\"\u25a4\", \"Stations\"), (\"\u25c8\", \"Forecast\"),"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/AuroraCommandDeck/deck_pro.py",
+   "\u25c9",
+   "NAV = [(\"\u25c9\", \"Overview\"), (\"\u25a4\", \"Stations\"), (\"\u25c8\", \"Forecast\"),"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/AuroraCommandDeck/deck_pro.py",
+   "\u2600",
+   "themeSeg.setSegments([\"\u2600\", \"\u263e\"])"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/AuroraCommandDeck/deck_pro.py",
+   "\u263e",
+   "themeSeg.setSegments([\"\u2600\", \"\u263e\"])"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/AuroraCommandDeck/deck_pro.py",
+   "\u2699",
+   "(\"\u259a\", \"Analytics\"), (\"\u2b22\", \"Gallery\"), (\"\u2699\", \"Settings\")]"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/AuroraCommandDeck/deck_pro.py",
+   "\u2726",
+   "b1 = QtWidgets.QLabel(\"\u2726 AURORA\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/AuroraCommandDeck/deck_pro.py",
+   "\u2726",
+   "tt = QtWidgets.QLabel(\"\u2726  Good evening, Operator\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/AuroraCommandDeck/deck_pro.py",
+   "\u2b22",
+   "(\"\u259a\", \"Analytics\"), (\"\u2b22\", \"Gallery\"), (\"\u2699\", \"Settings\")]"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/AuroraCommandDeck/deck_pro.py",
+   "\ud83d\udcca",
+   "es = QCustomEmptyState(icon=\"\ud83d\udcca\", title=title)"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/AuroraCommandDeck/deck_pro.py",
+   "\ud83d\udef0",
+   "es = QCustomEmptyState(icon=\"\ud83d\udef0\ufe0f\", title=\"No passes scheduled\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/AuroraCommandDeck/main.py",
+   "\u2600",
+   "self.themeBtn.setText(\"\u2600  Light\" if self.theme == \"light\" else \"\u263e  Dark\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/AuroraCommandDeck/main.py",
+   "\u263e",
+   "self.themeBtn = QCustomQPushButton(\"\u263e  Dark\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/AuroraCommandDeck/main.py",
+   "\u263e",
+   "self.themeBtn.setText(\"\u2600  Light\" if self.theme == \"light\" else \"\u263e  Dark\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/AuroraCommandDeck/main.py",
+   "\u2726",
+   "title = QtWidgets.QLabel(\"\u2726  AURORA COMMAND DECK\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomEmbeddedWindow/main.py",
+   "\ud83d\ude0e",
+   "label = QLabel(\"My parent is the top-level widget so I can move anywhere \ud83d\ude0e\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomEmojiPicker/main.py",
+   "\ud83d\ude00",
+   "line_edit_btn = QPushButton(\"\ud83d\ude00\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomEmojiPicker/main.py",
+   "\ud83d\ude00",
+   "text_edit_btn = QPushButton(\"\ud83d\ude00\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\u25cf",
+   "self.anim_status = QLabel(\"\u25cf Idle\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\u25cf",
+   "self.anim_status.setText(\"\u25cf Animating...\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\u25cf",
+   "self.anim_status.setText(\"\u25cf Idle\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\u26a1",
+   "perf_btn = QPushButton(\"\u26a1 Performance Test (100 widgets)\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\u26a1",
+   "rapid_add_btn = QPushButton(\"\u26a1 Rapid Add/Remove\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\u2705",
+   "lambda: self.statusBar.showMessage(\"\u2705 Animation complete!\", 2000)"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\u2728",
+   "icons = [\"\u2b50\", \"\u2764\ufe0f\", \"\ud83c\udfa8\", \"\ud83d\ude80\", \"\ud83d\udc8e\", \"\ud83c\udf1f\", \"\ud83c\udfaf\", \"\ud83d\udca1\", \"\ud83d\udd25\", \"\u2728\"]"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\u2728",
+   "lambda: self.statusBar.showMessage(\"\u2728 Layout animation started...\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\u2764",
+   "icons = [\"\u2b50\", \"\u2764\ufe0f\", \"\ud83c\udfa8\", \"\ud83d\ude80\", \"\ud83d\udc8e\", \"\ud83c\udf1f\", \"\ud83c\udfaf\", \"\ud83d\udca1\", \"\ud83d\udd25\", \"\u2728\"]"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\u2795",
+   "add_btn = QPushButton(\"\u2795 Add Widget\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\u2796",
+   "remove_last_btn = QPushButton(\"\u2796 Remove Last\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\u2b50",
+   "icons = [\"\u2b50\", \"\u2764\ufe0f\", \"\ud83c\udfa8\", \"\ud83d\ude80\", \"\ud83d\udc8e\", \"\ud83c\udf1f\", \"\ud83c\udfaf\", \"\ud83d\udca1\", \"\ud83d\udd25\", \"\u2728\"]"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\ufe0f",
+   "tabs.addTab(self.create_info_panel(), \"\u2139\ufe0f Information\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\ud83c\udf1f",
+   "icons = [\"\u2b50\", \"\u2764\ufe0f\", \"\ud83c\udfa8\", \"\ud83d\ude80\", \"\ud83d\udc8e\", \"\ud83c\udf1f\", \"\ud83c\udfaf\", \"\ud83d\udca1\", \"\ud83d\udd25\", \"\u2728\"]"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\ud83c\udfa8",
+   "icons = [\"\u2b50\", \"\u2764\ufe0f\", \"\ud83c\udfa8\", \"\ud83d\ude80\", \"\ud83d\udc8e\", \"\ud83c\udf1f\", \"\ud83c\udfaf\", \"\ud83d\udca1\", \"\ud83d\udd25\", \"\u2728\"]"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\ud83c\udfac",
+   "tabs.addTab(self.create_animation_panel(), \"\ud83c\udfac Animation Settings\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\ud83c\udfaf",
+   "icons = [\"\u2b50\", \"\u2764\ufe0f\", \"\ud83c\udfa8\", \"\ud83d\ude80\", \"\ud83d\udc8e\", \"\ud83c\udf1f\", \"\ud83c\udfaf\", \"\ud83d\udca1\", \"\ud83d\udd25\", \"\u2728\"]"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\ud83c\udfb2",
+   "remove_random_btn = QPushButton(\"\ud83c\udfb2 Remove Random\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\ud83d\udc8e",
+   "icons = [\"\u2b50\", \"\u2764\ufe0f\", \"\ud83c\udfa8\", \"\ud83d\ude80\", \"\ud83d\udc8e\", \"\ud83c\udf1f\", \"\ud83c\udfaf\", \"\ud83d\udca1\", \"\ud83d\udd25\", \"\u2728\"]"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\ud83d\udca1",
+   "icons = [\"\u2b50\", \"\u2764\ufe0f\", \"\ud83c\udfa8\", \"\ud83d\ude80\", \"\ud83d\udc8e\", \"\ud83c\udf1f\", \"\ud83c\udfaf\", \"\ud83d\udca1\", \"\ud83d\udd25\", \"\u2728\"]"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\ud83d\udcaa",
+   "resize_btn = QPushButton(\"\ud83d\udcaa Resize Stress Test\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\ud83d\udcca",
+   "sort_btn = QPushButton(\"\ud83d\udcca Sort by Size\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\ud83d\udcd0",
+   "tabs.addTab(self.create_layout_panel(), \"\ud83d\udcd0 Layout Properties\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\ud83d\udce6",
+   "tabs.addTab(self.create_widget_management_panel(), \"\ud83d\udce6 Widget Management\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\ud83d\udd03",
+   "reverse_btn = QPushButton(\"\ud83d\udd03 Reverse Order\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\ud83d\udd04",
+   "shuffle_btn = QPushButton(\"\ud83d\udd04 Shuffle Widgets\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\ud83d\udd25",
+   "icons = [\"\u2b50\", \"\u2764\ufe0f\", \"\ud83c\udfa8\", \"\ud83d\ude80\", \"\ud83d\udc8e\", \"\ud83c\udf1f\", \"\ud83c\udfaf\", \"\ud83d\udca1\", \"\ud83d\udd25\", \"\u2728\"]"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\ud83d\uddd1",
+   "clear_all_btn = QPushButton(\"\ud83d\uddd1 Clear All\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\ud83d\ude80",
+   "extreme_btn = QPushButton(\"\ud83d\ude80 Extreme Test (500 widgets)\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\ud83d\ude80",
+   "icons = [\"\u2b50\", \"\u2764\ufe0f\", \"\ud83c\udfa8\", \"\ud83d\ude80\", \"\ud83d\udc8e\", \"\ud83c\udf1f\", \"\ud83c\udfaf\", \"\ud83d\udca1\", \"\ud83d\udd25\", \"\u2728\"]"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "\ud83e\uddea",
+   "tabs.addTab(self.create_test_panel(), \"\ud83e\uddea Test Scenarios\")"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/WinningDashboard/main.py",
+   "\u2197",
+   "pill = QtWidgets.QLabel((\"\u2197  \" if trend == \"up\" else \"\u2198  \") + delta)"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/WinningDashboard/main.py",
+   "\u2198",
+   "pill = QtWidgets.QLabel((\"\u2197  \" if trend == \"up\" else \"\u2198  \") + delta)"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "\u2197",
+   "\"\u2197  +2%\" if key == \"sessions\" else \"\u2198  -1%\"))"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "\u2197",
+   "\"\u2197  +3%\" if key == \"sales\" else"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "\u2197",
+   "ref[\"delta\"].setText((\"\u2197  +5%\" if key == \"orders\" else"
+  ],
+  [
+   "glyph-icons",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "\u2198",
+   "\"\u2197  +2%\" if key == \"sessions\" else \"\u2198  -1%\"))"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/JSonStyles/__init__.py",
+   "#000",
+   "shadow_color = self.themeEngine.getThemeVariableValue(shadow.get(\"color\", \"#000\"))"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/components/python/ui_interface.py",
+   "#16191d",
+   "\"\tbackground-color: #16191d;\\n\""
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/components/python/ui_interface.py",
+   "#1f232a",
+   "\"\tbackground-color: #1f232a;\\n\""
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/components/python/ui_interface.py",
+   "#2c313c",
+   "\"\tbackground-color: #2c313c;\\n\""
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/components/python/ui_interface.py",
+   "#fff",
+   "\"\tcolor: #fff;\\n\""
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "#000",
+   "fg = \"#000\" if luma > 128 else \"#fff\""
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "#4ec9b0",
+   "(re.compile(r'#\\w+'), fmt(\"#4ec9b0\")),                         # ids / hex colors"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "#569cd6",
+   "(re.compile(r'\\b[A-Z]\\w+\\b'), fmt(\"#569cd6\", bold=True)),      # widget types"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "#6a9955",
+   "(re.compile(r'/\\*.*?\\*/', re.DOTALL), fmt(\"#6a9955\")),         # comments"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "#9cdcfe",
+   "(re.compile(r'\\b[a-z-]+(?=\\s*:)'), fmt(\"#9cdcfe\")),            # properties"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "#c586c0",
+   "(re.compile(r'::?[a-z-]+'), fmt(\"#c586c0\")),                   # pseudo/subcontrol"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "#ce9178",
+   "(re.compile(r':\\s*[^;{}]+'), fmt(\"#ce9178\")),                  # values"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "#dcdcaa",
+   "(re.compile(r'\\$[A-Z_]+'), fmt(\"#dcdcaa\", bold=True)),         # scss vars"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/designer/DesignerTools.py",
+   "#fff",
+   "fg = \"#000\" if luma > 128 else \"#fff\""
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/theming/QCustomTheme.py",
+   "#00bcff",
+   "super().__init__(\"Light\", \"white\", \"black\", \"#00bcff\", \"black\", defaultTheme, other_variables = other_variables, predefined=True)"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/theming/QCustomTheme.py",
+   "#0d1117",
+   "super().__init__(\"Dark\", \"#0d1117\", \"white\", \"#238636\", \"white\", defaultTheme, other_variables = other_variables, predefined=True)"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/theming/QCustomTheme.py",
+   "#238636",
+   "super().__init__(\"Dark\", \"#0d1117\", \"white\", \"#238636\", \"white\", defaultTheme, other_variables = other_variables, predefined=True)"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/theming/QCustomTheme.py",
+   "#ffffff",
+   "svg_color = \"#ffffff\""
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/tools/BlurWindow.py",
+   "#12121240",
+   "accent.GradientColor = HEXtoRGBAint(\"#12121240\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/tools/ProjectMaker.py",
+   "#ffffff",
+   "print(\"You can use HEX values (#ffffff) or color names (white)\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/buttons/QCustomQPushButton.py",
+   "#000000",
+   "self.color2 = QColor(\"#000000\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/buttons/QCustomQPushButton.py",
+   "#000046",
+   "self.color1 = QColor(\"#000046\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/buttons/QCustomQPushButton.py",
+   "#100E19",
+   "self.color2 = QColor(\"#100E19\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/buttons/QCustomQPushButton.py",
+   "#1CB5E0",
+   "self.color2 = QColor(\"#1CB5E0\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/buttons/QCustomQPushButton.py",
+   "#1D2671",
+   "self.color2 = QColor(\"#1D2671\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/buttons/QCustomQPushButton.py",
+   "#20002c",
+   "self.color1 = QColor(\"#20002c\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/buttons/QCustomQPushButton.py",
+   "#242424",
+   "self.color1 = QColor(\"#242424\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/buttons/QCustomQPushButton.py",
+   "#25395f",
+   "self.color1 = QColor(\"#25395f\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/buttons/QCustomQPushButton.py",
+   "#30E8BF",
+   "self.color2 = QColor(\"#30E8BF\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/buttons/QCustomQPushButton.py",
+   "#55ffff",
+   "self.color2 = QColor(\"#55ffff\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/buttons/QCustomQPushButton.py",
+   "#C0DB50",
+   "self.color1 = QColor(\"#C0DB50\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/buttons/QCustomQPushButton.py",
+   "#C33764",
+   "self.color1 = QColor(\"#C33764\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/buttons/QCustomQPushButton.py",
+   "#EB5757",
+   "self.color1 = QColor(\"#EB5757\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/buttons/QCustomQPushButton.py",
+   "#FA0000",
+   "self.color2 = QColor(\"#FA0000\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/buttons/QCustomQPushButton.py",
+   "#FF16EB",
+   "self.color1 = QColor(\"#FF16EB\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/buttons/QCustomQPushButton.py",
+   "#FF4200",
+   "self.color1 = QColor(\"#FF4200\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/buttons/QCustomQPushButton.py",
+   "#FF8235",
+   "self.color1 = QColor(\"#FF8235\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/buttons/QCustomQPushButton.py",
+   "#cbb4d4",
+   "self.color2 = QColor(\"#cbb4d4\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/buttons/QCustomQPushButton.py",
+   "#ee0979",
+   "self.color1 = QColor(\"#ee0979\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/buttons/QCustomQPushButton.py",
+   "#ff6a00",
+   "self.color2 = QColor(\"#ff6a00\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/charts/QCustomDonut.py",
+   "#1b1e26",
+   "self._gap_color = QColor(\"#1b1e26\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/charts/QCustomDonut.py",
+   "#7c6cf6",
+   "\"colorsCsv\": {\"type\": \"string\", \"default\": \"#7c6cf6,#f2794b,#f4c44e\"},"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/charts/QCustomDonut.py",
+   "#888888",
+   "color = self._colors[i % len(self._colors)] if self._colors else QColor(\"#888888\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/charts/QCustomDonut.py",
+   "#f2794b",
+   "\"colorsCsv\": {\"type\": \"string\", \"default\": \"#7c6cf6,#f2794b,#f4c44e\"},"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/charts/QCustomDonut.py",
+   "#f4c44e",
+   "\"colorsCsv\": {\"type\": \"string\", \"default\": \"#7c6cf6,#f2794b,#f4c44e\"},"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/charts/QCustomSparkline.py",
+   "#7c6cf6",
+   "def __init__(self, parent=None, values=None, lineColor=\"#7c6cf6\"):"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/charts/qtcharts/QCustomBarChartBase.py",
+   "#888888",
+   "color = QColor(\"#888888\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/charts/qtcharts/QCustomChartDataManager.py",
+   "#00bcff",
+   "self._defaultColor = QColor(\"#00bcff\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/containers/QCustomComponentLoader.py",
+   "#ffeeee",
+   "self.setStyleSheet(\"QWidget { border: 1px dotted red; background-color: #ffeeee; } #error_label { border: none; background-color: rgba(0,0,0,.6)}\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/containers/QCustomPopover.py",
+   "#cbd5e1",
+   "self._border = QColor(\"#cbd5e1\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/containers/QCustomPopover.py",
+   "#ffffff",
+   "self._panel = QColor(\"#ffffff\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/data/QCustomAnnotationWidget.py",
+   "#000000",
+   "self.pen_color = QColor('#000000')"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/data/QCustomCodeEditor.py",
+   "#222222",
+   "self.setStyleSheet(\"QPlainTextEdit {font-family:Consolas; font-size:14px; color:#222222;}\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/data/QCustomTableToolbar.py",
+   "#0f172a",
+   "self._c = dict(surface=\"#ffffff\", on_surface=\"#0f172a\","
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/data/QCustomTableToolbar.py",
+   "#0f172a",
+   "self._text = QColor(\"#0f172a\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/data/QCustomTableToolbar.py",
+   "#2563eb",
+   "muted=\"#64748b\", outline=\"#e2e8f0\", accent=\"#2563eb\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/data/QCustomTableToolbar.py",
+   "#3b82f6",
+   "def __init__(self, key, label, count=None, color=\"#3b82f6\", parent=None):"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/data/QCustomTableToolbar.py",
+   "#64748b",
+   "muted=\"#64748b\", outline=\"#e2e8f0\", accent=\"#2563eb\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/data/QCustomTableToolbar.py",
+   "#64748b",
+   "self._muted = QColor(\"#64748b\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/data/QCustomTableToolbar.py",
+   "#e2e8f0",
+   "muted=\"#64748b\", outline=\"#e2e8f0\", accent=\"#2563eb\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/data/QCustomTableToolbar.py",
+   "#ffffff",
+   "self._c = dict(surface=\"#ffffff\", on_surface=\"#0f172a\","
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/data/QCustomTableToolbar.py",
+   "#ffffff",
+   "self._surface = QColor(\"#ffffff\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomAvatarGroup.py",
+   "#94a3b8",
+   "self._overflow_bg = QColor(\"#94a3b8\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomAvatarGroup.py",
+   "#ffffff",
+   "self._overflow_text = QColor(\"#ffffff\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomAvatarGroup.py",
+   "#ffffff",
+   "self._ring = QColor(\"#ffffff\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomModals.py",
+   "#2799be",
+   "background-color: #2799be;"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomModals.py",
+   "#29b328",
+   "background-color: #29b328;"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomModals.py",
+   "#333333",
+   "color: #333333;"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomModals.py",
+   "#C8E6C9",
+   "background-color: #C8E6C9;"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomModals.py",
+   "#E6F7FF",
+   "background-color: #E6F7FF;"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomModals.py",
+   "#F5F5F5",
+   "color: #F5F5F5;"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomModals.py",
+   "#FFEBEE",
+   "background-color: #FFEBEE;"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomModals.py",
+   "#FFF9E1",
+   "background-color: #FFF9E1;"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomModals.py",
+   "#bb221d",
+   "background-color: #bb221d;"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomModals.py",
+   "#bb8128",
+   "background-color: #bb8128;"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomProgressIndicator.py",
+   "#000",
+   "self.color = \"#000\""
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomProgressIndicator.py",
+   "#00a4bd",
+   "self.fillColor = \"#00a4bd\""
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomProgressIndicator.py",
+   "#00a4bd",
+   "self.successFillColor = \"#00a4bd\""
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomProgressIndicator.py",
+   "#ff0000",
+   "self.errorFillColor = \"#ff0000\""
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomProgressIndicator.py",
+   "#ffa500",
+   "self.warningFillColor = \"#ffa500\""
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomProgressIndicator.py",
+   "#fff",
+   "self.color = \"#fff\""
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomProgressRing.py",
+   "#0f172a",
+   "self._text = QColor(\"#0f172a\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomProgressRing.py",
+   "#2563eb",
+   "self._ring = QColor(\"#2563eb\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomProgressRing.py",
+   "#e2e8f0",
+   "self._track = QColor(\"#e2e8f0\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomSkeleton.py",
+   "#e2e8f0",
+   "self._base = QColor(\"#e2e8f0\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomSkeleton.py",
+   "#f8fafc",
+   "self._highlight = QColor(\"#f8fafc\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomTimeline.py",
+   "#2563eb",
+   "self._defaultDot = QColor(\"#2563eb\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/display/QCustomTimeline.py",
+   "#cbd5e1",
+   "self._line = QColor(\"#cbd5e1\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/input/QCustomColorPicker.py",
+   "#3b82f6",
+   "def __init__(self, parent=None, color=\"#3b82f6\"):"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/input/QCustomRangeSlider.py",
+   "#2563eb",
+   "self._fill = QColor(\"#2563eb\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/input/QCustomRangeSlider.py",
+   "#2563eb",
+   "self._handleBorder = QColor(\"#2563eb\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/input/QCustomRangeSlider.py",
+   "#cbd5e1",
+   "self._track = QColor(\"#cbd5e1\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/input/QCustomRangeSlider.py",
+   "#ffffff",
+   "self._handle = QColor(\"#ffffff\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/input/QCustomSwitch.py",
+   "#00000022",
+   "self._thumbBorder = QColor(\"#00000022\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/input/QCustomSwitch.py",
+   "#2563eb",
+   "self._trackOn = QColor(\"#2563eb\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/input/QCustomSwitch.py",
+   "#cbd5e1",
+   "self._trackOff = QColor(\"#cbd5e1\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/input/QCustomSwitch.py",
+   "#ffffff",
+   "self._thumb = QColor(\"#ffffff\")"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/loading/QCustom3CirclesLoader.py",
+   "#333333",
+   "color=QColor(\"#333333\"),"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/loading/QCustomArcLoader.py",
+   "#ffffff",
+   "color=QColor(\"#ffffff\"),"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/loading/QCustomPerlinLoader.py",
+   "#082e63",
+   "circleColor2: QColor = QColor(\"#082e63\"),"
+  ],
+  [
+   "hardcoded-hex",
+   "Custom_Widgets/widgets/loading/QCustomPerlinLoader.py",
+   "#ff2e63",
+   "circleColor1: QColor = QColor(\"#ff2e63\"),"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AnalogGaugeMeterWidget/main.py",
+   "#002523",
+   "color1 = \"#002523\","
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AnalogGaugeMeterWidget/main.py",
+   "#005275",
+   "self.ui.widget.setBigScaleColor(\"#005275\")"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AnalogGaugeMeterWidget/main.py",
+   "#005275",
+   "self.ui.widget.setFineScaleColor(\"#005275\")"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AnalogGaugeMeterWidget/main.py",
+   "#00F6E9",
+   "color3 = \"#00F6E9\""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AnalogGaugeMeterWidget/main.py",
+   "#990008",
+   "color2= \"#990008\","
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AuroraCommandDeck/deck_pro.py",
+   "#4fe3a6",
+   "appearance.addWidget(QCustomColorPicker(color=\"#4fe3a6\"))"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AuroraCommandDeck/deck_pro.py",
+   "#4fe3a6",
+   "c.add(QCustomColorPicker(color=\"#4fe3a6\"))"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AuroraCommandDeck/deck_pro.py",
+   "#4fe3a6",
+   "{\"title\": \"Substorm onset detected\", \"time\": \"21:40\", \"color\": \"#4fe3a6\"},"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AuroraCommandDeck/deck_pro.py",
+   "#f6c65a",
+   "{\"title\": \"Kp forecast raised to 6\", \"time\": \"18:30\", \"color\": \"#f6c65a\"},"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AuroraDeckPro/gui/GuiFunctions.py",
+   "#4fe3a6",
+   "comp.accentPicker.setColor(\"#4fe3a6\")"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AuroraDeckPro/gui/GuiFunctions.py",
+   "#4fe3a6",
+   "comp.gColorPicker.setColor(\"#4fe3a6\")"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AuroraDeckPro/gui/GuiFunctions.py",
+   "#4fe3a6",
+   "{\"title\": \"Substorm onset detected\", \"time\": \"21:40\", \"color\": \"#4fe3a6\"},"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AuroraDeckPro/gui/GuiFunctions.py",
+   "#f6c65a",
+   "{\"title\": \"Kp forecast raised to 6\", \"time\": \"18:30\", \"color\": \"#f6c65a\"},"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AuroraJobsTable/main.py",
+   "#0f172a",
+   "rail=\"#0f172a\", accent=ORANGE, accent_hover=\"#ea6a10\","
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AuroraJobsTable/main.py",
+   "#64748b",
+   "color=\"#64748b\"),"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AuroraJobsTable/main.py",
+   "#94a3b8",
+   "def setActive(self, on, accent=\"#f97316\", muted=\"#94a3b8\"):"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AuroraJobsTable/main.py",
+   "#94a3b8",
+   "railMuted = \"#94a3b8\""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AuroraJobsTable/main.py",
+   "#ea6a10",
+   "rail=\"#0f172a\", accent=ORANGE, accent_hover=\"#ea6a10\","
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AuroraJobsTable/main.py",
+   "#ef4444",
+   "p.setBrush(QColor(\"#ef4444\"))"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AuroraJobsTable/main.py",
+   "#f97316",
+   "def setActive(self, on, accent=\"#f97316\", muted=\"#94a3b8\"):"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AuroraJobsTable/main.py",
+   "#ffffff",
+   "#addBtn {{ background: {accent}; color: #ffffff; border: none;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AuroraJobsTable/main.py",
+   "#ffffff",
+   "#avatar {{ background: {accent}; color: #ffffff; border-radius: 18px;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AuroraJobsTable/main.py",
+   "#ffffff",
+   "#railLogo {{ color: #ffffff; font-weight: 800; font-size: 18px;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AuroraJobsTable/main.py",
+   "#ffffff",
+   "col = \"#ffffff\" if on else muted"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/AuroraJobsTable/main.py",
+   "#ffffff",
+   "self._addBtn.setIcon(QIcon(_icon(\"plus\", \"#ffffff\", 18)))  # on accent fill"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/LoadingIndicators/QCustom3CirclesLoader/main.py",
+   "#000",
+   "self.loader = QCustom3CirclesLoader(color=QColor(\"#000\"))"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/LoadingIndicators/QCustomArcLoader/main.py",
+   "#000",
+   "self.loader = QCustomArcLoader(color=QColor(\"#000\"))"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/LoadingIndicators/QCustomSpinner/main.py",
+   "#000",
+   "self.spinner2 = QCustomSpinner(lineColor=\"#000\", animationType=\"Smooth\")"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/LoadingIndicators/QCustomSpinner/main.py",
+   "#FF0000",
+   "self.spinner = QCustomSpinner(lineWidth=10, lineColor=\"#FF0000\", animationType=\"Bounce\")"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QAppSettings/ui_interface.py",
+   "#17222d",
+   "\"\tborder-bottom: 1px solid  #17222d;\\n\""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QAppSettings/ui_interface.py",
+   "#17222d",
+   "\"\tborder-bottom: 1px solid #17222d;\\n\""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QAppSettings/ui_interface.py",
+   "#17222d",
+   "\"\tborder: 1px solid #17222d;\\n\""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QAppSettings/ui_interface.py",
+   "#283a4d",
+   "\"    background-color: #283a4d;\\n\""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QAppSettings/ui_interface.py",
+   "#fff",
+   "\"    color:  #fff;\\n\""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCard/ui_interface.py",
+   "#1f232a",
+   "\"\tbackground-color: #1f232a;\\n\""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomCheckBox/main.py",
+   "#17a8e3",
+   "activecolor = \"#17a8e3\","
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomCheckBox/main.py",
+   "#c3c3c3",
+   "bgColor = \"#c3c3c3\","
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomCheckBox/main.py",
+   "#fff",
+   "circlecolor = \"#fff\","
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowLayout/main.py",
+   "#000",
+   "color: #000"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowLayout/main.py",
+   "#3e8e41",
+   "background-color: #3e8e41;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowLayout/main.py",
+   "#45a049",
+   "background-color: #45a049;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowLayout/main.py",
+   "#4CAF50",
+   "background-color: #4CAF50;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowLayout/main.py",
+   "#f0f0f0",
+   "background-color: #f0f0f0;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#0f3460",
+   "background-color: #0f3460;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#16213e",
+   "background-color: #16213e;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#16213e",
+   "border: 1px solid #16213e;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#16213e",
+   "border: 2px solid #16213e;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#17a2b8",
+   "colors = [\"#e94560\", \"#28a745\", \"#ffc107\", \"#17a2b8\", \"#6f42c1\"]"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#1a1a2e",
+   "background-color: #1a1a2e;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#1a1a2e",
+   "background: #1a1a2e;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#1a1a2e",
+   "color: #1a1a2e;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#1a1a2e",
+   "info_text.setStyleSheet(\"QLabel { background-color: #1a1a2e; padding: 15px; border-radius: 8px; }\")"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#20c997",
+   "background-color: #20c997;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#218838",
+   "background-color: #218838;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#28a745",
+   "background-color: #28a745;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#28a745",
+   "colors = [\"#e94560\", \"#28a745\", \"#ffc107\", \"#17a2b8\", \"#6f42c1\"]"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#28a745",
+   "self.anim_status.setStyleSheet(\"color: #28a745; font-weight: bold; font-size: 14px;\")"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#28a745",
+   "self.counter_label.setStyleSheet(\"color: #28a745; font-weight: bold; font-size: 16px;\")"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#45B7D1",
+   "\"#FF6B6B\", \"#4ECDC4\", \"#45B7D1\", \"#96CEB4\","
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#45B7D1",
+   "colors = [\"#FF6B6B\", \"#4ECDC4\", \"#45B7D1\", \"#96CEB4\", \"#FFEAA7\", \"#DDA0DD\"]"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#4ECDC4",
+   "\"#FF6B6B\", \"#4ECDC4\", \"#45B7D1\", \"#96CEB4\","
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#4ECDC4",
+   "colors = [\"#FF6B6B\", \"#4ECDC4\", \"#45B7D1\", \"#96CEB4\", \"#FFEAA7\", \"#DDA0DD\"]"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#6f42c1",
+   "background-color: #6f42c1;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#6f42c1",
+   "colors = [\"#e94560\", \"#28a745\", \"#ffc107\", \"#17a2b8\", \"#6f42c1\"]"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#87CEEB",
+   "\"#FFB347\", \"#87CEEB\", \"#98FB98\", \"#DDA0DD\""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#96CEB4",
+   "\"#FF6B6B\", \"#4ECDC4\", \"#45B7D1\", \"#96CEB4\","
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#96CEB4",
+   "colors = [\"#FF6B6B\", \"#4ECDC4\", \"#45B7D1\", \"#96CEB4\", \"#FFEAA7\", \"#DDA0DD\"]"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#98D8C8",
+   "\"#FFEAA7\", \"#DDA0DD\", \"#98D8C8\", \"#FF9999\","
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#98FB98",
+   "\"#FFB347\", \"#87CEEB\", \"#98FB98\", \"#DDA0DD\""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#DDA0DD",
+   "\"#FFB347\", \"#87CEEB\", \"#98FB98\", \"#DDA0DD\""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#DDA0DD",
+   "\"#FFEAA7\", \"#DDA0DD\", \"#98D8C8\", \"#FF9999\","
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#DDA0DD",
+   "colors = [\"#FF6B6B\", \"#4ECDC4\", \"#45B7D1\", \"#96CEB4\", \"#FFEAA7\", \"#DDA0DD\"]"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#FF6B6B",
+   "\"#FF6B6B\", \"#4ECDC4\", \"#45B7D1\", \"#96CEB4\","
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#FF6B6B",
+   "colors = [\"#FF6B6B\", \"#4ECDC4\", \"#45B7D1\", \"#96CEB4\", \"#FFEAA7\", \"#DDA0DD\"]"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#FF9999",
+   "\"#FFEAA7\", \"#DDA0DD\", \"#98D8C8\", \"#FF9999\","
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#FFB347",
+   "\"#FFB347\", \"#87CEEB\", \"#98FB98\", \"#DDA0DD\""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#FFEAA7",
+   "\"#FFEAA7\", \"#DDA0DD\", \"#98D8C8\", \"#FF9999\","
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#FFEAA7",
+   "colors = [\"#FF6B6B\", \"#4ECDC4\", \"#45B7D1\", \"#96CEB4\", \"#FFEAA7\", \"#DDA0DD\"]"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#c73e54",
+   "background-color: #c73e54;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#c82333",
+   "background-color: #c82333;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#dc3545",
+   "background-color: #dc3545;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#dc3545",
+   "self.counter_label.setStyleSheet(\"color: #dc3545; font-weight: bold; font-size: 16px;\")"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#e0a800",
+   "background-color: #e0a800;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#e94560",
+   "<h2 style='color: #e94560;'>QCustomFlowWidget - Information</h2>"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#e94560",
+   "background-color: #e94560;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#e94560",
+   "background: #e94560;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#e94560",
+   "border-top: 5px solid #e94560;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#e94560",
+   "border: 1px solid #e94560;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#e94560",
+   "color: #e94560;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#e94560",
+   "colors = [\"#e94560\", \"#28a745\", \"#ffc107\", \"#17a2b8\", \"#6f42c1\"]"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#e94560",
+   "stop:0 #e94560, stop:1 #ff6b6b);"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#eee",
+   "color: #eee;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#eee",
+   "self.statusBar.setStyleSheet(\"QStatusBar { color: #eee; }\")"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#f39c12",
+   "border: 3px solid #f39c12;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#ff6b6b",
+   "background-color: #ff6b6b;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#ff6b6b",
+   "background: #ff6b6b;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#ff6b6b",
+   "stop:0 #e94560, stop:1 #ff6b6b);"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#ffc107",
+   "background-color: #ffc107;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#ffc107",
+   "colors = [\"#e94560\", \"#28a745\", \"#ffc107\", \"#17a2b8\", \"#6f42c1\"]"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#ffc107",
+   "self.anim_status.setStyleSheet(\"color: #ffc107; font-weight: bold; font-size: 14px;\")"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomFlowWidget/main.py",
+   "#ffc107",
+   "widget.setStyleSheet(original_style + \"border: 3px solid #ffc107;\")"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomModals/main.py",
+   "#000",
+   "icons_color = \"#000\" #black"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomModals/main.py",
+   "#0E1115",
+   "\"Custom\": \"#0E1115\"         #"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomModals/main.py",
+   "#0E1115",
+   "bg_color = \"#0E1115\""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomModals/main.py",
+   "#2799be",
+   "\"Information\": \"#2799be\",  # dark blue or teal"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomModals/main.py",
+   "#29b328",
+   "\"Success\": \"#29b328\",       # dark green"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomModals/main.py",
+   "#C8E6C9",
+   "\"Success\": \"#C8E6C9\",       # light green"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomModals/main.py",
+   "#E6F7FF",
+   "\"Information\": \"#E6F7FF\",  # light blue or teal"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomModals/main.py",
+   "#F0F0F0",
+   "bg_color = \"#F0F0F0\""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomModals/main.py",
+   "#F5F5F5",
+   "icons_color = \"#F5F5F5\" #white"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomModals/main.py",
+   "#FFEBEE",
+   "\"Error\": \"#FFEBEE\",         # light red or pink"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomModals/main.py",
+   "#FFF9E1",
+   "\"Warning\": \"#FFF9E1\",       # light yellow"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomModals/main.py",
+   "#FFFFFF",
+   "\"Custom\": \"#FFFFFF\"         #"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomModals/main.py",
+   "#FFFFFF",
+   "return color_map.get(modal_type, \"#FFFFFF\")  # Default to white"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomModals/main.py",
+   "#bb221d",
+   "\"Error\": \"#bb221d\",         # dark red or pink"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomModals/main.py",
+   "#bb8128",
+   "\"Warning\": \"#bb8128\",       # dark yellow"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomProgressIndicator/ui_interface.py",
+   "#55ffff",
+   "self.label.setText(QCoreApplication.translate(\"MainWindow\", u\"<html><head/><body><p align=\\\"center\\\"><span style=\\\" font-size:22pt; font-weight:600; color:#55ffff;\\\">F</span><span style=\\\" font-size:18pt; font-weight:600;\\\">orm </span><span style=\\\" font-size:22pt; font-weight:600; color:#55ffff;\\\">P</span><span style=\\\" font-size:18pt; font-weight:600;\\\">rogress </span><span style=\\\" font-size:22pt; font-weight:600; color:#55ffff;\\\">I</span><span style=\\\" font-size:18pt; font-weight:600;\\\">ndicator</span></p></body></html>\", None))"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomQDialog/main.py",
+   "#000",
+   "color: #000"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomQDialog/main.py",
+   "#3e8e41",
+   "background-color: #3e8e41;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomQDialog/main.py",
+   "#45a049",
+   "background-color: #45a049;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomQDialog/main.py",
+   "#4CAF50",
+   "background-color: #4CAF50;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomQDialog/main.py",
+   "#f0f0f0",
+   "background-color: #f0f0f0;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomQStackedWidget/ui_interface.py",
+   "#000",
+   "self.label_2.setStyleSheet(u\"color: #000;\")"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomRichTextColorPicker/main.py",
+   "#22c55e",
+   "self.picker = QCustomColorPicker(color=\"#22c55e\")"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomTipOverlay/main.py",
+   "#000",
+   "color: #000"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomTipOverlay/main.py",
+   "#3e8e41",
+   "background-color: #3e8e41;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomTipOverlay/main.py",
+   "#45a049",
+   "background-color: #45a049;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomTipOverlay/main.py",
+   "#4CAF50",
+   "background-color: #4CAF50;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomTipOverlay/main.py",
+   "#f0f0f0",
+   "background-color: #f0f0f0;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomToolTip/main.py",
+   "#000",
+   "color: #000"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomToolTip/main.py",
+   "#3e8e41",
+   "background-color: #3e8e41;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomToolTip/main.py",
+   "#45a049",
+   "background-color: #45a049;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomToolTip/main.py",
+   "#4CAF50",
+   "background-color: #4CAF50;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/QCustomToolTip/main.py",
+   "#f0f0f0",
+   "background-color: #f0f0f0;"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard/main.py",
+   "#000000",
+   "data = data.replace('stroke=\"#000000\"', 'stroke=\"%s\"' % color)"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard/main.py",
+   "#1b1e26",
+   "def __init__(self, values, colors, gap_color=\"#1b1e26\", parent=None):"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard/main.py",
+   "#1f9d63",
+   "css = \"color:#1f9d63; background:rgba(31,157,99,0.14);\""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard/main.py",
+   "#7b6cf6",
+   "av = InitialsAvatar(\"AK\", \"#7b6cf6\", 40)"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard/main.py",
+   "#ffffff",
+   "\"background:%s; color:#ffffff; border-radius:%dpx; \""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard/main.py",
+   "#ffffff",
+   "css = \"color:#ffffff; background:rgba(255,255,255,0.22);\""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard/main.py",
+   "#ffffff",
+   "data = data.replace('stroke=\"#ffffff\"', 'stroke=\"%s\"' % color)"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard/main.py",
+   "#ffffff",
+   "mark.setPixmap(feather_pixmap(\"award\", \"#ffffff\", 19))"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "#000000",
+   "svg = svg.replace('stroke=\"#000000\"', 'stroke=\"%s\"' % color)"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "#17b26a",
+   "\"success\": (pal.get(\"up\", \"#17b26a\"), \"rgba(23,178,106,0.16)\"),"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "#1b1e26",
+   "c.setGapColor(QColor(pal.get(\"panelBg\", \"#1b1e26\")))"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "#3ddc97",
+   "c = pal.get(\"up\" if up else \"down\", \"#3ddc97\")"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "#6c5ce7",
+   "return \"#6c5ce7\" if T.is_light(self._currentTheme()) else \"#7b6cf6\""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "#6c5ce7",
+   "return \"#6c5ce7\" if T.is_light(self._theme_name()) else \"#7b6cf6\""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "#7b6cf6",
+   "ref[\"spark\"].lineColor = QColor(pal.get(ref[\"ckey\"], \"#7b6cf6\"))"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "#7b6cf6",
+   "return \"#6c5ce7\" if T.is_light(self._currentTheme()) else \"#7b6cf6\""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "#7b6cf6",
+   "return \"#6c5ce7\" if T.is_light(self._theme_name()) else \"#7b6cf6\""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "#888",
+   "avatars = pal.get(\"avatar\", [\"#888\"] * 5)"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "#888",
+   "dot.setStyleSheet(\"background:%s; border-radius:4px;\" % pal.get(key, \"#888\"))"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "#888888",
+   "avatars = pal.get(\"avatar\", [\"#888888\"] * 5)"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "#888888",
+   "axis = QColor(pal.get(\"axis\", \"#888888\"))"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "#8b909e",
+   "fg, bg = table.get(variant, (\"#8b909e\", \"rgba(139,144,158,0.16)\"))"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "#e0a020",
+   "\"warning\": (\"#e0a020\", \"rgba(240,170,40,0.16)\"),"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "#e14d6e",
+   "\"destructive\": (pal.get(\"down\", \"#e14d6e\"), \"rgba(225,77,110,0.16)\"),"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "#ffffff",
+   "\"background:%s; color:#ffffff; border-radius:20px; font-weight:700;\""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "#ffffff",
+   "\"color:#ffffff; background:rgba(255,255,255,0.22);\""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "#ffffff",
+   "a.setStyleSheet(\"background:%s; color:#ffffff; border-radius:%dpx; \""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "#ffffff",
+   "av.setStyleSheet(\"background:%s; color:#ffffff; border-radius:16px; \""
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "#ffffff",
+   "ref[\"spark\"].lineColor = QColor(\"#ffffff\")"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "#ffffff",
+   "svg = svg.replace('stroke=\"#ffffff\"', 'stroke=\"%s\"' % color)"
+  ],
+  [
+   "hardcoded-hex",
+   "examples/PySide6/WinningDashboard_CorrectArchitecture/gui/GuiFunctions.py",
+   "#ffffff22",
+   "grid = QColor(pal.get(\"grid\", \"#ffffff22\"))"
+  ]
+ ]
+}

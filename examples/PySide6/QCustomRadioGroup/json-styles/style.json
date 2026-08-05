@@ -1,0 +1,30 @@
+{
+  "QSettings": {
+    "AppSettings": {
+      "OrganizationName": "CustomWidgets",
+      "ApplicationName": "QCustomRadioGroup Showcase"
+    },
+    "ThemeSettings": {
+      "CustomThemes": [
+        {
+          "Theme-name": "Group-Dark",
+          "Default-Theme": true,
+          "Create-icons": false,
+          "Background-color": "#131720",
+          "Text-color": "#e6eaf0",
+          "Accent-color": "#8b7cf6",
+          "Icons-color": "#9ca3af"
+        },
+        {
+          "Theme-name": "Group-Light",
+          "Default-Theme": false,
+          "Create-icons": false,
+          "Background-color": "#f6f7fb",
+          "Text-color": "#1c1c2e",
+          "Accent-color": "#6d5ce7",
+          "Icons-color": "#6b7280"
+        }
+      ]
+    }
+  }
+}
