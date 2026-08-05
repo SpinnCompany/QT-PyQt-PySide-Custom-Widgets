@@ -35,7 +35,19 @@ DOCS_REPO = os.path.join(os.path.dirname(ROOT), "Docs-QT-PyQt-PySide-Custom-Widg
 WIDGET_DOCS = os.path.join(DOCS_REPO, "docs", "01-Widgets")
 SHOTS = os.path.join(DOCS_REPO, "static", "img", "showcase")
 
-MARKER = "<!-- generated:widget-reference -->"
+MARKER = "<!-- generated:widget-reference -->"          # legacy .md marker
+MARKER_MDX = "{/* generated:widget-reference */}"       # HTML comments are invalid MDX
+
+
+def _mdxText(text):
+    """Escape prose for MDX: `{` opens an expression and `<` opens JSX, so raw
+    docstring text like "setItems([{label, value}])" fails the build unless
+    escaped. Code spans are left untouched — backticks already protect them."""
+    parts = re.split(r"(`[^`]*`)", text)
+    for i, part in enumerate(parts):
+        if not part.startswith("`"):
+            parts[i] = part.replace("{", "\\{").replace("<", "\\<")
+    return "".join(parts)
 
 #: Manifest entries that are not documentable widgets.
 #: QCustomLoadingIndicators / QCustomProgressBars are re-export shims with no
@@ -1834,19 +1846,21 @@ def renderPage(cls, row, shots, allRows=()):
     intro = intro or tooltip or "A Custom Widgets component."
     intro = intro[:1].upper() + intro[1:]          # docstrings often start lower
 
-    # `format: md` parses the page as CommonMark instead of MDX. Docstrings are
-    # prose written for Python, and prose like "setItems([{label, value}])"
-    # is a JSX expression to MDX — it fails the build rather than rendering.
+    # Pages are MDX: docstring prose gets _mdxText-escaped (a raw "{...}" is a
+    # JSX expression, a raw "<..." is a tag — either fails the build), and the
+    # richer formatting comes from real components (click-to-expand heroes).
     description = re.sub(r"\s+", " ", intro)[:155].strip().rstrip(".")
     out = ["---",
            "title: %s" % name,
-           "description: %s." % description.replace(":", " -"),
-           "mdx:", "  format: md"]
+           "description: %s." % description.replace(":", " -")]
     if tier == "pro-ext":
         # Puts a PRO pill next to the entry in the sidebar, so a reader
         # browsing the free reference can see what Pro adds in place.
         out.append("sidebar_class_name: sidebar-pro")
-    out += ["---", "", MARKER, "# %s" % name, ""]
+    out += ["---", "",
+            "import useBaseUrl from '@docusaurus/useBaseUrl';",
+            "import Zoomable from '@site/src/components/Zoomable';", "",
+            MARKER_MDX, "", "# %s" % name, ""]
 
     badge = _tierBadge(row)
     if badge:
@@ -1861,11 +1875,12 @@ def renderPage(cls, row, shots, allRows=()):
                 shots[key] = candidate
     hero = shots.get("gif") or shots.get("light")
     if hero:
-        out += ["![%s](/img/showcase/%s)" % (name, hero), ""]
+        out += ["<Zoomable src={useBaseUrl('/img/showcase/%s')} alt=\"%s\" />"
+                % (hero, name), ""]
 
-    out += ["%s" % intro, ""]
+    out += ["%s" % _mdxText(intro), ""]
     if detail:
-        out += [detail, ""]
+        out += [_mdxText(detail), ""]
 
     out += ["## At a glance", "",
             "| | |", "|---|---|",
@@ -1890,7 +1905,8 @@ def renderPage(cls, row, shots, allRows=()):
         out += ["## Dark theme", "",
                 "Colours come from the design tokens, so the widget follows the "
                 "app theme with no extra work.", "",
-                "![%s in dark theme](/img/showcase/%s)" % (name, dark), ""]
+                "<Zoomable src={useBaseUrl('/img/showcase/%s')} "
+                "alt=\"%s in dark theme\" />" % (dark, name), ""]
 
     props = designerProperties(cls)
     if props:
@@ -1916,7 +1932,7 @@ def renderPage(cls, row, shots, allRows=()):
     if methods:
         out += ["## Methods", "", "| Method | Description |", "|---|---|"]
         for signature, doc in methods:
-            out.append("| `%s` | %s |" % (signature, doc or ""))
+            out.append("| `%s` | %s |" % (signature, _mdxText(doc or "")))
         out.append("")
 
     tokens = catalog.get("tokens_used") or []
@@ -1933,13 +1949,20 @@ def renderPage(cls, row, shots, allRows=()):
 
     related = _relatedWidgets(cls, row, allRows)
     if related:
-        # Link to the file that actually exists — a few pages are .mdx, and a
-        # hard-coded .md turns every sibling link into a broken one.
+        # The extension must reflect what the sibling WILL be after this run,
+        # not what it is mid-migration: generated pages are .mdx, only a
+        # hand-written .md stays .md. Deciding from the current file alone
+        # made links order-dependent during the .md -> .mdx migration.
         links = []
         for other in related:
-            ext = ".mdx" if os.path.isfile(
-                os.path.join(WIDGET_DOCS, other + ".mdx")) else ".md"
-            if not os.path.isfile(os.path.join(WIDGET_DOCS, other + ext)):
+            mdPath = os.path.join(WIDGET_DOCS, other + ".md")
+            mdxPath = os.path.join(WIDGET_DOCS, other + ".mdx")
+            if os.path.isfile(mdPath) and MARKER not in open(
+                    mdPath, encoding="utf-8").read():
+                ext = ".md"                       # hand-written, stays .md
+            elif os.path.isfile(mdxPath) or os.path.isfile(mdPath):
+                ext = ".mdx"                      # generated (or migrating)
+            else:
                 continue
             links.append("[%s](%s%s)" % (other, other, ext))
         if links:
@@ -1981,7 +2004,9 @@ def apiReferenceBlock(cls, row):
     if methods:
         out += ["### Methods", "", "| Method | Description |", "|---|---|"]
         for signature, doc in methods:
-            out.append("| `%s` | %s |" % (signature, doc or ""))
+            # _mdxText is harmless in CommonMark .md and required in the two
+            # hand-written .mdx pages this block also lands in
+            out.append("| `%s` | %s |" % (signature, _mdxText(doc or "")))
         out.append("")
     if len(out) <= 6:
         return None
@@ -1995,7 +2020,7 @@ def augmentHandwritten(cls, row, path):
     # Generated pages already carry these tables. `writePage` is also False for
     # a generated page on a plain run, so the caller cannot tell them apart —
     # check the marker here or every reference page gets a duplicate.
-    if MARKER in raw:
+    if MARKER in raw or MARKER_MDX in raw:
         return False
     block = apiReferenceBlock(cls, row)
     if block is None:
@@ -2047,23 +2072,30 @@ def main():
         name = row["widget"]
         if args.only and name not in args.only:
             continue
-        path = os.path.join(WIDGET_DOCS, name + ".md")
+        # Generated pages are .mdx (escaped prose + real components). A page
+        # is hand-written iff it carries neither marker; those are never
+        # touched without --force. The legacy generated .md twin is deleted
+        # when its .mdx replacement is written — same basename means the same
+        # Docusaurus doc id, and a pair is a fatal collision.
+        path = os.path.join(WIDGET_DOCS, name + ".mdx")
+        legacyMd = os.path.join(WIDGET_DOCS, name + ".md")
         # A hand-written page keeps its prose but still shows a screenshot, so
         # "skip" means skip the WRITE, not the shot — otherwise a reshoot
         # leaves those images stale forever, which is how the dark variants
         # stayed on a light backdrop.
         writePage = True
-        # Docusaurus derives the doc id from the basename, so a generated .md
-        # beside a hand-written .mdx is an id collision that fails the build.
-        if os.path.exists(path[:-3] + ".mdx"):
-            writePage = False
-        elif os.path.exists(path):
-            existing = open(path, encoding="utf-8").read()
-            handwritten = MARKER not in existing
-            if handwritten and not args.force:
-                writePage = False
-            elif not args.all and not args.only and not handwritten:
-                writePage = False
+
+        def _generated(p):
+            text = open(p, encoding="utf-8").read()
+            return MARKER in text or MARKER_MDX in text
+
+        if os.path.exists(path) and not _generated(path):
+            writePage = False                      # hand-written .mdx
+        elif os.path.exists(legacyMd) and not _generated(legacyMd):
+            if not args.force:
+                writePage = False                  # hand-written .md
+        elif not args.all and not args.only and os.path.exists(path):
+            writePage = False                      # generated and current
         if not writePage:
             skipped.append(name)
             # --augment still needs the class, so it cannot short-circuit here.
@@ -2127,13 +2159,15 @@ def main():
 
         if not writePage:
             if args.augment:
-                target = path if os.path.exists(path) else path[:-3] + ".mdx"
+                target = legacyMd if os.path.exists(legacyMd) else path
                 if os.path.exists(target) and augmentHandwritten(cls, row, target):
                     augmented.append(name)
             continue
         try:
             open(path, "w", encoding="utf-8").write(
                 renderPage(cls, row, shots, allRows))
+            if os.path.isfile(legacyMd) and _generated(legacyMd):
+                os.remove(legacyMd)                # migrated: same doc id
             written.append(name)
         except Exception as exc:
             failed.append("%s (render: %s)" % (name, exc))
