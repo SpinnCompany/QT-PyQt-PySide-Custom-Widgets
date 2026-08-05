@@ -8,7 +8,7 @@ from typing import Any, ClassVar
 class QCustomChatBubble(QFrame):
     text: str
     side: str
-    sender: str
+    sender: str  # type: ignore[assignment]
     time: str
     foot: str
     bubbleColor: str

@@ -193,6 +193,9 @@ class TestToolingSeesMovedWidgets:
 
     def test_scan_widgets_covers_moved_widgets(self, qapp):
         manifest = os.path.join(REPO, "docs", "design", "tiering-manifest.md")
+        if not os.path.isfile(manifest):
+            pytest.skip("tiering manifest not shipped (internal launch-gate "
+                        "artifact, absent from the public tree)")
         text = open(manifest, encoding="utf-8").read()
         for name in ("QCustomRadioGroup", "QCustomTextArea", "QCustomSwitch"):
             assert "`%s`" % name in text, "%s missing from the launch gate" % name

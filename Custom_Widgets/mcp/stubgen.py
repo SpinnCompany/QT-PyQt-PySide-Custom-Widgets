@@ -110,12 +110,21 @@ def stub_for_class(cls, prop_types=None):
     lines = ["class %s(%s):" % (cls.__name__, base_str)]
     body = []
 
+    def _shadows_base_callable(name):
+        # A Qt property or setter named like a base-class METHOD (iconSize,
+        # sender, setData…) is legal at runtime but a typed override conflict
+        # in a stub — mypy needs the ignore / the inherited signature.
+        return any(callable(getattr(base, name, None)) for base in cls.__mro__[1:])
+
     for name, value in vars(cls).items():
         if isinstance(value, Signal):
             body.append("    %s: ClassVar[Signal]" % name)
     for name, value in vars(cls).items():
         if isinstance(value, Property):
-            body.append("    %s: %s" % (name, prop_types.get(name, "Any")))
+            line = "    %s: %s" % (name, prop_types.get(name, "Any"))
+            if _shadows_base_callable(name):
+                line += "  # type: ignore[assignment]"
+            body.append(line)
 
     if "__init__" in vars(cls):
         body.append("    def __init__(%s) -> None: ..."
@@ -129,7 +138,11 @@ def stub_for_class(cls, prop_types=None):
         elif isinstance(value, classmethod):
             deco, func = "    @classmethod\n", value.__func__
         params = _render_params(func)
-        ret = " -> None" if name.startswith("set") else ""
+        # set* returning None is only a guess — when the method overrides a
+        # Qt base (setData -> bool on item models), guessing wrong breaks
+        # mypy's override check, so leave the return to be inherited.
+        ret = (" -> None" if name.startswith("set")
+               and not _shadows_base_callable(name) else "")
         body.append("%s    def %s(%s)%s: ..." % (deco, name, params, ret))
 
     lines.extend(body or ["    ..."])
@@ -176,9 +189,14 @@ def stub_for_module(module_name, prop_types=None):
     # Import Signal from its concrete, typed binding module (e.g.
     # PySide6.QtCore), not qtpy — qtpy ships no stubs.
     imports[getattr(Signal, "__module__", "PySide6.QtCore")] = {"Signal"}
+    emitted = set(classes)
     for cls in classes:
         for base in cls.__bases__:
-            if base is object or base.__module__ == module_name:
+            # never import a base that this stub also DEFINES (private
+            # same-module mixins reach here under the flat legacy module
+            # name, where the __module__ comparison alone misses them —
+            # importing + defining is a mypy no-redef error)
+            if base is object or base.__module__ == module_name or base in emitted:
                 continue
             imports.setdefault(base.__module__, set()).add(base.__name__)
 
