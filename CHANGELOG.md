@@ -6,7 +6,8 @@ Metadata-only patch: **the Python floor is declared honestly as 3.10**.
 2.3.0 claimed `>=3.9`, but several modules evaluate PEP 604 union
 annotations (`QWidget | QFrame`) at import time — a `TypeError` on 3.9 —
 and PySide6 itself requires `>=3.10,<3.15`, so Python 3.9 could never run
-the library anyway. No code changes.
+the library anyway. Classifiers now list 3.10–3.14 and the project
+graduates to Production/Stable. No code changes.
 
 ## 2.3.0 — 2026-08-05
 
