@@ -58,12 +58,31 @@ def main():
     for names in groups.values():
         names.sort()
 
+    def _pageHero(name):
+        """The first showcase image the widget's own PAGE references.
+
+        Alias pages (QBadgeWidget, QCardWidget, QCustomEmbededWindow, …) show
+        their canonical sibling's asset, so a slug-derived filename misses and
+        the card said "No preview" while the page itself had a picture. The
+        page is the source of truth — read it.
+        """
+        for ext in (".md", ".mdx"):
+            path = os.path.join(WIDGET_DOCS, name + ext)
+            if not os.path.isfile(path):
+                continue
+            text = open(path, encoding="utf-8", errors="replace").read()
+            match = re.search(r"/img/showcase/([A-Za-z0-9_.-]+\.(?:gif|png|webp))",
+                              text)
+            if match:
+                return "/img/showcase/" + match.group(1)
+        return None
+
     def thumbnail(name):
         # Prefer the animation — it is what the widget actually does.
         for candidate in ("%s.gif" % slugFor(name), "%s.png" % slugFor(name)):
             if os.path.isfile(os.path.join(SHOTS, candidate)):
                 return "/img/showcase/" + candidate
-        return None
+        return _pageHero(name)
 
     total = sum(len(v) for v in groups.values())
     pro = sum(1 for v in groups.values() for n in v if tier.get(n) == "pro-ext")
@@ -87,6 +106,30 @@ def main():
            "interaction rather than a frozen frame. %d ship in "
            "[Pro](https://customwidgets.spinncode.com/pricing/); the rest are "
            "free under GPLv3." % (total, animated, pro), ""]
+
+    # Teaser strip for the app showcase — the widgets are the parts, these are
+    # the finished machines, and the gallery is where people look first.
+    teasers = [("aurorachat.png", "AuroraChat"),
+               ("nodestudio.png", "NodeStudio"),
+               ("financedashboard.png", "FinanceDashboard"),
+               ("rhythmotune.png", "RhythmoTune")]
+    teasers = [(shot, label) for shot, label in teasers
+               if os.path.isfile(os.path.join(DOCS, "static", "img",
+                                              "showcase-apps", shot))]
+    if teasers:
+        out += ["## Complete applications", "",
+                "Every widget below also exists inside a real app — dashboards, "
+                "chat, a music player, a node editor and more, each a runnable "
+                "example. Browse all of them in the "
+                "[App showcase](05-Usage-Examples/AppShowcase.mdx).", "",
+                '<div className="app-gallery">', ""]
+        for shot, label in teasers:
+            out.append("<a className=\"ag-card\" "
+                       "href={useBaseUrl('/Usage-Examples/AppShowcase')}>"
+                       "<img src={useBaseUrl('/img/showcase-apps/%s')} "
+                       "alt=\"%s\" loading=\"lazy\" />"
+                       '<span className="ag-name">%s</span></a>' % (shot, label, label))
+        out += ["", "</div>", ""]
     for category, _ in CATEGORIES:
         names = groups.get(category) or []
         if not names:

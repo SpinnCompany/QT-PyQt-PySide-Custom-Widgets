@@ -53,8 +53,13 @@ def _reap_dead_widgets():
     yield
     import gc
     gc.collect()
+    from qtpy.QtCore import QCoreApplication, QEvent
     from qtpy.QtWidgets import QApplication
     app = QApplication.instance()
     if app is not None:
         app.processEvents()
-        app.processEvents()   # deleteLater needs a second spin to finalize
+        # processEvents at this nesting level does NOT consume DeferredDelete
+        # events — widgets a test deleteLater()'d would stay half-alive into
+        # the next test without the explicit flush.
+        QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
+        app.processEvents()
