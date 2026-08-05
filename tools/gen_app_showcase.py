@@ -46,7 +46,7 @@ PATREON = {"FinanceDashboard", "CryptoDashboard", "CashFlowDashboard",
 #: Where the supporter-only apps live on disk (sibling private repo).
 PREMIUM = os.path.join(os.path.dirname(ROOT), "Custom-Widgets-Premium-Examples")
 
-PLANS_URL = "https://customwidgets.spinncode.com/pricing/"
+PLANS_URL = "https://customwidgets.org/pricing/"
 
 
 def appDir(name):

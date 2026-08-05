@@ -9,7 +9,7 @@
         "AppSettings": {
             "OrganizationName": "Custom Widgets",
             "ApplicationName": "WaveformDemo",
-            "OrganizationDomain": "spinncode.com"
+            "OrganizationDomain": "customwidgets.org"
         },
         "ThemeSettings": {
             "CustomThemes": [

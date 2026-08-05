@@ -10,7 +10,7 @@
         "AppSettings": {
             "OrganizationName": "Custom Widgets",
             "ApplicationName": "GlassHome",
-            "OrganizationDomain": "spinncode.com"
+            "OrganizationDomain": "customwidgets.org"
         },
         "ThemeSettings": {
             "QtDesignerIconsColor": "theme",

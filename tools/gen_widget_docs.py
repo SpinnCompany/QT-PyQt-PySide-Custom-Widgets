@@ -1707,7 +1707,7 @@ def _tierBadge(row):
         return (":::info Pro widget\n\n"
                 "`%s` ships in **Custom Widgets Pro**. The free package under "
                 "GPLv3 does not include it.\n\n"
-                "[See plans](https://customwidgets.spinncode.com/pricing/)\n\n"
+                "[See plans](https://customwidgets.org/pricing/)\n\n"
                 ":::")
     return None
 

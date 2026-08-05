@@ -1,6 +1,6 @@
 ## SPINN DESIGN CODE
-# YOUTUBE: (SPINN TV) https://www.youtube.com/spinnTv
-# WEBSITE: spinncode.com
+# YOUTUBE: (SPINN TV) https://www.youtube.com/@SpinnTV
+# WEBSITE: customwidgets.org
 import os
 import sys
 import __main__

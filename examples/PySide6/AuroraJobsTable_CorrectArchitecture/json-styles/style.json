@@ -11,7 +11,7 @@
         "AppSettings": {
             "OrganizationName": "Custom Widgets",
             "ApplicationName": "AuroraJobsTableCorrectArchitecture",
-            "OrganizationDomain": "spinncode.com"
+            "OrganizationDomain": "customwidgets.org"
         },
         "ThemeSettings": {
             "QtDesignerIconsColor": "theme",
