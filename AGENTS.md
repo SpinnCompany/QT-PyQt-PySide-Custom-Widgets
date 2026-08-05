@@ -199,6 +199,20 @@ broken PyQt5 `libQt5Charts.so.5`. The tool now sets
 touching its startup, and give any new capture/introspection tool the same
 default.
 
+### Never `sys.exit()` in an import-time guard
+`Custom_Widgets/mcp/server.py` used to `sys.exit(<msg>)` when the `mcp`
+package was missing. SystemExit is not an Exception: anything importing the
+module dies — pytest collection aborts with an INTERNALERROR across the whole
+suite. Guards raise ImportError; `__main__.py` catches it for the friendly
+CLI message. Related: extras must PIN `mcp>=1.9` — unpinned, CI resolved an
+old `mcp` with no `mcp.server.fastmcp`, and `importorskip("mcp")` does not
+save you (top-level `mcp` imports fine); skip on `"mcp.server.fastmcp"`.
+
+### Importing `Custom_Widgets` needs full Qt system libraries
+The package top-level imports `qtpy.QtWidgets`, so ANY tool that merely
+imports the package (the design linter, stubgen) needs libEGL & friends on a
+headless runner — same apt list as the test jobs in tests.yml.
+
 ### `git grep -- 'Custom_Widgets/**/*.py'` silently matches nothing
 Git pathspec `**` requires the `:(glob)` magic prefix; without it the pattern
 returns zero hits and reads as "no matches found" — this falsely "proved"

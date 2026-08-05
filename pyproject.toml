@@ -42,7 +42,7 @@ qr = ["qrcode>=8.0", "Pillow"]              # QCustomQRGenerator
 acrylic = ["numpy", "colorthief", "Pillow"] # AcrylicEffect blur (scipy optional upgrade)
 acrylic-hq = ["scipy"]                      # higher-quality acrylic blur
 loaders = ["perlin_noise"]                  # QCustomPerlinLoader
-mcp = ["mcp>=1.9"]                               # Custom_Widgets-mcp server
+mcp = ["mcp>=1.9,<2"]   # 2.0 removed mcp.server.fastmcp                               # Custom_Widgets-mcp server
 # QCustomMapView. Deliberately optional: a map drags in a mapping engine,
 # tile providers, API keys and provider ToS, which the core LGPL library
 # should not carry (docs/design/qcustommapview-project-plan.md). The
@@ -54,13 +54,13 @@ map = ["PySide6-Addons"]                    # QCustomMapView (QtLocation)
 dev = [
     "mypy>=1.10",
     "PySide6",
-    "mcp>=1.9",
+    "mcp>=1.9,<2",
     "build",
     "pytest",
 ]
 all = [
     "qrcode>=8.0", "Pillow", "numpy", "colorthief", "scipy",
-    "perlin_noise", "mcp>=1.9",
+    "perlin_noise", "mcp>=1.9,<2",
 ]
 
 [project.urls]
