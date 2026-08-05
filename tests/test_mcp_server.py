@@ -11,7 +11,8 @@ import os
 
 import pytest
 
-mcp_sdk = pytest.importorskip("mcp", reason="mcp extra not installed")
+mcp_sdk = pytest.importorskip("mcp.server.fastmcp",
+                              reason="mcp extra (>=1.9) not installed")
 
 from Custom_Widgets.mcp import server as McpServer  # noqa: E402
 from Custom_Widgets.mcp.workspace import ProjectRegistry, ProjectWorker  # noqa: E402

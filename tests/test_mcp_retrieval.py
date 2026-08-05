@@ -2,6 +2,10 @@
 the right recipe for a query and must NOT leak the internal design docs."""
 import os
 
+import pytest
+
+pytest.importorskip("mcp.server.fastmcp")  # pulled in via Custom_Widgets.mcp.__init__
+
 from Custom_Widgets.mcp import retrieval as r
 
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

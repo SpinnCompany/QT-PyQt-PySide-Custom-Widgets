@@ -9,7 +9,7 @@ import json
 
 import pytest
 
-pytest.importorskip("mcp")
+pytest.importorskip("mcp.server.fastmcp")  # an old mcp has no fastmcp
 from mcp.server.fastmcp.exceptions import ToolError  # noqa: E402
 
 from Custom_Widgets.mcp import server  # noqa: E402

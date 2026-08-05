@@ -33,9 +33,14 @@ import traceback
 
 try:
     from mcp.server.fastmcp import FastMCP, Image
-except ImportError:  # pragma: no cover
-    sys.exit("The MCP server needs the 'mcp' package:\n"
-             "    pip install QT-PyQt-PySide-Custom-Widgets[mcp]")
+except ImportError as exc:  # pragma: no cover
+    # Raise, never sys.exit: SystemExit at import time kills whatever is
+    # importing us (pytest collection dies with an INTERNALERROR). The
+    # __main__ entry turns this into the friendly CLI message. This also
+    # fires when an old 'mcp' (< 1.2, no fastmcp) is installed.
+    raise ImportError(
+        "The MCP server needs the 'mcp' package (>= 1.9):\n"
+        "    pip install 'QT-PyQt-PySide-Custom-Widgets[mcp]'") from exc
 try:
     from mcp.server.fastmcp.exceptions import ToolError
 except ImportError:  # pragma: no cover
