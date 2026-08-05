@@ -15,7 +15,7 @@ This repository has been forked and is now actively maintained at:
 - **Continuous Updates**: Regular maintenance, bug fixes, and new features
 - **Improved Accessibility**: Resolved previous access limitations
 
-The original repository by KhamisiKibet is temporarily inaccessible due to authentication issues. All future development will continue in this repository.
+This repository is the project's permanent home; the original KhamisiKibet repository is no longer accessible. All development continues here.
 
 ## Overview
 
@@ -33,6 +33,16 @@ pip install QT-PyQt-PySide-Custom-Widgets
 **Upgrade to latest version:**
 ```
 pip install --upgrade QT-PyQt-PySide-Custom-Widgets
+```
+
+**Optional extras** (niche widgets pull their heavier stacks on demand):
+```
+pip install "QT-PyQt-PySide-Custom-Widgets[qr]"       # QCustomQRGenerator
+pip install "QT-PyQt-PySide-Custom-Widgets[map]"      # QCustomMapView (QtLocation)
+pip install "QT-PyQt-PySide-Custom-Widgets[acrylic]"  # AcrylicEffect blur
+pip install "QT-PyQt-PySide-Custom-Widgets[loaders]"  # QCustomPerlinLoader
+pip install "QT-PyQt-PySide-Custom-Widgets[mcp]"      # the Custom_Widgets MCP server
+pip install "QT-PyQt-PySide-Custom-Widgets[all]"      # everything above
 ```
 
 ## Quick Links
