@@ -7,7 +7,7 @@ repo, in CI, in pre-commit, on every Claude Code / AI-agent edit, and in
 downstream apps built with the library.
 
 > The rule definitions live in code at
-> [`Custom_Widgets/lint/rules.py`](../../Custom_Widgets/lint/rules.py). This page
+> [`rules.py`](rules.py). This page
 > is the human-readable spec; keep the two in sync when you add or change a rule.
 
 ## The rules
