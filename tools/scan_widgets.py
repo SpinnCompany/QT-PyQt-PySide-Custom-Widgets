@@ -51,15 +51,56 @@ PRO_EXT = {
 INFRA = {
     "QCustomComponent", "QCustomComponentContainer", "QCustomComponentLoader",
     "QCustomTheme", "QCustomThemeList",
+    # Generated form class (base `object`), not a widget at all — it can never
+    # be registered with Designer, so counting it as a Designer gap is noise.
+    "Ui_CustomMainWindow",
+}
+
+# Widgets that legitimately CANNOT be Designer-registered, with the reason.
+# These stay free/Pro catalog widgets — demoting them to `internal` would
+# misreport the catalogue — but they are excluded from the Designer-coverage
+# gap, because the gap is meant to list work, not permanent facts.
+#
+# Designer instantiates a custom widget with a parent and nothing else, so any
+# widget whose __init__ demands more cannot be registered without crashing it.
+DESIGNER_WAIVED = {
+    "QCustomToast": "__init__ requires (parent, message); shown programmatically",
+    "QCustomQToolTip": "__init__ requires (text); transient overlay",
+    "LoadForm": "helper inside QCustomModals; __init__ requires (form)",
+    # Transient overlays. Instantiable, but dropping one onto a form is
+    # meaningless: they position themselves over a parent at runtime.
+    "QCustomTipOverlay": "transient overlay, positioned at runtime",
+    "QCustomPopover": "transient overlay, anchored to a trigger at runtime",
+    "QCustomQDialog": "dialog shown modally, not a child placed on a form",
+    # Registering this would import QtLocation into every Designer startup for
+    # a widget that only exists when the optional [map] extra is installed.
+    "QCustomMapView": "optional [map] extra; would pull QtLocation into Designer",
+    # Not a widget: a namespace class holding nested modal types
+    # (QCustomModals.BaseModal and friends), each shown programmatically.
+    "QCustomModals": "namespace class of nested modal types, not a placeable widget",
+    # NEEDS A DECISION, not a permanent fact: the module defines exactly one
+    # class, `Canvas(QLabel)`, and this display name comes from WIDGET_OVERRIDE
+    # -- there is no QCustomAnnotationWidget class to register. Registering it
+    # would put "Canvas" in the Designer palette, or the class needs renaming,
+    # which is a public-API change. Waived until that is decided.
+    "QCustomAnnotationWidget": "module's only class is Canvas(QLabel); public name unresolved",
 }
 
 # Display-name fixups where the scanned primary class isn't the public widget.
+# Keyed by BASENAME, not path: the previous keys were pre-regrouping paths
+# ("Custom_Widgets/QCustomModals.py") that stopped existing when widgets moved
+# into subpackages, so the overrides silently never applied and the manifest
+# advertised internal helper classes (Canvas, LoadForm) as public widgets.
 WIDGET_OVERRIDE = {
-    "Custom_Widgets/QCustomAnnotationWidget.py": "QCustomAnnotationWidget",
-    "Custom_Widgets/QCustomModals.py": "QCustomModals",
+    "QCustomAnnotationWidget.py": "QCustomAnnotationWidget",
+    "QCustomModals.py": "QCustomModals",
 }
 
-CLASS_RE = re.compile(r'^class\s+([A-Z]\w+)\s*\(([^)]*)\)', re.M)
+# The base group is optional: `class QCustomModals:` (no parentheses) was
+# invisible to the old pattern, so the scanner fell through to an internal
+# helper class in the same module and the public widget vanished from the
+# manifest entirely.
+CLASS_RE = re.compile(r'^class\s+([A-Z]\w+)\s*(?:\(([^)]*)\))?\s*:', re.M)
 WIDGET_BASE = re.compile(
     r'QWidget|QFrame|QLabel|QPushButton|QDialog|QAbstractButton|QTableView|'
     r'QTableWidget|QTreeWidget|QStackedWidget|QScrollArea|QSlider|QComboBox|'
@@ -117,7 +158,9 @@ def scan():
                          else (classes[0][0] if classes else stem)))
         rel = os.path.relpath(m, ROOT)
         names = {primary, stem} | set(widget_classes)
-        primary = WIDGET_OVERRIDE.get(rel, primary)   # public-widget display name
+        # Basename, not the relative path: widgets move between subpackages and
+        # a path key silently stops matching (see WIDGET_OVERRIDE).
+        primary = WIDGET_OVERRIDE.get(os.path.basename(m), primary)
 
         def hit(corpus):
             return any(re.search(r'\b%s\b' % re.escape(nm), corpus) for nm in names)
@@ -139,8 +182,20 @@ def scan():
             "test": hit(tests_text),
             "example": hit(examples_text) or primary in example_dirs or stem in example_dirs,
             "designer": hit(register_text),
+            # Raw fact stays in `designer`; this records WHY a false is
+            # permanent rather than outstanding work. Read them together:
+            # a real gap is `not designer and not designer_waived`.
+            "designer_waived": DESIGNER_WAIVED.get(primary),
         })
     return rows
+
+
+def designer_gap(rows):
+    """Rows that still need Designer registration — excluding the waived ones,
+    so the number means "work left" instead of "falses"."""
+    return [r for r in rows
+            if r["tier"] in ("free", "pro-ext")
+            and not r["designer"] and not r.get("designer_waived")]
 
 
 def tier(r):
@@ -210,6 +265,11 @@ ships at once.
 | In `__catalog__` | {pc('catalog')} |
 | Designer-registered | {pc('designer')} |
 | `.pyi` type stub | {pc('pyi')} |
+
+**Designer gap: {len(designer_gap(rows))} widget(s) still to register**
+({len([r for r in rows if r.get('designer_waived')])} waived — see
+`designer_waived` in the JSON for why each is permanent, e.g. an `__init__`
+that needs more than a parent, or a transient overlay).
 
 Breakdown: **{len(pro)}** free-base-with-Pro-extension, **{len(free)}** free
 standalone, **{len(internal)}** internal/engine (not shipped as standalone).

@@ -25,8 +25,13 @@ ships at once.
 | Designer-registered | 137/176 (78%) |
 | `.pyi` type stub | 116/176 (66%) |
 
-Breakdown: **5** free-base-with-Pro-extension, **152** free
-standalone, **19** internal/engine (not shipped as standalone).
+**Designer gap: 16 widget(s) still to register**
+(8 waived — see
+`designer_waived` in the JSON for why each is permanent, e.g. an `__init__`
+that needs more than a parent, or a transient overlay).
+
+Breakdown: **5** free-base-with-Pro-extension, **151** free
+standalone, **20** internal/engine (not shipped as standalone).
 
 ## Legend
 - **Test / Example / Catalog / Designer / .pyi** -- objective presence signals.
@@ -56,18 +61,17 @@ Pro mapping:
 - `QCustomBarChart` -> Charts Pro (SKU-2, candidate)
 - `QCustomPieChart` -> Charts Pro (SKU-2, candidate)
 
-## Tier: free -- standalone (152)
+## Tier: free -- standalone (151)
 
 | Widget | Test | Example | Catalog | Designer | .pyi | LOC | Module |
 |---|:--:|:--:|:--:|:--:|:--:|--:|---|
 | `AnalogGaugeWidget` | ✅ | ✅ | — | ✅ | — | 1015 | Custom_Widgets/widgets/display/AnalogGaugeWidget.py |
-| `Canvas` | ✅ | — | — | — | — | 551 | Custom_Widgets/widgets/data/QCustomAnnotationWidget.py |
-| `LoadForm` | ✅ | ✅ | — | — | — | 873 | Custom_Widgets/widgets/display/QCustomModals.py |
 | `QCustom3CirclesLoader` | ✅ | ✅ | — | — | — | 188 | Custom_Widgets/widgets/loading/QCustom3CirclesLoader.py |
 | `QCustomAccordion` | ✅ | ✅ | ✅ | ✅ | ✅ | 150 | Custom_Widgets/widgets/containers/QCustomAccordion.py |
 | `QCustomActionButton` | ✅ | — | ✅ | ✅ | ✅ | 152 | Custom_Widgets/widgets/buttons/QCustomActionButton.py |
 | `QCustomAgendaList` | ✅ | ✅ | ✅ | ✅ | ✅ | 365 | Custom_Widgets/widgets/display/QCustomAgendaList.py |
 | `QCustomAlert` | ✅ | ✅ | ✅ | ✅ | ✅ | 166 | Custom_Widgets/widgets/display/QCustomAlert.py |
+| `QCustomAnnotationWidget` | ✅ | — | — | — | — | 551 | Custom_Widgets/widgets/data/QCustomAnnotationWidget.py |
 | `QCustomArcLoader` | ✅ | ✅ | — | — | — | 143 | Custom_Widgets/widgets/loading/QCustomArcLoader.py |
 | `QCustomAvatar` | ✅ | ✅ | ✅ | ✅ | ✅ | 297 | Custom_Widgets/widgets/display/QCustomAvatar.py |
 | `QCustomAvatarGroup` | ✅ | ✅ | ✅ | ✅ | ✅ | 150 | Custom_Widgets/widgets/display/QCustomAvatarGroup.py |
@@ -137,6 +141,7 @@ Pro mapping:
 | `QCustomMessageStatus` | — | — | ✅ | ✅ | — | 152 | Custom_Widgets/widgets/chat/QCustomMessageStatus.py |
 | `QCustomMiniBarChart` | ✅ | ✅ | ✅ | ✅ | ✅ | 505 | Custom_Widgets/widgets/charts/QCustomMiniBarChart.py |
 | `QCustomModal` | ✅ | — | ✅ | ✅ | ✅ | 289 | Custom_Widgets/widgets/containers/QCustomModal.py |
+| `QCustomModals` | ✅ | ✅ | — | — | — | 873 | Custom_Widgets/widgets/display/QCustomModals.py |
 | `QCustomMultiSelect` | ✅ | ✅ | ✅ | ✅ | ✅ | 534 | Custom_Widgets/widgets/input/QCustomMultiSelect.py |
 | `QCustomNodeGraph` | ✅ | — | ✅ | ✅ | ✅ | 1031 | Custom_Widgets/widgets/data/QCustomNodeGraph.py |
 | `QCustomNumberCounter` | ✅ | ✅ | ✅ | ✅ | ✅ | 265 | Custom_Widgets/widgets/display/QCustomNumberCounter.py |
@@ -211,21 +216,20 @@ Pro mapping:
 | `QCustomWaveform` | ✅ | ✅ | ✅ | ✅ | ✅ | 457 | Custom_Widgets/widgets/charts/QCustomWaveform.py |
 | `QFlowProgressBar` | ✅ | ✅ | — | — | — | 381 | Custom_Widgets/widgets/display/QFlowProgressBar.py |
 | `QTagEdit` | ✅ | — | — | — | — | 307 | Custom_Widgets/widgets/input/QCustomTagEdit.py |
-| `Ui_CustomMainWindow` | — | — | — | — | — | 40 | Custom_Widgets/components/uis/QCustomQMainWindow_ui.py |
 
-## Internal / engine -- not standalone widgets (19)
+## Internal / engine -- not standalone widgets (20)
 
 Chart-subsystem engine + shared helpers. Ship as free library internals; no
 separate tier. (Most surface through the public chart types above.)
 
 | Widget | Test | Example | Catalog | Designer | .pyi | LOC | Module |
 |---|:--:|:--:|:--:|:--:|:--:|--:|---|
+| `ChartCommonProps` | — | — | — | — | — | 485 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartProps.py |
 | `QCustomBarChartBase` | — | — | — | — | — | 1935 | Custom_Widgets/widgets/charts/qtcharts/QCustomBarChartBase.py |
 | `QCustomChartBase` | — | — | — | — | — | 379 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartBase.py |
 | `QCustomChartConstants` | ✅ | — | — | — | — | 426 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartConstants.py |
 | `QCustomChartDataManager` | — | — | — | — | — | 605 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartDataManager.py |
 | `QCustomChartExporter` | — | — | — | — | — | 575 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartExporter.py |
-| `QCustomChartProps` | — | — | — | — | — | 485 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartProps.py |
 | `QCustomChartThemeManager` | ✅ | — | — | — | — | 534 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartThemeManager.py |
 | `QCustomChartToolbar` | — | — | — | — | — | 511 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartToolbar.py |
 | `QCustomChartTooltip` | — | — | — | — | — | 415 | Custom_Widgets/widgets/charts/qtcharts/QCustomChartTooltip.py |
@@ -239,12 +243,13 @@ separate tier. (Most surface through the public chart types above.)
 | `QCustomTheme` | ✅ | ✅ | — | — | — | 1807 | Custom_Widgets/theming/QCustomTheme.py |
 | `QCustomThemeList` | ✅ | ✅ | — | ✅ | — | 140 | Custom_Widgets/widgets/input/QCustomThemeList.py |
 | `QCustomVerticalBarSeries` | ✅ | — | — | ✅ | — | 272 | Custom_Widgets/widgets/charts/qtcharts/QCustomVerticalBarSeries.py |
+| `Ui_CustomMainWindow` | — | — | — | — | — | 40 | Custom_Widgets/components/uis/QCustomQMainWindow_ui.py |
 
 ---
 
 ## Hardening backlog (drives the gate)
 
-### Untested user-facing widgets (9) -- highest priority
+### Untested user-facing widgets (8) -- highest priority
 - `QCustomCoverCard` (QCustomCoverCard.py)
 - `QCustomCoverFlow` (QCustomCoverFlow.py)
 - `QCustomFileCard` (QCustomFileCard.py)
@@ -253,13 +258,11 @@ separate tier. (Most surface through the public chart types above.)
 - `QCustomMessageStatus` (QCustomMessageStatus.py)
 - `QCustomReactionBar` (QCustomReactionBar.py)
 - `QCustomVideoPlayer` (QCustomVideoPlayer.py)
-- `Ui_CustomMainWindow` (QCustomQMainWindow_ui.py)
 
-### Missing `__catalog__` entry (40)
+### Missing `__catalog__` entry (39)
 - `AnalogGaugeWidget`
-- `Canvas`
-- `LoadForm`
 - `QCustom3CirclesLoader`
+- `QCustomAnnotationWidget`
 - `QCustomArcLoader`
 - `QCustomCheckBox`
 - `QCustomCodeEditor`
@@ -272,6 +275,7 @@ separate tier. (Most surface through the public chart types above.)
 - `QCustomHorizontalSeparator`
 - `QCustomLoadingIndicators`
 - `QCustomMapView`
+- `QCustomModals`
 - `QCustomPerlinLoader`
 - `QCustomProgressBars`
 - `QCustomProgressIndicator`
@@ -295,11 +299,10 @@ separate tier. (Most surface through the public chart types above.)
 - `QCustomVerticalSeparator`
 - `QFlowProgressBar`
 - `QTagEdit`
-- `Ui_CustomMainWindow`
 
-### Missing example (39)
-- `Canvas`
+### Missing example (38)
 - `QCustomActionButton`
+- `QCustomAnnotationWidget`
 - `QCustomBeeswarm`
 - `QCustomCardStack`
 - `QCustomChatBubble`
@@ -336,7 +339,6 @@ separate tier. (Most surface through the public chart types above.)
 - `QCustomVideoPlayer`
 - `QCustomVoiceMessage`
 - `QTagEdit`
-- `Ui_CustomMainWindow`
 
 ## Per-widget hardening checklist (fill during the pass)
 
