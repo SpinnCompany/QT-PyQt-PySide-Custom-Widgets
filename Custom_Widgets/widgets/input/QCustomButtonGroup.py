@@ -15,7 +15,7 @@ class QCustomButtonGroup(QWidget):
     "selected" state that's driven by the button group's selection.
     """
 
-    WIDGET_ICON = "components/icons/button_group.png"
+    WIDGET_ICON = "components/icons/smart_button.png"
     WIDGET_TOOLTIP = "A tokenized, accessible button group"
     WIDGET_MODULE = "Custom_Widgets.QCustomButtonGroup"
     WIDGET_DOM_XML = """

@@ -26,7 +26,7 @@ class QCustomAvatar(QWidget):
 
     clicked = Signal()
 
-    WIDGET_ICON = "components/icons/avatar.png"
+    WIDGET_ICON = "components/icons/account_circle.png"
     WIDGET_TOOLTIP = "A circular avatar with an optional status dot"
     WIDGET_MODULE = "Custom_Widgets.QCustomAvatar"
     WIDGET_DOM_XML = """

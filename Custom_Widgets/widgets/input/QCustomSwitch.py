@@ -20,7 +20,7 @@ from qtpy.QtWidgets import QWidget, QSizePolicy
 class QCustomSwitch(QWidget):
     toggled = Signal(bool)
 
-    WIDGET_ICON = "components/icons/switch.png"
+    WIDGET_ICON = "components/icons/toggle_on.png"
     WIDGET_TOOLTIP = "An on/off toggle switch"
     WIDGET_MODULE = "Custom_Widgets.QCustomSwitch"
     WIDGET_DOM_XML = """

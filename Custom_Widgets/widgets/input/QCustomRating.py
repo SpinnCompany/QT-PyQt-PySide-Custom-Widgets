@@ -17,7 +17,7 @@ from qtpy.QtWidgets import QWidget, QHBoxLayout, QLabel
 class QCustomRating(QWidget):
     valueChanged = Signal(int)
 
-    WIDGET_ICON = "components/icons/rating.png"
+    WIDGET_ICON = "components/icons/star.png"
     WIDGET_TOOLTIP = "A star rating"
     WIDGET_MODULE = "Custom_Widgets.QCustomRating"
     WIDGET_DOM_XML = """

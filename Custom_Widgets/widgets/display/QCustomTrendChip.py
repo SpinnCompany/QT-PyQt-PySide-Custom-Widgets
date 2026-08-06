@@ -23,7 +23,7 @@ from qtpy.QtWidgets import QWidget, QSizePolicy
 
 class QCustomTrendChip(QWidget):
 
-    WIDGET_ICON = "components/icons/trend.png"
+    WIDGET_ICON = "components/icons/trending_up.png"
     WIDGET_TOOLTIP = "A directional delta / trend chip (up/down arrow)"
     WIDGET_MODULE = "Custom_Widgets.QCustomTrendChip"
     WIDGET_DOM_XML = """

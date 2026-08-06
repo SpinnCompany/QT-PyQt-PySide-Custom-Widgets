@@ -21,7 +21,7 @@ from qtpy.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QTextEdit,
 class QCustomRichTextEditor(QWidget):
     textChanged = Signal()
 
-    WIDGET_ICON = "components/icons/richtext.png"
+    WIDGET_ICON = "components/icons/text_snippet.png"
     WIDGET_TOOLTIP = "A WYSIWYG rich-text editor"
     WIDGET_MODULE = "Custom_Widgets.QCustomRichTextEditor"
     WIDGET_DOM_XML = """

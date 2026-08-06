@@ -23,7 +23,7 @@ class QCustomActionButton(QFrame):
 
     clicked = Signal()
 
-    WIDGET_ICON = "components/icons/action_button.png"
+    WIDGET_ICON = "components/icons/smart_button.png"
     WIDGET_TOOLTIP = "A round icon button with a caption"
     WIDGET_MODULE = "Custom_Widgets.QCustomActionButton"
     WIDGET_DOM_XML = """

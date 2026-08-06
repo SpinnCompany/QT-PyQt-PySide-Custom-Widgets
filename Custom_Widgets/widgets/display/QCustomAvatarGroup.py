@@ -34,7 +34,7 @@ def _color_for(name):
 
 
 class QCustomAvatarGroup(QWidget):
-    WIDGET_ICON = "components/icons/avatars.png"
+    WIDGET_ICON = "components/icons/group.png"
     WIDGET_TOOLTIP = "A row of overlapping avatars with overflow"
     WIDGET_MODULE = "Custom_Widgets.QCustomAvatarGroup"
     WIDGET_DOM_XML = """

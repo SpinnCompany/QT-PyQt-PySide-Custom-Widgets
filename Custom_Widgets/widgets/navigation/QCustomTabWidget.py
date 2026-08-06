@@ -16,7 +16,7 @@ from qtpy.QtWidgets import QTabWidget, QToolButton
 
 
 class QCustomTabWidget(QTabWidget):
-    WIDGET_ICON = "components/icons/tabs.png"
+    WIDGET_ICON = "components/icons/tab.png"
     WIDGET_TOOLTIP = "A tokenized tab container (underline / pills / enclosed)"
     WIDGET_MODULE = "Custom_Widgets.QCustomTabWidget"
     WIDGET_DOM_XML = """

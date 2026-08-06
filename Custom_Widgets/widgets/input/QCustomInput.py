@@ -14,7 +14,7 @@ class QCustomInput(QLineEdit):
     Works seamlessly with QCustomForm fields.
     """
 
-    WIDGET_ICON = "components/icons/text_input.png"
+    WIDGET_ICON = "components/icons/text_fields.png"
     WIDGET_TOOLTIP = "A modern text input with variant/size styling"
     WIDGET_MODULE = "Custom_Widgets.QCustomInput"
     WIDGET_DOM_XML = """

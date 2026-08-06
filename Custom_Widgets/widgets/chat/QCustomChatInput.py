@@ -27,7 +27,7 @@ class QCustomChatInput(QFrame):
     emojiClicked = Signal()
     textChanged = Signal(str)
 
-    WIDGET_ICON = "components/icons/chat_input.png"
+    WIDGET_ICON = "components/icons/keyboard.png"
     WIDGET_TOOLTIP = "A chat message composer bar"
     WIDGET_MODULE = "Custom_Widgets.QCustomChatInput"
     WIDGET_DOM_XML = """

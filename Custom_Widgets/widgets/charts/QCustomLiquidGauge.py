@@ -31,7 +31,7 @@ class QCustomLiquidGauge(QWidget):
 
     valueChanged = Signal(float)
 
-    WIDGET_ICON = "components/icons/liquid.png"
+    WIDGET_ICON = "components/icons/water_drop.png"
     WIDGET_TOOLTIP = "A wavy liquid-fill level gauge (fuel / battery / tank)"
     WIDGET_MODULE = "Custom_Widgets.QCustomLiquidGauge"
     WIDGET_DOM_XML = """

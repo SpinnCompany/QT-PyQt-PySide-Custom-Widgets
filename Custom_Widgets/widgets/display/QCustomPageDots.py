@@ -21,7 +21,7 @@ class QCustomPageDots(QWidget):
 
     pageChanged = Signal(int)
 
-    WIDGET_ICON = "components/icons/dots.png"
+    WIDGET_ICON = "components/icons/more_horiz.png"
     WIDGET_TOOLTIP = "A carousel / pager page indicator (dots + active pill)"
     WIDGET_MODULE = "Custom_Widgets.QCustomPageDots"
     WIDGET_DOM_XML = """

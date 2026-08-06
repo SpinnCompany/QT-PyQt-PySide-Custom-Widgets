@@ -42,7 +42,7 @@ class _Rule(QWidget):
 
 class QCustomChatDivider(QFrame):
 
-    WIDGET_ICON = "components/icons/chat_divider.png"
+    WIDGET_ICON = "components/icons/horizontal_rule.png"
     WIDGET_TOOLTIP = "A chat thread date / unread divider"
     WIDGET_MODULE = "Custom_Widgets.QCustomChatDivider"
     WIDGET_DOM_XML = """

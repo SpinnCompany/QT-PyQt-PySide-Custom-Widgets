@@ -29,7 +29,7 @@ class QCustomChatList(QFrame):
     currentChanged = Signal(int)
     itemClicked = Signal(int)
 
-    WIDGET_ICON = "components/icons/chat_list.png"
+    WIDGET_ICON = "components/icons/forum.png"
     WIDGET_TOOLTIP = "A data-driven conversation list"
     WIDGET_MODULE = "Custom_Widgets.QCustomChatList"
     WIDGET_DOM_XML = """

@@ -21,7 +21,7 @@ from qtpy.QtWidgets import QWidget, QSizePolicy
 
 class QCustomTypingIndicator(QWidget):
 
-    WIDGET_ICON = "components/icons/typing_indicator.png"
+    WIDGET_ICON = "components/icons/more_horiz.png"
     WIDGET_TOOLTIP = "Animated typing dots"
     WIDGET_MODULE = "Custom_Widgets.QCustomTypingIndicator"
     WIDGET_DOM_XML = """

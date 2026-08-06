@@ -20,7 +20,7 @@ from qtpy.QtWidgets import QWidget, QHBoxLayout, QLineEdit, QPushButton
 class QCustomNumberInput(QWidget):
     valueChanged = Signal(object)          # int or float
 
-    WIDGET_ICON = "components/icons/numberinput.png"
+    WIDGET_ICON = "components/icons/numbers.png"
     WIDGET_TOOLTIP = "A number stepper / spin box"
     WIDGET_MODULE = "Custom_Widgets.QCustomNumberInput"
     WIDGET_DOM_XML = """

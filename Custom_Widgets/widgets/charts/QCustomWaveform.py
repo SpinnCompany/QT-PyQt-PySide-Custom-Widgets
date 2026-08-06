@@ -35,7 +35,7 @@ class QCustomWaveform(QWidget):
 
     valuePushed = Signal(float)
 
-    WIDGET_ICON = "components/icons/waveform.png"
+    WIDGET_ICON = "components/icons/graphic_eq.png"
     WIDGET_TOOLTIP = "A waveform / equalizer / streaming-ECG visualiser"
     WIDGET_MODULE = "Custom_Widgets.QCustomWaveform"
     WIDGET_DOM_XML = """

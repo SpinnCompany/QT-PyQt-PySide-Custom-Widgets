@@ -17,7 +17,7 @@ from qtpy.QtWidgets import QWidget, QHBoxLayout, QPushButton, QLabel
 class QCustomBreadcrumbs(QWidget):
     itemClicked = Signal(int, object)      # index, data
 
-    WIDGET_ICON = "components/icons/breadcrumbs.png"
+    WIDGET_ICON = "components/icons/last_page.png"
     WIDGET_TOOLTIP = "A clickable path navigation"
     WIDGET_MODULE = "Custom_Widgets.QCustomBreadcrumbs"
     WIDGET_DOM_XML = """

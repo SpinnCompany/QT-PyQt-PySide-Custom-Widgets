@@ -17,7 +17,7 @@ from qtpy.QtWidgets import QWidget, QSizePolicy
 
 
 class QCustomSkeleton(QWidget):
-    WIDGET_ICON = "components/icons/skeleton.png"
+    WIDGET_ICON = "components/icons/dashboard_customize.png"
     WIDGET_TOOLTIP = "A shimmering loading placeholder"
     WIDGET_MODULE = "Custom_Widgets.QCustomSkeleton"
     WIDGET_DOM_XML = """

@@ -50,7 +50,7 @@ class _DragHandle(QWidget):
 
 class QCustomListRow(QFrame):
 
-    WIDGET_ICON = "components/icons/list_row.png"
+    WIDGET_ICON = "components/icons/table_rows.png"
     WIDGET_TOOLTIP = "A leading-icon list item (transaction / activity row)"
     WIDGET_MODULE = "Custom_Widgets.QCustomListRow"
     WIDGET_DOM_XML = """

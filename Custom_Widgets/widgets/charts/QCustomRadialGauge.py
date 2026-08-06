@@ -41,7 +41,7 @@ class QCustomRadialGauge(QWidget):
     valueChanged = Signal(float)
     finished = Signal()          # countdown reached the minimum
 
-    WIDGET_ICON = "components/icons/gauge.png"
+    WIDGET_ICON = "components/icons/speed.png"
     WIDGET_TOOLTIP = "A painted gauge (needle / tick / threshold / countdown)"
     WIDGET_MODULE = "Custom_Widgets.QCustomRadialGauge"
     WIDGET_DOM_XML = """

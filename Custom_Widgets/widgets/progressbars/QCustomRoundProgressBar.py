@@ -28,7 +28,7 @@ class ProgressBarArcLoader:
 class QCustomRoundProgressBar(QWidget):
     # Define XML for Qt Designer
     script_dir = packageDir()
-    WIDGET_ICON = os.path.join(script_dir, "../components/icons/donut_large.png")
+    WIDGET_ICON = os.path.join(script_dir, "components/icons/donut_large.png")
     WIDGET_TOOLTIP = "A custom round progress bar that shows animated progress."
     WIDGET_DOM_XML = """
     <ui language='c++'>

@@ -27,7 +27,7 @@ _STATES = ("sending", "sent", "delivered", "read")
 
 class QCustomMessageStatus(QWidget):
 
-    WIDGET_ICON = "components/icons/message_status.png"
+    WIDGET_ICON = "components/icons/done_all.png"
     WIDGET_TOOLTIP = "A delivery-state tick indicator (sent / delivered / read)"
     WIDGET_MODULE = "Custom_Widgets.QCustomMessageStatus"
     WIDGET_DOM_XML = """

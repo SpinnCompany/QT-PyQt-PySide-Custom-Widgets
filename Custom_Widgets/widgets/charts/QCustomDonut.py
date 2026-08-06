@@ -28,7 +28,7 @@ from qtpy.QtWidgets import QWidget, QSizePolicy
 
 class QCustomDonut(QWidget):
 
-    WIDGET_ICON = "components/icons/donut.png"
+    WIDGET_ICON = "components/icons/donut_small.png"
     WIDGET_TOOLTIP = "A painted donut / multi-ring radial chart"
     WIDGET_MODULE = "Custom_Widgets.QCustomDonut"
     WIDGET_DOM_XML = """

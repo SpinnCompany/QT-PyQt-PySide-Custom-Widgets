@@ -29,7 +29,7 @@ class QCustomAgendaList(QWidget):
 
     itemClicked = Signal(int)
 
-    WIDGET_ICON = "components/icons/agenda.png"
+    WIDGET_ICON = "components/icons/view_agenda.png"
     WIDGET_TOOLTIP = "A schedule / event timeline list (rail + status rows)"
     WIDGET_MODULE = "Custom_Widgets.QCustomAgendaList"
     WIDGET_DOM_XML = """

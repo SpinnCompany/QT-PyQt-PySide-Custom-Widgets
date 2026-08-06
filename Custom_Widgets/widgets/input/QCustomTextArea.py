@@ -33,7 +33,7 @@ class QCustomTextArea(QPlainTextEdit):
     lengthChanged = Signal(int)
     limitReached = Signal(bool)
 
-    WIDGET_ICON = "components/icons/text_input.png"
+    WIDGET_ICON = "components/icons/text_fields.png"
     WIDGET_TOOLTIP = "A multi-line text input with counter and auto-grow"
     WIDGET_MODULE = "Custom_Widgets.QCustomTextArea"
     WIDGET_DOM_XML = """

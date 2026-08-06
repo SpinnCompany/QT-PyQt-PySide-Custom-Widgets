@@ -112,7 +112,7 @@ class QCustomFileCard(QWidget):
     clicked = Signal()
     downloadClicked = Signal()
 
-    WIDGET_ICON = "components/icons/file_card.png"
+    WIDGET_ICON = "components/icons/description.png"
     WIDGET_TOOLTIP = "A file / attachment row"
     WIDGET_MODULE = "Custom_Widgets.QCustomFileCard"
     WIDGET_DOM_XML = """

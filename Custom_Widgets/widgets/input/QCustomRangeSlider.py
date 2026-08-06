@@ -21,7 +21,7 @@ class QCustomRangeSlider(QWidget):
 
     HANDLE = 9
 
-    WIDGET_ICON = "components/icons/rangeslider.png"
+    WIDGET_ICON = "components/icons/tune.png"
     WIDGET_TOOLTIP = "A dual-handle range slider"
     WIDGET_MODULE = "Custom_Widgets.QCustomRangeSlider"
     WIDGET_DOM_XML = """

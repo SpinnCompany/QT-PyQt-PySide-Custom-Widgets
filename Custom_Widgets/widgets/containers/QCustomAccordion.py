@@ -86,7 +86,7 @@ class QCustomAccordion(QWidget):
     # index, expanded
     sectionToggled = Signal(int, bool)
 
-    WIDGET_ICON = "components/icons/accordion.png"
+    WIDGET_ICON = "components/icons/view_stream.png"
     WIDGET_TOOLTIP = "A stack of collapsible sections"
     WIDGET_MODULE = "Custom_Widgets.QCustomAccordion"
     WIDGET_DOM_XML = """

@@ -18,7 +18,7 @@ from qtpy.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 
 
 class QCustomStatCard(QWidget):
-    WIDGET_ICON = "components/icons/statcard.png"
+    WIDGET_ICON = "components/icons/insert_chart.png"
     WIDGET_TOOLTIP = "A KPI / metric card"
     WIDGET_MODULE = "Custom_Widgets.QCustomStatCard"
     WIDGET_DOM_XML = """

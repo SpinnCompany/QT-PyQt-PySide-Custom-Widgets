@@ -20,7 +20,7 @@ class QCustomHorizontalBarSeries(QCustomBarChartBase):
     """
     
     # Designer registration constants
-    WIDGET_ICON = "components/icons/bar_chart_horizontal.png"
+    WIDGET_ICON = "components/icons/bar_chart.png"
     WIDGET_TOOLTIP = "Customizable horizontal grouped bar chart"
     WIDGET_DOM_XML = """
     <ui language='c++'>

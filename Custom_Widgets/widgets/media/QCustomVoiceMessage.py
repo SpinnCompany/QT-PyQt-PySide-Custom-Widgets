@@ -142,7 +142,7 @@ class QCustomVoiceMessage(QWidget):
     playToggled = Signal(bool)
     seeked = Signal(float)
 
-    WIDGET_ICON = "components/icons/voice_message.png"
+    WIDGET_ICON = "components/icons/mic.png"
     WIDGET_TOOLTIP = "A voice / audio message with a scrubber waveform"
     WIDGET_MODULE = "Custom_Widgets.QCustomVoiceMessage"
     WIDGET_DOM_XML = """
