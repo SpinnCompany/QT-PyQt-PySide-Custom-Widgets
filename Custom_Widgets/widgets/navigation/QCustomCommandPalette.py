@@ -83,6 +83,18 @@ class _PaletteSearch(QLineEdit):
 
 
 class QCustomCommandPalette(QWidget):
+    # Qt Designer contract. WIDGET_MODULE is the FLAT public path --
+    # Custom_Widgets.QCustomCommandPalette is what .ui files carry in <header>, not the
+    # subpackage this file now lives in.
+    WIDGET_MODULE = "Custom_Widgets.QCustomCommandPalette"
+    WIDGET_TOOLTIP = "A fuzzy-searchable command launcher (Ctrl/Cmd+K)"
+    WIDGET_DOM_XML = """
+    <ui language='c++'>
+        <widget class='QCustomCommandPalette' name='qCustomCommandPalette'>
+            <property name='geometry'><rect><x>0</x><y>0</y><width>480</width><height>320</height></rect></property>
+        </widget>
+    </ui>
+    """
     commandTriggered = Signal(str)     # command id
     FADE_MS = 120
 

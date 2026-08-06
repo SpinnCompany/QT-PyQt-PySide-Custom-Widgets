@@ -47,6 +47,18 @@ class LoadForm(QWidget):
         self.style().drawPrimitive(QStyle.PE_Widget, opt, painter, self)
 
 class QCustomEmbeddedWindow(QWidget):
+    # Qt Designer contract. WIDGET_MODULE is the FLAT public path --
+    # Custom_Widgets.QCustomEmbeddedWindow is what .ui files carry in <header>, not the
+    # subpackage this file now lives in.
+    WIDGET_MODULE = "Custom_Widgets.QCustomEmbeddedWindow"
+    WIDGET_TOOLTIP = "A draggable in-app window frame"
+    WIDGET_DOM_XML = """
+    <ui language='c++'>
+        <widget class='QCustomEmbeddedWindow' name='qCustomEmbeddedWindow'>
+            <property name='geometry'><rect><x>0</x><y>0</y><width>400</width><height>300</height></rect></property>
+        </widget>
+    </ui>
+    """
 
     closed = Signal()
 

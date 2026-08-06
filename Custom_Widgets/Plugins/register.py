@@ -1549,3 +1549,182 @@ try:
     installDesignerTools()
 except Exception as e:
     logException(e, message="Error installing Designer tools")
+
+
+########################################################################
+## Widgets that had no Designer contract at all, so they could not be placed
+## on a form despite the project rule that every widget is authorable in Qt
+## Designer. Each declares WIDGET_MODULE / WIDGET_TOOLTIP / WIDGET_DOM_XML in
+## its own module and instantiates from a bare parent.
+##
+## No icon= argument: 44 of the already-registered widgets point WIDGET_ICON at
+## files that do not exist, so they show nothing in the palette anyway. Adding
+## 16 more broken paths would grow that problem; Designer's default icon is the
+## honest fallback until real icons are drawn.
+########################################################################
+
+from Custom_Widgets.QCustom3CirclesLoader import QCustom3CirclesLoader
+
+try:
+    logInfo("Registering QCustom3CirclesLoader")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustom3CirclesLoader, module=QCustom3CirclesLoader.WIDGET_MODULE,
+        tool_tip=QCustom3CirclesLoader.WIDGET_TOOLTIP, xml=QCustom3CirclesLoader.WIDGET_DOM_XML,
+        group="Progressbars")
+except Exception as e:
+    logException(e, message="Error registering QCustom3CirclesLoader")
+
+from Custom_Widgets.QCustomArcLoader import QCustomArcLoader
+
+try:
+    logInfo("Registering QCustomArcLoader")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomArcLoader, module=QCustomArcLoader.WIDGET_MODULE,
+        tool_tip=QCustomArcLoader.WIDGET_TOOLTIP, xml=QCustomArcLoader.WIDGET_DOM_XML,
+        group="Progressbars")
+except Exception as e:
+    logException(e, message="Error registering QCustomArcLoader")
+
+from Custom_Widgets.QCustomPerlinLoader import QCustomPerlinLoader
+
+try:
+    logInfo("Registering QCustomPerlinLoader")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomPerlinLoader, module=QCustomPerlinLoader.WIDGET_MODULE,
+        tool_tip=QCustomPerlinLoader.WIDGET_TOOLTIP, xml=QCustomPerlinLoader.WIDGET_DOM_XML,
+        group="Progressbars")
+except Exception as e:
+    logException(e, message="Error registering QCustomPerlinLoader")
+
+from Custom_Widgets.QCustomSpinner import QCustomSpinner
+
+try:
+    logInfo("Registering QCustomSpinner")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomSpinner, module=QCustomSpinner.WIDGET_MODULE,
+        tool_tip=QCustomSpinner.WIDGET_TOOLTIP, xml=QCustomSpinner.WIDGET_DOM_XML,
+        group="Progressbars")
+except Exception as e:
+    logException(e, message="Error registering QCustomSpinner")
+
+from Custom_Widgets.QFlowProgressBar import QFlowProgressBar
+
+try:
+    logInfo("Registering QFlowProgressBar")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QFlowProgressBar, module=QFlowProgressBar.WIDGET_MODULE,
+        tool_tip=QFlowProgressBar.WIDGET_TOOLTIP, xml=QFlowProgressBar.WIDGET_DOM_XML,
+        group="Progressbars")
+except Exception as e:
+    logException(e, message="Error registering QFlowProgressBar")
+
+from Custom_Widgets.QCustomProgressIndicator import QCustomProgressIndicator
+
+try:
+    logInfo("Registering QCustomProgressIndicator")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomProgressIndicator, module=QCustomProgressIndicator.WIDGET_MODULE,
+        tool_tip=QCustomProgressIndicator.WIDGET_TOOLTIP, xml=QCustomProgressIndicator.WIDGET_DOM_XML,
+        group="Progressbars")
+except Exception as e:
+    logException(e, message="Error registering QCustomProgressIndicator")
+
+from Custom_Widgets.QCustomQSlider import QCustomQSlider
+
+try:
+    logInfo("Registering QCustomQSlider")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomQSlider, module=QCustomQSlider.WIDGET_MODULE,
+        tool_tip=QCustomQSlider.WIDGET_TOOLTIP, xml=QCustomQSlider.WIDGET_DOM_XML,
+        group="Input Widgets")
+except Exception as e:
+    logException(e, message="Error registering QCustomQSlider")
+
+from Custom_Widgets.QCustomTagEdit import QTagEdit
+
+try:
+    logInfo("Registering QTagEdit")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QTagEdit, module=QTagEdit.WIDGET_MODULE,
+        tool_tip=QTagEdit.WIDGET_TOOLTIP, xml=QTagEdit.WIDGET_DOM_XML,
+        group="Input Widgets")
+except Exception as e:
+    logException(e, message="Error registering QTagEdit")
+
+from Custom_Widgets.QCustomForm import QCustomForm
+
+try:
+    logInfo("Registering QCustomForm")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomForm, module=QCustomForm.WIDGET_MODULE,
+        tool_tip=QCustomForm.WIDGET_TOOLTIP, xml=QCustomForm.WIDGET_DOM_XML,
+        group="Input Widgets")
+except Exception as e:
+    logException(e, message="Error registering QCustomForm")
+
+
+from Custom_Widgets.QCustomQPushButtonGroup import QCustomQPushButtonGroup
+
+try:
+    logInfo("Registering QCustomQPushButtonGroup")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomQPushButtonGroup, module=QCustomQPushButtonGroup.WIDGET_MODULE,
+        tool_tip=QCustomQPushButtonGroup.WIDGET_TOOLTIP, xml=QCustomQPushButtonGroup.WIDGET_DOM_XML,
+        group="Buttons")
+except Exception as e:
+    logException(e, message="Error registering QCustomQPushButtonGroup")
+
+from Custom_Widgets.QCustomCommandPalette import QCustomCommandPalette
+
+try:
+    logInfo("Registering QCustomCommandPalette")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomCommandPalette, module=QCustomCommandPalette.WIDGET_MODULE,
+        tool_tip=QCustomCommandPalette.WIDGET_TOOLTIP, xml=QCustomCommandPalette.WIDGET_DOM_XML,
+        group="Navigation")
+except Exception as e:
+    logException(e, message="Error registering QCustomCommandPalette")
+
+from Custom_Widgets.QCustomDrawer import QCustomDrawer
+
+try:
+    logInfo("Registering QCustomDrawer")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomDrawer, module=QCustomDrawer.WIDGET_MODULE,
+        tool_tip=QCustomDrawer.WIDGET_TOOLTIP, xml=QCustomDrawer.WIDGET_DOM_XML,
+        group="Navigation")
+except Exception as e:
+    logException(e, message="Error registering QCustomDrawer")
+
+from Custom_Widgets.QCustomSlideMenu import QCustomSlideMenu
+
+try:
+    logInfo("Registering QCustomSlideMenu")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomSlideMenu, module=QCustomSlideMenu.WIDGET_MODULE,
+        tool_tip=QCustomSlideMenu.WIDGET_TOOLTIP, xml=QCustomSlideMenu.WIDGET_DOM_XML,
+        group="Navigation")
+except Exception as e:
+    logException(e, message="Error registering QCustomSlideMenu")
+
+from Custom_Widgets.QCustomEmbeddedWindow import QCustomEmbeddedWindow
+
+try:
+    logInfo("Registering QCustomEmbeddedWindow")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomEmbeddedWindow, module=QCustomEmbeddedWindow.WIDGET_MODULE,
+        tool_tip=QCustomEmbeddedWindow.WIDGET_TOOLTIP, xml=QCustomEmbeddedWindow.WIDGET_DOM_XML,
+        group="Containers")
+except Exception as e:
+    logException(e, message="Error registering QCustomEmbeddedWindow")
+
+from Custom_Widgets.QCustomCodeEditor import QCustomCodeEditor
+
+try:
+    logInfo("Registering QCustomCodeEditor")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomCodeEditor, module=QCustomCodeEditor.WIDGET_MODULE,
+        tool_tip=QCustomCodeEditor.WIDGET_TOOLTIP, xml=QCustomCodeEditor.WIDGET_DOM_XML,
+        group="Input Widgets")
+except Exception as e:
+    logException(e, message="Error registering QCustomCodeEditor")
