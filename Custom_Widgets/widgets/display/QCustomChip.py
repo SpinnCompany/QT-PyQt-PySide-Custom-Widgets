@@ -102,7 +102,7 @@ class QCustomChipGroup(QWidget):
     chipRemoved = Signal(object)        # data of removed chip
     selectionChanged = Signal(list)     # list of selected data
 
-    WIDGET_ICON = "components/icons/chips.png"
+    WIDGET_ICON = "components/icons/label.png"
     WIDGET_TOOLTIP = "A wrapping group of chips / tags"
     WIDGET_MODULE = "Custom_Widgets.QCustomChip"
     WIDGET_DOM_XML = """

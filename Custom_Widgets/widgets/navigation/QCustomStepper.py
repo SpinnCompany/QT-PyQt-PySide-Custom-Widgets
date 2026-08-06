@@ -18,7 +18,7 @@ from qtpy.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel, QFrame
 class QCustomStepper(QWidget):
     currentStepChanged = Signal(int)
 
-    WIDGET_ICON = "components/icons/stepper.png"
+    WIDGET_ICON = "components/icons/linear_scale.png"
     WIDGET_TOOLTIP = "A step progress indicator"
     WIDGET_MODULE = "Custom_Widgets.QCustomStepper"
     WIDGET_DOM_XML = """

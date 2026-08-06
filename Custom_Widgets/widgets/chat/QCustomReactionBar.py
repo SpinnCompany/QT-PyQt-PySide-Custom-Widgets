@@ -91,7 +91,7 @@ class QCustomReactionBar(QWidget):
     reactionClicked = Signal(str)
     addRequested = Signal()
 
-    WIDGET_ICON = "components/icons/reaction_bar.png"
+    WIDGET_ICON = "components/icons/emoji_emotions.png"
     WIDGET_TOOLTIP = "A row of emoji reaction chips"
     WIDGET_MODULE = "Custom_Widgets.QCustomReactionBar"
     WIDGET_DOM_XML = """

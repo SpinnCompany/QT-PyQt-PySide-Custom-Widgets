@@ -52,7 +52,7 @@ class _ModalCloseButton(QPushButton):
 
 class QCustomModal(QWidget):
 
-    WIDGET_ICON = "components/icons/modal.png"
+    WIDGET_ICON = "components/icons/web_asset.png"
     WIDGET_TOOLTIP = "A modern centered modal dialog with a dim backdrop"
     WIDGET_MODULE = "Custom_Widgets.QCustomModal"
     WIDGET_DOM_XML = """

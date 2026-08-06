@@ -26,7 +26,7 @@ class QCustomVideoPlayer(QWidget):
     playToggled = Signal(bool)
     seeked = Signal(float)
 
-    WIDGET_ICON = "components/icons/video_player.png"
+    WIDGET_ICON = "components/icons/play_circle.png"
     WIDGET_TOOLTIP = "A poster-framed media / video player card"
     WIDGET_MODULE = "Custom_Widgets.QCustomVideoPlayer"
     WIDGET_DOM_XML = """

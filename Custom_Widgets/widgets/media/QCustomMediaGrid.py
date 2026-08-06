@@ -76,7 +76,7 @@ class QCustomMediaGrid(QWidget):
 
     tileClicked = Signal(int)
 
-    WIDGET_ICON = "components/icons/media_grid.png"
+    WIDGET_ICON = "components/icons/collections.png"
     WIDGET_TOOLTIP = "A data-driven thumbnail gallery"
     WIDGET_MODULE = "Custom_Widgets.QCustomMediaGrid"
     WIDGET_DOM_XML = """

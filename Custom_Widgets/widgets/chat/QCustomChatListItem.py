@@ -66,7 +66,7 @@ class QCustomChatListItem(QFrame):
 
     clicked = Signal()
 
-    WIDGET_ICON = "components/icons/chat_list_item.png"
+    WIDGET_ICON = "components/icons/chat.png"
     WIDGET_TOOLTIP = "A conversation row for a messenger list"
     WIDGET_MODULE = "Custom_Widgets.QCustomChatListItem"
     WIDGET_DOM_XML = """

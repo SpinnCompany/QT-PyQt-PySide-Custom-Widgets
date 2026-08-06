@@ -15,7 +15,7 @@ from qtpy.QtWidgets import QTreeWidget, QTreeWidgetItem
 
 
 class QCustomTreeWidget(QTreeWidget):
-    WIDGET_ICON = "components/icons/tree.png"
+    WIDGET_ICON = "components/icons/account_tree.png"
     WIDGET_TOOLTIP = "A hierarchical tree"
     WIDGET_MODULE = "Custom_Widgets.QCustomTreeWidget"
     WIDGET_DOM_XML = """

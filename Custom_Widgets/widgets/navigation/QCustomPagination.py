@@ -38,7 +38,7 @@ def pages_to_show(current, total, window=1):
 class QCustomPagination(QWidget):
     pageChanged = Signal(int)      # 1-based current page
 
-    WIDGET_ICON = "components/icons/pagination.png"
+    WIDGET_ICON = "components/icons/more_horiz.png"
     WIDGET_TOOLTIP = "Page navigation"
     WIDGET_MODULE = "Custom_Widgets.QCustomPagination"
     WIDGET_DOM_XML = """

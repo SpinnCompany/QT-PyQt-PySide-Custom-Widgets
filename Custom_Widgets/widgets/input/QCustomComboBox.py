@@ -22,7 +22,7 @@ from qtpy.QtWidgets import QComboBox, QCompleter
 
 class QCustomComboBox(QComboBox):
     # Designer registration
-    WIDGET_ICON = "components/icons/combobox.png"
+    WIDGET_ICON = "components/icons/expand_circle_down.png"
     WIDGET_TOOLTIP = "A searchable / autocomplete select"
     WIDGET_MODULE = "Custom_Widgets.QCustomComboBox"
     WIDGET_DOM_XML = """

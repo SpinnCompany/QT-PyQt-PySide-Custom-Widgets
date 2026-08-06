@@ -89,7 +89,7 @@ class QCustomLinkPreview(QWidget):
 
     clicked = Signal(str)
 
-    WIDGET_ICON = "components/icons/link_preview.png"
+    WIDGET_ICON = "components/icons/link.png"
     WIDGET_TOOLTIP = "A shared-link preview card"
     WIDGET_MODULE = "Custom_Widgets.QCustomLinkPreview"
     WIDGET_DOM_XML = """

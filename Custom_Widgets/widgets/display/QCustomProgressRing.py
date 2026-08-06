@@ -21,7 +21,7 @@ from qtpy.QtWidgets import QWidget, QSizePolicy
 class QCustomProgressRing(QWidget):
     valueChanged = Signal(int)
 
-    WIDGET_ICON = "components/icons/progressring.png"
+    WIDGET_ICON = "components/icons/data_usage.png"
     WIDGET_TOOLTIP = "A circular progress ring"
     WIDGET_MODULE = "Custom_Widgets.QCustomProgressRing"
     WIDGET_DOM_XML = """

@@ -22,7 +22,7 @@ class QCustomLineChart(QCustomChartBase, AxisChartProps, SeriesStyleProps,
     """
     
     # Designer registration constants
-    WIDGET_ICON = "components/icons/line_chart.png"
+    WIDGET_ICON = "components/icons/show_chart.png"
     WIDGET_TOOLTIP = "Customizable line series chart with advanced styling"
     WIDGET_DOM_XML = """
     <ui language='c++'>

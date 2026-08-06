@@ -32,7 +32,7 @@ class QCustomRulerPicker(QWidget):
 
     valueChanged = Signal(float)
 
-    WIDGET_ICON = "components/icons/ruler.png"
+    WIDGET_ICON = "components/icons/straighten.png"
     WIDGET_TOOLTIP = "A numbered tick-ruler value selector (weight / height)"
     WIDGET_MODULE = "Custom_Widgets.QCustomRulerPicker"
     WIDGET_DOM_XML = """
