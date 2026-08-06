@@ -95,6 +95,18 @@ class ArcLoader:
         self.parent.update()
 
 class QCustomArcLoader(QFrame):
+    # Qt Designer contract. WIDGET_MODULE is the FLAT public path --
+    # Custom_Widgets.QCustomArcLoader is what .ui files carry in <header>, not the
+    # subpackage this file now lives in.
+    WIDGET_MODULE = "Custom_Widgets.QCustomArcLoader"
+    WIDGET_TOOLTIP = "A spinning arc loading indicator"
+    WIDGET_DOM_XML = """
+    <ui language='c++'>
+        <widget class='QCustomArcLoader' name='qCustomArcLoader'>
+            <property name='geometry'><rect><x>0</x><y>0</y><width>64</width><height>64</height></rect></property>
+        </widget>
+    </ui>
+    """
     def __init__(
             self, 
             parent=None,

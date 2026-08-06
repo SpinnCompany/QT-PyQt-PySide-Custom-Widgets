@@ -4,6 +4,18 @@ from qtpy.QtWidgets import QWidget
 from typing import List
 
 class QFlowProgressBar(QWidget):
+    # Qt Designer contract. WIDGET_MODULE is the FLAT public path --
+    # Custom_Widgets.QFlowProgressBar is what .ui files carry in <header>, not the
+    # subpackage this file now lives in.
+    WIDGET_MODULE = "Custom_Widgets.QFlowProgressBar"
+    WIDGET_TOOLTIP = "An animated multi-step flow progress bar"
+    WIDGET_DOM_XML = """
+    <ui language='c++'>
+        <widget class='QFlowProgressBar' name='qFlowProgressBar'>
+            <property name='geometry'><rect><x>0</x><y>0</y><width>320</width><height>60</height></rect></property>
+        </widget>
+    </ui>
+    """
     onStepClicked = Signal(int)  # Define the signal for step clicks
 
     class Styles:

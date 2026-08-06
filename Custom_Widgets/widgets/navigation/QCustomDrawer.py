@@ -22,6 +22,18 @@ _SIDES = ("left", "right", "top", "bottom")
 
 
 class QCustomDrawer(QWidget):
+    # Qt Designer contract. WIDGET_MODULE is the FLAT public path --
+    # Custom_Widgets.QCustomDrawer is what .ui files carry in <header>, not the
+    # subpackage this file now lives in.
+    WIDGET_MODULE = "Custom_Widgets.QCustomDrawer"
+    WIDGET_TOOLTIP = "A slide-in side panel / sheet"
+    WIDGET_DOM_XML = """
+    <ui language='c++'>
+        <widget class='QCustomDrawer' name='qCustomDrawer'>
+            <property name='geometry'><rect><x>0</x><y>0</y><width>260</width><height>400</height></rect></property>
+        </widget>
+    </ui>
+    """
     opened = Signal()
     closed = Signal()
     SLIDE_MS = 220

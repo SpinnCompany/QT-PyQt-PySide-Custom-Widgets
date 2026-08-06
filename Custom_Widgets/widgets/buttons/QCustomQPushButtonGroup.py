@@ -17,6 +17,18 @@ from qtpy.QtWidgets import QPushButton
 ## GROUP BUTTONS
 ########################################################################
 class QCustomQPushButtonGroup(QPushButton):
+    # Qt Designer contract. WIDGET_MODULE is the FLAT public path --
+    # Custom_Widgets.QCustomQPushButtonGroup is what .ui files carry in <header>, not the
+    # subpackage this file now lives in.
+    WIDGET_MODULE = "Custom_Widgets.QCustomQPushButtonGroup"
+    WIDGET_TOOLTIP = "A button group with active/inactive state management"
+    WIDGET_DOM_XML = """
+    <ui language='c++'>
+        <widget class='QCustomQPushButtonGroup' name='qCustomQPushButtonGroup'>
+            <property name='geometry'><rect><x>0</x><y>0</y><width>320</width><height>40</height></rect></property>
+        </widget>
+    </ui>
+    """
     def __init__(self, parent=None):
         super().__init__(parent)
 

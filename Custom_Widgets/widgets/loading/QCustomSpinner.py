@@ -10,6 +10,18 @@ from qtpy.QtWidgets import QWidget
 from qtpy.QtGui import QPainter, QPen, QPalette, QColor
 
 class QCustomSpinner(QWidget):
+    # Qt Designer contract. WIDGET_MODULE is the FLAT public path --
+    # Custom_Widgets.QCustomSpinner is what .ui files carry in <header>, not the
+    # subpackage this file now lives in.
+    WIDGET_MODULE = "Custom_Widgets.QCustomSpinner"
+    WIDGET_TOOLTIP = "A lightweight spinning busy indicator"
+    WIDGET_DOM_XML = """
+    <ui language='c++'>
+        <widget class='QCustomSpinner' name='qCustomSpinner'>
+            <property name='geometry'><rect><x>0</x><y>0</y><width>48</width><height>48</height></rect></property>
+        </widget>
+    </ui>
+    """
     def __init__(self, lineWidth = 2, lineColor = None, direction = "Clockwise", borderRadius = 3, animationType = "Bounce"):
         super().__init__()
 

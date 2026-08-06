@@ -6,6 +6,18 @@ from Custom_Widgets.QCustomFlowLayout import QCustomFlowLayout
 
 class QTagEdit(QtWidgets.QScrollArea):
     """A tag based edit"""
+    # Qt Designer contract. WIDGET_MODULE is the FLAT public path --
+    # Custom_Widgets.QCustomTagEdit is what .ui files carry in <header>, not the
+    # subpackage this file now lives in.
+    WIDGET_MODULE = "Custom_Widgets.QCustomTagEdit"
+    WIDGET_TOOLTIP = "A tag input field with removable chips"
+    WIDGET_DOM_XML = """
+    <ui language='c++'>
+        <widget class='QTagEdit' name='qTagEdit'>
+            <property name='geometry'><rect><x>0</x><y>0</y><width>260</width><height>90</height></rect></property>
+        </widget>
+    </ui>
+    """
 
     def __init__(self, parent: QtWidgets = None, tag_suggestions: typing.List[str] = []):
         super().__init__(parent)

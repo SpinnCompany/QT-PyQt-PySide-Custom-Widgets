@@ -24,6 +24,18 @@ from qtpy.QtWidgets import QFrame, QWidget
 
 
 class QCustomPerlinLoader(QFrame):
+    # Qt Designer contract. WIDGET_MODULE is the FLAT public path --
+    # Custom_Widgets.QCustomPerlinLoader is what .ui files carry in <header>, not the
+    # subpackage this file now lives in.
+    WIDGET_MODULE = "Custom_Widgets.QCustomPerlinLoader"
+    WIDGET_TOOLTIP = "A Perlin-noise blob loading animation"
+    WIDGET_DOM_XML = """
+    <ui language='c++'>
+        <widget class='QCustomPerlinLoader' name='qCustomPerlinLoader'>
+            <property name='geometry'><rect><x>0</x><y>0</y><width>96</width><height>96</height></rect></property>
+        </widget>
+    </ui>
+    """
     def __init__(self, parent: Optional[QWidget] = None,
                 size: QSize = QSize(600, 600),
                 message: str = "LOADING...",

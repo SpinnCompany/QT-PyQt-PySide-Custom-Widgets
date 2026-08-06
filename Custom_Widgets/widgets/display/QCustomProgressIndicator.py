@@ -25,6 +25,18 @@ import warnings
 ## FORM PROGRESS INDICATOR
 ########################################################################
 class QCustomProgressIndicator(QWidget):
+    # Qt Designer contract. WIDGET_MODULE is the FLAT public path --
+    # Custom_Widgets.QCustomProgressIndicator is what .ui files carry in <header>, not the
+    # subpackage this file now lives in.
+    WIDGET_MODULE = "Custom_Widgets.QCustomProgressIndicator"
+    WIDGET_TOOLTIP = "A multi-step progress indicator for wizards and forms"
+    WIDGET_DOM_XML = """
+    <ui language='c++'>
+        <widget class='QCustomProgressIndicator' name='qCustomProgressIndicator'>
+            <property name='geometry'><rect><x>0</x><y>0</y><width>320</width><height>60</height></rect></property>
+        </widget>
+    </ui>
+    """
     def __init__(self, parent=None):
         super(QCustomProgressIndicator, self).__init__(parent)
         # Try to add layout if does not exist

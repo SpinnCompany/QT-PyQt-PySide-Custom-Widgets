@@ -71,6 +71,12 @@ DESIGNER_WAIVED = {
     # meaningless: they position themselves over a parent at runtime.
     "QCustomTipOverlay": "transient overlay, positioned at runtime",
     "QCustomPopover": "transient overlay, anchored to a trigger at runtime",
+    # Every __init__ arg has a default, so it LOOKS registrable, but it is an
+    # anchored popup: with target=None it raises
+    # AttributeError: 'NoneType' object has no attribute 'mapToGlobal'
+    # even when given a parent. Registering it would break Designer. Found by
+    # instantiating each candidate rather than trusting the signature.
+    "QCustomEmojiPicker": "anchored popup; needs a target widget, not just a parent",
     "QCustomQDialog": "dialog shown modally, not a child placed on a form",
     # Registering this would import QtLocation into every Designer startup for
     # a widget that only exists when the optional [map] extra is installed.
