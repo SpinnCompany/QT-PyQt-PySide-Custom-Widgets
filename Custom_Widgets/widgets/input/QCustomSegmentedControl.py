@@ -18,7 +18,7 @@ from qtpy.QtWidgets import QWidget, QHBoxLayout, QPushButton, QButtonGroup
 class QCustomSegmentedControl(QWidget):
     currentChanged = Signal(int)
 
-    WIDGET_ICON = "components/icons/segmented.png"
+    WIDGET_ICON = "components/icons/view_module.png"
     WIDGET_TOOLTIP = "A single-select segmented control"
     WIDGET_MODULE = "Custom_Widgets.QCustomSegmentedControl"
     WIDGET_DOM_XML = """

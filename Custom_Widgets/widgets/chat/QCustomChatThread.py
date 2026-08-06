@@ -50,7 +50,7 @@ class QCustomChatThread(QFrame):
     # (url) — an inline link preview was clicked.
     linkClicked = Signal(str)
 
-    WIDGET_ICON = "components/icons/chat_thread.png"
+    WIDGET_ICON = "components/icons/question_answer.png"
     WIDGET_TOOLTIP = "A data-driven chat message thread"
     WIDGET_MODULE = "Custom_Widgets.QCustomChatThread"
     WIDGET_DOM_XML = """

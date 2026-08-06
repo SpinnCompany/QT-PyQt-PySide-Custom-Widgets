@@ -39,7 +39,7 @@ class QCustomBubbleChart(QWidget):
     searchRequested = Signal()
     zoomChanged = Signal(float)
 
-    WIDGET_ICON = "components/icons/bubble.png"
+    WIDGET_ICON = "components/icons/bubble_chart.png"
     WIDGET_TOOLTIP = "An interactive packed-circle (bubble) chart"
     WIDGET_MODULE = "Custom_Widgets.QCustomBubbleChart"
     WIDGET_DOM_XML = """

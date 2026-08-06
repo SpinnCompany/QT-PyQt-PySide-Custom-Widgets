@@ -32,6 +32,36 @@ setupLogger(designer = True)
 
 import PySide6.QtDesigner as QtDesigner
 
+
+def _iconFor(widget):
+    """Absolute, existing path for a widget's Designer palette icon, or "".
+
+    Most widgets declare a BARE RELATIVE WIDGET_ICON
+    ("components/icons/combobox.png"). Designer resolves that against its own
+    working directory, not the package, so the icon silently never loads even
+    though the file is right there — 44 registered widgets were in exactly that
+    state. Anchor it to the package instead.
+
+    A path that does not resolve returns "" rather than a dead path: Designer
+    then draws its default placeholder instead of a broken-image box, and the
+    difference tells you the icon is genuinely missing rather than mislocated.
+    """
+    path = getattr(widget, "WIDGET_ICON", "") or ""
+    if not path:
+        return ""
+    if not _os.path.isabs(path):
+        path = _os.path.normpath(_os.path.join(_PKG_DIR, path))
+    return path if _os.path.isfile(path) else ""
+
+
+try:
+    from Custom_Widgets._resources import packageDir as _packageDir
+    _PKG_DIR = _packageDir()
+except Exception:
+    # Fall back to this file's grandparent (Custom_Widgets/), so a failure to
+    # import the helper degrades to no icons rather than no widgets.
+    _PKG_DIR = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))
+
 logInfo("Registering Custom Widgets")
 
 # Capture the form editor core (needed to open forms into this Designer
@@ -55,7 +85,7 @@ try:
         QCustomQMainWindow, module=QCustomQMainWindow.WIDGET_MODULE,
         tool_tip=QCustomQMainWindow.WIDGET_TOOLTIP, 
         xml=QCustomQMainWindow.WIDGET_DOM_XML,
-        icon=QCustomQMainWindow.WIDGET_ICON, container=True, group="Main Window"
+        icon=_iconFor(QCustomQMainWindow), container=True, group="Main Window"
     )
 except Exception as e:
     logException(e, message="Error registering QCustomQMainWindow")
@@ -70,7 +100,7 @@ try:
         QCustomQPushButton, module=QCustomQPushButton.WIDGET_MODULE,
         tool_tip=QCustomQPushButton.WIDGET_TOOLTIP,
         xml=QCustomQPushButton.WIDGET_DOM_XML,
-        icon=QCustomQPushButton.WIDGET_ICON, group="Buttons"
+        icon=_iconFor(QCustomQPushButton), group="Buttons"
     )
 except Exception as e:
     logException(e, message="Error registering QCustomQPushButton")
@@ -85,7 +115,7 @@ try:
         QAvatarWidget, module=QAvatarWidget.WIDGET_MODULE,
         tool_tip=QAvatarWidget.WIDGET_TOOLTIP, 
         xml=QAvatarWidget.WIDGET_DOM_XML,
-        icon=QAvatarWidget.WIDGET_ICON
+        icon=_iconFor(QAvatarWidget)
     )
 except Exception as e:
     logException(e, message="Error registering QAvatarWidget")
@@ -100,7 +130,7 @@ try:
         QCustomBadge, module=QCustomBadge.WIDGET_MODULE,
         tool_tip=QCustomBadge.WIDGET_TOOLTIP,
         xml=QCustomBadge.WIDGET_DOM_XML,
-        icon=QCustomBadge.WIDGET_ICON, group="Display Widgets"
+        icon=_iconFor(QCustomBadge), group="Display Widgets"
     )
 except Exception as e:
     logException(e, message="Error registering QCustomBadge")
@@ -115,7 +145,7 @@ try:
         AnalogGaugeWidget, module=AnalogGaugeWidget.WIDGET_MODULE,
         tool_tip=AnalogGaugeWidget.WIDGET_TOOLTIP, 
         xml=AnalogGaugeWidget.WIDGET_DOM_XML,
-        icon=AnalogGaugeWidget.WIDGET_ICON
+        icon=_iconFor(AnalogGaugeWidget)
     )
 except Exception as e:
     logException(e, message="Error registering AnalogGaugeWidget")
@@ -130,7 +160,7 @@ try:
         QCustomDataTable, module=QCustomDataTable.WIDGET_MODULE,
         tool_tip=QCustomDataTable.WIDGET_TOOLTIP,
         xml=QCustomDataTable.WIDGET_DOM_XML,
-        icon=QCustomDataTable.WIDGET_ICON, group="Item Views"
+        icon=_iconFor(QCustomDataTable), group="Item Views"
     )
 except Exception as e:
     logException(e, message="Error registering QCustomDataTable")
@@ -145,7 +175,7 @@ try:
         QCustomTableToolbar, module=QCustomTableToolbar.WIDGET_MODULE,
         tool_tip=QCustomTableToolbar.WIDGET_TOOLTIP,
         xml=QCustomTableToolbar.WIDGET_DOM_XML,
-        icon=QCustomTableToolbar.WIDGET_ICON, group="Item Views"
+        icon=_iconFor(QCustomTableToolbar), group="Item Views"
     )
 except Exception as e:
     logException(e, message="Error registering QCustomTableToolbar")
@@ -160,7 +190,7 @@ try:
         QCustomComboBox, module=QCustomComboBox.WIDGET_MODULE,
         tool_tip=QCustomComboBox.WIDGET_TOOLTIP,
         xml=QCustomComboBox.WIDGET_DOM_XML,
-        icon=QCustomComboBox.WIDGET_ICON, group="Input Widgets"
+        icon=_iconFor(QCustomComboBox), group="Input Widgets"
     )
 except Exception as e:
     logException(e, message="Error registering QCustomComboBox")
@@ -176,7 +206,7 @@ for _dtw, _grp in ((QCustomDateEdit, "Input Widgets"),
         logInfo("Registering %s" % _dtw.__name__)
         QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
             _dtw, module=_dtw.WIDGET_MODULE, tool_tip=_dtw.WIDGET_TOOLTIP,
-            xml=_dtw.WIDGET_DOM_XML, icon=_dtw.WIDGET_ICON, group=_grp)
+            xml=_dtw.WIDGET_DOM_XML, icon=_iconFor(_dtw), group=_grp)
     except Exception as e:
         logException(e, message="Error registering %s" % _dtw.__name__)
 
@@ -189,7 +219,7 @@ for _ctr, _cont in ((QCustomTabWidget, True), (QCustomAccordion, False)):
         logInfo("Registering %s" % _ctr.__name__)
         QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
             _ctr, module=_ctr.WIDGET_MODULE, tool_tip=_ctr.WIDGET_TOOLTIP,
-            xml=_ctr.WIDGET_DOM_XML, icon=_ctr.WIDGET_ICON,
+            xml=_ctr.WIDGET_DOM_XML, icon=_iconFor(_ctr),
             container=_cont, group="Containers")
     except Exception as e:
         logException(e, message="Error registering %s" % _ctr.__name__)
@@ -203,7 +233,7 @@ for _w, _grp in ((QCustomTreeWidget, "Item Views"), (QCustomStepper, "Display Wi
         logInfo("Registering %s" % _w.__name__)
         QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
             _w, module=_w.WIDGET_MODULE, tool_tip=_w.WIDGET_TOOLTIP,
-            xml=_w.WIDGET_DOM_XML, icon=_w.WIDGET_ICON, group=_grp)
+            xml=_w.WIDGET_DOM_XML, icon=_iconFor(_w), group=_grp)
     except Exception as e:
         logException(e, message="Error registering %s" % _w.__name__)
 
@@ -216,7 +246,7 @@ for _iw in (QCustomRichTextEditor, QCustomColorPicker):
         logInfo("Registering %s" % _iw.__name__)
         QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
             _iw, module=_iw.WIDGET_MODULE, tool_tip=_iw.WIDGET_TOOLTIP,
-            xml=_iw.WIDGET_DOM_XML, icon=_iw.WIDGET_ICON, group="Input Widgets")
+            xml=_iw.WIDGET_DOM_XML, icon=_iconFor(_iw), group="Input Widgets")
     except Exception as e:
         logException(e, message="Error registering %s" % _iw.__name__)
 
@@ -230,7 +260,7 @@ for _dw in (QCustomBreadcrumbs, QCustomRating, QCustomChipGroup):
         logInfo("Registering %s" % _dw.__name__)
         QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
             _dw, module=_dw.WIDGET_MODULE, tool_tip=_dw.WIDGET_TOOLTIP,
-            xml=_dw.WIDGET_DOM_XML, icon=_dw.WIDGET_ICON, group="Display Widgets")
+            xml=_dw.WIDGET_DOM_XML, icon=_iconFor(_dw), group="Display Widgets")
     except Exception as e:
         logException(e, message="Error registering %s" % _dw.__name__)
 
@@ -244,7 +274,7 @@ for _sw in (QCustomSkeleton, QCustomAvatarGroup, QCustomTimeline):
         logInfo("Registering %s" % _sw.__name__)
         QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
             _sw, module=_sw.WIDGET_MODULE, tool_tip=_sw.WIDGET_TOOLTIP,
-            xml=_sw.WIDGET_DOM_XML, icon=_sw.WIDGET_ICON, group="Display Widgets")
+            xml=_sw.WIDGET_DOM_XML, icon=_iconFor(_sw), group="Display Widgets")
     except Exception as e:
         logException(e, message="Error registering %s" % _sw.__name__)
 
@@ -257,7 +287,7 @@ for _pw in (QCustomPagination, QCustomSegmentedControl):
         logInfo("Registering %s" % _pw.__name__)
         QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
             _pw, module=_pw.WIDGET_MODULE, tool_tip=_pw.WIDGET_TOOLTIP,
-            xml=_pw.WIDGET_DOM_XML, icon=_pw.WIDGET_ICON, group="Input Widgets")
+            xml=_pw.WIDGET_DOM_XML, icon=_iconFor(_pw), group="Input Widgets")
     except Exception as e:
         logException(e, message="Error registering %s" % _pw.__name__)
 
@@ -273,7 +303,7 @@ for _xw, _xg in ((QCustomEmptyState, "Display Widgets"),
         logInfo("Registering %s" % _xw.__name__)
         QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
             _xw, module=_xw.WIDGET_MODULE, tool_tip=_xw.WIDGET_TOOLTIP,
-            xml=_xw.WIDGET_DOM_XML, icon=_xw.WIDGET_ICON, group=_xg)
+            xml=_xw.WIDGET_DOM_XML, icon=_iconFor(_xw), group=_xg)
     except Exception as e:
         logException(e, message="Error registering %s" % _xw.__name__)
 
@@ -303,7 +333,7 @@ for _nw, _ng in ((QCustomSwitch, "Input Widgets"),
         logInfo("Registering %s" % _nw.__name__)
         QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
             _nw, module=_nw.WIDGET_MODULE, tool_tip=_nw.WIDGET_TOOLTIP,
-            xml=_nw.WIDGET_DOM_XML, icon=_nw.WIDGET_ICON, group=_ng)
+            xml=_nw.WIDGET_DOM_XML, icon=_iconFor(_nw), group=_ng)
     except Exception as e:
         logException(e, message="Error registering %s" % _nw.__name__)
 
@@ -317,7 +347,7 @@ for _dw2, _dg2 in ((QCustomStatCard, "Display Widgets"),
         logInfo("Registering %s" % _dw2.__name__)
         QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
             _dw2, module=_dw2.WIDGET_MODULE, tool_tip=_dw2.WIDGET_TOOLTIP,
-            xml=_dw2.WIDGET_DOM_XML, icon=_dw2.WIDGET_ICON, group=_dg2)
+            xml=_dw2.WIDGET_DOM_XML, icon=_iconFor(_dw2), group=_dg2)
     except Exception as e:
         logException(e, message="Error registering %s" % _dw2.__name__)
 
@@ -330,7 +360,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomCard, module=QCustomCard.WIDGET_MODULE,
         tool_tip=QCustomCard.WIDGET_TOOLTIP, xml=QCustomCard.WIDGET_DOM_XML,
-        icon=QCustomCard.WIDGET_ICON, container=True, group="Containers")
+        icon=_iconFor(QCustomCard), container=True, group="Containers")
 except Exception as e:
     logException(e, message="Error registering QCustomCard")
 
@@ -344,7 +374,7 @@ try:
         QCustomThemeList, module=QCustomThemeList.WIDGET_MODULE,
         tool_tip=QCustomThemeList.WIDGET_TOOLTIP, 
         xml=QCustomThemeList.WIDGET_DOM_XML,
-        icon=QCustomThemeList.WIDGET_ICON
+        icon=_iconFor(QCustomThemeList)
     )
 except Exception as e:
     logException(e, message="Error registering QCustomThemeList")
@@ -358,7 +388,7 @@ try:
         QCustomThemeDarkLightToggle, module=QCustomThemeDarkLightToggle.WIDGET_MODULE,
         tool_tip=QCustomThemeDarkLightToggle.WIDGET_TOOLTIP, 
         xml=QCustomThemeDarkLightToggle.WIDGET_DOM_XML,
-        icon=QCustomThemeDarkLightToggle.WIDGET_ICON
+        icon=_iconFor(QCustomThemeDarkLightToggle)
     )
 except Exception as e:
     logException(e, message="Error registering QCustomThemeDarkLightToggle")
@@ -373,7 +403,7 @@ try:
         QCustomCheckBox, module=QCustomCheckBox.WIDGET_MODULE,
         tool_tip=QCustomCheckBox.WIDGET_TOOLTIP, 
         xml=QCustomCheckBox.WIDGET_DOM_XML,
-        icon=QCustomCheckBox.WIDGET_ICON
+        icon=_iconFor(QCustomCheckBox)
     )
 except Exception as e:
     logException(e, message="Error registering QCustomCheckBox")
@@ -388,7 +418,7 @@ try:
         QCustomSidebar, module=QCustomSidebar.WIDGET_MODULE,
         tool_tip=QCustomSidebar.WIDGET_TOOLTIP, 
         xml=QCustomSidebar.WIDGET_DOM_XML,
-        icon=QCustomSidebar.WIDGET_ICON, container=True, group="Sidebar"
+        icon=_iconFor(QCustomSidebar), container=True, group="Sidebar"
     )
 except Exception as e:
     logException(e, message="Error registering QCustomSidebar")
@@ -405,7 +435,7 @@ try:
         QCustomHamburgerMenu, module=QCustomHamburgerMenu.WIDGET_MODULE,
         tool_tip=QCustomHamburgerMenu.WIDGET_TOOLTIP, 
         xml=QCustomHamburgerMenu.WIDGET_DOM_XML,
-        icon=QCustomHamburgerMenu.WIDGET_ICON, container=True, group="Hamburger Menu"
+        icon=_iconFor(QCustomHamburgerMenu), container=True, group="Hamburger Menu"
     )
 except Exception as e:
     logException(e, message="Error registering QCustomHamburgerMenu")
@@ -420,7 +450,7 @@ try:
         QCustomHorizontalSeparator, module=QCustomHorizontalSeparator.WIDGET_MODULE,
         tool_tip=QCustomHorizontalSeparator.WIDGET_TOOLTIP, 
         xml=QCustomHorizontalSeparator.WIDGET_DOM_XML,
-        icon=QCustomHorizontalSeparator.WIDGET_ICON, container=False, group="Sidebar"
+        icon=_iconFor(QCustomHorizontalSeparator), container=False, group="Sidebar"
     )
 except Exception as e:
     logException(e, message="Error registering QCustomHorizontalSeparator")
@@ -434,7 +464,7 @@ try:
         QCustomVerticalSeparator, module=QCustomVerticalSeparator.WIDGET_MODULE,
         tool_tip=QCustomVerticalSeparator.WIDGET_TOOLTIP, 
         xml=QCustomVerticalSeparator.WIDGET_DOM_XML,
-        icon=QCustomVerticalSeparator.WIDGET_ICON, container=False, group="Sidebar"
+        icon=_iconFor(QCustomVerticalSeparator), container=False, group="Sidebar"
     )
 except Exception as e:
     logException(e, message="Error registering QCustomVerticalSeparator")
@@ -449,7 +479,7 @@ try:
         QCustomSidebarLabel, module=QCustomSidebarLabel.WIDGET_MODULE,
         tool_tip=QCustomSidebarLabel.WIDGET_TOOLTIP, 
         xml=QCustomSidebarLabel.WIDGET_DOM_XML,
-        icon=QCustomSidebarLabel.WIDGET_ICON, group="Sidebar"
+        icon=_iconFor(QCustomSidebarLabel), group="Sidebar"
     )
 except Exception as e:
     logException(e, message="Error registering QCustomSidebarLabel")
@@ -464,7 +494,7 @@ try:
         QCustomSidebarButton, module=QCustomSidebarButton.WIDGET_MODULE,
         tool_tip=QCustomSidebarButton.WIDGET_TOOLTIP, 
         xml=QCustomSidebarButton.WIDGET_DOM_XML,
-        icon=QCustomSidebarButton.WIDGET_ICON, group="Sidebar"
+        icon=_iconFor(QCustomSidebarButton), group="Sidebar"
     )
 except Exception as e:
     logException(e, message="Error registering QCustomSidebarButton")
@@ -479,7 +509,7 @@ try:
         QCustomSidebarContainer, module=QCustomSidebarContainer.WIDGET_MODULE,
         tool_tip=QCustomSidebarContainer.WIDGET_TOOLTIP, 
         xml=QCustomSidebarContainer.WIDGET_DOM_XML,
-        icon=QCustomSidebarContainer.WIDGET_ICON, container=True, group="Sidebar"
+        icon=_iconFor(QCustomSidebarContainer), container=True, group="Sidebar"
     )
 except Exception as e:
     logException(e, message="Error registering QCustomSidebarContainer")
@@ -493,7 +523,7 @@ try:
         QCustomRoundProgressBar, module=QCustomRoundProgressBar.WIDGET_MODULE,
         tool_tip=QCustomRoundProgressBar.WIDGET_TOOLTIP, 
         xml=QCustomRoundProgressBar.WIDGET_DOM_XML,
-        icon=QCustomRoundProgressBar.WIDGET_ICON, group="Progressbars"
+        icon=_iconFor(QCustomRoundProgressBar), group="Progressbars"
     )
 except Exception as e:
     logException(e, message="Error registering QCustomRoundProgressBar")
@@ -507,7 +537,7 @@ try:
         QCustomComponent, module=QCustomComponent.WIDGET_MODULE,
         tool_tip=QCustomComponent.WIDGET_TOOLTIP, 
         xml=QCustomComponent.WIDGET_DOM_XML,
-        icon=QCustomComponent.WIDGET_ICON, container=True, group="Component Container"
+        icon=_iconFor(QCustomComponent), container=True, group="Component Container"
     )
 except Exception as e:
     logException(e, message="Error registering QCustomComponent")
@@ -521,7 +551,7 @@ try:
         QCustomComponentContainer, module=QCustomComponentContainer.WIDGET_MODULE,
         tool_tip=QCustomComponentContainer.WIDGET_TOOLTIP, 
         xml=QCustomComponentContainer.WIDGET_DOM_XML,
-        icon=QCustomComponentContainer.WIDGET_ICON, container=False, group="Component Container"
+        icon=_iconFor(QCustomComponentContainer), container=False, group="Component Container"
     )
 except Exception as e:
     logException(e, message="Error registering QCustomComponentContainer")
@@ -534,7 +564,7 @@ try:
         QCustomQStackedWidget, module=QCustomQStackedWidget.WIDGET_MODULE,
         tool_tip=QCustomQStackedWidget.WIDGET_TOOLTIP, 
         xml=QCustomQStackedWidget.WIDGET_DOM_XML,
-        icon=QCustomQStackedWidget.WIDGET_ICON, container=True
+        icon=_iconFor(QCustomQStackedWidget), container=True
     )
 except Exception as e:
     logException(e, message="Error registering QCustomQStackedWidget")
@@ -548,7 +578,7 @@ try:
         QCustomQProgressBar, module=QCustomQProgressBar.WIDGET_MODULE,
         tool_tip=QCustomQProgressBar.WIDGET_TOOLTIP, 
         xml=QCustomQProgressBar.WIDGET_DOM_XML,
-        icon=QCustomQProgressBar.WIDGET_ICON, group="Progressbars"
+        icon=_iconFor(QCustomQProgressBar), group="Progressbars"
     )
 except Exception as e:
     logException(e, message="Error registering QCustomQProgressBar")
@@ -562,7 +592,7 @@ try:
         QCustomQRGenerator, module=QCustomQRGenerator.WIDGET_MODULE,
         tool_tip=QCustomQRGenerator.WIDGET_TOOLTIP, 
         xml=QCustomQRGenerator.WIDGET_DOM_XML,
-        icon=QCustomQRGenerator.WIDGET_ICON, container=False, group="QR Generator"
+        icon=_iconFor(QCustomQRGenerator), container=False, group="QR Generator"
     )
 except Exception as e:
     logException(e, message="Error registering QCustomQRGenerator")
@@ -577,7 +607,7 @@ try:
         module=QCustomLineChart.WIDGET_MODULE,
         tool_tip=QCustomLineChart.WIDGET_TOOLTIP, 
         xml=QCustomLineChart.WIDGET_DOM_XML,
-        icon=QCustomLineChart.WIDGET_ICON, 
+        icon=_iconFor(QCustomLineChart), 
         container=False, 
         group="Charts"
     )
@@ -597,7 +627,7 @@ try:
         module=QCustomBarChart.WIDGET_MODULE,
         tool_tip=QCustomBarChart.WIDGET_TOOLTIP, 
         xml=QCustomBarChart.WIDGET_DOM_XML,
-        icon=QCustomBarChart.WIDGET_ICON, 
+        icon=_iconFor(QCustomBarChart), 
         container=False, 
         group="Charts"
     )
@@ -617,7 +647,7 @@ try:
         module=QCustomAreaChart.WIDGET_MODULE,
         tool_tip=QCustomAreaChart.WIDGET_TOOLTIP, 
         xml=QCustomAreaChart.WIDGET_DOM_XML,
-        icon=QCustomAreaChart.WIDGET_ICON, 
+        icon=_iconFor(QCustomAreaChart), 
         container=False, 
         group="Charts"
     )
@@ -637,7 +667,7 @@ try:
         module=QCustomPieChart.WIDGET_MODULE,
         tool_tip=QCustomPieChart.WIDGET_TOOLTIP, 
         xml=QCustomPieChart.WIDGET_DOM_XML,
-        icon=QCustomPieChart.WIDGET_ICON, 
+        icon=_iconFor(QCustomPieChart), 
         container=False, 
         group="Charts"
     )
@@ -657,7 +687,7 @@ try:
         module=QCustomVerticalBarSeries.WIDGET_MODULE,
         tool_tip=QCustomVerticalBarSeries.WIDGET_TOOLTIP,
         xml=QCustomVerticalBarSeries.WIDGET_DOM_XML,
-        icon=QCustomVerticalBarSeries.WIDGET_ICON,
+        icon=_iconFor(QCustomVerticalBarSeries),
         container=False,
         group="Charts"
     )
@@ -675,7 +705,7 @@ try:
         module=QCustomHorizontalBarSeries.WIDGET_MODULE,
         tool_tip=QCustomHorizontalBarSeries.WIDGET_TOOLTIP,
         xml=QCustomHorizontalBarSeries.WIDGET_DOM_XML,
-        icon=QCustomHorizontalBarSeries.WIDGET_ICON,
+        icon=_iconFor(QCustomHorizontalBarSeries),
         container=False,
         group="Charts"
     )
@@ -697,7 +727,7 @@ try:
         module=QCustomFlowWidget.WIDGET_MODULE,
         tool_tip=QCustomFlowWidget.WIDGET_TOOLTIP,
         xml=QCustomFlowWidget.WIDGET_DOM_XML,
-        icon=QCustomFlowWidget.WIDGET_ICON,
+        icon=_iconFor(QCustomFlowWidget),
         container=True,
         group="Layouts"
     )
@@ -716,7 +746,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomKbd, module=QCustomKbd.WIDGET_MODULE,
         tool_tip=QCustomKbd.WIDGET_TOOLTIP, xml=QCustomKbd.WIDGET_DOM_XML,
-        icon=QCustomKbd.WIDGET_ICON, group="Display Widgets")
+        icon=_iconFor(QCustomKbd), group="Display Widgets")
 except Exception as e:
     logException(e, message="Error registering QCustomKbd")
 
@@ -729,7 +759,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomCarousel, module=QCustomCarousel.WIDGET_MODULE,
         tool_tip=QCustomCarousel.WIDGET_TOOLTIP, xml=QCustomCarousel.WIDGET_DOM_XML,
-        icon=QCustomCarousel.WIDGET_ICON, group="Containers")
+        icon=_iconFor(QCustomCarousel), group="Containers")
 except Exception as e:
     logException(e, message="Error registering QCustomCarousel")
 
@@ -742,7 +772,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomSplitter, module=QCustomSplitter.WIDGET_MODULE,
         tool_tip=QCustomSplitter.WIDGET_TOOLTIP, xml=QCustomSplitter.WIDGET_DOM_XML,
-        icon=QCustomSplitter.WIDGET_ICON, container=True, group="Containers")
+        icon=_iconFor(QCustomSplitter), container=True, group="Containers")
 except Exception as e:
     logException(e, message="Error registering QCustomSplitter")
 
@@ -754,7 +784,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomPaymentCard, module=QCustomPaymentCard.WIDGET_MODULE,
         tool_tip=QCustomPaymentCard.WIDGET_TOOLTIP, xml=QCustomPaymentCard.WIDGET_DOM_XML,
-        icon=QCustomPaymentCard.WIDGET_ICON, group="Display Widgets")
+        icon=_iconFor(QCustomPaymentCard), group="Display Widgets")
 except Exception as e:
     logException(e, message="Error registering QCustomPaymentCard")
 
@@ -767,7 +797,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomMiniBarChart, module=QCustomMiniBarChart.WIDGET_MODULE,
         tool_tip=QCustomMiniBarChart.WIDGET_TOOLTIP, xml=QCustomMiniBarChart.WIDGET_DOM_XML,
-        icon=QCustomMiniBarChart.WIDGET_ICON, group="Charts")
+        icon=_iconFor(QCustomMiniBarChart), group="Charts")
 except Exception as e:
     logException(e, message="Error registering QCustomMiniBarChart")
 
@@ -780,7 +810,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomDivergingBarChart, module=QCustomDivergingBarChart.WIDGET_MODULE,
         tool_tip=QCustomDivergingBarChart.WIDGET_TOOLTIP, xml=QCustomDivergingBarChart.WIDGET_DOM_XML,
-        icon=QCustomDivergingBarChart.WIDGET_ICON, group="Charts")
+        icon=_iconFor(QCustomDivergingBarChart), group="Charts")
 except Exception as e:
     logException(e, message="Error registering QCustomDivergingBarChart")
 
@@ -793,7 +823,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomDotMatrix, module=QCustomDotMatrix.WIDGET_MODULE,
         tool_tip=QCustomDotMatrix.WIDGET_TOOLTIP, xml=QCustomDotMatrix.WIDGET_DOM_XML,
-        icon=QCustomDotMatrix.WIDGET_ICON, group="Charts")
+        icon=_iconFor(QCustomDotMatrix), group="Charts")
 except Exception as e:
     logException(e, message="Error registering QCustomDotMatrix")
 
@@ -806,7 +836,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomBeeswarm, module=QCustomBeeswarm.WIDGET_MODULE,
         tool_tip=QCustomBeeswarm.WIDGET_TOOLTIP, xml=QCustomBeeswarm.WIDGET_DOM_XML,
-        icon=QCustomBeeswarm.WIDGET_ICON, group="Charts")
+        icon=_iconFor(QCustomBeeswarm), group="Charts")
 except Exception as e:
     logException(e, message="Error registering QCustomBeeswarm")
 
@@ -819,7 +849,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomGanttChart, module=QCustomGanttChart.WIDGET_MODULE,
         tool_tip=QCustomGanttChart.WIDGET_TOOLTIP, xml=QCustomGanttChart.WIDGET_DOM_XML,
-        icon=QCustomGanttChart.WIDGET_ICON, group="Charts")
+        icon=_iconFor(QCustomGanttChart), group="Charts")
 except Exception as e:
     logException(e, message="Error registering QCustomGanttChart")
 
@@ -832,7 +862,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomTileButton, module=QCustomTileButton.WIDGET_MODULE,
         tool_tip=QCustomTileButton.WIDGET_TOOLTIP, xml=QCustomTileButton.WIDGET_DOM_XML,
-        icon=QCustomTileButton.WIDGET_ICON, group="Buttons")
+        icon=_iconFor(QCustomTileButton), group="Buttons")
 except Exception as e:
     logException(e, message="Error registering QCustomTileButton")
 
@@ -845,7 +875,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomCardStack, module=QCustomCardStack.WIDGET_MODULE,
         tool_tip=QCustomCardStack.WIDGET_TOOLTIP, xml=QCustomCardStack.WIDGET_DOM_XML,
-        icon=QCustomCardStack.WIDGET_ICON, group="Containers", container=True)
+        icon=_iconFor(QCustomCardStack), group="Containers", container=True)
 except Exception as e:
     logException(e, message="Error registering QCustomCardStack")
 
@@ -858,7 +888,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomMenu, module=QCustomMenu.WIDGET_MODULE,
         tool_tip=QCustomMenu.WIDGET_TOOLTIP, xml=QCustomMenu.WIDGET_DOM_XML,
-        icon=QCustomMenu.WIDGET_ICON, group="Menus")
+        icon=_iconFor(QCustomMenu), group="Menus")
 except Exception as e:
     logException(e, message="Error registering QCustomMenu")
 
@@ -871,7 +901,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomModal, module=QCustomModal.WIDGET_MODULE,
         tool_tip=QCustomModal.WIDGET_TOOLTIP, xml=QCustomModal.WIDGET_DOM_XML,
-        icon=QCustomModal.WIDGET_ICON, group="Menus")
+        icon=_iconFor(QCustomModal), group="Menus")
 except Exception as e:
     logException(e, message="Error registering QCustomModal")
 
@@ -884,7 +914,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomCompassDial, module=QCustomCompassDial.WIDGET_MODULE,
         tool_tip=QCustomCompassDial.WIDGET_TOOLTIP, xml=QCustomCompassDial.WIDGET_DOM_XML,
-        icon=QCustomCompassDial.WIDGET_ICON, group="Display Widgets")
+        icon=_iconFor(QCustomCompassDial), group="Display Widgets")
 except Exception as e:
     logException(e, message="Error registering QCustomCompassDial")
 
@@ -897,7 +927,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomCompass, module=QCustomCompass.WIDGET_MODULE,
         tool_tip=QCustomCompass.WIDGET_TOOLTIP, xml=QCustomCompass.WIDGET_DOM_XML,
-        icon=QCustomCompass.WIDGET_ICON, group="Display Widgets")
+        icon=_iconFor(QCustomCompass), group="Display Widgets")
 except Exception as e:
     logException(e, message="Error registering QCustomCompass")
 
@@ -910,7 +940,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomBubbleChart, module=QCustomBubbleChart.WIDGET_MODULE,
         tool_tip=QCustomBubbleChart.WIDGET_TOOLTIP, xml=QCustomBubbleChart.WIDGET_DOM_XML,
-        icon=QCustomBubbleChart.WIDGET_ICON, group="Charts")
+        icon=_iconFor(QCustomBubbleChart), group="Charts")
 except Exception as e:
     logException(e, message="Error registering QCustomBubbleChart")
 
@@ -940,7 +970,7 @@ try:
         QCustomCandlestickChart, module=QCustomCandlestickChart.WIDGET_MODULE,
         tool_tip=QCustomCandlestickChart.WIDGET_TOOLTIP,
         xml=QCustomCandlestickChart.WIDGET_DOM_XML,
-        icon=QCustomCandlestickChart.WIDGET_ICON, group="Charts")
+        icon=_iconFor(QCustomCandlestickChart), group="Charts")
 except Exception as e:
     logException(e, message="Error registering QCustomCandlestickChart")
 
@@ -951,7 +981,7 @@ try:
         QCustomRadarChart, module=QCustomRadarChart.WIDGET_MODULE,
         tool_tip=QCustomRadarChart.WIDGET_TOOLTIP,
         xml=QCustomRadarChart.WIDGET_DOM_XML,
-        icon=QCustomRadarChart.WIDGET_ICON, group="Charts")
+        icon=_iconFor(QCustomRadarChart), group="Charts")
 except Exception as e:
     logException(e, message="Error registering QCustomRadarChart")
 
@@ -962,7 +992,7 @@ try:
         QCustomScatterChart, module=QCustomScatterChart.WIDGET_MODULE,
         tool_tip=QCustomScatterChart.WIDGET_TOOLTIP,
         xml=QCustomScatterChart.WIDGET_DOM_XML,
-        icon=QCustomScatterChart.WIDGET_ICON, group="Charts")
+        icon=_iconFor(QCustomScatterChart), group="Charts")
 except Exception as e:
     logException(e, message="Error registering QCustomScatterChart")
 
@@ -973,7 +1003,7 @@ try:
         QCustomFunnelChart, module=QCustomFunnelChart.WIDGET_MODULE,
         tool_tip=QCustomFunnelChart.WIDGET_TOOLTIP,
         xml=QCustomFunnelChart.WIDGET_DOM_XML,
-        icon=QCustomFunnelChart.WIDGET_ICON, group="Charts")
+        icon=_iconFor(QCustomFunnelChart), group="Charts")
 except Exception as e:
     logException(e, message="Error registering QCustomFunnelChart")
 
@@ -984,7 +1014,7 @@ try:
         QCustomRangeBarChart, module=QCustomRangeBarChart.WIDGET_MODULE,
         tool_tip=QCustomRangeBarChart.WIDGET_TOOLTIP,
         xml=QCustomRangeBarChart.WIDGET_DOM_XML,
-        icon=QCustomRangeBarChart.WIDGET_ICON, group="Charts")
+        icon=_iconFor(QCustomRangeBarChart), group="Charts")
 except Exception as e:
     logException(e, message="Error registering QCustomRangeBarChart")
 
@@ -995,7 +1025,7 @@ try:
         QCustomRadialBars, module=QCustomRadialBars.WIDGET_MODULE,
         tool_tip=QCustomRadialBars.WIDGET_TOOLTIP,
         xml=QCustomRadialBars.WIDGET_DOM_XML,
-        icon=QCustomRadialBars.WIDGET_ICON, group="Charts")
+        icon=_iconFor(QCustomRadialBars), group="Charts")
 except Exception as e:
     logException(e, message="Error registering QCustomRadialBars")
 
@@ -1006,7 +1036,7 @@ try:
         QCustomRadialLines, module=QCustomRadialLines.WIDGET_MODULE,
         tool_tip=QCustomRadialLines.WIDGET_TOOLTIP,
         xml=QCustomRadialLines.WIDGET_DOM_XML,
-        icon=QCustomRadialLines.WIDGET_ICON, group="Charts")
+        icon=_iconFor(QCustomRadialLines), group="Charts")
 except Exception as e:
     logException(e, message="Error registering QCustomRadialLines")
 
@@ -1017,7 +1047,7 @@ try:
         QCustomSankey, module=QCustomSankey.WIDGET_MODULE,
         tool_tip=QCustomSankey.WIDGET_TOOLTIP,
         xml=QCustomSankey.WIDGET_DOM_XML,
-        icon=QCustomSankey.WIDGET_ICON, group="Charts")
+        icon=_iconFor(QCustomSankey), group="Charts")
 except Exception as e:
     logException(e, message="Error registering QCustomSankey")
 
@@ -1028,7 +1058,7 @@ try:
         QCustomFeaturedIcon, module=QCustomFeaturedIcon.WIDGET_MODULE,
         tool_tip=QCustomFeaturedIcon.WIDGET_TOOLTIP,
         xml=QCustomFeaturedIcon.WIDGET_DOM_XML,
-        icon=QCustomFeaturedIcon.WIDGET_ICON, group="Display Widgets")
+        icon=_iconFor(QCustomFeaturedIcon), group="Display Widgets")
 except Exception as e:
     logException(e, message="Error registering QCustomFeaturedIcon")
 
@@ -1039,7 +1069,7 @@ try:
         QCustomCopyButton, module=QCustomCopyButton.WIDGET_MODULE,
         tool_tip=QCustomCopyButton.WIDGET_TOOLTIP,
         xml=QCustomCopyButton.WIDGET_DOM_XML,
-        icon=QCustomCopyButton.WIDGET_ICON, group="Buttons")
+        icon=_iconFor(QCustomCopyButton), group="Buttons")
 except Exception as e:
     logException(e, message="Error registering QCustomCopyButton")
 
@@ -1050,7 +1080,7 @@ try:
         QCustomSocialButton, module=QCustomSocialButton.WIDGET_MODULE,
         tool_tip=QCustomSocialButton.WIDGET_TOOLTIP,
         xml=QCustomSocialButton.WIDGET_DOM_XML,
-        icon=QCustomSocialButton.WIDGET_ICON, group="Buttons")
+        icon=_iconFor(QCustomSocialButton), group="Buttons")
 except Exception as e:
     logException(e, message="Error registering QCustomSocialButton")
 
@@ -1061,7 +1091,7 @@ try:
         QCustomHeaderNav, module=QCustomHeaderNav.WIDGET_MODULE,
         tool_tip=QCustomHeaderNav.WIDGET_TOOLTIP,
         xml=QCustomHeaderNav.WIDGET_DOM_XML,
-        icon=QCustomHeaderNav.WIDGET_ICON, group="Navigation")
+        icon=_iconFor(QCustomHeaderNav), group="Navigation")
 except Exception as e:
     logException(e, message="Error registering QCustomHeaderNav")
 
@@ -1072,7 +1102,7 @@ try:
         QCustomNumberCounter, module=QCustomNumberCounter.WIDGET_MODULE,
         tool_tip=QCustomNumberCounter.WIDGET_TOOLTIP,
         xml=QCustomNumberCounter.WIDGET_DOM_XML,
-        icon=QCustomNumberCounter.WIDGET_ICON, group="Display Widgets")
+        icon=_iconFor(QCustomNumberCounter), group="Display Widgets")
 except Exception as e:
     logException(e, message="Error registering QCustomNumberCounter")
 
@@ -1083,7 +1113,7 @@ try:
         QCustomTypewriterText, module=QCustomTypewriterText.WIDGET_MODULE,
         tool_tip=QCustomTypewriterText.WIDGET_TOOLTIP,
         xml=QCustomTypewriterText.WIDGET_DOM_XML,
-        icon=QCustomTypewriterText.WIDGET_ICON, group="Display Widgets")
+        icon=_iconFor(QCustomTypewriterText), group="Display Widgets")
 except Exception as e:
     logException(e, message="Error registering QCustomTypewriterText")
 
@@ -1094,7 +1124,7 @@ try:
         QCustomGradientText, module=QCustomGradientText.WIDGET_MODULE,
         tool_tip=QCustomGradientText.WIDGET_TOOLTIP,
         xml=QCustomGradientText.WIDGET_DOM_XML,
-        icon=QCustomGradientText.WIDGET_ICON, group="Display Widgets")
+        icon=_iconFor(QCustomGradientText), group="Display Widgets")
 except Exception as e:
     logException(e, message="Error registering QCustomGradientText")
 
@@ -1105,7 +1135,7 @@ try:
         QCustomRainbowButton, module=QCustomRainbowButton.WIDGET_MODULE,
         tool_tip=QCustomRainbowButton.WIDGET_TOOLTIP,
         xml=QCustomRainbowButton.WIDGET_DOM_XML,
-        icon=QCustomRainbowButton.WIDGET_ICON, group="Buttons")
+        icon=_iconFor(QCustomRainbowButton), group="Buttons")
 except Exception as e:
     logException(e, message="Error registering QCustomRainbowButton")
 
@@ -1116,7 +1146,7 @@ try:
         QCustomSparklesText, module=QCustomSparklesText.WIDGET_MODULE,
         tool_tip=QCustomSparklesText.WIDGET_TOOLTIP,
         xml=QCustomSparklesText.WIDGET_DOM_XML,
-        icon=QCustomSparklesText.WIDGET_ICON, group="Display Widgets")
+        icon=_iconFor(QCustomSparklesText), group="Display Widgets")
 except Exception as e:
     logException(e, message="Error registering QCustomSparklesText")
 
@@ -1129,7 +1159,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomAgendaList, module=QCustomAgendaList.WIDGET_MODULE,
         tool_tip=QCustomAgendaList.WIDGET_TOOLTIP, xml=QCustomAgendaList.WIDGET_DOM_XML,
-        icon=QCustomAgendaList.WIDGET_ICON, group="Display Widgets")
+        icon=_iconFor(QCustomAgendaList), group="Display Widgets")
 except Exception as e:
     logException(e, message="Error registering QCustomAgendaList")
 
@@ -1142,7 +1172,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomWaveform, module=QCustomWaveform.WIDGET_MODULE,
         tool_tip=QCustomWaveform.WIDGET_TOOLTIP, xml=QCustomWaveform.WIDGET_DOM_XML,
-        icon=QCustomWaveform.WIDGET_ICON, group="Charts")
+        icon=_iconFor(QCustomWaveform), group="Charts")
 except Exception as e:
     logException(e, message="Error registering QCustomWaveform")
 
@@ -1155,7 +1185,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomDateRangePicker, module=QCustomDateRangePicker.WIDGET_MODULE,
         tool_tip=QCustomDateRangePicker.WIDGET_TOOLTIP, xml=QCustomDateRangePicker.WIDGET_DOM_XML,
-        icon=QCustomDateRangePicker.WIDGET_ICON, group="Input Widgets")
+        icon=_iconFor(QCustomDateRangePicker), group="Input Widgets")
 except Exception as e:
     logException(e, message="Error registering QCustomDateRangePicker")
 
@@ -1168,7 +1198,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomRulerPicker, module=QCustomRulerPicker.WIDGET_MODULE,
         tool_tip=QCustomRulerPicker.WIDGET_TOOLTIP, xml=QCustomRulerPicker.WIDGET_DOM_XML,
-        icon=QCustomRulerPicker.WIDGET_ICON, group="Input Widgets")
+        icon=_iconFor(QCustomRulerPicker), group="Input Widgets")
 except Exception as e:
     logException(e, message="Error registering QCustomRulerPicker")
 
@@ -1181,7 +1211,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomLiquidGauge, module=QCustomLiquidGauge.WIDGET_MODULE,
         tool_tip=QCustomLiquidGauge.WIDGET_TOOLTIP, xml=QCustomLiquidGauge.WIDGET_DOM_XML,
-        icon=QCustomLiquidGauge.WIDGET_ICON, group="Progressbars")
+        icon=_iconFor(QCustomLiquidGauge), group="Progressbars")
 except Exception as e:
     logException(e, message="Error registering QCustomLiquidGauge")
 
@@ -1194,7 +1224,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomHeatmap, module=QCustomHeatmap.WIDGET_MODULE,
         tool_tip=QCustomHeatmap.WIDGET_TOOLTIP, xml=QCustomHeatmap.WIDGET_DOM_XML,
-        icon=QCustomHeatmap.WIDGET_ICON, group="Charts")
+        icon=_iconFor(QCustomHeatmap), group="Charts")
 except Exception as e:
     logException(e, message="Error registering QCustomHeatmap")
 
@@ -1207,7 +1237,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomRadialGauge, module=QCustomRadialGauge.WIDGET_MODULE,
         tool_tip=QCustomRadialGauge.WIDGET_TOOLTIP, xml=QCustomRadialGauge.WIDGET_DOM_XML,
-        icon=QCustomRadialGauge.WIDGET_ICON, group="Progressbars")
+        icon=_iconFor(QCustomRadialGauge), group="Progressbars")
 except Exception as e:
     logException(e, message="Error registering QCustomRadialGauge")
 
@@ -1220,7 +1250,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomListRow, module=QCustomListRow.WIDGET_MODULE,
         tool_tip=QCustomListRow.WIDGET_TOOLTIP, xml=QCustomListRow.WIDGET_DOM_XML,
-        icon=QCustomListRow.WIDGET_ICON, group="Display Widgets")
+        icon=_iconFor(QCustomListRow), group="Display Widgets")
 except Exception as e:
     logException(e, message="Error registering QCustomListRow")
 
@@ -1233,7 +1263,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomAvatar, module=QCustomAvatar.WIDGET_MODULE,
         tool_tip=QCustomAvatar.WIDGET_TOOLTIP, xml=QCustomAvatar.WIDGET_DOM_XML,
-        icon=QCustomAvatar.WIDGET_ICON, group="Display Widgets")
+        icon=_iconFor(QCustomAvatar), group="Display Widgets")
 except Exception as e:
     logException(e, message="Error registering QCustomAvatar")
 
@@ -1246,7 +1276,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomTrendChip, module=QCustomTrendChip.WIDGET_MODULE,
         tool_tip=QCustomTrendChip.WIDGET_TOOLTIP, xml=QCustomTrendChip.WIDGET_DOM_XML,
-        icon=QCustomTrendChip.WIDGET_ICON, group="Charts")
+        icon=_iconFor(QCustomTrendChip), group="Charts")
 except Exception as e:
     logException(e, message="Error registering QCustomTrendChip")
 
@@ -1259,7 +1289,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomPageDots, module=QCustomPageDots.WIDGET_MODULE,
         tool_tip=QCustomPageDots.WIDGET_TOOLTIP, xml=QCustomPageDots.WIDGET_DOM_XML,
-        icon=QCustomPageDots.WIDGET_ICON, group="Navigation")
+        icon=_iconFor(QCustomPageDots), group="Navigation")
 except Exception as e:
     logException(e, message="Error registering QCustomPageDots")
 
@@ -1272,7 +1302,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomChatListItem, module=QCustomChatListItem.WIDGET_MODULE,
         tool_tip=QCustomChatListItem.WIDGET_TOOLTIP, xml=QCustomChatListItem.WIDGET_DOM_XML,
-        icon=QCustomChatListItem.WIDGET_ICON, group="Display Widgets")
+        icon=_iconFor(QCustomChatListItem), group="Display Widgets")
 except Exception as e:
     logException(e, message="Error registering QCustomChatListItem")
 
@@ -1285,7 +1315,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomChatBubble, module=QCustomChatBubble.WIDGET_MODULE,
         tool_tip=QCustomChatBubble.WIDGET_TOOLTIP, xml=QCustomChatBubble.WIDGET_DOM_XML,
-        icon=QCustomChatBubble.WIDGET_ICON, group="Display Widgets")
+        icon=_iconFor(QCustomChatBubble), group="Display Widgets")
 except Exception as e:
     logException(e, message="Error registering QCustomChatBubble")
 
@@ -1298,7 +1328,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomVoiceMessage, module=QCustomVoiceMessage.WIDGET_MODULE,
         tool_tip=QCustomVoiceMessage.WIDGET_TOOLTIP, xml=QCustomVoiceMessage.WIDGET_DOM_XML,
-        icon=QCustomVoiceMessage.WIDGET_ICON, group="Display Widgets")
+        icon=_iconFor(QCustomVoiceMessage), group="Display Widgets")
 except Exception as e:
     logException(e, message="Error registering QCustomVoiceMessage")
 
@@ -1365,7 +1395,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomCoverCard, module=QCustomCoverCard.WIDGET_MODULE,
         tool_tip=QCustomCoverCard.WIDGET_TOOLTIP, xml=QCustomCoverCard.WIDGET_DOM_XML,
-        icon=QCustomCoverCard.WIDGET_ICON, group="Media")
+        icon=_iconFor(QCustomCoverCard), group="Media")
 except Exception as e:
     logException(e, message="Error registering QCustomCoverCard")
 
@@ -1378,7 +1408,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomCoverFlow, module=QCustomCoverFlow.WIDGET_MODULE,
         tool_tip=QCustomCoverFlow.WIDGET_TOOLTIP, xml=QCustomCoverFlow.WIDGET_DOM_XML,
-        icon=QCustomCoverFlow.WIDGET_ICON, group="Media")
+        icon=_iconFor(QCustomCoverFlow), group="Media")
 except Exception as e:
     logException(e, message="Error registering QCustomCoverFlow")
 
@@ -1391,7 +1421,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomPlayerBar, module=QCustomPlayerBar.WIDGET_MODULE,
         tool_tip=QCustomPlayerBar.WIDGET_TOOLTIP, xml=QCustomPlayerBar.WIDGET_DOM_XML,
-        icon=QCustomPlayerBar.WIDGET_ICON, group="Media")
+        icon=_iconFor(QCustomPlayerBar), group="Media")
 except Exception as e:
     logException(e, message="Error registering QCustomPlayerBar")
 
@@ -1404,7 +1434,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomNodeGraph, module=QCustomNodeGraph.WIDGET_MODULE,
         tool_tip=QCustomNodeGraph.WIDGET_TOOLTIP, xml=QCustomNodeGraph.WIDGET_DOM_XML,
-        icon=QCustomNodeGraph.WIDGET_ICON, group="Containers")
+        icon=_iconFor(QCustomNodeGraph), group="Containers")
 except Exception as e:
     logException(e, message="Error registering QCustomNodeGraph")
 
@@ -1417,7 +1447,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomMediaTimeline, module=QCustomMediaTimeline.WIDGET_MODULE,
         tool_tip=QCustomMediaTimeline.WIDGET_TOOLTIP, xml=QCustomMediaTimeline.WIDGET_DOM_XML,
-        icon=QCustomMediaTimeline.WIDGET_ICON, group="Media")
+        icon=_iconFor(QCustomMediaTimeline), group="Media")
 except Exception as e:
     logException(e, message="Error registering QCustomMediaTimeline")
 
@@ -1430,7 +1460,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomQLabel, module=QCustomQLabel.WIDGET_MODULE,
         tool_tip=QCustomQLabel.WIDGET_TOOLTIP, xml=QCustomQLabel.WIDGET_DOM_XML,
-        icon=QCustomQLabel.WIDGET_ICON, group="Display Widgets")
+        icon=_iconFor(QCustomQLabel), group="Display Widgets")
 except Exception as e:
     logException(e, message="Error registering QCustomQLabel")
 
@@ -1443,7 +1473,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomGlassFrame, module=QCustomGlassFrame.WIDGET_MODULE,
         tool_tip=QCustomGlassFrame.WIDGET_TOOLTIP, xml=QCustomGlassFrame.WIDGET_DOM_XML,
-        icon=QCustomGlassFrame.WIDGET_ICON, group="Containers", container=True)
+        icon=_iconFor(QCustomGlassFrame), group="Containers", container=True)
 except Exception as e:
     logException(e, message="Error registering QCustomGlassFrame")
 
@@ -1456,7 +1486,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomWallpaper, module=QCustomWallpaper.WIDGET_MODULE,
         tool_tip=QCustomWallpaper.WIDGET_TOOLTIP, xml=QCustomWallpaper.WIDGET_DOM_XML,
-        icon=QCustomWallpaper.WIDGET_ICON, group="Display Widgets")
+        icon=_iconFor(QCustomWallpaper), group="Display Widgets")
 except Exception as e:
     logException(e, message="Error registering QCustomWallpaper")
 
@@ -1469,7 +1499,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomClockLabel, module=QCustomClockLabel.WIDGET_MODULE,
         tool_tip=QCustomClockLabel.WIDGET_TOOLTIP, xml=QCustomClockLabel.WIDGET_DOM_XML,
-        icon=QCustomClockLabel.WIDGET_ICON, group="Display Widgets")
+        icon=_iconFor(QCustomClockLabel), group="Display Widgets")
 except Exception as e:
     logException(e, message="Error registering QCustomClockLabel")
 
@@ -1490,7 +1520,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomInput, module=QCustomInput.WIDGET_MODULE,
         tool_tip=QCustomInput.WIDGET_TOOLTIP, xml=QCustomInput.WIDGET_DOM_XML,
-        icon=QCustomInput.WIDGET_ICON, group="Input Widgets")
+        icon=_iconFor(QCustomInput), group="Input Widgets")
 except Exception as e:
     logException(e, message="Error registering QCustomInput")
 
@@ -1503,7 +1533,7 @@ try:
         QCustomButtonGroup, module=QCustomButtonGroup.WIDGET_MODULE,
         tool_tip=QCustomButtonGroup.WIDGET_TOOLTIP,
         xml=QCustomButtonGroup.WIDGET_DOM_XML,
-        icon=QCustomButtonGroup.WIDGET_ICON, group="Buttons")
+        icon=_iconFor(QCustomButtonGroup), group="Buttons")
 except Exception as e:
     logException(e, message="Error registering QCustomButtonGroup")
 
@@ -1515,7 +1545,7 @@ try:
     QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
         QCustomDonut, module=QCustomDonut.WIDGET_MODULE,
         tool_tip=QCustomDonut.WIDGET_TOOLTIP, xml=QCustomDonut.WIDGET_DOM_XML,
-        icon=QCustomDonut.WIDGET_ICON, group="Charts")
+        icon=_iconFor(QCustomDonut), group="Charts")
 except Exception as e:
     logException(e, message="Error registering QCustomDonut")
 
@@ -1528,7 +1558,7 @@ try:
         QCustomSparkline, module=QCustomSparkline.WIDGET_MODULE,
         tool_tip=QCustomSparkline.WIDGET_TOOLTIP,
         xml=QCustomSparkline.WIDGET_DOM_XML,
-        icon=QCustomSparkline.WIDGET_ICON, group="Charts")
+        icon=_iconFor(QCustomSparkline), group="Charts")
 except Exception as e:
     logException(e, message="Error registering QCustomSparkline")
 

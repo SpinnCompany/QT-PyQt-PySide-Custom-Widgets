@@ -33,7 +33,7 @@ class QCustomHeatmap(QWidget):
 
     cellClicked = Signal(int, int, float)
 
-    WIDGET_ICON = "components/icons/heatmap.png"
+    WIDGET_ICON = "components/icons/grid_on.png"
     WIDGET_TOOLTIP = "A painted colour-intensity grid (activity / calendar heatmap)"
     WIDGET_MODULE = "Custom_Widgets.QCustomHeatmap"
     WIDGET_DOM_XML = """

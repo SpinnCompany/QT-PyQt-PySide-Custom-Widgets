@@ -27,7 +27,7 @@ _PRESETS = [
 class QCustomColorPicker(QWidget):
     colorChanged = Signal(QColor)
 
-    WIDGET_ICON = "components/icons/colorpicker.png"
+    WIDGET_ICON = "components/icons/palette.png"
     WIDGET_TOOLTIP = "A colour selector with presets and a custom dialog"
     WIDGET_MODULE = "Custom_Widgets.QCustomColorPicker"
     WIDGET_DOM_XML = """

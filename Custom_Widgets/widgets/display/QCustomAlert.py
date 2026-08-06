@@ -21,7 +21,7 @@ from qtpy.QtWidgets import (QWidget, QHBoxLayout, QVBoxLayout, QLabel,
 class QCustomAlert(QWidget):
     closed = Signal()
 
-    WIDGET_ICON = "components/icons/alert.png"
+    WIDGET_ICON = "components/icons/warning.png"
     WIDGET_TOOLTIP = "An inline alert / callout banner"
     WIDGET_MODULE = "Custom_Widgets.QCustomAlert"
     WIDGET_DOM_XML = """

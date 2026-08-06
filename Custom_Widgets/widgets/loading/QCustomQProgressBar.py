@@ -18,7 +18,7 @@ class QCustomQProgressBar(QProgressBar):
     """ Indeterminate progress bar """
 
     script_dir = packageDir()
-    WIDGET_ICON = os.path.join(script_dir, "../components/icons/linear_scale.png")
+    WIDGET_ICON = os.path.join(script_dir, "components/icons/linear_scale.png")
     WIDGET_TOOLTIP = "A custom animated progress bar."
     WIDGET_DOM_XML = """
     <ui language='c++'>

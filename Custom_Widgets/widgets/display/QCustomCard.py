@@ -17,7 +17,7 @@ from qtpy.QtWidgets import QWidget, QVBoxLayout, QLabel
 
 
 class QCustomCard(QWidget):
-    WIDGET_ICON = "components/icons/card.png"
+    WIDGET_ICON = "components/icons/web_asset.png"
     WIDGET_TOOLTIP = "A card / surface container"
     WIDGET_MODULE = "Custom_Widgets.QCustomCard"
     WIDGET_DOM_XML = """

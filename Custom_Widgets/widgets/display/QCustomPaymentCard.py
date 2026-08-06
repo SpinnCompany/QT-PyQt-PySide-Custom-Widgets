@@ -28,7 +28,7 @@ class QCustomPaymentCard(QWidget):
     # Emitted when the eye toggles the full number on/off.
     numberRevealed = Signal(bool)
 
-    WIDGET_ICON = "components/icons/card.png"
+    WIDGET_ICON = "components/icons/credit_card.png"
     WIDGET_TOOLTIP = "A painted credit / debit card surface"
     WIDGET_MODULE = "Custom_Widgets.QCustomPaymentCard"
     WIDGET_DOM_XML = """

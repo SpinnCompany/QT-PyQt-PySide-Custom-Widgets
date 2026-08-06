@@ -58,7 +58,7 @@ def _emptyMarkPixmap(size, color, ratio=1.0):
 class QCustomEmptyState(QWidget):
     actionClicked = Signal()
 
-    WIDGET_ICON = "components/icons/emptystate.png"
+    WIDGET_ICON = "components/icons/inbox.png"
     WIDGET_TOOLTIP = "An empty-state placeholder"
     WIDGET_MODULE = "Custom_Widgets.QCustomEmptyState"
     WIDGET_DOM_XML = """

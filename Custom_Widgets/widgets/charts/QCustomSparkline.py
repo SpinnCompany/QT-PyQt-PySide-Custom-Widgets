@@ -20,7 +20,7 @@ from qtpy.QtWidgets import QWidget, QSizePolicy
 
 class QCustomSparkline(QWidget):
 
-    WIDGET_ICON = "components/icons/sparkline.png"
+    WIDGET_ICON = "components/icons/insights.png"
     WIDGET_TOOLTIP = "A compact axis-less trend line (sparkline)"
     WIDGET_MODULE = "Custom_Widgets.QCustomSparkline"
     WIDGET_DOM_XML = """

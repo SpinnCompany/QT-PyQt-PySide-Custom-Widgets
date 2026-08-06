@@ -21,7 +21,7 @@ class QCustomFileDropZone(QWidget):
     filesDropped = Signal(list)        # newly added paths
     filesChanged = Signal(list)        # full current list
 
-    WIDGET_ICON = "components/icons/dropzone.png"
+    WIDGET_ICON = "components/icons/upload_file.png"
     WIDGET_TOOLTIP = "A drag-and-drop file input"
     WIDGET_MODULE = "Custom_Widgets.QCustomFileDropZone"
     WIDGET_DOM_XML = """

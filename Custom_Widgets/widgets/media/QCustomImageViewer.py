@@ -90,7 +90,7 @@ class QCustomImageViewer(QWidget):
     indexChanged = Signal(int)
     closed = Signal()
 
-    WIDGET_ICON = "components/icons/image_viewer.png"
+    WIDGET_ICON = "components/icons/image.png"
     WIDGET_TOOLTIP = "A modal lightbox for a gallery of images"
     WIDGET_MODULE = "Custom_Widgets.QCustomImageViewer"
     WIDGET_DOM_XML = """
