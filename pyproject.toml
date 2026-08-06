@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "QT-PyQt-PySide-Custom-Widgets"
-version = "2.3.2"
+version = "2.3.3"
 description = "A comprehensive library of custom Qt widgets, animations, and UI components for PySide and PyQt desktop applications."
 readme = "README.md"
 requires-python = ">=3.10"
