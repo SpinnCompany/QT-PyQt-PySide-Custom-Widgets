@@ -74,12 +74,12 @@
   {
     "module": "Custom_Widgets/widgets/loading/QCustom3CirclesLoader.py",
     "widget": "QCustom3CirclesLoader",
-    "loc": 188,
+    "loc": 200,
     "pyi": false,
     "catalog": false,
     "test": true,
     "example": true,
-    "designer": false,
+    "designer": true,
     "designer_waived": null,
     "tier": "free"
   },
@@ -146,12 +146,12 @@
   {
     "module": "Custom_Widgets/widgets/loading/QCustomArcLoader.py",
     "widget": "QCustomArcLoader",
-    "loc": 143,
+    "loc": 155,
     "pyi": false,
     "catalog": false,
     "test": true,
     "example": true,
-    "designer": false,
+    "designer": true,
     "designer_waived": null,
     "tier": "free"
   },
@@ -398,12 +398,12 @@
   {
     "module": "Custom_Widgets/widgets/data/QCustomCodeEditor.py",
     "widget": "QCustomCodeEditor",
-    "loc": 343,
+    "loc": 355,
     "pyi": false,
     "catalog": false,
     "test": true,
     "example": true,
-    "designer": false,
+    "designer": true,
     "designer_waived": null,
     "tier": "free"
   },
@@ -434,12 +434,12 @@
   {
     "module": "Custom_Widgets/widgets/navigation/QCustomCommandPalette.py",
     "widget": "QCustomCommandPalette",
-    "loc": 247,
+    "loc": 259,
     "pyi": true,
     "catalog": true,
     "test": true,
     "example": true,
-    "designer": false,
+    "designer": true,
     "designer_waived": null,
     "tier": "free"
   },
@@ -566,24 +566,24 @@
   {
     "module": "Custom_Widgets/widgets/navigation/QCustomDrawer.py",
     "widget": "QCustomDrawer",
-    "loc": 138,
+    "loc": 150,
     "pyi": true,
     "catalog": true,
     "test": true,
     "example": true,
-    "designer": false,
+    "designer": true,
     "designer_waived": null,
     "tier": "free"
   },
   {
     "module": "Custom_Widgets/widgets/containers/QCustomEmbeddedWindow.py",
     "widget": "QCustomEmbeddedWindow",
-    "loc": 266,
+    "loc": 278,
     "pyi": false,
     "catalog": false,
     "test": true,
     "example": true,
-    "designer": false,
+    "designer": true,
     "designer_waived": null,
     "tier": "free"
   },
@@ -596,7 +596,7 @@
     "test": true,
     "example": true,
     "designer": false,
-    "designer_waived": null,
+    "designer_waived": "anchored popup; needs a target widget, not just a parent",
     "tier": "free"
   },
   {
@@ -674,12 +674,12 @@
   {
     "module": "Custom_Widgets/widgets/input/QCustomForm.py",
     "widget": "QCustomForm",
-    "loc": 114,
+    "loc": 126,
     "pyi": false,
     "catalog": false,
     "test": true,
     "example": true,
-    "designer": false,
+    "designer": true,
     "designer_waived": null,
     "tier": "free"
   },
@@ -1070,12 +1070,12 @@
   {
     "module": "Custom_Widgets/widgets/loading/QCustomPerlinLoader.py",
     "widget": "QCustomPerlinLoader",
-    "loc": 143,
+    "loc": 155,
     "pyi": false,
     "catalog": false,
     "test": true,
     "example": true,
-    "designer": false,
+    "designer": true,
     "designer_waived": null,
     "tier": "free"
   },
@@ -1118,12 +1118,12 @@
   {
     "module": "Custom_Widgets/widgets/display/QCustomProgressIndicator.py",
     "widget": "QCustomProgressIndicator",
-    "loc": 375,
+    "loc": 387,
     "pyi": false,
     "catalog": false,
     "test": true,
     "example": true,
-    "designer": false,
+    "designer": true,
     "designer_waived": null,
     "tier": "free"
   },
@@ -1202,12 +1202,12 @@
   {
     "module": "Custom_Widgets/widgets/buttons/QCustomQPushButtonGroup.py",
     "widget": "QCustomQPushButtonGroup",
-    "loc": 60,
+    "loc": 72,
     "pyi": false,
     "catalog": false,
     "test": true,
     "example": true,
-    "designer": false,
+    "designer": true,
     "designer_waived": null,
     "tier": "free"
   },
@@ -1226,12 +1226,12 @@
   {
     "module": "Custom_Widgets/widgets/input/QCustomQSlider.py",
     "widget": "QCustomQSlider",
-    "loc": 47,
+    "loc": 59,
     "pyi": false,
     "catalog": false,
     "test": true,
     "example": true,
-    "designer": false,
+    "designer": true,
     "designer_waived": null,
     "tier": "free"
   },
@@ -1526,12 +1526,12 @@
   {
     "module": "Custom_Widgets/widgets/navigation/QCustomSlideMenu.py",
     "widget": "QCustomSlideMenu",
-    "loc": 679,
+    "loc": 691,
     "pyi": false,
     "catalog": false,
     "test": true,
     "example": true,
-    "designer": false,
+    "designer": true,
     "designer_waived": null,
     "tier": "free"
   },
@@ -1574,12 +1574,12 @@
   {
     "module": "Custom_Widgets/widgets/loading/QCustomSpinner.py",
     "widget": "QCustomSpinner",
-    "loc": 79,
+    "loc": 91,
     "pyi": false,
     "catalog": false,
     "test": true,
     "example": true,
-    "designer": false,
+    "designer": true,
     "designer_waived": null,
     "tier": "free"
   },
@@ -1850,24 +1850,24 @@
   {
     "module": "Custom_Widgets/widgets/display/QFlowProgressBar.py",
     "widget": "QFlowProgressBar",
-    "loc": 381,
+    "loc": 393,
     "pyi": false,
     "catalog": false,
     "test": true,
     "example": true,
-    "designer": false,
+    "designer": true,
     "designer_waived": null,
     "tier": "free"
   },
   {
     "module": "Custom_Widgets/widgets/input/QCustomTagEdit.py",
     "widget": "QTagEdit",
-    "loc": 307,
+    "loc": 319,
     "pyi": false,
     "catalog": false,
     "test": true,
     "example": false,
-    "designer": false,
+    "designer": true,
     "designer_waived": null,
     "tier": "free"
   },

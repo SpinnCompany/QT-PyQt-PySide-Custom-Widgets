@@ -69,6 +69,18 @@ class QCustomFormField(QObject):
 
 class QCustomForm(QWidget):
     """Minimal form container with validation and submit signals."""
+    # Qt Designer contract. WIDGET_MODULE is the FLAT public path --
+    # Custom_Widgets.QCustomForm is what .ui files carry in <header>, not the
+    # subpackage this file now lives in.
+    WIDGET_MODULE = "Custom_Widgets.QCustomForm"
+    WIDGET_TOOLTIP = "A form container with validation and submit signals"
+    WIDGET_DOM_XML = """
+    <ui language='c++'>
+        <widget class='QCustomForm' name='qCustomForm'>
+            <property name='geometry'><rect><x>0</x><y>0</y><width>320</width><height>240</height></rect></property>
+        </widget>
+    </ui>
+    """
 
     submitted = Signal(dict)
 

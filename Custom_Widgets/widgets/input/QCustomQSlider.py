@@ -18,6 +18,18 @@ from qtpy.QtWidgets import QSlider, QStyle, QStyleOptionSlider
 ## CUSTOM QSLIDER
 ########################################################################
 class QCustomQSlider(QSlider):
+    # Qt Designer contract. WIDGET_MODULE is the FLAT public path --
+    # Custom_Widgets.QCustomQSlider is what .ui files carry in <header>, not the
+    # subpackage this file now lives in.
+    WIDGET_MODULE = "Custom_Widgets.QCustomQSlider"
+    WIDGET_TOOLTIP = "A QSlider that jumps to the clicked position"
+    WIDGET_DOM_XML = """
+    <ui language='c++'>
+        <widget class='QCustomQSlider' name='qCustomQSlider'>
+            <property name='geometry'><rect><x>0</x><y>0</y><width>200</width><height>24</height></rect></property>
+        </widget>
+    </ui>
+    """
     def __init__(self, parent=None):
         super().__init__(parent)
 
