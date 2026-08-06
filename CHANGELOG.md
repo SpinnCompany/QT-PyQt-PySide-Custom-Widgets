@@ -1,5 +1,45 @@
 # Changelog
 
+## 2.3.3 — 2026-08-06
+
+**Qt Designer release.** Every widget is supposed to be authorable in Designer.
+In practice 19 could not be dropped onto a form at all, and most of the palette
+showed no icon.
+
+### Added
+- **19 widgets registered with Qt Designer**, so they can be placed on a form
+  like any other: the four loaders (`QCustom3CirclesLoader`, `QCustomArcLoader`,
+  `QCustomPerlinLoader`, `QCustomSpinner`), `QFlowProgressBar`,
+  `QCustomProgressIndicator`, `QCustomQSlider`, `QTagEdit`, `QCustomForm`,
+  `QCustomInput`, `QCustomButtonGroup`, `QCustomQPushButtonGroup`,
+  `QCustomCommandPalette`, `QCustomDrawer`, `QCustomSlideMenu`,
+  `QCustomEmbeddedWindow`, `QCustomCodeEditor`, `QCustomDonut`,
+  `QCustomSparkline`. Four of those already declared the full Designer contract
+  and were simply never registered.
+
+### Fixed
+- **The Designer palette was mostly iconless: 19 of 102 registered widgets
+  showed an icon, now all 102 do.** Most widgets declare a relative
+  `WIDGET_ICON`, which Designer resolved against its own working directory
+  instead of the package — so 44 widgets had working icons Designer could not
+  find. Icon paths are now anchored to the package centrally, and a path that
+  cannot be resolved yields Designer's own placeholder rather than a broken
+  image.
+- 58 `WIDGET_ICON` declarations named files that were never drawn; each now
+  points at one of the ~2370 Material icons the package already ships.
+- `QCustomQProgressBar` and `QCustomRoundProgressBar` had icon paths containing
+  `../`, which escaped the package directory entirely.
+
+### Notes
+- Widgets that legitimately cannot be Designer-registered are now recorded as
+  such rather than counted as gaps: `QCustomToast`, `QCustomQToolTip` and
+  `QCustomEmojiPicker` need more than a parent to construct (Designer supplies
+  only a parent), `QCustomTipOverlay` / `QCustomPopover` / `QCustomQDialog` are
+  transient overlays positioned at runtime, `QCustomMapView` would pull
+  QtLocation into every Designer start-up for an optional extra, and
+  `QCustomModals` is a namespace of nested modal types rather than a widget.
+- No API or behaviour changes. Full suite green (1316 tests).
+
 ## 2.3.2 — 2026-08-06
 
 **A missing Qt binding now tells you what to do.** `pip install
