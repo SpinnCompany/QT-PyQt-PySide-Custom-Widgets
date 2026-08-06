@@ -93,6 +93,13 @@ def scan():
     # a fixed path silently dropped them from the launch gate.
     for _stray in ("AnalogGaugeWidget.py", "QFlowProgressBar.py"):
         mods += glob.glob(os.path.join(CW, "**", _stray), recursive=True)
+    # QCustomMapView lives behind a facade in the optional [map] subpackage, so
+    # neither the QCustom* glob nor the stray list above finds it. Its row was
+    # added to the manifest by hand (commit 8ffdcb82f) and every regeneration
+    # then silently deleted it again — precisely the "a widget going missing
+    # must not be possible" failure the comment above warns about. The class is
+    # QCustomMapView(QWidget), so name resolution needs no override.
+    mods += glob.glob(os.path.join(CW, "map", "facade.py"))
     mods = sorted({m for m in mods
                    if os.path.isfile(m)
                    and not m.endswith(".pyi")

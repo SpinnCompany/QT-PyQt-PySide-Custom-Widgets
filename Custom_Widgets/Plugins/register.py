@@ -1475,6 +1475,65 @@ except Exception as e:
 
 
 ########################################################################
+## Widgets that already declared the full Designer contract
+## (WIDGET_MODULE / WIDGET_TOOLTIP / WIDGET_DOM_XML / WIDGET_ICON) but were
+## never actually registered here, so they could not be dropped onto a form —
+## a silent violation of the project rule that every widget is authorable in
+## Qt Designer. Each is instantiable from a bare parent, which is all Designer
+## gives a custom widget.
+########################################################################
+
+from Custom_Widgets.QCustomInput import QCustomInput
+
+try:
+    logInfo("Registering QCustomInput")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomInput, module=QCustomInput.WIDGET_MODULE,
+        tool_tip=QCustomInput.WIDGET_TOOLTIP, xml=QCustomInput.WIDGET_DOM_XML,
+        icon=QCustomInput.WIDGET_ICON, group="Input Widgets")
+except Exception as e:
+    logException(e, message="Error registering QCustomInput")
+
+
+from Custom_Widgets.QCustomButtonGroup import QCustomButtonGroup
+
+try:
+    logInfo("Registering QCustomButtonGroup")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomButtonGroup, module=QCustomButtonGroup.WIDGET_MODULE,
+        tool_tip=QCustomButtonGroup.WIDGET_TOOLTIP,
+        xml=QCustomButtonGroup.WIDGET_DOM_XML,
+        icon=QCustomButtonGroup.WIDGET_ICON, group="Buttons")
+except Exception as e:
+    logException(e, message="Error registering QCustomButtonGroup")
+
+
+from Custom_Widgets.QCustomDonut import QCustomDonut
+
+try:
+    logInfo("Registering QCustomDonut")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomDonut, module=QCustomDonut.WIDGET_MODULE,
+        tool_tip=QCustomDonut.WIDGET_TOOLTIP, xml=QCustomDonut.WIDGET_DOM_XML,
+        icon=QCustomDonut.WIDGET_ICON, group="Charts")
+except Exception as e:
+    logException(e, message="Error registering QCustomDonut")
+
+
+from Custom_Widgets.QCustomSparkline import QCustomSparkline
+
+try:
+    logInfo("Registering QCustomSparkline")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomSparkline, module=QCustomSparkline.WIDGET_MODULE,
+        tool_tip=QCustomSparkline.WIDGET_TOOLTIP,
+        xml=QCustomSparkline.WIDGET_DOM_XML,
+        icon=QCustomSparkline.WIDGET_ICON, group="Charts")
+except Exception as e:
+    logException(e, message="Error registering QCustomSparkline")
+
+
+########################################################################
 ## DESIGNER BRIDGE - lets a running app push theme changes into Designer
 ## (refresh icons / restyle open forms). See Custom_Widgets/DesignerBridge.py
 ########################################################################
