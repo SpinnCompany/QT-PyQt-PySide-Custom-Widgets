@@ -7,6 +7,7 @@ a socket path on Linux) - Qt objects must not live on short-lived Python
 threads, that crashes at teardown.
 """
 import json
+import os
 import socket
 import time
 
@@ -20,7 +21,7 @@ def _spin(qapp, seconds=0.3):
         time.sleep(0.01)
 
 
-def _request(qapp, server, payload, timeout=5.0):
+def _request(qapp, server, payload, timeout=5.0, token=None):
     """Send one JSON line over a raw unix socket and read the reply while
     spinning the (same-thread) server's event loop."""
     path = server._server.fullServerName()
@@ -32,6 +33,10 @@ def _request(qapp, server, payload, timeout=5.0):
         except BlockingIOError:
             pass
         _spin(qapp, 0.05)
+        if token is None:
+            token = getattr(server, "token", None)
+        if token:
+            sock.sendall(("CWTOKEN " + token + "\n").encode())
         sock.sendall((json.dumps(payload) + "\n").encode())
 
         buf = b""
@@ -57,7 +62,7 @@ def bridge(qapp, project_dir):
     server = DesignerBridgeServer(project_dir=str(project_dir))
     assert server.isListening()
     yield server
-    server._server.close()
+    server.close()
     _spin(qapp, 0.05)
 
 
@@ -299,3 +304,53 @@ def test_qss_window_paint_entire_designer_toggle(qapp, bridge, fake_qss_window):
 def test_qss_window_unknown_action(qapp, bridge, fake_qss_window):
     reply = _request(qapp, bridge, {"method": "qssWindow", "action": "bogus"})
     assert "error" in reply and "unknown qss action" in reply["error"]
+
+
+def test_unauthenticated_connection_is_rejected(qapp, bridge):
+    """A raw socket that does NOT present the auth token first must never get
+    a reply (the server aborts the connection)."""
+    path = bridge._server.fullServerName()
+    sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    sock.setblocking(False)
+    try:
+        try:
+            sock.connect(path)
+        except BlockingIOError:
+            pass
+        _spin(qapp, 0.05)
+        sock.sendall(b'{"method": "ping"}\n')
+        buf = b""
+        deadline = time.time() + 2
+        while time.time() < deadline and b"\n" not in buf:
+            qapp.processEvents()
+            try:
+                chunk = sock.recv(4096)
+                if chunk:
+                    buf += chunk
+            except BlockingIOError:
+                time.sleep(0.01)
+        assert b"pong" not in buf
+    finally:
+        sock.close()
+
+
+def test_wrong_token_is_rejected(qapp, bridge):
+    with pytest.raises(AssertionError):
+        _request(qapp, bridge, {"method": "ping"}, token="deadbeef")
+
+
+def test_no_token_file_means_client_fails_closed(qapp, tmp_path):
+    """A client for a socket whose token file is absent fails closed - it must
+    not even attempt a connection, so a spoofed pre-listen server is never
+    talked to."""
+    from Custom_Widgets.DesignerBridge import DesignerBridgeClient
+    from Custom_Widgets.tools import socket_auth
+
+    client = DesignerBridgeClient(project_dir=str(tmp_path / "ghost"))
+    path = socket_auth.token_path(client._name)
+    if os.path.exists(path):  # paranoia: nothing should have created it
+        os.remove(path)
+    start = time.time()
+    assert client.send({"method": "ping"}) is False
+    assert client.request({"method": "ping"}) is None
+    assert time.time() - start < 3

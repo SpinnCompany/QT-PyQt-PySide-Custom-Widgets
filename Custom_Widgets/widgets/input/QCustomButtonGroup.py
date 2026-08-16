@@ -2,6 +2,9 @@ from qtpy.QtCore import Qt, Property, Signal
 from qtpy.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QButtonGroup, QPushButton
 
 
+from Custom_Widgets.accessibility import set_accessibility, QAccessible
+
+
 class QCustomButtonGroup(QWidget):
     """An accessible button group (radio-style or checkbox-style selection).
     
@@ -62,6 +65,7 @@ class QCustomButtonGroup(QWidget):
             self._layout = QVBoxLayout(self)
         self._layout.setContentsMargins(0, 0, 0, 0)
         self._layout.setSpacing(4)
+        set_accessibility(self, QAccessible.Grouping, self.toolTip() or "Button group")
 
     def _onSelectionChanged(self, btn):
         """Emit selectionChanged signal when a button is clicked."""

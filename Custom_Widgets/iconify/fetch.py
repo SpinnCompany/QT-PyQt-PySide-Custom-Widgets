@@ -146,6 +146,14 @@ class Fetcher(object):
         print('Extracting to: {}'.format(installLocation))
         print(localFile)
         with zipfile.ZipFile(localFile) as zipData:
+            # Zip-slip guard: a hostile zip must not be able to write outside
+            # the extraction dir via ../ or absolute member names.
+            base = os.path.normpath(tmpdir)
+            for member in zipData.namelist():
+                dest = os.path.normpath(os.path.join(base, member))
+                if not (dest == base or dest.startswith(base + os.sep)):
+                    raise ValueError(
+                        f"refusing to extract member outside tmpdir: {member!r}")
             zipData.extractall(tmpdir)
 
             cls.updateDataHook(installLocation)

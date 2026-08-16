@@ -1339,7 +1339,7 @@ def _register_widget(cls, group):
         logInfo("Registering %s" % cls.__name__)
         QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
             cls, module=cls.WIDGET_MODULE, tool_tip=cls.WIDGET_TOOLTIP,
-            xml=cls.WIDGET_DOM_XML, icon=getattr(cls, "WIDGET_ICON", ""), group=group)
+            xml=cls.WIDGET_DOM_XML, icon=_iconFor(cls), group=group)
     except Exception as e:
         logException(e, message="Error registering %s" % cls.__name__)
 
@@ -1615,38 +1615,33 @@ try:
 except Exception as e:
     logException(e, message="Error registering QCustomArcLoader")
 
-from Custom_Widgets.QCustomPerlinLoader import QCustomPerlinLoader
-
+# QCustomPerlinLoader needs the optional [loaders] extra: its __init__ raises
+# ImportError without perlin_noise (QCustomPerlinLoader.py:72-75), so an
+# unconditional registration would make a bare Designer drag fail on every
+# machine that only installed the base package. Gate on availability.
 try:
-    logInfo("Registering QCustomPerlinLoader")
-    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QCustomPerlinLoader, module=QCustomPerlinLoader.WIDGET_MODULE,
-        tool_tip=QCustomPerlinLoader.WIDGET_TOOLTIP, xml=QCustomPerlinLoader.WIDGET_DOM_XML,
-        group="Progressbars")
-except Exception as e:
-    logException(e, message="Error registering QCustomPerlinLoader")
+    import perlin_noise  # noqa: F401
+    _perlin_available = True
+except ImportError:
+    _perlin_available = False
 
-from Custom_Widgets.QCustomSpinner import QCustomSpinner
+if _perlin_available:
+    from Custom_Widgets.QCustomPerlinLoader import QCustomPerlinLoader
 
-try:
-    logInfo("Registering QCustomSpinner")
-    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QCustomSpinner, module=QCustomSpinner.WIDGET_MODULE,
-        tool_tip=QCustomSpinner.WIDGET_TOOLTIP, xml=QCustomSpinner.WIDGET_DOM_XML,
-        group="Progressbars")
-except Exception as e:
-    logException(e, message="Error registering QCustomSpinner")
+    try:
+        logInfo("Registering QCustomPerlinLoader")
+        QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+            QCustomPerlinLoader, module=QCustomPerlinLoader.WIDGET_MODULE,
+            tool_tip=QCustomPerlinLoader.WIDGET_TOOLTIP, xml=QCustomPerlinLoader.WIDGET_DOM_XML,
+            group="Progressbars")
+    except Exception as e:
+        logException(e, message="Error registering QCustomPerlinLoader")
 
-from Custom_Widgets.QFlowProgressBar import QFlowProgressBar
-
-try:
-    logInfo("Registering QFlowProgressBar")
-    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QFlowProgressBar, module=QFlowProgressBar.WIDGET_MODULE,
-        tool_tip=QFlowProgressBar.WIDGET_TOOLTIP, xml=QFlowProgressBar.WIDGET_DOM_XML,
-        group="Progressbars")
-except Exception as e:
-    logException(e, message="Error registering QFlowProgressBar")
+# Two loader widgets (spinner + multi-step flow bar) are NOT Designer-registered:
+# their __init__ first positional argument is not a parent (lineWidth, and the
+# step-detail list respectively), so Designer's `createWidget(parent)` binds the
+# parent to that slot and leaves the widget unparented and misconfigured. They
+# are waived in the tiering manifest for the same reason as the anchored popups.
 
 from Custom_Widgets.QCustomProgressIndicator import QCustomProgressIndicator
 

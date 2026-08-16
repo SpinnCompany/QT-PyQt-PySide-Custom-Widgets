@@ -15,6 +15,9 @@ from qtpy.QtCore import Signal, Property
 from qtpy.QtWidgets import QWidget, QHBoxLayout, QPushButton, QButtonGroup
 
 
+from Custom_Widgets.accessibility import set_accessibility, QAccessible
+
+
 class QCustomSegmentedControl(QWidget):
     currentChanged = Signal(int)
 
@@ -49,6 +52,7 @@ class QCustomSegmentedControl(QWidget):
         self._row = QHBoxLayout(self)
         self._row.setContentsMargins(0, 0, 0, 0)
         self._row.setSpacing(0)
+        set_accessibility(self, QAccessible.Grouping, self.toolTip() or "Segmented control")
 
     def setSegments(self, items):
         """Each item is a string, (label, data) pair, or a dict with

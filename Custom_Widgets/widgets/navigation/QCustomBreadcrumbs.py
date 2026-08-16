@@ -14,6 +14,9 @@ from qtpy.QtCore import Qt, Signal
 from qtpy.QtWidgets import QWidget, QHBoxLayout, QPushButton, QLabel
 
 
+from Custom_Widgets.accessibility import set_accessibility, QAccessible
+
+
 class QCustomBreadcrumbs(QWidget):
     itemClicked = Signal(int, object)      # index, data
 
@@ -43,6 +46,7 @@ class QCustomBreadcrumbs(QWidget):
         self._row.setContentsMargins(0, 0, 0, 0)
         self._row.setSpacing(6)
         self._row.addStretch(1)
+        set_accessibility(self, QAccessible.Grouping, "Breadcrumbs")
 
     def setItems(self, items):
         """Set the trail. Each item is a string, (label, data) pair, or a dict

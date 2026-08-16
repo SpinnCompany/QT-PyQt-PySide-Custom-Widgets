@@ -13,7 +13,7 @@ import colorsys
 
 from qtpy.QtWidgets import QApplication, QPushButton, QLabel, QTabWidget, QCheckBox, QToolBox, QMainWindow, QMenu, QTreeWidgetItem
 from qtpy.QtGui import QPalette, QCursor, QFont, QFontDatabase, QIcon, QColor, QPixmap, QPixmapCache
-from qtpy.QtCore import QCoreApplication, QRect, Signal, QObject, QSettings, Property, QDir, QThreadPool
+from qtpy.QtCore import QCoreApplication, QRect, Signal, QObject, QSettings, Property, QDir, QThreadPool, Qt
 
 import qtsass
 
@@ -1076,8 +1076,25 @@ class QCustomTheme(QObject):
             stylesheet = re.sub(var_pattern, str(value), stylesheet)
         return stylesheet
     
+    def _variablesCacheKey(self):
+        """Cheap fingerprint of the inputs `createVariables` derives from, so
+        `getThemeVariableValue` can skip the recompute + _variables.scss write
+        that otherwise runs on every single variable lookup."""
+        theme = self.currentTheme
+        try:
+            others = tuple(sorted((str(k), str(v)) for k, v in
+                                  getattr(theme, "other_variables", {}).items()))
+        except Exception:
+            others = ()
+        return (str(self.theme), str(theme.bg_color), str(theme.txt_color),
+                str(theme.accent_color), str(getattr(theme, "icons_color", "")),
+                others)
+
     def getThemeVariableValue(self, color_variable):
-        self.createVariables()
+        key = self._variablesCacheKey()
+        if getattr(self, '_variables_cache_key', None) != key:
+            self.createVariables()
+            self._variables_cache_key = key
         return self._variable_mapping.get(color_variable, color_variable)
     
     def reloadJsonStyles(self, update = False):
@@ -1276,7 +1293,7 @@ class QCustomTheme(QObject):
             # degrades to a plain compile (token() simply unavailable).
             token_fns = []
             try:
-                from Custom_Widgets.JSonStyles.tokens import DesignTokens, sass_functions
+                from Custom_Widgets.theming.tokens import DesignTokens, sass_functions
                 _tname = "dark" if getattr(self, "_isThemeDark", False) else "light"
                 _roles = {"surface": self.COLOR_BACKGROUND_1,
                           "on-surface": self.COLOR_TEXT_1,
@@ -1298,7 +1315,7 @@ class QCustomTheme(QObject):
                 # usable, but the real cause is no longer buried.
                 detail = None
                 try:
-                    from Custom_Widgets.JSonStyles.tokens import \
+                    from Custom_Widgets.theming.tokens import \
                         describe_scss_compile_error
                     detail = describe_scss_compile_error(
                         main_sass_path, [os.path.dirname(main_sass_path)], e)
@@ -1347,15 +1364,41 @@ class QCustomTheme(QObject):
             except Exception as e:
                 logError(f"Failed to write GENERATED-ICONS-COLOR to QSettings: {e}")
 
+            # Coalesce icon generation: a previous worker may still be writing
+            # the shared SVG set when a new theme lands (rapid toggles). Stop
+            # it and wait for it to drain before starting a fresh one, so two
+            # threads never interleave writes to the same files. The bound
+            # (15s) keeps a wedged worker from hanging the switch forever.
+            prev = getattr(self, "iconsWorker", None)
+            if prev is not None:
+                prev.stop()
+                self.customWidgetsThreadpool.waitForDone(15000)
+            self._icon_generation = getattr(self, "_icon_generation", 0) + 1
+            generation = self._icon_generation
+
             self.iconsWorker = Worker(self.compileSassTheme, themeInfo=themeInfo,
                                       iconsColor=iconsColor, iconsForce=iconsForce)
             self.iconsWorker.signals.result.connect(WorkerResponse.print_output)
-            self.iconsWorker.signals.finished.connect(lambda: self._themeChangeComplete())
+            # The worker emits `finished` from its pool thread. A plain lambda
+            # has no thread affinity, so the connection was Direct and
+            # `_themeChangeComplete` ran on the worker thread, mutating GUI
+            # state (QPixmapCache, setStyleSheet, full repolish, QLocalSocket
+            # I/O) off the GUI thread. Queue the completion onto the main
+            # thread (QCustomTheme lives there) and let the generation guard
+            # drop superseded completions when a newer worker was started in
+            # the meantime.
+            self.iconsWorker.signals.finished.connect(
+                lambda: self._themeChangeComplete(generation), Qt.QueuedConnection)
             self.iconsWorker.signals.progress.connect(self.sassCompilationProgress)
 
             self.customWidgetsThreadpool.start(self.iconsWorker)
 
-    def _themeChangeComplete(self):
+    def _themeChangeComplete(self, generation=None):
+        # A rapid theme toggle may have started a newer worker while this one
+        # was still draining; only the newest generation may re-apply the GUI.
+        if generation is not None and generation != getattr(self, "_icon_generation", 0):
+            logDebug("superseded theme generation %s skipped" % generation)
+            return
         # The shared icon set may have been rewritten in place - drop cached
         # pixmaps and re-apply the stylesheet so QSS urls re-read the files.
         app = QApplication.instance()
