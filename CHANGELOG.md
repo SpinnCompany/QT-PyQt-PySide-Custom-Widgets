@@ -1,6 +1,11 @@
 # Changelog
 
-## Unreleased
+## 2.4.0 — 2026-08-16
+
+**Fleet-review hardening.** Six review tracks landed at once: thread-safe
+theming, real security on the local sockets + HTTP daemon, an import-light
+package root, one widget catalog, an accessibility surface for the
+custom-painted widgets, and a CI example-boot gate.
 
 ### Security
 - **`QLocalServer` sockets (Designer bridge + in-app control server) are
