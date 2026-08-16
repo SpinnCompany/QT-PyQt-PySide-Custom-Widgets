@@ -1272,7 +1272,7 @@ class QssEditorWindow(QMainWindow):
         except Exception as e:
             detail = None
             try:
-                from Custom_Widgets.JSonStyles.tokens import \
+                from Custom_Widgets.theming.tokens import \
                     describe_scss_compile_error
                 # The buffer @imports resolve from the scss folder; also walk
                 # main.scss so a dangling @import in an imported partial is caught.

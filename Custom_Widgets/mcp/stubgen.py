@@ -14,7 +14,6 @@
 ## call, so an agent never sees a stale signature).
 ########################################################################
 import argparse
-import glob
 import importlib
 import inspect
 import os
@@ -36,15 +35,15 @@ _HEADER = ("# Auto-generated type stub — DO NOT EDIT.\n"
 
 
 def _widgets_package_dir():
-    import Custom_Widgets
-    return os.path.dirname(Custom_Widgets.__file__)
+    from Custom_Widgets.mcp.catalog import widgets_package_dir
+    return widgets_package_dir()
 
 
 def _catalog_props():
     """{class_name: {prop: type}} from the AST catalog, for typing properties."""
-    from Custom_Widgets.mcp.server import _discover_widgets
+    from Custom_Widgets.mcp.catalog import discover_widgets
     out = {}
-    for entry in _discover_widgets().values():
+    for entry in discover_widgets().values():
         types = {}
         for prop, meta in (entry.get("props") or {}).items():
             t = (meta or {}).get("type", "")
@@ -55,8 +54,8 @@ def _catalog_props():
 
 def _catalog_modules():
     """Widget modules to stub: those that declare at least one __catalog__."""
-    from Custom_Widgets.mcp.server import _discover_widgets
-    return sorted({e["module"] for e in _discover_widgets().values()})
+    from Custom_Widgets.mcp.catalog import discover_widgets
+    return sorted({e["module"] for e in discover_widgets().values()})
 
 
 def _ann(annotation):

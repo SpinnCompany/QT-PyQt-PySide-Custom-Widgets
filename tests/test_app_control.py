@@ -116,6 +116,7 @@ def test_socket_roundtrip_ping(qapp, server):
                 break
             except (BlockingIOError, OSError):
                 pass
+        sock.sendall(("CWTOKEN " + server.token + "\n").encode())
         sock.sendall(b'{"method": "ping"}\n')
         buf = b""
         deadline = time.time() + 3
@@ -128,6 +129,52 @@ def test_socket_roundtrip_ping(qapp, server):
         assert b"pong" in buf
     finally:
         sock.close()
+
+
+def test_unauthenticated_connection_is_rejected(qapp, server):
+    """No token line -> server aborts the connection, no reply."""
+    path = server._server.fullServerName()
+    sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    sock.setblocking(False)
+    try:
+        try:
+            sock.connect(path)
+        except BlockingIOError:
+            pass
+        deadline = time.time() + 2
+        while time.time() < deadline:
+            qapp.processEvents(); time.sleep(0.01)
+            try:
+                sock.connect(path)
+                break
+            except (BlockingIOError, OSError):
+                pass
+        sock.sendall(b'{"method": "ping"}\n')
+        buf = b""
+        deadline = time.time() + 2
+        while time.time() < deadline and b"\n" not in buf:
+            qapp.processEvents()
+            try:
+                chunk = sock.recv(4096)
+                if chunk:
+                    buf += chunk
+            except BlockingIOError:
+                time.sleep(0.01)
+        assert b"pong" not in buf
+    finally:
+        sock.close()
+
+
+def test_client_without_token_file_fails_closed(qapp, tmp_path):
+    from Custom_Widgets import AppControl
+
+    class _DummyClient(AppControl.AppControlClient):
+        pass
+
+    client = _DummyClient(project_dir=str(tmp_path / "ghost"))
+    start = time.time()
+    assert client.request({"method": "ping"}) is None
+    assert time.time() - start < 3
 
 
 def test_maybe_start_gated_on_env(qapp, tmp_path, monkeypatch):

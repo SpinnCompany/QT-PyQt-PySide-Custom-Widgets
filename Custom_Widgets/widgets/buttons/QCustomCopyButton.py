@@ -23,6 +23,9 @@ from qtpy.QtGui import QColor, QPainter, QPen, QBrush, QFontMetrics
 from qtpy.QtWidgets import QWidget, QSizePolicy, QApplication
 
 
+from Custom_Widgets.accessibility import set_accessibility, QAccessible
+
+
 class QCustomCopyButton(QWidget):
     copied = Signal(str)
 
@@ -79,6 +82,7 @@ class QCustomCopyButton(QWidget):
         self._timer = QTimer(self)
         self._timer.setSingleShot(True)
         self._timer.timeout.connect(self._reset)
+        set_accessibility(self, QAccessible.Button, self._text)
 
     # ------------------------------------------------------------------ #
     ## Copying

@@ -19,7 +19,6 @@
 ## Requires the optional dependency:  pip install QT-PyQt-PySide-Custom-Widgets[mcp]
 ########################################################################
 import argparse
-import ast
 import base64
 import functools
 import glob
@@ -158,13 +157,20 @@ def catalog_resource() -> str:
     JSON: every widget's module/class, each property with its type and allowed
     enum values, signals, the design tokens it honours, and whether it is
     Designer-droppable. Same data the widgets_catalog tool returns."""
-    return json.dumps(_discover_widgets(), indent=2)
+    return json.dumps(catalog.discover_widgets(), indent=2)
 
 
 _PROJECT_DIR = projectRoot()
 _qt_app = None
 
+# Designers this server launched: pid -> (project_dir, Popen). Lets
+# designer_quit kill exactly the processes it owns instead of a /proc sweep
+# (which is kept only as a fallback for other sessions' Designers).
+_LAUNCHED_DESIGNERS = {}
+_LAUNCHED_DESIGNERS_LOCK = threading.Lock()
+
 from Custom_Widgets.mcp.workspace import ProjectRegistry  # noqa: E402
+from Custom_Widgets.mcp import catalog  # noqa: E402
 
 ########################################################################
 ## PER-PROJECT SERIALIZATION
@@ -344,21 +350,44 @@ def designer_launch(project: str = "") -> str:
     control bridge, working in a project folder (`project`; blank = default).
     Returns immediately; give Designer a few seconds to start, then check
     designer_status."""
-    subprocess.Popen(
+    proc = subprocess.Popen(
         [os.path.join(os.path.dirname(sys.executable), "Custom_Widgets"),
          "--start-designer", "--plugins"],
         cwd=_resolve(project), start_new_session=True,
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    with _LAUNCHED_DESIGNERS_LOCK:
+        _LAUNCHED_DESIGNERS[proc.pid] = (_resolve(project), proc)
     return "Designer launching (verify with designer_status in ~5s)"
 
 
 def _kill_designer_processes(project_dir=None):
-    """Force-kill pyside6-designer processes (optionally only those whose cwd is
-    project_dir). Robust against a hung Designer whose bridge won't answer."""
+    """Force-kill Designer processes (optionally only those whose project is
+    project_dir). Prefers processes this server actually launched (tracked by
+    PID - no /proc walk), falling back to a /proc scan for Designers another
+    agent/session or a manual run started. Robust against a hung Designer
+    whose bridge won't answer."""
     import glob
     import signal
     killed = []
     target = os.path.abspath(project_dir) if project_dir else None
+
+    # 1) Processes we launched and can identify exactly.
+    with _LAUNCHED_DESIGNERS_LOCK:
+        for pid, (pdir, proc) in list(_LAUNCHED_DESIGNERS.items()):
+            if target and pdir != target:
+                continue
+            if proc.poll() is not None:
+                del _LAUNCHED_DESIGNERS[pid]
+                continue
+            try:
+                proc.kill()
+                killed.append(pid)
+            except OSError:
+                pass
+            del _LAUNCHED_DESIGNERS[pid]
+
+    # 2) Fallback: Designers we didn't launch (other sessions, manual runs).
+    #    Match both the real binary and our launcher script.
     for proc in glob.glob("/proc/[0-9]*"):
         pid = proc.rsplit("/", 1)[-1]
         try:
@@ -366,7 +395,9 @@ def _kill_designer_processes(project_dir=None):
                 cmd = f.read().replace(b"\x00", b" ").decode("utf-8", "ignore")
         except OSError:
             continue
-        if "pyside6-designer" not in cmd:
+        if "pyside6-designer" not in cmd and "--start-designer" not in cmd:
+            continue
+        if int(pid) in killed:
             continue
         if target:
             try:
@@ -558,88 +589,13 @@ def designer_get_object_info(project: str = "") -> str:
 ##
 ## These tools answer "which widget, configured how" and "what does it look
 ## like" WITHOUT a running Designer or app. The catalog is read straight from
-## each widget's `__catalog__` (via AST, so importing/instantiating nothing);
-## render_widget draws one widget offscreen in an isolated subprocess.
+## each widget's `__catalog__` (via AST, so importing/instantiating nothing) —
+## the single implementation lives in catalog.py, shared with the stub
+## generator and the launch-gate manifest. render_widget draws one widget
+## offscreen in an isolated subprocess.
 ########################################################################
-def _widgets_package_dir():
-    import Custom_Widgets
-    return os.path.dirname(Custom_Widgets.__file__)
-
-
-def _ast_literal(node):
-    try:
-        return ast.literal_eval(node)
-    except (ValueError, SyntaxError):
-        return None
-
-
-def _class_catalog(node, stem):
-    """Extract a widget's catalog entry from its ClassDef, or None if the class
-    declares no `__catalog__`."""
-    catalog = None
-    attrs = {}
-    for stmt in node.body:
-        if not isinstance(stmt, ast.Assign):
-            continue
-        for tgt in stmt.targets:
-            if not isinstance(tgt, ast.Name):
-                continue
-            if tgt.id == "__catalog__":
-                catalog = _ast_literal(stmt.value)
-            elif tgt.id in ("WIDGET_MODULE", "WIDGET_TOOLTIP", "WIDGET_DOM_XML"):
-                attrs[tgt.id] = _ast_literal(stmt.value)
-    if not isinstance(catalog, dict):
-        return None
-    doc = ast.get_docstring(node)
-    summary = (doc.strip().splitlines()[0] if doc
-               else (attrs.get("WIDGET_TOOLTIP") or ""))
-    return {
-        "name": catalog.get("name") or node.name,
-        "class": node.name,
-        "module": attrs.get("WIDGET_MODULE") or "Custom_Widgets.%s" % stem,
-        "summary": summary,
-        "props": catalog.get("props", {}),
-        "signals": catalog.get("signals", []),
-        "tokens_used": catalog.get("tokens_used", []),
-        "droppable": "WIDGET_DOM_XML" in attrs,
-    }
-
-
-@functools.lru_cache(maxsize=1)
-def _discover_widgets():
-    """Scan the Custom_Widgets package for widgets declaring `__catalog__` and
-    return {name: entry}. Parsed via AST — nothing is imported or instantiated,
-    so it's safe and fast in the headless server process."""
-    out = {}
-    # Recursive: widgets live under Custom_Widgets/widgets/<group>/ since the
-    # 2026-07-31 regrouping. A top-level-only glob silently dropped every
-    # module that had moved, emptying them out of the MCP catalog and out of
-    # stub generation with no error to show for it.
-    _paths = glob.glob(os.path.join(_widgets_package_dir(), "**", "QCustom*.py"),
-                       recursive=True)
-    for path in sorted(p for p in _paths if "__pycache__" not in p):
-        stem = os.path.splitext(os.path.basename(path))[0]
-        try:
-            with open(path, encoding="utf-8") as fh:
-                tree = ast.parse(fh.read(), filename=path)
-        except (OSError, SyntaxError):
-            continue
-        for node in tree.body:
-            if isinstance(node, ast.ClassDef):
-                entry = _class_catalog(node, stem)
-                if entry:
-                    out[entry["name"]] = entry
-    return out
-
-
 def _find_widget(name):
-    widgets = _discover_widgets()
-    info = widgets.get(name)
-    if info is None:
-        needle = name.lower()
-        info = next((w for w in widgets.values()
-                     if w["name"].lower() == needle or w["class"].lower() == needle),
-                    None)
+    info = catalog.find_widget(name)
     if info is None:
         _fail("unknown_widget",
               "no widget named %r" % name,
@@ -663,7 +619,7 @@ def widgets_catalog(name: str = "", query: str = "") -> str:
     """
     if name:
         return json.dumps(_find_widget(name), indent=2)
-    items = sorted(_discover_widgets().values(), key=lambda w: w["name"])
+    items = sorted(catalog.discover_widgets().values(), key=lambda w: w["name"])
     if query:
         q = query.lower()
         items = [w for w in items
@@ -684,7 +640,7 @@ from qtpy.QtCore import QByteArray, QBuffer, QIODevice
 app = QApplication.instance() or QApplication([])
 if spec.get("theme", True):
     try:
-        from Custom_Widgets.JSonStyles.tokens import applyDesignTokens
+        from Custom_Widgets.theming.tokens import applyDesignTokens
         applyDesignTokens(app, theme=spec.get("theme_name", "light"))
     except Exception:
         pass
@@ -1270,6 +1226,41 @@ def _show_style_in_editor(path, project=None):
         pass
 
 
+def _loopback_host(host):
+    return host in ("127.0.0.1", "localhost", "::1")
+
+
+def _enable_http_auth(token, host, port):
+    """Require ``Authorization: Bearer <token>`` on every HTTP request. Uses
+    the mcp SDK's native bearer middleware (token verifier + AuthSettings) so
+    unauthenticated requests get a 401 instead of reaching the tool layer."""
+    import hmac
+
+    from mcp.server.auth.provider import AccessToken, TokenVerifier
+    from mcp.server.auth.settings import AuthSettings
+    from pydantic import AnyHttpUrl
+
+    class _StaticTokenVerifier(TokenVerifier):
+        def __init__(self, secret):
+            self._secret = secret.encode("utf-8")
+
+        async def verify_token(self, token):
+            if hmac.compare_digest(token.encode("utf-8"), self._secret):
+                return AccessToken(token=token, client_id="static", scopes=[])
+            return None
+
+    base = f"http://{host}:{port}"
+    mcp._token_verifier = _StaticTokenVerifier(token)
+    try:
+        mcp.settings.auth = AuthSettings(
+            issuer_url=AnyHttpUrl(base),
+            resource_server_url=AnyHttpUrl(base),
+        )
+    except Exception:  # pragma: no cover - pydantic/URL edge cases
+        pass
+    print("MCP HTTP: bearer-token auth enabled", file=sys.stderr)
+
+
 def main():
     global _PROJECT_DIR
     parser = argparse.ArgumentParser(description="Custom Widgets MCP server")
@@ -1289,6 +1280,13 @@ def main():
                         help="HTTP bind host (transport=http). Default 127.0.0.1.")
     parser.add_argument("--port", type=int, default=8765,
                         help="HTTP bind port (transport=http). Default 8765.")
+    parser.add_argument(
+        "--token", default=os.environ.get("CUSTOM_WIDGETS_MCP_TOKEN", ""),
+        help="Bearer token HTTP clients must present (Authorization: Bearer "
+             "<token>). Non-loopback binds REQUIRE one; the daemon refuses to "
+             "start otherwise. Loopback works without it (matches existing "
+             "configs), but set it when several machines/users can reach the "
+             "port. Also read from CUSTOM_WIDGETS_MCP_TOKEN.")
     args = parser.parse_args()
     _PROJECT_DIR = os.path.abspath(args.project_dir)
     from Custom_Widgets.Project import setProjectRoot
@@ -1297,11 +1295,19 @@ def main():
     if args.transport == "http":
         # Shared daemon: several sessions/agents dial in over streamable HTTP;
         # cross-client commands to one project are serialized by its worker.
+        if not _loopback_host(args.host) and not args.token:
+            raise SystemExit(
+                f"refusing to bind the MCP HTTP daemon to a non-loopback host "
+                f"({args.host}) without a bearer token. Pass --token=... (or "
+                f"set CUSTOM_WIDGETS_MCP_TOKEN) and put that token in the "
+                f"client's Authorization header.")
         try:
             mcp.settings.host = args.host
             mcp.settings.port = args.port
         except Exception:  # pragma: no cover - older FastMCP settings shape
             pass
+        if args.token:
+            _enable_http_auth(args.token, args.host, args.port)
         mcp.run(transport="streamable-http")
     else:
         mcp.run()

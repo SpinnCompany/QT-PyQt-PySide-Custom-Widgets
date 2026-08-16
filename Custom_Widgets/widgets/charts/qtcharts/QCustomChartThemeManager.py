@@ -195,7 +195,7 @@ class QCustomChartThemeManager(QObject, QCustomChartConstants):
         and reports dark whenever no theme JSON has been loaded.
         """
         try:
-            from Custom_Widgets.JSonStyles.tokens import activeDesignTokens
+            from Custom_Widgets.theming.tokens import activeDesignTokens
         except Exception:
             return None
         tokens = activeDesignTokens()

@@ -17,6 +17,9 @@ from qtpy.QtGui import QColor, QPainter, QPen, QBrush
 from qtpy.QtWidgets import QWidget, QSizePolicy
 
 
+from Custom_Widgets.accessibility import set_accessibility, QAccessible
+
+
 class QCustomSwitch(QWidget):
     toggled = Signal(bool)
 
@@ -58,6 +61,7 @@ class QCustomSwitch(QWidget):
         self._anim = QPropertyAnimation(self, b"thumbPosition", self)
         self._anim.setDuration(140)
         self._anim.setEasingCurve(QEasingCurve.InOutCubic)
+        set_accessibility(self, QAccessible.CheckBox, self.toolTip() or "Toggle switch")
 
     # ------------------------------------------------------------------ #
     ## Geometry

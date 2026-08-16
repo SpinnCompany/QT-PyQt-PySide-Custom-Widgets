@@ -25,6 +25,9 @@ from qtpy.QtGui import (QColor, QPainter, QPen, QBrush, QConicalGradient,
 from qtpy.QtWidgets import QWidget, QSizePolicy
 
 
+from Custom_Widgets.accessibility import set_accessibility, QAccessible
+
+
 class QCustomRainbowButton(QWidget):
     clicked = Signal()
 
@@ -87,6 +90,7 @@ class QCustomRainbowButton(QWidget):
 
         self._timer = QTimer(self)
         self._timer.timeout.connect(self._advance)
+        set_accessibility(self, QAccessible.Button, self._text)
 
     # ------------------------------------------------------------------ #
     ## Animation

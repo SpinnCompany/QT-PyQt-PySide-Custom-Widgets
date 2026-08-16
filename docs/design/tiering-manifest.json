@@ -578,7 +578,7 @@
   {
     "module": "Custom_Widgets/widgets/containers/QCustomEmbeddedWindow.py",
     "widget": "QCustomEmbeddedWindow",
-    "loc": 278,
+    "loc": 279,
     "pyi": false,
     "catalog": false,
     "test": true,
@@ -884,6 +884,18 @@
     "test": true,
     "example": true,
     "designer": true,
+    "designer_waived": null,
+    "tier": "free"
+  },
+  {
+    "module": "Custom_Widgets/QCustomMainWindow.py",
+    "widget": "QCustomMainWindow",
+    "loc": 581,
+    "pyi": false,
+    "catalog": false,
+    "test": false,
+    "example": true,
+    "designer": false,
     "designer_waived": null,
     "tier": "free"
   },
@@ -1579,8 +1591,8 @@
     "catalog": false,
     "test": true,
     "example": true,
-    "designer": true,
-    "designer_waived": null,
+    "designer": false,
+    "designer_waived": "ctor takes lineWidth first, not a parent",
     "tier": "free"
   },
   {
@@ -1855,8 +1867,8 @@
     "catalog": false,
     "test": true,
     "example": true,
-    "designer": true,
-    "designer_waived": null,
+    "designer": false,
+    "designer_waived": "ctor takes strDetailList first, not a parent",
     "tier": "free"
   },
   {
@@ -2066,7 +2078,7 @@
   {
     "module": "Custom_Widgets/theming/QCustomTheme.py",
     "widget": "QCustomTheme",
-    "loc": 1807,
+    "loc": 1850,
     "pyi": false,
     "catalog": false,
     "test": true,

@@ -30,6 +30,9 @@ from qtpy.QtWidgets import QApplication, QWidget
 
 from Custom_Widgets.Project import projectRoot
 from Custom_Widgets.Log import *
+from Custom_Widgets.tools.socket_auth import (write_token, read_token,
+                                              remove_token, auth_line,
+                                              parse_auth_line)
 
 _bridge_server = None
 _form_editor_core = None  # QDesignerFormEditorInterface, captured at plugin init
@@ -153,8 +156,16 @@ class DesignerBridgeServer(QObject):
 
         name = bridgeServerName(self._project_dir)
         QLocalServer.removeServer(name)  # clear a stale socket from a crash
+        self._socket_name = name
         self._server = QLocalServer(self)
         if self._server.listen(name):
+            try:
+                # Only the owning user may connect; a token is still required
+                # as the first line (see socket_auth).
+                self._server.setSocketOptions(QLocalServer.UserAccessOption)
+            except Exception as e:
+                logDebug(f"Designer bridge: socket options not applied: {e}")
+            self.token = write_token(name)
             self._server.newConnection.connect(self._onNewConnection)
             logInfo(f"Designer bridge listening on '{name}'")
         else:
@@ -173,8 +184,15 @@ class DesignerBridgeServer(QObject):
                            os.path.join(self._project_dir, 'Qss/icons/'))
         name = bridgeServerName(self._project_dir)
         self._server.close()
+        remove_token(self._socket_name)
         QLocalServer.removeServer(name)
+        self._socket_name = name
         if self._server.listen(name):
+            try:
+                self._server.setSocketOptions(QLocalServer.UserAccessOption)
+            except Exception as e:
+                logDebug(f"Designer bridge: socket options not applied: {e}")
+            self.token = write_token(name)
             logInfo(f"Designer bridge re-bound to '{name}'")
         else:
             logWarning(f"Designer bridge could not re-bind to '{name}': "
@@ -186,6 +204,7 @@ class DesignerBridgeServer(QObject):
     def _onNewConnection(self):
         while self._server.hasPendingConnections():
             sock = self._server.nextPendingConnection()
+            sock._authorized = False
             sock.readyRead.connect(lambda s=sock: self._onReadyRead(s))
             sock.disconnected.connect(lambda s=sock: self._dropSocket(s))
             self._sockets.append(sock)
@@ -193,12 +212,45 @@ class DesignerBridgeServer(QObject):
     def _dropSocket(self, sock):
         if sock in self._sockets:
             self._sockets.remove(sock)
-        sock.deleteLater()
+        try:
+            sock.deleteLater()
+        except RuntimeError:
+            pass
+
+    def close(self):
+        """Stop listening and drop the auth token (clean teardown)."""
+        for sock in list(self._sockets):
+            try:
+                sock.disconnected.disconnect()
+                sock.readyRead.disconnect()
+            except (RuntimeError, TypeError):
+                pass
+            try:
+                sock.abort()
+                sock.deleteLater()
+            except RuntimeError:
+                pass
+        self._sockets.clear()
+        try:
+            self._server.close()
+        except RuntimeError:
+            pass
+        remove_token(self._socket_name)
 
     def _onReadyRead(self, sock):
         while sock.canReadLine():
             raw = bytes(sock.readLine()).decode("utf-8", errors="ignore").strip()
             if not raw:
+                continue
+            if not getattr(sock, "_authorized", False):
+                if parse_auth_line(raw, self.token):
+                    sock._authorized = True
+                else:
+                    logWarning("Designer bridge: rejecting unauthenticated "
+                               "connection")
+                    sock.abort()
+                    self._dropSocket(sock)
+                    return
                 continue
             try:
                 message = json.loads(raw)
@@ -1255,10 +1307,14 @@ class DesignerBridgeClient:
     def send(self, message):
         """Deliver one message. Returns True when the bridge accepted it."""
         try:
+            token = read_token(self._name)
+            if not token:
+                return False
             sock = QLocalSocket()
             sock.connectToServer(self._name)
             if not sock.waitForConnected(self._timeout):
                 return False
+            sock.write(auth_line(token))
             sock.write((json.dumps(message) + "\n").encode("utf-8"))
             sock.flush()
             sock.waitForBytesWritten(self._timeout)
@@ -1280,10 +1336,14 @@ class DesignerBridgeClient:
         """Send one message and wait for the JSON reply. Returns the reply
         dict, or None when Designer/the bridge is not running."""
         try:
+            token = read_token(self._name)
+            if not token:
+                return None
             sock = QLocalSocket()
             sock.connectToServer(self._name)
             if not sock.waitForConnected(self._timeout):
                 return None
+            sock.write(auth_line(token))
             sock.write((json.dumps(message) + "\n").encode("utf-8"))
             sock.flush()
             sock.waitForBytesWritten(self._timeout)

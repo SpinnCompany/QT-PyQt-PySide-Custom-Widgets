@@ -73,7 +73,8 @@ class QCustomEmbeddedWindow(QWidget):
         self.customTheme = QCustomTheme()
 
         if pos is None:
-            pos = (random.randint(0, self.parent().width()-285), random.randint(0, self.parent().height()-190))
+            pos = (random.randint(0, max(0, self.parent().width()-285)),
+                   random.randint(0, max(0, self.parent().height()-190)))
         self.setMinimumSize(285, 100)
         self.setGeometry(pos[0], pos[1], 285, 190)
 

@@ -14,6 +14,9 @@ from qtpy.QtCore import Qt, Signal, Property
 from qtpy.QtWidgets import QWidget, QHBoxLayout, QLabel
 
 
+from Custom_Widgets.accessibility import set_accessibility, QAccessible
+
+
 class QCustomRating(QWidget):
     valueChanged = Signal(int)
 
@@ -48,6 +51,7 @@ class QCustomRating(QWidget):
         self._row.setContentsMargins(0, 0, 0, 0)
         self._row.setSpacing(2)
         self._build()
+        set_accessibility(self, QAccessible.Slider, "Rating")
 
     def _build(self):
         while self._row.count():

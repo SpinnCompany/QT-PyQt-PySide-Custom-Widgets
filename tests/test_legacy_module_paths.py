@@ -167,16 +167,16 @@ class TestToolingSeesMovedWidgets:
     """
 
     def test_mcp_discovery_includes_moved_widgets(self, qapp):
-        from Custom_Widgets.mcp.server import _discover_widgets
-        found = _discover_widgets()
+        from Custom_Widgets.mcp.catalog import discover_widgets
+        found = discover_widgets()
         for name in ("QCustomMultiSelect", "QCustomRadioGroup",
                      "QCustomTextArea", "QCustomSwitch"):
             assert name in found, "%s dropped out of MCP discovery" % name
 
     def test_discovered_module_is_the_public_path(self, qapp):
         """MCP hands this to callers as an import path; it must be the stable one."""
-        from Custom_Widgets.mcp.server import _discover_widgets
-        found = _discover_widgets()
+        from Custom_Widgets.mcp.catalog import discover_widgets
+        found = discover_widgets()
         assert found["QCustomSwitch"]["module"] == "Custom_Widgets.QCustomSwitch"
 
     def test_stubs_live_at_the_flat_public_path(self, qapp):

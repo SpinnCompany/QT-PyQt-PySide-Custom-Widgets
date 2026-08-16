@@ -16,6 +16,9 @@ from qtpy.QtGui import QColor, QPainter, QPen, QBrush
 from qtpy.QtWidgets import QWidget, QSizePolicy
 
 
+from Custom_Widgets.accessibility import set_accessibility, QAccessible
+
+
 class QCustomRangeSlider(QWidget):
     valuesChanged = Signal(int, int)       # lower, upper
 
@@ -56,6 +59,7 @@ class QCustomRangeSlider(QWidget):
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.setMinimumHeight(24)
         self.setCursor(Qt.PointingHandCursor)
+        set_accessibility(self, QAccessible.Slider, self.toolTip() or "Range slider")
 
     # ------------------------------------------------------------------ #
     ## Geometry helpers

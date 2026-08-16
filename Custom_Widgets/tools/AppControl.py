@@ -26,6 +26,9 @@ from qtpy.QtWidgets import QApplication, QWidget, QAbstractButton
 
 from Custom_Widgets.Project import projectRoot
 from Custom_Widgets.Log import *
+from Custom_Widgets.tools.socket_auth import (write_token, read_token,
+                                              remove_token, auth_line,
+                                              parse_auth_line)
 
 _server_singleton = None
 
@@ -67,10 +70,18 @@ class AppControlServer(QObject):
         self._sockets = []
         name = appControlServerName(project_dir)
         QLocalServer.removeServer(name)  # clear a stale socket from a crash
+        self._socket_name = name
         self._server = QLocalServer(self)
         if not self._server.listen(name):
             raise RuntimeError(
                 f"cannot listen on {name}: {self._server.errorString()}")
+        try:
+            # Only the owning user may connect; a token is still required as
+            # the first line (see socket_auth).
+            self._server.setSocketOptions(QLocalServer.UserAccessOption)
+        except Exception as e:
+            logDebug(f"App control: socket options not applied: {e}")
+        self.token = write_token(name)
         self._server.newConnection.connect(self._onNewConnection)
         logInfo(f"App control: listening on {name} (pid {os.getpid()})")
 
@@ -96,11 +107,13 @@ class AppControlServer(QObject):
             self._server.close()
         except RuntimeError:
             pass
+        remove_token(self._socket_name)
 
     # -- connection plumbing (line-based, mirrors DesignerBridge) -------
     def _onNewConnection(self):
         while self._server.hasPendingConnections():
             sock = self._server.nextPendingConnection()
+            sock._authorized = False
             sock.readyRead.connect(lambda s=sock: self._onReadyRead(s))
             sock.disconnected.connect(lambda s=sock: self._dropSocket(s))
             self._sockets.append(sock)
@@ -117,6 +130,16 @@ class AppControlServer(QObject):
         while sock.canReadLine():
             raw = bytes(sock.readLine()).decode("utf-8", errors="ignore").strip()
             if not raw:
+                continue
+            if not getattr(sock, "_authorized", False):
+                if parse_auth_line(raw, self.token):
+                    sock._authorized = True
+                else:
+                    logWarning("App control: rejecting unauthenticated "
+                               "connection")
+                    sock.abort()
+                    self._dropSocket(sock)
+                    return
                 continue
             try:
                 reply = self._dispatch(json.loads(raw))
@@ -406,11 +429,15 @@ class AppControlClient:
         self._timeout = timeout_ms
 
     def request(self, message, reply_timeout_ms=10000):
+        token = read_token(self._name)
+        if not token:
+            return None
         sock = QLocalSocket()
         sock.connectToServer(self._name)
         if not sock.waitForConnected(self._timeout):
             return None
         try:
+            sock.write(auth_line(token))
             sock.write((json.dumps(message) + "\n").encode("utf-8"))
             sock.flush()
             buf = b""

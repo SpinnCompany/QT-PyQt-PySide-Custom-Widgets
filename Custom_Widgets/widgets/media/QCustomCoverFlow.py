@@ -30,6 +30,9 @@ from qtpy.QtGui import (QColor, QPainter, QBrush, QPen, QFont, QFontMetrics,
 from qtpy.QtWidgets import QWidget, QSizePolicy
 
 
+from Custom_Widgets.accessibility import set_accessibility, QAccessible
+
+
 class QCustomCoverFlow(QWidget):
 
     WIDGET_ICON = "components/icons/view_carousel.png"
@@ -107,6 +110,7 @@ class QCustomCoverFlow(QWidget):
         self._anim = QTimer(self)
         self._anim.setInterval(16)
         self._anim.timeout.connect(self._tick)
+        set_accessibility(self, QAccessible.List, "Cover flow")
 
     # ------------------------------------------------------------------ #
     ## API

@@ -18,7 +18,12 @@ import os
 import re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CW = os.path.join(ROOT, "Custom_Widgets")
+# Single source for the package path: the same catalog module the MCP server
+# and stub generator import, so the launch-gate manifest can never drift from
+# the path the other consumers scan.
+from Custom_Widgets.mcp.catalog import widgets_package_dir  # noqa: E402
+
+CW = widgets_package_dir()
 DATE = "2026-07-31"  # bump when regenerating
 
 # Rendered into the Markdown table. Built via chr() so this .py stays glyph-free
@@ -77,6 +82,13 @@ DESIGNER_WAIVED = {
     # even when given a parent. Registering it would break Designer. Found by
     # instantiating each candidate rather than trusting the signature.
     "QCustomEmojiPicker": "anchored popup; needs a target widget, not just a parent",
+    # __init__ first positional argument is NOT a parent (QCustomSpinner takes
+    # lineWidth, QFlowProgressBar takes strDetailList). Designer's
+    # createWidget(parent) would bind the parent to those slots and leave the
+    # widget unparented and misconfigured (QCustomSpinner.py:25,
+    # QFlowProgressBar.py:31). Not registered for exactly this reason.
+    "QCustomSpinner": "ctor takes lineWidth first, not a parent",
+    "QFlowProgressBar": "ctor takes strDetailList first, not a parent",
     "QCustomQDialog": "dialog shown modally, not a child placed on a form",
     # Registering this would import QtLocation into every Designer startup for
     # a widget that only exists when the optional [map] extra is installed.

@@ -10,7 +10,7 @@
 ##
 ## Unlike QCustomModals, toasts STACK in a corner and reflow as they
 ## close, managed by QCustomToastManager. Styled entirely from design
-## tokens (see Custom_Widgets/JSonStyles/tokens.py); no bundled assets.
+## tokens (see Custom_Widgets/theming/tokens.py); no bundled assets.
 ##
 ##     QCustomToast.success(window, "Saved!")
 ##     QCustomToast.error(window, "Failed", title="Upload", position="bottom-right")

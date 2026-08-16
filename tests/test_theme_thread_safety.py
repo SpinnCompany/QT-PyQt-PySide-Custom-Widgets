@@ -126,3 +126,114 @@ def test_main_thread_settings_access_during_icon_generation(project_dir):
         f"stdout:\n{result.stdout}\nstderr:\n{result.stderr}"
     )
     assert "OK" in result.stdout
+
+
+def test_theme_change_completion_runs_on_the_main_thread(project_dir):
+    """The `finished` connection that drives _themeChangeComplete must deliver
+    on the GUI thread. It used to be a plain lambda (DirectConnection), so the
+    completion ran on the icon worker's thread and mutated Qt GUI state (pixmap
+    cache, stylesheet, full repolish walk, QLocalSocket I/O) off-thread.
+
+    This exercises the REAL applyCompiledSass wiring in a subprocess: a full
+    icon worker runs, and the completion wrapper records the thread it landed
+    on. Runs in a subprocess because a revert to DirectConnection would crash
+    or behave badly inside the pytest process itself.
+    """
+    result = subprocess.run(
+        [sys.executable, "-c", AFFINITY_SCRIPT, REPO_ROOT],
+        capture_output=True,
+        text=True,
+        timeout=180,
+        cwd=str(project_dir),
+    )
+    assert result.returncode == 0, (
+        f"affinity subprocess failed\n"
+        f"stdout:\n{result.stdout}\nstderr:\n{result.stderr}"
+    )
+    assert "OK" in result.stdout
+
+
+def test_superseded_theme_generation_is_skipped(theme, qapp):
+    """A completion for an old generation (a rapid toggle started a newer
+    worker) must not re-apply the GUI."""
+    theme._icon_generation = 5
+    fired = []
+    theme.onThemeChangeComplete.connect(lambda: fired.append(1))
+    theme._themeChangeComplete(4)  # stale -> early return, no side effects
+    assert fired == []
+    theme._themeChangeComplete(5)  # current generation -> full completion
+    assert len(fired) == 1
+
+
+def test_get_theme_variable_value_is_memoized(theme, qapp, monkeypatch):
+    """getThemeVariableValue ran createVariables (colour maths, an _variables.scss
+    write, a stat) on EVERY lookup, and loadJsonStyle looks up several variables
+    per widget. Only the first lookup after a theme change may recompute.
+
+    createVariables is stubbed so the test does not depend on whatever theme the
+    suite-wide singleton happens to be pointing at (an earlier test's QSettings
+    THEME can resolve to a theme with empty colours and make the real
+    createVariables raise)."""
+    calls = []
+
+    def fake_create():
+        calls.append(1)
+        theme._variable_mapping = {"COLOR_BACKGROUND_1": "white"}
+
+    monkeypatch.setattr(theme, "createVariables", fake_create)
+    theme._variables_cache_key = None
+    v1 = theme.getThemeVariableValue("COLOR_BACKGROUND_1")
+    v2 = theme.getThemeVariableValue("COLOR_BACKGROUND_1")
+    assert v1 == v2 == "white"
+    assert len(calls) == 1, "createVariables recomputed per lookup: %s" % calls
+
+
+AFFINITY_SCRIPT = r"""
+import os, sys, threading, time
+
+os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+os.environ.setdefault("QT_API", "pyside6")
+sys.path.insert(0, sys.argv[1])
+
+from qtpy.QtWidgets import QApplication
+
+app = QApplication([])
+app.setOrganizationName("CustomWidgetsTests")
+app.setApplicationName("CustomWidgetsTests")
+
+from Custom_Widgets.QCustomTheme import QCustomTheme
+
+theme = QCustomTheme()
+main_tid = threading.get_ident()
+# A bare test project has no json-styles to seed `themesRead`; the flag just
+# lets applyCompiledSass past its early return. Set it directly.
+theme.themesRead = True
+
+# Record which thread the completion actually lands on, then let the real
+# completion body run (guarded to the current generation).
+recorded = []
+orig = theme._themeChangeComplete
+
+def recording(gen=None):
+    recorded.append((gen, threading.get_ident()))
+
+theme._themeChangeComplete = recording
+
+# This is the exact code path applyCompiledSass(generateIcons=True) takes:
+# a Worker on the shared pool whose `finished` drives the completion.
+theme.applyCompiledSass(generateIcons=True, paintEntireApp=False)
+
+deadline = time.monotonic() + 120
+while time.monotonic() < deadline and not recorded:
+    app.processEvents()
+    time.sleep(0.02)
+
+theme.customWidgetsThreadpool.waitForDone(30000)
+
+assert recorded, "theme-change completion was never delivered"
+gen, tid = recorded[0]
+assert tid == main_tid, (
+    "completion %r ran on a worker thread (main=%r got=%r)"
+    % (gen, main_tid, tid))
+print("OK")
+"""

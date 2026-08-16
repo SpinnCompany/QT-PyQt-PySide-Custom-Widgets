@@ -35,6 +35,9 @@ def pages_to_show(current, total, window=1):
     return out
 
 
+from Custom_Widgets.accessibility import set_accessibility, QAccessible
+
+
 class QCustomPagination(QWidget):
     pageChanged = Signal(int)      # 1-based current page
 
@@ -68,6 +71,7 @@ class QCustomPagination(QWidget):
         self._row.setSpacing(4)
         self._row.addStretch(1)
         self._rebuild()
+        set_accessibility(self, QAccessible.Grouping, "Pagination")
 
     def _rebuild(self):
         while self._row.count() > 1:

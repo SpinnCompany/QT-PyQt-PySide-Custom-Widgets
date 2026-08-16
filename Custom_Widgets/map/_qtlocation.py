@@ -301,12 +301,27 @@ class QtLocationEngine(object):
 
         A QML Plugin's parameters cannot be reassigned after construction, so
         the whole Plugin is recreated and handed back to the Map.
+
+        Both names and values land inside QML string literals, so they are
+        validated/escaped rather than interpolated raw (a hostile option could
+        otherwise break out of the string and inject QML).
         """
+        import re
         from qtpy.QtCore import QUrl                       # noqa: F401
+
+        def _qml_string(value):
+            return (str(value)
+                    .replace("\\", "\\\\")
+                    .replace('"', '\\"')
+                    .replace("\n", "\\n")
+                    .replace("\r", "\\r"))
+
+        valid_key = re.compile(r"^[A-Za-z0-9_.-]+$")
         params = "".join(
             '        PluginParameter { name: "%s"; value: "%s" }\n'
-            % (key, str(value).replace('"', '\\"'))
-            for key, value in options.items())
+            % (key, _qml_string(value))
+            for key, value in options.items()
+            if valid_key.match(str(key)))
         qml = ('import QtLocation\nPlugin {\n    name: "%s"\n%s}\n'
                % (self._root.property("providerName"), params))
         try:

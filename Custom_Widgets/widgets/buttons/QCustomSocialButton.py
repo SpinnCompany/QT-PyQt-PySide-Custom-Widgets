@@ -24,6 +24,9 @@ from qtpy.QtGui import QColor, QPainter, QPen, QBrush, QIcon, QFontMetrics
 from qtpy.QtWidgets import QWidget, QSizePolicy
 
 
+from Custom_Widgets.accessibility import set_accessibility, QAccessible
+
+
 class QCustomSocialButton(QWidget):
     clicked = Signal()
 
@@ -102,6 +105,7 @@ class QCustomSocialButton(QWidget):
         self.setBrand(brand)
         if text is not None:
             self._text = str(text)
+        set_accessibility(self, QAccessible.Button, self._text or self.toolTip() or "Social button")
 
     # ------------------------------------------------------------------ #
     ## Brand

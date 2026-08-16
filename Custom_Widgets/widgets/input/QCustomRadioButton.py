@@ -26,6 +26,9 @@ from qtpy.QtGui import QColor, QPainter, QPen, QBrush, QFontMetrics
 from qtpy.QtWidgets import QWidget, QSizePolicy
 
 
+from Custom_Widgets.accessibility import set_accessibility, QAccessible
+
+
 class QCustomRadioButton(QWidget):
     toggled = Signal(bool)
     selected = Signal(str)
@@ -76,6 +79,7 @@ class QCustomRadioButton(QWidget):
         self._anim = QPropertyAnimation(self, b"dotScale", self)
         self._anim.setDuration(120)
         self._anim.setEasingCurve(QEasingCurve.OutCubic)
+        set_accessibility(self, QAccessible.RadioButton, self._text)
 
     # ------------------------------------------------------------------ #
     ## Geometry
