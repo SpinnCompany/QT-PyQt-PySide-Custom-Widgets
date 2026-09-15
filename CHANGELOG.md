@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.5.1 — 2026-09-16
 
 - **Legibility, part two — the inverse contrast sweep.** 2.5.0 fixed text that
   was painted with a *border* value (`outline`) but only where the sweep looked
