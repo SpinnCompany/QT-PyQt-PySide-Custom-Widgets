@@ -785,8 +785,13 @@ def emptystate_qss(tokens):
     px = tokens.px
     css = []
     # markColor drives the PAINTED default mark; the #emptyIcon colour still
-    # applies when a caller passes a string icon of their own.
-    css.append("QCustomEmptyState { qproperty-markColor: %s; }\n" % r("outline"))
+    # applies when a caller passes a string icon of their own. The two are
+    # alternatives for the SAME slot, so they must resolve the same role --
+    # this one was left on "outline" when #emptyIcon moved, which made the
+    # painted mark (thin line art at 1.48:1 on light) effectively invisible
+    # while a caller-supplied glyph in the same position was legible.
+    css.append("QCustomEmptyState { qproperty-markColor: %s; }\n"
+               % r("on-surface-muted"))
     css.append("QCustomEmptyState #emptyIcon { color: %s; font-size: 44px; }\n"
                % r("on-surface-muted"))
     css.append("QCustomEmptyState #emptyTitle { color: %s; font-weight: %d; font-size: %s; }\n"

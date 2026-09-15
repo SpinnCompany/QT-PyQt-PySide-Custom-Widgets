@@ -5,6 +5,7 @@ tint with the theme, does not scale cleanly, and renders as a different picture
 on every platform. The violation was sitting in the lint baseline, so nothing
 caught it until it appeared in a public documentation screenshot.
 """
+import pytest
 
 
 class TestDefaultMark:
@@ -44,9 +45,43 @@ class TestDefaultMark:
         applyDesignTokens(qapp, theme="dark")
         widget = QCustomEmptyState()
         widget.ensurePolished()
-        expected = DesignTokens(theme="dark").role("outline").lower()
+        expected = DesignTokens(theme="dark").role("on-surface-muted").lower()
         assert widget.markColor.name().lower() == expected
         qapp.setStyleSheet("")
+
+    def test_mark_and_glyph_slots_agree(self, qapp):
+        """The painted mark and a caller's glyph share one slot, so one role.
+
+        They drifted apart once: #emptyIcon moved to the muted foreground role
+        and qproperty-markColor stayed on "outline", so the built-in mark was
+        invisible while a supplied glyph in the same position was not.
+        """
+        from Custom_Widgets.theming.tokens import DesignTokens, emptystate_qss
+        for theme in ("light", "dark"):
+            css = emptystate_qss(DesignTokens(theme))
+            mark = css.split("qproperty-markColor:")[1].split(";")[0].strip()
+            glyph = css.split("#emptyIcon { color:")[1].split(";")[0].strip()
+            assert mark == glyph, "%s: mark %s != glyph %s" % (theme, mark, glyph)
+
+    @pytest.mark.parametrize("theme,surface", [("light", "#ffffff"),
+                                               ("dark", "#0f172a")])
+    def test_mark_clears_the_graphical_contrast_minimum(self, qapp, theme, surface):
+        """Thin line art has to be visible: WCAG wants 3:1 for graphics."""
+        from Custom_Widgets.theming.tokens import DesignTokens
+
+        def luminance(value):
+            value = value.lstrip("#")
+            channels = []
+            for pair in (value[0:2], value[2:4], value[4:6]):
+                c = int(pair, 16) / 255.0
+                channels.append(c / 12.92 if c <= 0.03928
+                                else ((c + 0.055) / 1.055) ** 2.4)
+            return (0.2126 * channels[0] + 0.7152 * channels[1]
+                    + 0.0722 * channels[2])
+
+        mark = DesignTokens(theme).role("on-surface-muted")
+        high, low = sorted((luminance(mark), luminance(surface)), reverse=True)
+        assert (high + 0.05) / (low + 0.05) >= 3.0
 
 
 class TestSetIconStillWorks:

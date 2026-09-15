@@ -71,14 +71,14 @@ class QCustomEmptyState(QWidget):
     __catalog__ = {
         "name": "QCustomEmptyState",
         "props": {"markSize": {"type": "int", "default": 56},
-                  "markColor": {"type": "color", "default": "#cbd5e1"}},
+                  "markColor": {"type": "color", "default": "#64748b"}},
         "signals": ["actionClicked"],
-        # Mirrors emptystate_qss. Both #emptyIcon and #emptyDesc were drawn in
-        # "outline" (1.48:1 on light) — the icon and the explanatory copy that
-        # are the entire point of an empty state. Both now use the muted
-        # foreground role. NOTE: the painted markColor default below is still a
-        # hardcoded #cbd5e1, which is the same invisible value.
-        "tokens_used": ["on-surface", "on-surface-muted", "outline"],
+        # Mirrors emptystate_qss. Everything an empty state exists to show --
+        # the painted mark, a caller's glyph, the title and the description --
+        # was drawn in "outline", which is a BORDER value at 1.48:1 on light.
+        # All three foregrounds now use the muted foreground role; "outline"
+        # is no longer referenced by this widget at all.
+        "tokens_used": ["on-surface", "on-surface-muted"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see
@@ -97,7 +97,13 @@ class QCustomEmptyState(QWidget):
         col.setSpacing(8)
 
         self._markSize = 56
-        self._markColor = QColor("#cbd5e1")     # outline role
+        # The pre-QSS default, used until a token stylesheet polishes the
+        # widget (and by apps that never apply one). It used to be #cbd5e1,
+        # picked to mirror the "outline" role -- 1.48:1 on white, i.e. the
+        # untokenised mark was invisible. This is light-theme
+        # on-surface-muted, so the fallback matches what the token QSS will
+        # set a moment later instead of contradicting it.
+        self._markColor = QColor("#64748b")
 
         self._icon = QLabel(self)
         self._icon.setObjectName("emptyIcon")
