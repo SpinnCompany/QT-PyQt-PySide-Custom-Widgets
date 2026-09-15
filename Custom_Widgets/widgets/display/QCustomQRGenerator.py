@@ -36,6 +36,25 @@ class QCustomQRGenerator(QWidget):
     Uses QWidget with QLabel to display QR codes with customization through properties.
     """
     
+    __catalog__ = {
+        "name": "QCustomQRGenerator",
+        "props": {
+            "data": {"default": 'https://example.com'},
+            "version": {},
+            "errorCorrection": {"default": 'H'},
+            "boxSize": {"default": 10},
+            "border": {"default": 4},
+            "sizeRatio": {"default": 1.0},
+            "moduleDrawer": {"default": 'square'},
+            "colorMask": {"default": 'solid'},
+            "fillColor": {},
+            "backgroundColor": {},
+            "gradientStartColor": {},
+            "gradientEndColor": {},
+            "embedImage": {"default": False},
+            "cacheEnabled": {"default": True},
+        },
+    }
     script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/qr_code_scanner.png")
     WIDGET_TOOLTIP = "A customizable QR code generator widget"

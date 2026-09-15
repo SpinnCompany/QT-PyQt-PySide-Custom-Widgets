@@ -14,6 +14,27 @@ from Custom_Widgets._resources import packageDir
 
 class QCustomQMainWindow(QMainWindow):
     # Icon path for the widget
+    __catalog__ = {
+        "name": "QCustomQMainWindow",
+        "props": {
+            "appTheme": {},
+            "jsonStylesheetFilePath": {},
+            "frameless": {},
+            "translucentBg": {},
+            "windowBorderRadius": {},
+            "sizeGrip": {},
+            "minimizeBtn": {},
+            "closeBtn": {},
+            "restoreBtn": {},
+            "titleBar": {},
+            "moveWindow": {},
+            "shadowColor": {},
+            "shadowBlurRadius": {},
+            "shadowXOffset": {},
+            "shadowYOffset": {},
+            "customSideDrawers": {},
+        },
+    }
     script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/dashboard.png")
     

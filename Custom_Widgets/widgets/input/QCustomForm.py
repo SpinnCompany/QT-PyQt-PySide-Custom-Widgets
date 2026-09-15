@@ -72,6 +72,10 @@ class QCustomForm(QWidget):
     # Qt Designer contract. WIDGET_MODULE is the FLAT public path --
     # Custom_Widgets.QCustomForm is what .ui files carry in <header>, not the
     # subpackage this file now lives in.
+    __catalog__ = {
+        "name": "QCustomForm",
+        "signals": ["submitted"],
+    }
     WIDGET_MODULE = "Custom_Widgets.QCustomForm"
     WIDGET_TOOLTIP = "A form container with validation and submit signals"
     WIDGET_DOM_XML = """

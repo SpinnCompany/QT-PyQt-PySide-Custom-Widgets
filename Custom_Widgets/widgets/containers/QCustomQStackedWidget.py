@@ -46,6 +46,23 @@ class QCustomQStackedWidget(QStackedWidget):
     """
     
     # Define the XML metadata and icon for Qt Designer
+    __catalog__ = {
+        "name": "QCustomQStackedWidget",
+        "props": {
+            "fadeTransition": {"default": False},
+            "slideTransition": {"default": False},
+            "transitionTime": {"default": 500},
+            "transitionEasingCurve": {"default": 'OutBack'},
+            "fadeTime": {"default": 500},
+            "fadeDelay": {"default": 0},
+            "fadeInTime": {"default": 250},
+            "fadeOutTime": {"default": 250},
+            "fadeEasingCurve": {"default": 'Linear'},
+            "fadeInCurve": {"default": 'OutCubic'},
+            "fadeOutCurve": {"default": 'InCubic'},
+        },
+        "signals": ["transitionFinished"],
+    }
     script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/layers.png")
     WIDGET_TOOLTIP = "A custom QStackedWidget with transitions"

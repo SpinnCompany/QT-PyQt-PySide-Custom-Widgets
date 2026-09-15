@@ -21,6 +21,9 @@ class QCustomQSlider(QSlider):
     # Qt Designer contract. WIDGET_MODULE is the FLAT public path --
     # Custom_Widgets.QCustomQSlider is what .ui files carry in <header>, not the
     # subpackage this file now lives in.
+    __catalog__ = {
+        "name": "QCustomQSlider",
+    }
     WIDGET_MODULE = "Custom_Widgets.QCustomQSlider"
     WIDGET_TOOLTIP = "A QSlider that jumps to the clicked position"
     WIDGET_DOM_XML = """

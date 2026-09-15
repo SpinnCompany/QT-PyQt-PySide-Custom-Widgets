@@ -28,6 +28,19 @@ class QCustomProgressIndicator(QWidget):
     # Qt Designer contract. WIDGET_MODULE is the FLAT public path --
     # Custom_Widgets.QCustomProgressIndicator is what .ui files carry in <header>, not the
     # subpackage this file now lives in.
+    __catalog__ = {
+        "name": "QCustomProgressIndicator",
+        "props": {
+            "color": {"default": '#000'},
+            "fillColor": {"default": '#00a4bd'},
+            "successFillColor": {"default": '#00a4bd'},
+            "warningFillColor": {"default": '#ffa500'},
+            "errorFillColor": {"default": '#ff0000'},
+            "formProgressCount": {"default": 5},
+            "formProgressHeight": {"default": 30},
+            "formProgressAnimationDuration": {},
+        },
+    }
     WIDGET_MODULE = "Custom_Widgets.QCustomProgressIndicator"
     WIDGET_TOOLTIP = "A multi-step progress indicator for wizards and forms"
     WIDGET_DOM_XML = """

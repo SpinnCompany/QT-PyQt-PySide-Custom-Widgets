@@ -19,6 +19,9 @@ except Exception:  # pragma: no cover - defensive, projectRoot is optional here
 class QCustomComponentLoader(QWidget):
     """A custom widget to load and display a UI class defined in an external file."""
 
+    __catalog__ = {
+        "name": "QCustomComponentLoader",
+    }
     def __init__(self, parent=None):
         super().__init__(parent)
         self._layout = None

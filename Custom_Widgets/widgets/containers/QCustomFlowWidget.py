@@ -16,6 +16,23 @@ class QCustomFlowWidget(QWidget):
     """
     
     # Qt Designer integration properties
+    __catalog__ = {
+        "name": "QCustomFlowWidget",
+        "props": {
+            "spacing": {"default": 10},
+            "horizontalSpacing": {"default": 10},
+            "verticalSpacing": {"default": 10},
+            "margin": {"default": 10},
+            "equalDistribution": {"default": True},
+            "autoFillWidth": {"default": False},
+            "autoFillHeight": {"default": False},
+            "justifySpacing": {"default": False},
+            "animationEnabled": {"default": True},
+            "animationDuration": {"default": 300},
+            "animationEasingCurve": {"default": 'OutCubic'},
+            "orderJsonPath": {"default": ''},
+        },
+    }
     script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/layout.png")
     WIDGET_TOOLTIP = "A flow layout container widget with smooth animations"

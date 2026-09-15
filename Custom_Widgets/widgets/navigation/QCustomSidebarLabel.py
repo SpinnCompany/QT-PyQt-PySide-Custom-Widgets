@@ -9,6 +9,15 @@ import os
 from Custom_Widgets._resources import packageDir
 
 class QCustomSidebarLabel(QWidget):
+    __catalog__ = {
+        "name": "QCustomSidebarLabel",
+        "props": {
+            "text": {},
+            "hideOnCollapse": {"default": True},
+            "showOnCollapse": {"default": False},
+        },
+        "signals": ["visibilityChanged"],
+    }
     visibilityChanged = Signal(bool)
 
     script_dir = packageDir()

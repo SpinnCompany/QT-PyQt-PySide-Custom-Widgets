@@ -40,7 +40,14 @@ class QCustomMessageStatus(QWidget):
     __catalog__ = {
         "name": "QCustomMessageStatus",
         "props": {
-            "status": {"type": "enum", "values": list(_STATES), "default": "read"},
+            # Spelled out rather than list(_STATES): catalog.py reads this with
+            # ast.literal_eval and never imports the module, so a CALL makes the
+            # whole __catalog__ unreadable — class_catalog() returns None and
+            # the widget disappears from the catalog, the MCP server and the
+            # type stubs with nothing raising. Keep in step with _STATES above.
+            "status": {"type": "enum",
+                       "values": ["sending", "sent", "delivered", "read"],
+                       "default": "read"},
             "tickColor": {"type": "color", "default": "#99a0b0"},
             "readColor": {"type": "color", "default": "#1b74e4"},
             "tickSize": {"type": "int", "default": 13},

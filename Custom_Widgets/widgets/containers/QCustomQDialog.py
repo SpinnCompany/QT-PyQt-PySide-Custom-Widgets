@@ -14,6 +14,10 @@ from Custom_Widgets.AcrylicEffect import AcrylicEffect
 from Custom_Widgets.Log import *
 
 class QCustomQDialog(QDialog, Ui_Form):
+    __catalog__ = {
+        "name": "QCustomQDialog",
+        "signals": ["accepted", "rejected"],
+    }
     accepted = Signal()
     rejected = Signal()
     

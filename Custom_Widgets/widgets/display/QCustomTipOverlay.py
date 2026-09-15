@@ -20,6 +20,10 @@ class LoadForm(QWidget):
 
 class QCustomTipOverlay(QWidget, Ui_Form):
     """ QCustomOvelay with multi-screen support """
+    __catalog__ = {
+        "name": "QCustomTipOverlay",
+        "signals": ["closed"],
+    }
     closed = Signal()
     def __init__(self, title: str = "", description: str = "", icon: Union[QIcon, str] = None,
                image: Union[str, QPixmap, QImage] = None, isClosable=False, target: Union[QWidget, QPoint, QPointF] = None,

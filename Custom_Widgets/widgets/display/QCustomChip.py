@@ -18,6 +18,10 @@ from Custom_Widgets.QCustomFlowLayout import QCustomFlowLayout
 
 
 class QCustomChip(QWidget):
+    __catalog__ = {
+        "name": "QCustomChip",
+        "signals": ["removed", "clicked", "toggled"],
+    }
     removed = Signal()          # close button clicked
     clicked = Signal()          # chip body clicked
     toggled = Signal(bool)      # selection changed (selectable chips)

@@ -7,6 +7,14 @@ from Custom_Widgets._resources import packageDir
 
 class QCustomHorizontalSeparator(QWidget):
     # Meta-information for integration with Qt Designer or other uses
+    __catalog__ = {
+        "name": "QCustomHorizontalSeparator",
+        "props": {
+            "color": {},
+            "height": {},
+            "margin": {},
+        },
+    }
     script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/horizontal_rule.png")
     WIDGET_TOOLTIP = "A custom horizontal separator widget"

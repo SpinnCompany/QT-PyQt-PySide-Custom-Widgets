@@ -9,6 +9,13 @@ class QTagEdit(QtWidgets.QScrollArea):
     # Qt Designer contract. WIDGET_MODULE is the FLAT public path --
     # Custom_Widgets.QCustomTagEdit is what .ui files carry in <header>, not the
     # subpackage this file now lives in.
+    __catalog__ = {
+        "name": "QTagEdit",
+        "props": {
+            "tagColor": {},
+            "tagTextColor": {},
+        },
+    }
     WIDGET_MODULE = "Custom_Widgets.QCustomTagEdit"
     WIDGET_TOOLTIP = "A tag input field with removable chips"
     WIDGET_DOM_XML = """

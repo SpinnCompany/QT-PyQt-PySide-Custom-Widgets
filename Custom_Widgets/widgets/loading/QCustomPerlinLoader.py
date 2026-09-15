@@ -27,6 +27,21 @@ class QCustomPerlinLoader(QFrame):
     # Qt Designer contract. WIDGET_MODULE is the FLAT public path --
     # Custom_Widgets.QCustomPerlinLoader is what .ui files carry in <header>, not the
     # subpackage this file now lives in.
+    __catalog__ = {
+        "name": "QCustomPerlinLoader",
+        "props": {
+            "message": {},
+            "color": {},
+            "fontFamily": {},
+            "fontSize": {},
+            "rayon": {},
+            "duration": {},
+            "backgroundColor": {},
+            "circleColor1": {},
+            "circleColor2": {},
+            "circleColor3": {},
+        },
+    }
     WIDGET_MODULE = "Custom_Widgets.QCustomPerlinLoader"
     WIDGET_TOOLTIP = "A Perlin-noise blob loading animation"
     WIDGET_DOM_XML = """

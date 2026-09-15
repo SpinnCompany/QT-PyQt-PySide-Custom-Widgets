@@ -11,6 +11,15 @@ from Custom_Widgets._resources import packageDir
 class QCustomSidebarContainer(QWidget):
     """A container widget that can hide or show its contents when the parent sidebar collapses/expands."""
     
+    __catalog__ = {
+        "name": "QCustomSidebarContainer",
+        "props": {
+            "hideOnCollapse": {"default": True},
+            "showOnCollapse": {"default": False},
+            "animationDuration": {"default": 500},
+        },
+        "signals": ["visibilityChanged"],
+    }
     visibilityChanged = Signal(bool)
     script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/featured_play_list.png")

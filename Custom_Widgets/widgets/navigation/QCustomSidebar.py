@@ -17,6 +17,26 @@ from Custom_Widgets.QPropertyAnimation import returnAnimationEasingCurve, easing
 from Custom_Widgets._resources import packageDir
 
 class QCustomSidebar(QCustomSlideMenu):
+    __catalog__ = {
+        "name": "QCustomSidebar",
+        "props": {
+            "defaultWidth": {"default": 300},
+            "defaultHeight": {"default": 'parent'},
+            "collapsedWidth": {"default": 50},
+            "collapsedHeight": {"default": 'parent'},
+            "expandedWidth": {"default": 300},
+            "expandedHeight": {"default": 'parent'},
+            "toggleButtonName": {"default": ''},
+            "iconCollapsed": {"default": ''},
+            "iconExpanded": {"default": ''},
+            "animationDuration": {"default": 500},
+            "animationEasingCurve": {"default": 'OutQuad'},
+            "shadowColor": {},
+            "shadowBlurRadius": {"default": 0},
+            "shadowXOffset": {"default": 0},
+            "shadowYOffset": {"default": 0},
+        },
+    }
     script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/view_sidebar.png")
     WIDGET_TOOLTIP = "A custom collapsible sidebar widget"

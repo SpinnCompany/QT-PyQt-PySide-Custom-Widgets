@@ -7,6 +7,10 @@ from Custom_Widgets.components.python.ui_tooltip import Ui_Form
 
 class QCustomQToolTip(QWidget, Ui_Form):
     """ QCustomOvelay """
+    __catalog__ = {
+        "name": "QCustomQToolTip",
+        "signals": ["onClosed"],
+    }
     onClosed = Signal()
 
     def __init__(self, text: str, parent=None, target=None, duration=1500, icon=None, tailPosition="auto"):

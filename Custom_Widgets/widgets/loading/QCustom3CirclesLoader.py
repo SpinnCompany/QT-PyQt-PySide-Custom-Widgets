@@ -22,6 +22,14 @@ class QCustom3CirclesLoader(QFrame):
     # Qt Designer contract. WIDGET_MODULE is the FLAT public path --
     # Custom_Widgets.QCustom3CirclesLoader is what .ui files carry in <header>, not the
     # subpackage this file now lives in.
+    __catalog__ = {
+        "name": "QCustom3CirclesLoader",
+        "props": {
+            "color": {},
+            "penWidth": {},
+            "animationDuration": {},
+        },
+    }
     WIDGET_MODULE = "Custom_Widgets.QCustom3CirclesLoader"
     WIDGET_TOOLTIP = "A three-circle bouncing loading animation"
     WIDGET_DOM_XML = """

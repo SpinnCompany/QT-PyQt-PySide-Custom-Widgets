@@ -11,6 +11,15 @@ from Custom_Widgets._resources import packageDir
 
 class QCustomThemeDarkLightToggle(QPushButton):
     # Icon path for the widget
+    __catalog__ = {
+        "name": "QCustomThemeDarkLightToggle",
+        "props": {
+            "updateLabelText": {},
+            "updateButtonIcon": {},
+            "darkTheme": {},
+            "lightTheme": {},
+        },
+    }
     script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/dark_mode.png")
 

@@ -20,6 +20,13 @@ class QCustomCodeEditor(QWidget):
     # Qt Designer contract. WIDGET_MODULE is the FLAT public path --
     # Custom_Widgets.QCustomCodeEditor is what .ui files carry in <header>, not the
     # subpackage this file now lives in.
+    __catalog__ = {
+        "name": "QCustomCodeEditor",
+        "props": {
+            "lang": {},
+            "theme": {},
+        },
+    }
     WIDGET_MODULE = "Custom_Widgets.QCustomCodeEditor"
     WIDGET_TOOLTIP = "A syntax-highlighted code editor"
     WIDGET_DOM_XML = """

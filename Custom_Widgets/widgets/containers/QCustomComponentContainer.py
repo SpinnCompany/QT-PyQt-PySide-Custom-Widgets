@@ -15,6 +15,15 @@ from Custom_Widgets._resources import packageDir
 class QCustomComponentContainer(QWidget):
     """A custom widget to load and display a UI class defined in an external file."""
 
+    __catalog__ = {
+        "name": "QCustomComponentContainer",
+        "props": {
+            "filePath": {},
+            "formClassName": {},
+            "previewComponent": {},
+            "hotReload": {},
+        },
+    }
     script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/view_quilt.png")
     WIDGET_TOOLTIP = "A custom component loader for dynamic UI loading."

@@ -166,6 +166,10 @@ class _EmojiButton(QtWidgets.QPushButton):
 class QCustomEmojiPicker(QCustomTipOverlay):
     """A modern, updatable emoji picker."""
 
+    __catalog__ = {
+        "name": "QCustomEmojiPicker",
+        "signals": ["emojiSelected", "emojisUpdated", "updateFailed"],
+    }
     emojiSelected = Signal(str)
     emojisUpdated = Signal(int)
     updateFailed = Signal(str)

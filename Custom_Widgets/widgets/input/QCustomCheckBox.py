@@ -13,6 +13,16 @@ import os
 from Custom_Widgets._resources import packageDir
 
 class QCustomCheckBox(QCheckBox):
+    __catalog__ = {
+        "name": "QCustomCheckBox",
+        "props": {
+            "backgroundColor": {},
+            "circleColor": {},
+            "activeColor": {},
+            "animationDuration": {"default": 300},
+            "animationEasingCurve": {},
+        },
+    }
     script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/check_box.png")
     WIDGET_TOOLTIP = "A custom animated checkbox widget"

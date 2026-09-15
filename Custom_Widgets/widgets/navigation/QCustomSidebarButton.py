@@ -10,6 +10,18 @@ from Custom_Widgets.Log import *
 from Custom_Widgets._resources import packageDir
 
 class QCustomSidebarButton(QPushButton):
+    __catalog__ = {
+        "name": "QCustomSidebarButton",
+        "props": {
+            "labelText": {},
+            "textPrefixSpaces": {"default": 5},
+            "hideOnCollapse": {"default": True},
+            "showOnCollapse": {"default": False},
+            "iconColor": {},
+            "iconColorActive": {},
+        },
+        "signals": ["clicked"],
+    }
     clicked = Signal()
 
     # Define XML for Qt Designer

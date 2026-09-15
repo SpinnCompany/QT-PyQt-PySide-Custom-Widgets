@@ -17,6 +17,17 @@ from Custom_Widgets._resources import packageDir
 class QCustomQProgressBar(QProgressBar):
     """ Indeterminate progress bar """
 
+    __catalog__ = {
+        "name": "QCustomQProgressBar",
+        "props": {
+            "shortPos": {"default": 0},
+            "longPos": {"default": 0},
+            "paused": {},
+            "customBarColor": {},
+            "errorColor": {},
+            "pausedColor": {},
+        },
+    }
     script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/linear_scale.png")
     WIDGET_TOOLTIP = "A custom animated progress bar."

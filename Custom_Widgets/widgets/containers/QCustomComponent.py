@@ -12,6 +12,12 @@ from Custom_Widgets._resources import packageDir
 
 class QCustomComponent(QWidget):
     # Icon path for the widget in Qt Designer
+    __catalog__ = {
+        "name": "QCustomComponent",
+        "props": {
+            "jsonStylesheetFilePath": {},
+        },
+    }
     script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/widgets.png")
 

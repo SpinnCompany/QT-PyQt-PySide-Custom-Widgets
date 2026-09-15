@@ -98,6 +98,13 @@ class QCustomArcLoader(QFrame):
     # Qt Designer contract. WIDGET_MODULE is the FLAT public path --
     # Custom_Widgets.QCustomArcLoader is what .ui files carry in <header>, not the
     # subpackage this file now lives in.
+    __catalog__ = {
+        "name": "QCustomArcLoader",
+        "props": {
+            "color": {},
+            "penWidth": {},
+        },
+    }
     WIDGET_MODULE = "Custom_Widgets.QCustomArcLoader"
     WIDGET_TOOLTIP = "A spinning arc loading indicator"
     WIDGET_DOM_XML = """

@@ -17,6 +17,10 @@ class QCustomSlideMenu(QWidget):
     # Qt Designer contract. WIDGET_MODULE is the FLAT public path --
     # Custom_Widgets.QCustomSlideMenu is what .ui files carry in <header>, not the
     # subpackage this file now lives in.
+    __catalog__ = {
+        "name": "QCustomSlideMenu",
+        "signals": ["onCollapsed", "onExpanded", "onCollapsing", "onExpanding"],
+    }
     WIDGET_MODULE = "Custom_Widgets.QCustomSlideMenu"
     WIDGET_TOOLTIP = "A collapsible slide menu with animated expand/collapse"
     WIDGET_DOM_XML = """

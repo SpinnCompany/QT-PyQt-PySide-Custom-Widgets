@@ -20,6 +20,9 @@ class QCustomQPushButtonGroup(QPushButton):
     # Qt Designer contract. WIDGET_MODULE is the FLAT public path --
     # Custom_Widgets.QCustomQPushButtonGroup is what .ui files carry in <header>, not the
     # subpackage this file now lives in.
+    __catalog__ = {
+        "name": "QCustomQPushButtonGroup",
+    }
     WIDGET_MODULE = "Custom_Widgets.QCustomQPushButtonGroup"
     WIDGET_TOOLTIP = "A button group with active/inactive state management"
     WIDGET_DOM_XML = """

@@ -13,6 +13,18 @@ class QCustomSpinner(QWidget):
     # Qt Designer contract. WIDGET_MODULE is the FLAT public path --
     # Custom_Widgets.QCustomSpinner is what .ui files carry in <header>, not the
     # subpackage this file now lives in.
+    __catalog__ = {
+        "name": "QCustomSpinner",
+        "props": {
+            "lineWidth": {},
+            "color": {},
+            "borderRadius": {},
+            "direction": {},
+            "animationType": {},
+            "speed": {},
+            "play": {},
+        },
+    }
     WIDGET_MODULE = "Custom_Widgets.QCustomSpinner"
     WIDGET_TOOLTIP = "A lightweight spinning busy indicator"
     WIDGET_DOM_XML = """

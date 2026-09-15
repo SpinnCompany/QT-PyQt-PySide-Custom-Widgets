@@ -21,6 +21,9 @@ class QCustomHamburgerMenu(QWidget):
     A customizable hamburger menu widget for Qt Designer with four-position support.
     """
     
+    __catalog__ = {
+        "name": "QCustomHamburgerMenu",
+    }
     script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/reorder.png")
     WIDGET_TOOLTIP = "A customizable hamburger menu with four-position support"

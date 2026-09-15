@@ -26,6 +26,10 @@ class AnimatedWidgetItem:
 
 class QCustomFlowLayout(QtWidgets.QLayout):
     # Signal emitted when layout animation starts
+    __catalog__ = {
+        "name": "QCustomFlowLayout",
+        "signals": ["animationStarted", "animationFinished"],
+    }
     animationStarted = QtCore.Signal()
     # Signal emitted when layout animation finishes
     animationFinished = QtCore.Signal()
