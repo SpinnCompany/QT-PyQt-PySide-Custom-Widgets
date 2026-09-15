@@ -1,0 +1,33 @@
+# Auto-generated type stub — DO NOT EDIT.
+# Regenerate with:  python -m Custom_Widgets.mcp.stubgen --write
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QWidget
+from typing import Any, ClassVar
+
+
+class QCustomQRGenerator(QWidget):
+    data: Any
+    version: Any
+    errorCorrection: Any
+    boxSize: Any
+    border: Any
+    fillColor: Any
+    backgroundColor: Any
+    cacheEnabled: Any
+    moduleDrawer: Any
+    colorMask: Any
+    gradientStartColor: Any
+    gradientEndColor: Any
+    sizeRatio: Any
+    embedImage: Any
+    embeddedImageIcon: Any
+    def __init__(self, parent = ...) -> None: ...
+    def generateQRCode(self): ...
+    def resizeQR(self): ...
+    def resizeEvent(self, event): ...
+    def refreshQRCode(self): ...
+    def saveQRCode(self, file_path = ...): ...
+    def getQRCodePixmap(self): ...
+    def copyToClipboard(self): ...
+    def clearCache(self): ...
+    def setEmbeddedImageFromFileDialog(self) -> None: ...

@@ -8,6 +8,13 @@ from typing import Any, ClassVar
 class QCustomModal(QWidget):
     triggered: ClassVar[Signal]
     closed: ClassVar[Signal]
+    title: str
+    subtitle: str
+    cornerRadius: int
+    panelWidth: int
+    scrimAlpha: int
+    closeOnScrim: bool
+    xColor: Any
     def __init__(self, parent = ...) -> None: ...
     def clearContent(self): ...
     def clearActions(self): ...

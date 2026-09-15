@@ -7,6 +7,9 @@ from typing import Any, ClassVar
 
 class QCustomMenu(QWidget):
     triggered: ClassVar[Signal]
+    itemHeight: int
+    cornerRadius: int
+    minWidth: int
     def __init__(self, parent = ...) -> None: ...
     def addAction(self, text, key = ..., icon = ..., hint = ..., danger = ...): ...
     def addSeparator(self): ...
