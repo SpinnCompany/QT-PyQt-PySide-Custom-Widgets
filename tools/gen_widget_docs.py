@@ -1907,15 +1907,27 @@ def _widgetFolders():
     return _FOLDERS
 
 
+def _fileStem(row):
+    """The source file a row's class lives in, from the catalog's module.
+
+    Five classes are co-located (QTagEdit lives in QCustomTagEdit.py, the three
+    date/time editors share QCustomDateTimeEdit.py, QCustomChipGroup sits in
+    QCustomChip.py), so the class name is NOT the file name and keying a
+    filesystem lookup on it silently drops exactly those five.
+    """
+    module = (row or {}).get("module", "")
+    return module.rsplit(".", 1)[-1] if module else ""
+
+
 def _relatedWidgets(cls, row, allRows):
     """Siblings from the same folder — the neighbours a reader wants next."""
     folders = _widgetFolders()
-    group = folders.get(cls.__name__)
+    group = folders.get(_fileStem(row))
     if not group:
         return []
     out = [other["widget"] for other in allRows
            if other["widget"] != cls.__name__
-           and folders.get(other["widget"]) == group]
+           and folders.get(_fileStem(other)) == group]
     return sorted(out)[:8]
 
 
