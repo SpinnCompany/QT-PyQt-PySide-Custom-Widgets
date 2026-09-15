@@ -74,10 +74,13 @@ def manifestRows():
     over the package, so it needs no Qt binding, cannot drift from the code it
     describes, and cannot be deleted without those consumers noticing first.
 
-    The old tier filter goes with the manifest that carried it, and is not
-    needed: the catalog scans only this package, so everything it returns is the
-    free edition by construction. Pro widgets ship in their own distribution and
-    were never documented from here.
+    The tier filter went with the manifest that carried it. Do NOT read that as
+    "everything here is free": 23 published pages are marked Pro, and the
+    catalog happily returns those classes, so a row carries no `tier` and
+    renderPage()'s `row.get("tier", "free")` would re-render every one of them
+    as "Free (GPLv3)" — dropping the Pro notice, the sidebar class and the
+    pricing CTA from the docs that sell the product. main() therefore recovers
+    the tier from the page already on disk; see _publishedTier.
     """
     from Custom_Widgets.mcp import catalog
 
@@ -87,6 +90,26 @@ def manifestRows():
                             key=lambda e: e["class"])
         if entry["class"] not in SKIP
     ]
+
+
+def _publishedTier(name):
+    """The tier the page on disk already claims, or None when there is no page.
+
+    The tiering manifest that used to supply this is gone from the repo, so the
+    published page is the only surviving record of which widgets are Pro.
+    Reading it back keeps a regeneration idempotent for the 23 Pro pages
+    instead of silently relicensing them as free.
+    """
+    for ext in (".mdx", ".md"):
+        path = os.path.join(WIDGET_DOCS, name + ext)
+        if not os.path.isfile(path):
+            continue
+        with open(path, encoding="utf-8", errors="ignore") as handle:
+            head = handle.read(2000)
+        if "sidebar_class_name: sidebar-pro" in head or "| **Tier** | Pro |" in head:
+            return "pro-ext"
+        return "free"
+    return None
 
 
 def importWidget(name, module):
@@ -1847,19 +1870,44 @@ def _exampleFromSeed(cls):
     return [l for l in body if l.strip()]
 
 
+_FOLDERS = {}
+
+
+def _widgetFolders():
+    """class name -> the folder under Custom_Widgets/widgets/ holding its source.
+
+    This used to be read straight off row["module"], back when the manifest
+    reported a file path. The catalog reports the PUBLIC module instead
+    (Custom_Widgets.QCustomCharts.QCustomBarChart) — deliberately flat, and it
+    says nothing about where the file lives, so the old
+    `Custom_Widgets/widgets/([^/]+)/` match never fired and every generated page
+    silently lost its `## Related` section. The folder has to come from disk.
+    """
+    if not _FOLDERS:
+        root = os.path.join(ROOT, "Custom_Widgets", "widgets")
+        for dirpath, _dirs, files in os.walk(root):
+            rel = os.path.relpath(dirpath, root).replace("\\", "/")
+            if rel in (".", ""):
+                continue
+            # The TOP level only: charts/qtcharts/ is still "charts", which is
+            # what the old path regex captured. Grouping by the leaf would split
+            # the chart family across two unrelated Related lists.
+            folder = rel.split("/")[0]
+            for fname in files:
+                if fname.endswith(".py") and not fname.startswith("_"):
+                    _FOLDERS.setdefault(fname[:-3], folder)
+    return _FOLDERS
+
+
 def _relatedWidgets(cls, row, allRows):
     """Siblings from the same folder — the neighbours a reader wants next."""
-    module = (row or {}).get("module", "").replace("\\", "/")
-    match = re.search(r"Custom_Widgets/widgets/([^/]+)/", module)
-    if not match:
+    folders = _widgetFolders()
+    group = folders.get(cls.__name__)
+    if not group:
         return []
-    group = match.group(1)
-    out = []
-    for other in allRows:
-        if other["widget"] == cls.__name__:
-            continue
-        if ("/widgets/%s/" % group) in other.get("module", "").replace("\\", "/"):
-            out.append(other["widget"])
+    out = [other["widget"] for other in allRows
+           if other["widget"] != cls.__name__
+           and folders.get(other["widget"]) == group]
     return sorted(out)[:8]
 
 
@@ -2103,6 +2151,11 @@ def main():
         name = row["widget"]
         if args.only and name not in args.only:
             continue
+        # Carry the published tier forward. Without this every Pro page is
+        # rewritten as free, because the catalog cannot know the tier.
+        published = _publishedTier(name)
+        if published and "tier" not in row:
+            row["tier"] = published
         # Generated pages are .mdx (escaped prose + real components). A page
         # is hand-written iff it carries neither marker; those are never
         # touched without --force. The legacy generated .md twin is deleted
@@ -2149,28 +2202,36 @@ def main():
             continue
 
         shots = {}
-        if not args.no_shots:
-            slug = slugFor(name)
-            for theme, key in (("light", "light"), ("dark", "dark")):
-                existingShot = "%s%s.png" % (slug, "-dark" if theme == "dark" else "")
-                if not args.reshoot and os.path.isfile(
-                        os.path.join(SHOTS, existingShot)):
+        slug = slugFor(name)
+        for theme, key in (("light", "light"), ("dark", "dark")):
+            existingShot = "%s%s.png" % (slug, "-dark" if theme == "dark" else "")
+            onDisk = os.path.isfile(os.path.join(SHOTS, existingShot))
+            # --no-shots skips CAPTURING, not the screenshots already published.
+            # Adopting what is on disk is what keeps a text-only regeneration
+            # text-only: without it every rewritten page loses its <Zoomable>
+            # and its "Dark theme" section, and a run meant to correct a
+            # sentence quietly deletes 300+ images from the docs.
+            if args.no_shots:
+                if onDisk:
                     shots[key] = existingShot
-                    continue
-                try:
-                    produced = shoot(cls, slug, theme)
-                except Exception as exc:
-                    # One unrenderable widget must not abort a 120-page run.
-                    failed.append("%s (shot %s: %s)" % (name, theme, exc))
-                    produced = None
-                if produced:
-                    shots[key] = produced
-                    shot += 1
-                elif os.path.isfile(os.path.join(SHOTS, existingShot)):
-                    # Nothing rendered, but an old file is still on disk and
-                    # pages will keep pointing at it. Never silently keep it.
-                    stale.append(existingShot)
-                    shots[key] = existingShot
+                continue
+            if not args.reshoot and onDisk:
+                shots[key] = existingShot
+                continue
+            try:
+                produced = shoot(cls, slug, theme)
+            except Exception as exc:
+                # One unrenderable widget must not abort a 120-page run.
+                failed.append("%s (shot %s: %s)" % (name, theme, exc))
+                produced = None
+            if produced:
+                shots[key] = produced
+                shot += 1
+            elif onDisk:
+                # Nothing rendered, but an old file is still on disk and
+                # pages will keep pointing at it. Never silently keep it.
+                stale.append(existingShot)
+                shots[key] = existingShot
 
         if args.gifs:
             for theme in ("light", "dark"):
