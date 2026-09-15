@@ -60,16 +60,47 @@ SKIP = {"Canvas", "LoadForm", "QCustomLoadingIndicators", "QCustomProgressBars",
 # Introspection
 # --------------------------------------------------------------------------- #
 def manifestRows():
-    path = os.path.join(ROOT, "docs", "design", "tiering-manifest.json")
-    data = json.load(open(path, encoding="utf-8"))
-    rows = data if isinstance(data, list) else data.get("widgets", data.get("rows", []))
-    return [r for r in rows if r.get("tier") in ("free", "pro-ext")
-            and r.get("widget") not in SKIP]
+    """Every widget to document, taken from the catalog.
+
+    This used to read docs/design/tiering-manifest.json. That file was stripped
+    from this repository when its history was rewritten and survives only on
+    archive/tiering-manifest-internal, so the generator could not run on a clean
+    checkout — and the docs' "164 widgets" has been frozen at whatever it was on
+    2026-08-05 ever since, with nothing failing to say so.
+
+    Custom_Widgets.mcp.catalog replaces it. 2.4.0 introduced that module as "the
+    single source for what widgets exist", and the MCP server, the stub
+    generator and the launch-gate manifest already import it. It is pure AST
+    over the package, so it needs no Qt binding, cannot drift from the code it
+    describes, and cannot be deleted without those consumers noticing first.
+
+    The old tier filter goes with the manifest that carried it, and is not
+    needed: the catalog scans only this package, so everything it returns is the
+    free edition by construction. Pro widgets ship in their own distribution and
+    were never documented from here.
+    """
+    from Custom_Widgets.mcp import catalog
+
+    return [
+        {"widget": entry["class"], "module": entry["module"], "name": entry["name"]}
+        for entry in sorted(catalog.discover_widgets().values(),
+                            key=lambda e: e["class"])
+        if entry["class"] not in SKIP
+    ]
 
 
 def importWidget(name, module):
-    """Import a widget class from its real module path."""
-    dotted = os.path.splitext(module)[0].replace(os.sep, ".").replace("/", ".")
+    """Import a widget class from its module, dotted or path-shaped.
+
+    The catalog reports dotted modules ("Custom_Widgets.QCustomActionButton")
+    while the old manifest carried file paths. splitext over a dotted string
+    truncates it at the last dot — "Custom_Widgets.QCustomX" becomes
+    "Custom_Widgets" — which imports the package instead of the widget and then
+    reports the widget as missing rather than raising.
+    """
+    if os.sep in module or "/" in module or module.endswith(".py"):
+        module = os.path.splitext(module)[0].replace(os.sep, ".").replace("/", ".")
+    dotted = module
     mod = __import__(dotted, fromlist=[name])
     return getattr(mod, name, None)
 
