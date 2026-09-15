@@ -270,10 +270,19 @@ class TestRadarPainting:
         assert not any("QtChart" in name for name in imported), imported
 
     def test_colors_via_qproperty(self, qapp):
-        from Custom_Widgets.JSonStyles.tokens import applyDesignTokens
+        """Asserts the ROLES, not hexes.
+
+        axisColor used to pin "#cbd5e1", the light `outline` value, which made
+        this a test of today's palette rather than of the wiring it is named
+        for. The spokes have since moved to the muted foreground role so they
+        clear 3:1; naming the roles keeps a palette tweak from reading as
+        broken wiring.
+        """
+        from Custom_Widgets.JSonStyles.tokens import applyDesignTokens, DesignTokens
         applyDesignTokens(qapp, theme="light")
         c = _chart(qapp)
         c.ensurePolished()
-        assert c.labelColor.name().lower() == "#0f172a"     # on-surface
-        assert c.axisColor.name().lower() == "#cbd5e1"      # outline
+        tokens = DesignTokens(theme="light")
+        assert c.labelColor.name().lower() == tokens.role("on-surface").lower()
+        assert c.axisColor.name().lower() == tokens.role("on-surface-muted").lower()
         qapp.setStyleSheet("")

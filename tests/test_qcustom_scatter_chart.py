@@ -219,9 +219,87 @@ class TestScatterPainting:
         assert not any("QtChart" in n for n in imported), imported
 
     def test_colors_via_qproperty(self, qapp):
-        from Custom_Widgets.JSonStyles.tokens import applyDesignTokens
+        """Asserts the ROLE, not a hex.
+
+        This pinned "#cbd5e1" -- the light `outline` value -- which made it a
+        test of today's palette rather than of the wiring it is named for. The
+        axis has since moved to the muted foreground role for contrast, so name
+        the role: a palette tweak should not read as broken chart wiring.
+        """
+        from Custom_Widgets.JSonStyles.tokens import applyDesignTokens, DesignTokens
         applyDesignTokens(qapp, theme="light")
         c = _chart()
         c.ensurePolished()
-        assert c.axisColor.name().lower() == "#cbd5e1"
+        expected = DesignTokens(theme="light").role("on-surface-muted").lower()
+        assert c.axisColor.name().lower() == expected
         qapp.setStyleSheet("")
+
+
+def _contrast(fg, bg):
+    def lum(value):
+        value = value.lstrip("#")
+        parts = []
+        for pair in (value[0:2], value[2:4], value[4:6]):
+            c = int(pair, 16) / 255.0
+            parts.append(c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4)
+        return 0.2126 * parts[0] + 0.7152 * parts[1] + 0.0722 * parts[2]
+    high, low = sorted((lum(fg), lum(bg)), reverse=True)
+    return (high + 0.05) / (low + 0.05)
+
+
+def _emitted(css, prop):
+    for line in css.splitlines():
+        if prop in line:
+            return line.split(":")[1].strip().rstrip(";")
+    raise AssertionError("%s not emitted" % prop)
+
+
+class TestChartAxisLegibility:
+    """axisColor draws structure, not decoration.
+
+    Scatter uses it for the x baseline and the y edge; radar uses it for the
+    spokes from centre to vertex (_paintAxes). You cannot read a value off
+    either plot without them, so WCAG's 3:1 for graphical objects applies. Both
+    were "outline" -- a BORDER role at 1.48:1 on light -- and both carried a
+    matching #cbd5e1 literal for untokenised apps.
+    """
+
+    @staticmethod
+    def _generators():
+        from Custom_Widgets.theming.tokens import radar_qss, scatter_qss
+        return (("scatter", scatter_qss), ("radar", radar_qss))
+
+    def test_axes_clear_the_graphical_minimum(self, qapp):
+        from Custom_Widgets.theming.tokens import DesignTokens
+        for name, gen in self._generators():
+            for theme in ("light", "dark"):
+                tokens = DesignTokens(theme)
+                axis = _emitted(gen(tokens), "qproperty-axisColor")
+                assert _contrast(axis, tokens.role("surface")) >= 3.0, (name, theme)
+
+    def test_depth_order_grid_then_axis_then_label(self, qapp):
+        """The point of the fix is legibility, not weight.
+
+        If the grid ever caught up with the axes the plot would read as a flat
+        mesh, so pin the ordering rather than any single value: the grid sits
+        behind the data, the axes frame it, the labels sit on top.
+        """
+        from Custom_Widgets.theming.tokens import DesignTokens
+        for name, gen in self._generators():
+            for theme in ("light", "dark"):
+                tokens = DesignTokens(theme)
+                css = gen(tokens)
+                surface = tokens.role("surface")
+                grid = _contrast(_emitted(css, "qproperty-gridColor"), surface)
+                axis = _contrast(_emitted(css, "qproperty-axisColor"), surface)
+                label = _contrast(_emitted(css, "qproperty-labelColor"), surface)
+                assert grid < axis < label, (name, theme, grid, axis, label)
+
+    def test_untokenised_axis_default_is_visible(self, qapp):
+        """An app that never applies tokens still has to see its axes."""
+        from Custom_Widgets.QCustomRadarChart import QCustomRadarChart
+        from Custom_Widgets.QCustomScatterChart import QCustomScatterChart
+        for widget in (QCustomScatterChart(), QCustomRadarChart()):
+            assert _contrast(widget.axisColor.name(), "#ffffff") >= 3.0
+            assert (_contrast(widget.gridColor.name(), "#ffffff")
+                    < _contrast(widget.axisColor.name(), "#ffffff"))

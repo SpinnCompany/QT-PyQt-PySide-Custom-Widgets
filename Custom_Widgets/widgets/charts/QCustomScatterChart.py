@@ -67,10 +67,10 @@ class QCustomScatterChart(QWidget):
                   "showLegend": {"type": "bool", "default": True},
                   "showTooltip": {"type": "bool", "default": True},
                   "gridColor": {"type": "color", "default": "#e2e8f0"},
-                  "axisColor": {"type": "color", "default": "#cbd5e1"},
+                  "axisColor": {"type": "color", "default": "#64748b"},
                   "labelColor": {"type": "color", "default": "#64748b"}},
         "signals": ["pointHovered", "pointClicked"],
-        "tokens_used": ["outline", "on-surface", "surface-muted"],
+        "tokens_used": ["on-surface", "on-surface-muted", "surface-muted"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see
@@ -115,7 +115,11 @@ class QCustomScatterChart(QWidget):
         self._hover = (-1, -1)
 
         self._gridColor = QColor("#e2e8f0")
-        self._axisColor = QColor("#cbd5e1")
+        # Was #cbd5e1 -- the light "outline" value, 1.48:1 on a white plot, so
+        # an untokenised chart had no visible axes. This is light-theme
+        # on-surface-muted, matching what the token QSS sets. The grid above
+        # stays faint on purpose: it sits behind the data, the axes frame it.
+        self._axisColor = QColor("#64748b")
         self._labelColor = QColor("#64748b")
         self._tooltipBg = QColor("#0f172a")
         self._tooltipText = QColor("#f8fafc")

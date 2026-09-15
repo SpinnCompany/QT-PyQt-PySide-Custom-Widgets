@@ -65,10 +65,10 @@ class QCustomRadarChart(QWidget):
                   "showMarkers": {"type": "bool", "default": True},
                   "showLegend": {"type": "bool", "default": True},
                   "gridColor": {"type": "color", "default": "#e2e8f0"},
-                  "axisColor": {"type": "color", "default": "#cbd5e1"},
+                  "axisColor": {"type": "color", "default": "#64748b"},
                   "labelColor": {"type": "color", "default": "#0f172a"}},
         "signals": ["seriesHovered", "axisClicked"],
-        "tokens_used": ["outline", "on-surface", "surface-muted"],
+        "tokens_used": ["on-surface", "on-surface-muted", "surface-muted"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see
@@ -115,7 +115,11 @@ class QCustomRadarChart(QWidget):
         self._hover = -1
 
         self._gridColor = QColor("#e2e8f0")
-        self._axisColor = QColor("#cbd5e1")
+        # Was #cbd5e1 -- the light "outline" value, 1.48:1, so the spokes that
+        # give a radar its shape were invisible until a theme was applied. This
+        # is light-theme on-surface-muted, matching the token QSS. The web
+        # rings above stay faint.
+        self._axisColor = QColor("#64748b")
         self._labelColor = QColor("#0f172a")
 
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)

@@ -1107,21 +1107,31 @@ def funnel_qss(tokens):
 def scatter_qss(tokens):
     """Feed token colours to the painted QCustomScatterChart."""
     r = tokens.role
+    # axisColor draws the x baseline and the y edge -- structure you need in
+    # order to read a value off the plot, so WCAG's 3:1 for graphical objects
+    # applies. "outline" is a border value at 1.48:1 on light. gridColor is
+    # deliberately left on "surface-muted": the grid is a reading aid behind
+    # the data, and the two being separate is what keeps this change confined
+    # to the two axis lines instead of darkening the whole plot.
     return ("QCustomScatterChart {\n"
             "    qproperty-gridColor: %s;\n"
             "    qproperty-axisColor: %s;\n"
             "    qproperty-labelColor: %s;\n"
-            "}\n" % (r("surface-muted"), r("outline"), r("on-surface")))
+            "}\n" % (r("surface-muted"), r("on-surface-muted"), r("on-surface")))
 
 
 def radar_qss(tokens):
     """Feed token colours to the painted QCustomRadarChart."""
     r = tokens.role
+    # Same reasoning as scatter_qss, and more so: here axisColor draws the
+    # spokes from the centre out to each vertex (_paintAxes), which are what
+    # make the shape readable as a radar at all. The web rings stay on
+    # "surface-muted".
     return ("QCustomRadarChart {\n"
             "    qproperty-gridColor: %s;\n"
             "    qproperty-axisColor: %s;\n"
             "    qproperty-labelColor: %s;\n"
-            "}\n" % (r("surface-muted"), r("outline"), r("on-surface")))
+            "}\n" % (r("surface-muted"), r("on-surface-muted"), r("on-surface")))
 
 
 def candlestick_qss(tokens):
