@@ -23,8 +23,37 @@ _legacy_paths.install()
 # getattr() for each name.
 import importlib
 
-from Custom_Widgets.Log import *
-from Custom_Widgets.Project import projectRoot, setProjectRoot  # noqa: E402
+
+def _qtBindingError():
+    """The instruction qtpy's bare QtBindingsNotFoundError never gives.
+
+    Shared by the eager imports below and by __getattr__, so a missing binding
+    reads the same however the user reached it.
+    """
+    return ImportError(
+        "Custom_Widgets needs a Qt binding, and none is installed.\n"
+        "\n"
+        "    pip install PySide6\n"
+        "\n"
+        "Or install PyQt6 instead and set QT_API=pyqt6. The binding is not\n"
+        "bundled so you can choose one; everything else this library needs is\n"
+        "already installed.\n"
+        "Docs: https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/"
+    )
+
+
+# Log and Project are the one pair that cannot be deferred -- script_dir is
+# computed at import time and both reach qtpy. So they have to carry the same
+# translation __getattr__ applies. Without it the root raises qtpy's raw
+# traceback before __getattr__ is ever consulted, and the guard below silently
+# stops protecting the only path most users take: plain `import Custom_Widgets`.
+try:
+    from Custom_Widgets.Log import *
+    from Custom_Widgets.Project import projectRoot, setProjectRoot  # noqa: E402
+except ImportError as _exc:  # QtBindingsNotFoundError subclasses ImportError
+    if type(_exc).__name__ != "QtBindingsNotFoundError":
+        raise
+    raise _qtBindingError() from None
 script_dir = projectRoot().replace("\\", "/")
 
 _LAZY_EXPORTS = {
@@ -71,16 +100,7 @@ def __getattr__(name):
     except ImportError as _exc:  # QtBindingsNotFoundError subclasses ImportError
         if type(_exc).__name__ != "QtBindingsNotFoundError":
             raise
-        raise ImportError(
-            "Custom_Widgets needs a Qt binding, and none is installed.\n"
-            "\n"
-            "    pip install PySide6\n"
-            "\n"
-            "Or install PyQt6 instead and set QT_API=pyqt6. The binding is not\n"
-            "bundled so you can choose one; everything else this library needs is\n"
-            "already installed.\n"
-            "Docs: https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/"
-        ) from None
+        raise _qtBindingError() from None
     value = getattr(module, attr)
     globals()[name] = value
     return value
