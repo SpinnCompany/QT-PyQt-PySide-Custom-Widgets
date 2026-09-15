@@ -54,6 +54,44 @@ class TestLegacyImports:
         module = importlib.import_module("Custom_Widgets.%s" % name)
         assert hasattr(module, name)
 
+    def test_every_catalogued_widget_imports_via_its_module(self, qapp):
+        """The catalog's `module` field must actually import and expose the class.
+
+        The sampled names above are all one-class-per-file, where the flat alias
+        happens to equal the class name. That is NOT the contract, and assuming
+        it is produces a convincing false alarm: five widgets are CO-LOCATED --
+        QCustomChipGroup lives in QCustomChip.py, and QCustomDateEdit,
+        QCustomTimeEdit and QCustomDateRangeEdit all share QCustomDateTimeEdit.py.
+        Since _legacy_paths derives aliases from FILENAMES, importing
+        `Custom_Widgets.QCustomChipGroup` raises ModuleNotFoundError while the
+        widget itself is perfectly fine.
+
+        catalog.class_catalog() already gets this right (it falls back to the
+        file stem, not the class name), so read `module` and never rebuild it
+        from the widget's name.
+        """
+        from Custom_Widgets.mcp.catalog import discover_widgets, find_widget
+        broken = []
+        for name in discover_widgets():
+            entry = find_widget(name)
+            try:
+                module = importlib.import_module(entry["module"])
+                getattr(module, entry["class"])
+            except Exception as exc:                     # pragma: no cover
+                broken.append((name, entry["module"], type(exc).__name__))
+        assert not broken, "catalogued widgets that do not import: %r" % (broken,)
+
+    @pytest.mark.parametrize("cls,module", [
+        ("QCustomChipGroup", "Custom_Widgets.QCustomChip"),
+        ("QCustomDateEdit", "Custom_Widgets.QCustomDateTimeEdit"),
+        ("QCustomTimeEdit", "Custom_Widgets.QCustomDateTimeEdit"),
+        ("QCustomDateRangeEdit", "Custom_Widgets.QCustomDateTimeEdit"),
+        ("QTagEdit", "Custom_Widgets.QCustomTagEdit"),
+    ])
+    def test_colocated_classes_resolve_through_their_file(self, qapp, cls, module):
+        """Pin the co-located cases by name, so a later split/move is deliberate."""
+        assert hasattr(importlib.import_module(module), cls)
+
     def test_flat_and_real_paths_are_the_same_module(self, qapp):
         """Not a copy — a second execution would re-register Designer widgets."""
         legacy = importlib.import_module("Custom_Widgets.QCustomSwitch")
