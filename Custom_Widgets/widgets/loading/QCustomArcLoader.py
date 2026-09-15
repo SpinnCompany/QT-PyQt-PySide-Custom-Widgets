@@ -104,6 +104,11 @@ class QCustomArcLoader(QFrame):
             "color": {},
             "penWidth": {},
         },
+        # Accurate as of the token conversion: the colour default now resolves
+        # through activeDesignTokens().role("accent"). Declared only because it
+        # is now true — most self-painted widgets still own their colours and
+        # correctly declare nothing here.
+        "tokens_used": ["accent"],
     }
     WIDGET_MODULE = "Custom_Widgets.QCustomArcLoader"
     WIDGET_TOOLTIP = "A spinning arc loading indicator"
@@ -144,17 +149,42 @@ class QCustomArcLoader(QFrame):
             self.pen.setWidth(self._penWidth)
             self.update()
 
+    @staticmethod
+    def _defaultColor():
+        """The accent role when the app is token-themed, else the old white.
+
+        This widget paints itself, so the token QSS that styles most of the
+        library cannot reach it — the same gap QCustomChartThemeManager exists
+        to close for charts. The default used to be a hard "#ffffff", which is
+        invisible on a light background: the loader looked broken to every user
+        on a light theme.
+
+        activeDesignTokens() returns None when nothing has applied tokens, and
+        its docstring is explicit that None must mean "fall back" rather than
+        "assume a default" — assuming would force light onto a dark app. So an
+        untokenised app keeps exactly the behaviour it had.
+        """
+        try:
+            from Custom_Widgets.theming.tokens import activeDesignTokens
+            tokens = activeDesignTokens()
+            if tokens is not None:
+                return QColor(tokens.role("accent"))
+        except Exception:
+            pass
+        return QColor("#ffffff")
+
     def __init__(
-            self, 
+            self,
             parent=None,
-            color=QColor("#ffffff"),
+            color=None,
             penWidth=20
             ):
         QFrame.__init__(self, parent=parent)
 
         self.setFrameShape(QFrame.NoFrame)
         self.setFixedSize(160, 160)
-        self.color = color
+        # None means "follow the theme"; an explicit colour still wins.
+        self.color = self._defaultColor() if color is None else color
         self.initPen(penWidth)
 
         self.arc1 = ArcLoader(self, 0, 270, 1/16, True, 4*1000)

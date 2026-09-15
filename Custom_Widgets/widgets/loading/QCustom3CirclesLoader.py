@@ -29,6 +29,11 @@ class QCustom3CirclesLoader(QFrame):
             "penWidth": {},
             "animationDuration": {},
         },
+        # Accurate as of the token conversion: the colour default now resolves
+        # through activeDesignTokens().role("accent"). Declared only because it
+        # is now true — most self-painted widgets still own their colours and
+        # correctly declare nothing here.
+        "tokens_used": ["accent"],
     }
     WIDGET_MODULE = "Custom_Widgets.QCustom3CirclesLoader"
     WIDGET_TOOLTIP = "A three-circle bouncing loading animation"
@@ -74,19 +79,45 @@ class QCustom3CirclesLoader(QFrame):
     def animationDuration(self, value):
         self._animationDuration = int(value)
 
+    @staticmethod
+    def _defaultColor():
+        """The accent role when the app is token-themed, else the old #333333.
+
+        This widget paints itself, so the token QSS that styles most of the
+        library cannot reach it — the same gap QCustomChartThemeManager exists
+        to close for charts. The default used to be a hard "#333333", which is
+        invisible on a dark background: the loader looked broken to every user
+        on a dark theme. (Its sibling QCustomArcLoader had the mirror image of
+        this bug, defaulting to white.)
+
+        activeDesignTokens() returns None when nothing has applied tokens, and
+        its docstring is explicit that None must mean "fall back" rather than
+        "assume a default". So an untokenised app keeps exactly the behaviour
+        it had.
+        """
+        try:
+            from Custom_Widgets.theming.tokens import activeDesignTokens
+            tokens = activeDesignTokens()
+            if tokens is not None:
+                return QColor(tokens.role("accent"))
+        except Exception:
+            pass
+        return QColor("#333333")
+
     def __init__(
-            self, 
+            self,
             parent=None,
-            color=QColor("#333333"),
+            color=None,
             penWidth=20,
             animationDuration=400
             ):
         QFrame.__init__(self, parent=parent)
-        
+
         self.setFrameShape(QFrame.NoFrame)
         self.setFixedSize(140, 140)
 
-        self.color = color
+        # None means "follow the theme"; an explicit colour still wins.
+        self.color = self._defaultColor() if color is None else color
         self.penWidth = penWidth
         self.animationDuration = animationDuration
 
