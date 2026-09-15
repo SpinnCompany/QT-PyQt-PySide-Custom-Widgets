@@ -1,5 +1,78 @@
 # Changelog
 
+## 2.5.0 — 2026-09-15
+
+**Legibility.** A sweep of the design-token palette found colours that could
+not be read: a border value was doing duty as a text colour in a dozen places,
+and two loading indicators ignored the theme entirely. Most of this release is
+that, plus making the widget catalog tell the truth about itself.
+
+If your app applies design tokens, **some colours change**. Everything listed
+here moved because it failed a WCAG minimum, not for taste. Apps that never
+call `applyDesignTokens` are unaffected: every painted widget keeps its old
+literal as a fallback.
+
+### Added
+- **`on-surface-muted`, a muted foreground role** (`slate.500` light /
+  `slate.400` dark). The palette had no "dimmed but still readable" colour, so
+  code reached for `outline` — a *border* value that renders text at **1.48:1**
+  on a light surface. The new role is 4.76:1 light / 6.96:1 dark while staying
+  ~3.8x dimmer than `on-surface`, which is the point of it.
+  Known boundary: muted text on `surface-muted` is 4.34:1 in light theme, just
+  under the body-text bar. Use `on-surface` for small text on a muted panel.
+
+### Fixed
+- **Two loading indicators ignored the theme.** `QCustomArcLoader` defaulted to
+  white and `QCustom3CirclesLoader` to `#333333`, so each was invisible on half
+  the themes in use — mirror images of the same bug. Both now resolve `accent`
+  when the app is token-themed.
+- **Text rendered at 1.48:1 in 12 places.** Timeline descriptions, empty-state
+  copy and icon, flat-trend stat values, unfilled rating stars (which made a
+  rating control's maximum unreadable), breadcrumb separators, pagination
+  ellipses, chat message previews and timestamps, chat bubble meta lines, the
+  unplayed part of a voice waveform, and the multi-select placeholder.
+- **Chart axes were invisible.** `QCustomScatterChart` and `QCustomRadarChart`
+  drew their axis lines — the x baseline, the y edge, the radar spokes — at
+  1.48:1. Grid lines are a separate property and deliberately stay faint, so
+  the depth order `grid < axis < label` is preserved.
+- **`QCustomChatThread` was overriding the message-status tick** back to an
+  unreadable colour on every outgoing message, via `tickColor = metaColor`.
+- Read receipts, progress-bar error/paused states, and the empty-state mark now
+  resolve token roles instead of hardcoded hexes.
+- `:disabled` states deliberately keep `outline`: WCAG 1.4.3 exempts inactive
+  controls, and dimmer-than-muted is the right signal there.
+
+### Changed
+- **`tokens_used` in the widget catalog is now accurate.** It was largely
+  fiction: 43 widgets declared roles while resolving none, 10 named roles that
+  do not exist at all (`up`, `down`, `background`, `text`), and 25 over-claimed.
+  Every one of the 71 remaining declarations now matches the QSS rules that
+  actually target that widget. This metadata feeds the MCP server and the
+  generated docs, so a wrong entry actively misinforms tools and agents.
+- **37 widgets that shipped without `__catalog__` now declare one**, so they are
+  visible to the MCP server, the docs generator and stub generation. The
+  authoritative widget count is now derived from the catalog rather than typed
+  by hand.
+- `WIDGET_MODULE` on two progress bars pointed at a legacy aggregate rather than
+  the widget, so no stub was ever generated for them. Existing `.ui` files are
+  unaffected — the old module still resolves.
+- Type stubs regenerated: 34 new, covering the newly catalogued widgets.
+
+## 2.4.1 — 2026-09-15
+
+Recorded retroactively; 2.4.1 was published without a changelog entry.
+
+### Fixed
+- **A bare `pip install` printed a raw `QtBindingsNotFoundError` traceback**
+  instead of the instruction 2.3.2 added. The package root did an eager
+  `from Custom_Widgets.Log import *` (which reaches qtpy) *above* the
+  `__getattr__` holding the translation, so the eager import raised first and
+  the guard never ran — despite a comment claiming the root imports no Qt
+  eagerly. Both paths now share one `_qtBindingError()`.
+- Restored the free-artifact release gates as a tracked script; they had only
+  ever existed as an untracked file and were lost.
+- Live links point at the SpinnCompany account.
+
 ## 2.4.0 — 2026-08-16
 
 **Fleet-review hardening.** Six review tracks landed at once: thread-safe
