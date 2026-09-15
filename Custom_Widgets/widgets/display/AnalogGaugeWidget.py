@@ -10,7 +10,7 @@
 ## SPINN DESIGN CODE
 # YOUTUBE: (SPINN TV) https://www.youtube.com/@SpinnTV
 # WEBSITE: customwidgets.org
-# GitHub : https://github.com/KhamisiKibet
+# GitHub : https://github.com/SpinnCompany
 
 
 ## IMPORTS

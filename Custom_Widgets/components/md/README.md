@@ -25,4 +25,4 @@
 
 This structure allows for automatic conversion of UI files to Python code and placement within the src folder, simplifying the development process for users.
 
-For more, visit https://github.com/KhamisiKibet/QT-PyQt-PySide-Custom-Widgets
+For more, visit https://github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets

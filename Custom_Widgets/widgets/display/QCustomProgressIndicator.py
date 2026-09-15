@@ -458,7 +458,7 @@ class Test:
             "To test the custom widgets please check the examples folder on github.\n"
             "Deprecated imports. Please update your import statements:\n"
             "For more information, refer to the documentation"
-            "https://github.com/KhamisiKibet/QT-PyQt-PySide-Custom-Widgets"
+            "https://github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets"
             "or contact support."
         )
 
