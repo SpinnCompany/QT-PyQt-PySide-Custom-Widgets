@@ -130,3 +130,10 @@ examples/**/stripe.tar.gz
 /Qss/
 /generated-files/
 examples/PySide6/Qss/
+
+# Agent working notes. Untracked deliberately: AGENTS.md documents the internal
+# workflow and names the Pro website (billing, pricing) and its local path, so
+# it does not belong on a public branch. The file stays on disk -- the MCP
+# retrieval indexer reads it from the repo root, and findings are logged to it.
+# Recover the last tracked copy with: git show 13575e2a8:AGENTS.md
+/AGENTS.md
