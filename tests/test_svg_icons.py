@@ -32,19 +32,33 @@ def _pinned_active_theme(theme):
     (e.g. a task-menu test's colourless "Emerald"), which makes
     generateNewIcons resolve an empty icons colour and silently skip —
     an order-dependence that broke the whole class when unrelated tests
-    stopped accidentally repairing the state."""
+    stopped accidentally repairing the state.
+
+    GENERATED-ICONS-COLOR is cleared for the same reason — the same bug
+    wearing a different key. `iconsColorAndForce` computes
+    ``force = QSettings().value("GENERATED-ICONS-COLOR") != color``, so once a
+    sibling test leaves that key equal to the colour a later test asks for,
+    generateNewIcons concludes there is nothing to do and skips. The assertion
+    then reads a freshly-built temp icon set that never received the colour, so
+    the test passes alone and fails in the suite."""
     from qtpy.QtCore import QSettings
 
     settings = QSettings()
     previous_stored = settings.value("THEME")
     previous_cached = getattr(theme, "_theme", None)
+    previous_icons = settings.value("GENERATED-ICONS-COLOR")
     settings.setValue("THEME", "Light")
+    settings.remove("GENERATED-ICONS-COLOR")
     theme._theme = "Light"
     yield
     if previous_stored is None:
         settings.remove("THEME")
     else:
         settings.setValue("THEME", previous_stored)
+    if previous_icons is None:
+        settings.remove("GENERATED-ICONS-COLOR")
+    else:
+        settings.setValue("GENERATED-ICONS-COLOR", previous_icons)
     theme._theme = previous_cached
 
 
