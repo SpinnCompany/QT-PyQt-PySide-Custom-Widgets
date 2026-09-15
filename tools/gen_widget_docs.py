@@ -1836,9 +1836,17 @@ def slugFor(name):
 def _tierBadge(row):
     tier = (row or {}).get("tier", "free")
     if tier == "pro-ext":
+        # This used to read "The free package under GPLv3 does not include it",
+        # which is false: the published free wheel carries every Pro widget,
+        # ungated (checked against 2.5.0 on PyPI). Dual licensing is the lever —
+        # the Pro package is a proprietary licence layer that *depends on* the
+        # free one and ships no widget code at all. Saying otherwise undersold
+        # the free edition and misdescribed what a Pro customer pays for.
         return (":::info Pro widget\n\n"
-                "`%s` ships in **Custom Widgets Pro**. The free package under "
-                "GPLv3 does not include it.\n\n"
+                "`%s` is included in the free package under the GPLv3, so an "
+                "application you distribute with it must be GPLv3 as well. "
+                "**Custom Widgets Pro** is the commercial licence that lets you "
+                "use it in closed-source software.\n\n"
                 "[See plans](https://customwidgets.org/pricing/)\n\n"
                 ":::")
     return None
