@@ -67,6 +67,25 @@ _SEMANTIC = {
     "light": {
         "surface": "{color.white}",
         "on-surface": "{color.slate.900}",
+        # Secondary foreground: dimmed, but still meant to be READ. Sits next to
+        # on-surface because it is a muted variant OF IT, not the foreground for
+        # surface-muted (that pairing is on-surface, which stays high-contrast).
+        #
+        # Before this role existed the only greyish role was "outline", and a
+        # dozen QSS rules reached for it as a text colour. outline is a BORDER
+        # value -- on a light surface it lands at 1.48:1, i.e. invisible.
+        #
+        #   on light surface (#ffffff):  outline 1.48:1  ->  this 4.76:1
+        #   on dark  surface (#0f172a):  outline 2.36:1  ->  this 6.96:1
+        #
+        # Both pass the 4.5:1 body-text minimum while staying ~3.8x dimmer than
+        # on-surface, which is the whole point -- slate.600 would pass every
+        # pairing but at 2.4x it reads as body text and the hierarchy collapses.
+        #
+        # Known boundary: muted text ON surface-muted is 4.34:1 in light theme,
+        # just under the body-text bar (it clears 3:1 for large text and
+        # graphical objects). Use on-surface for small text on a muted panel.
+        "on-surface-muted": "{color.slate.500}",
         "surface-muted": "{color.slate.100}",
         "primary": "{color.blue.600}",
         "on-primary": "{color.white}",
@@ -90,6 +109,11 @@ _SEMANTIC = {
     "dark": {
         "surface": "{color.slate.900}",
         "on-surface": "{color.slate.100}",
+        # Mirrors light's slate.500 across the scale midpoint. See the light
+        # block for the contrast rationale; dark clears 4.5:1 on BOTH surface
+        # (6.96:1) and surface-muted (5.71:1), so the boundary noted there is
+        # light-theme only.
+        "on-surface-muted": "{color.slate.400}",
         "surface-muted": "{color.slate.800}",
         "primary": "{color.blue.500}",
         "on-primary": "{color.white}",
@@ -627,7 +651,7 @@ def breadcrumbs_qss(tokens):
     css.append("QCustomBreadcrumbs #breadcrumbLink:hover { color: %s; }\n" % r("primary-hover"))
     css.append("QCustomBreadcrumbs #breadcrumbCurrent { color: %s; font-weight: %d; }\n"
                % (r("on-surface"), int(r("font.weight.semibold"))))
-    css.append("QCustomBreadcrumbs #breadcrumbSep { color: %s; }\n" % r("outline"))
+    css.append("QCustomBreadcrumbs #breadcrumbSep { color: %s; }\n" % r("on-surface-muted"))
     return "".join(css)
 
 
@@ -635,7 +659,8 @@ def rating_qss(tokens):
     """Generate QCustomRating QSS (empty vs filled stars)."""
     r = tokens.role
     css = []
-    css.append("QCustomRating #ratingStar { color: %s; font-size: 18px; }\n" % r("outline"))
+    css.append("QCustomRating #ratingStar { color: %s; font-size: 18px; }\n"
+               % r("on-surface-muted"))
     css.append('QCustomRating #ratingStar[filled="true"] { color: %s; }\n' % r("warning"))
     return "".join(css)
 
@@ -690,7 +715,7 @@ def timeline_qss(tokens):
                % (r("on-surface"), int(r("font.weight.semibold"))))
     css.append("QCustomTimeline #timelineTime { color: %s; font-size: %s; }\n"
                % (r("accent"), px("font.size.sm")))
-    css.append("QCustomTimeline #timelineDesc { color: %s; }\n" % r("outline"))
+    css.append("QCustomTimeline #timelineDesc { color: %s; }\n" % r("on-surface-muted"))
     return "".join(css)
 
 
@@ -711,7 +736,8 @@ def pagination_qss(tokens):
     css.append('QCustomPagination #pageBtn[current="true"] {'
                ' background-color: %s; color: %s; border-color: %s; }\n'
                % (r("accent"), r("on-primary"), r("accent")))
-    css.append("QCustomPagination #pageEllipsis { color: %s; padding: 0 2px; }\n" % r("outline"))
+    css.append("QCustomPagination #pageEllipsis { color: %s; padding: 0 2px; }\n"
+               % r("on-surface-muted"))
     return "".join(css)
 
 
@@ -761,10 +787,11 @@ def emptystate_qss(tokens):
     # markColor drives the PAINTED default mark; the #emptyIcon colour still
     # applies when a caller passes a string icon of their own.
     css.append("QCustomEmptyState { qproperty-markColor: %s; }\n" % r("outline"))
-    css.append("QCustomEmptyState #emptyIcon { color: %s; font-size: 44px; }\n" % r("outline"))
+    css.append("QCustomEmptyState #emptyIcon { color: %s; font-size: 44px; }\n"
+               % r("on-surface-muted"))
     css.append("QCustomEmptyState #emptyTitle { color: %s; font-weight: %d; font-size: %s; }\n"
                % (r("on-surface"), int(r("font.weight.semibold")), px("font.size.lg")))
-    css.append("QCustomEmptyState #emptyDesc { color: %s; }\n" % r("outline"))
+    css.append("QCustomEmptyState #emptyDesc { color: %s; }\n" % r("on-surface-muted"))
     return "".join(css)
 
 
@@ -1168,7 +1195,8 @@ def statcard_qss(tokens):
                % (px("font.size.sm"), int(r("font.weight.medium"))))
     css.append('QCustomStatCard[trend="up"] #statDelta { color: %s; }\n' % r("success"))
     css.append('QCustomStatCard[trend="down"] #statDelta { color: %s; }\n' % r("destructive"))
-    css.append('QCustomStatCard[trend="flat"] #statDelta { color: %s; }\n' % r("outline"))
+    css.append('QCustomStatCard[trend="flat"] #statDelta { color: %s; }\n'
+               % r("on-surface-muted"))
     return "".join(css)
 
 

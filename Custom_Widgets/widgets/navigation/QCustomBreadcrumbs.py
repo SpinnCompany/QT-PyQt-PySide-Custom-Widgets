@@ -34,7 +34,11 @@ class QCustomBreadcrumbs(QWidget):
         "name": "QCustomBreadcrumbs",
         "props": {},
         "signals": ["itemClicked"],
-        "tokens_used": ["on-surface", "surface-muted", "accent"],
+        # Mirrors breadcrumbs_qss exactly. The separator moved off "outline"
+        # (a BORDER value, 1.48:1 on a light surface) onto the muted foreground
+        # role; "surface-muted" was claimed here but never actually used.
+        "tokens_used": ["accent", "on-surface", "on-surface-muted",
+                        "primary-hover"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

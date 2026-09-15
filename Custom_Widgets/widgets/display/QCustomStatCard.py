@@ -36,8 +36,12 @@ class QCustomStatCard(QWidget):
                   "trend": {"type": "enum", "values": ["up", "down", "flat"],
                             "default": "flat"}},
         "signals": [],
-        "tokens_used": ["surface", "on-surface", "outline", "surface-muted",
-                        "success", "destructive"],
+        # Mirrors statcard_qss. The trend="flat" delta is a DATA VALUE and was
+        # drawn in "outline" (1.48:1 on light) — unreadable for exactly the
+        # readings that have not moved. Now the muted foreground role.
+        # ("surface-muted" was claimed but never used.)
+        "tokens_used": ["destructive", "on-surface", "on-surface-muted",
+                        "outline", "success", "surface"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

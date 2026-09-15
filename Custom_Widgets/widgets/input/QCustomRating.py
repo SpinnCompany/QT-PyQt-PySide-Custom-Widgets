@@ -36,7 +36,11 @@ class QCustomRating(QWidget):
                   "value": {"type": "int", "default": 0},
                   "readOnly": {"type": "bool", "default": False}},
         "signals": ["valueChanged"],
-        "tokens_used": ["warning", "outline"],
+        # The EMPTY star was drawn in "outline" — a border value that renders at
+        # 1.48:1 on a light surface, i.e. the unfilled stars were effectively
+        # invisible and the control's maximum could not be read. Now the muted
+        # foreground role (4.76:1 light / 6.96:1 dark).
+        "tokens_used": ["on-surface-muted", "warning"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

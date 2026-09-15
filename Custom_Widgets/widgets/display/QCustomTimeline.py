@@ -58,7 +58,10 @@ class QCustomTimeline(QWidget):
         "name": "QCustomTimeline",
         "props": {},
         "signals": [],
-        "tokens_used": ["on-surface", "surface-muted", "outline", "accent"],
+        # Mirrors timeline_qss. #timelineDesc is body copy and was rendered in
+        # "outline" (1.48:1 on light) — it is now the muted foreground role.
+        # "outline" is still claimed: the rail/dot borders legitimately use it.
+        "tokens_used": ["accent", "on-surface", "on-surface-muted", "outline"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

@@ -53,13 +53,10 @@ class QCustomMessageStatus(QWidget):
             "tickSize": {"type": "int", "default": 13},
         },
         "signals": [],
-        # "accent" was declared here before the widget actually used it — the
-        # ticks were hardcoded. The read tick now genuinely resolves through the
-        # token system, so this is true rather than aspirational. The
-        # sent/delivered tick is deliberately NOT tokenised (see __init__: every
-        # candidate role fails the 3:1 contrast minimum), so nothing else is
-        # claimed here.
-        "tokens_used": ["accent"],
+        # Both ticks now genuinely resolve through the token system: the read
+        # tick via "accent", the sent/delivered tick via "on-surface-muted"
+        # (see __init__ for the contrast measurements behind that pairing).
+        "tokens_used": ["accent", "on-surface-muted"],
     }
 
     @staticmethod
@@ -87,25 +84,19 @@ class QCustomMessageStatus(QWidget):
         self._status = "read"
         self._read = self._tokenColor("accent", "#1b74e4")
 
-        # The sent/delivered tick stays a literal ON PURPOSE.
+        # The sent/delivered tick has to read as "delivered but not seen":
+        # dimmer than the read tick, yet still legible. "outline" was the
+        # obvious mapping and was wrong — it is a BORDER value, and on a light
+        # surface it lands at 1.48:1. The palette now carries a real muted
+        # FOREGROUND role, which is dim by design and legible by measurement:
         #
-        # "outline" is what this library uses for a dimmed foreground
-        # (QCustomQPushButton:disabled, QCustomDataTable's disabled pager), and
-        # it was the obvious mapping — but measured against the surfaces it is
-        # far too faint for a mark that still has to be read:
+        #     light (#ffffff):  #99a0b0 = 2.62:1   on-surface-muted = 4.76:1
+        #     dark  (#0f172a):  #99a0b0 = 6.81:1   on-surface-muted = 6.96:1
         #
-        #     light (#ffffff):  #99a0b0 = 2.62:1   outline #cbd5e1 = 1.48:1
-        #     dark  (#0f172a):  #99a0b0 = 6.81:1   outline #475569 = 2.36:1
-        #
-        # Both fall under the 3:1 WCAG minimum for graphical objects, so the
-        # token would trade a theme-correct colour for an unreadable one.
-        # "on-surface" is the only role with enough contrast and it is full
-        # emphasis (17.85:1), which would erase the unread/read distinction
-        # this widget exists to show.
-        #
-        # The gap is in the palette, not here: there is no "muted but legible"
-        # foreground role. Add one and this becomes a one-line change.
-        self._tick = QColor("#99a0b0")
+        # So the tokenised tick is strictly MORE legible than the literal it
+        # replaces, in both themes, while staying well clear of the accent
+        # colour that marks a message as read.
+        self._tick = self._tokenColor("on-surface-muted", "#99a0b0")
         self._size = 13
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self._updateFixed()

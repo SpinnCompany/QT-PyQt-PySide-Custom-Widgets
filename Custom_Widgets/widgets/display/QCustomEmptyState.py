@@ -73,7 +73,12 @@ class QCustomEmptyState(QWidget):
         "props": {"markSize": {"type": "int", "default": 56},
                   "markColor": {"type": "color", "default": "#cbd5e1"}},
         "signals": ["actionClicked"],
-        "tokens_used": ["on-surface", "outline", "surface-muted", "accent"],
+        # Mirrors emptystate_qss. Both #emptyIcon and #emptyDesc were drawn in
+        # "outline" (1.48:1 on light) — the icon and the explanatory copy that
+        # are the entire point of an empty state. Both now use the muted
+        # foreground role. NOTE: the painted markColor default below is still a
+        # hardcoded #cbd5e1, which is the same invisible value.
+        "tokens_used": ["on-surface", "on-surface-muted", "outline"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

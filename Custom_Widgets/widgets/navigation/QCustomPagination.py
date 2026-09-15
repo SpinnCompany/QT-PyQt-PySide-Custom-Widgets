@@ -56,8 +56,12 @@ class QCustomPagination(QWidget):
         "props": {"pageCount": {"type": "int", "default": 1},
                   "currentPage": {"type": "int", "default": 1}},
         "signals": ["pageChanged"],
-        "tokens_used": ["surface", "on-surface", "surface-muted", "outline",
-                        "accent", "on-primary"],
+        # Mirrors pagination_qss. #pageEllipsis moved off "outline" onto the
+        # muted foreground role; "outline" is still claimed because the button
+        # borders and the :disabled arrows legitimately use it. ("surface" was
+        # claimed but never used.)
+        "tokens_used": ["accent", "on-primary", "on-surface",
+                        "on-surface-muted", "outline", "surface-muted"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see
