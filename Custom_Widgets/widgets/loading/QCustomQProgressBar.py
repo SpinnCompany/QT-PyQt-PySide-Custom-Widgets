@@ -36,7 +36,17 @@ class QCustomQProgressBar(QProgressBar):
         <widget class='QCustomQProgressBar' name='customProgressBar'/>
     </ui>
     """
-    WIDGET_MODULE = "Custom_Widgets.QCustomLoadingIndicators"
+    # The FLAT public path for THIS widget, per the Designer contract, not the
+    # legacy QCustomLoadingIndicators aggregate it used to name. stubgen keys
+    # off this: it imports WIDGET_MODULE and introspects the classes defined
+    # there, so pointing at an aggregate that merely re-exports meant no stub
+    # was ever generated for this widget.
+    #
+    # Existing .ui files are unaffected. Four of them carry
+    # Custom_Widgets.QCustomLoadingIndicators in <header>; that module still
+    # exists, still re-exports this class, and resolves to the identical object.
+    # WIDGET_MODULE only decides what Designer writes into NEW .ui files.
+    WIDGET_MODULE = "Custom_Widgets.QCustomQProgressBar"
 
     # Rich editors for the Designer "Custom Properties" dock (see
     # DesignerTools.CustomPropertiesDock).
