@@ -36,7 +36,8 @@ class QCustomInput(QLineEdit):
                             "default": "md"},
         },
         "signals": ["textChanged", "returnPressed"],
-        "tokens_used": ["surface", "on-surface", "outline", "focus-ring"],
+        # Intentionally no tokens_used: nothing in tokens.py emits a rule
+        # targeting this widget, so it resolves no role.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

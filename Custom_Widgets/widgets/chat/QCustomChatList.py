@@ -52,7 +52,8 @@ class QCustomChatList(QFrame):
                   "surfaceColor": {"type": "color", "default": "#ffffff"},
                   "rowSpacing": {"type": "int", "default": 2}},
         "signals": ["currentChanged", "itemClicked"],
-        "tokens_used": ["accent"],
+        "tokens_used": ["accent", "on-primary", "on-surface", "outline",
+                        "primary", "success", "surface"],
     }
 
     def __init__(self, parent=None):

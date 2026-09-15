@@ -41,7 +41,8 @@ class QCustomColorPicker(QWidget):
         "name": "QCustomColorPicker",
         "props": {},
         "signals": ["colorChanged"],
-        "tokens_used": ["surface", "on-surface", "surface-muted", "outline"],
+        "tokens_used": ["focus-ring", "on-surface", "outline", "surface",
+                        "surface-muted"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

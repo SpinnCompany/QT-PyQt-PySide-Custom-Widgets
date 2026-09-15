@@ -61,7 +61,7 @@ class QCustomFunnelChart(QWidget):
                   "labelColor": {"type": "color", "default": "#ffffff"},
                   "outsideLabelColor": {"type": "color", "default": "#0f172a"}},
         "signals": ["stageHovered", "stageClicked"],
-        "tokens_used": ["on-surface"],
+        "tokens_used": ["on-primary", "on-surface"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

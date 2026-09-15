@@ -15,6 +15,8 @@ class QTagEdit(QtWidgets.QScrollArea):
             "tagColor": {},
             "tagTextColor": {},
         },
+        "tokens_used": ["on-secondary", "on-surface", "outline", "secondary",
+                        "surface"],
     }
     WIDGET_MODULE = "Custom_Widgets.QCustomTagEdit"
     WIDGET_TOOLTIP = "A tag input field with removable chips"

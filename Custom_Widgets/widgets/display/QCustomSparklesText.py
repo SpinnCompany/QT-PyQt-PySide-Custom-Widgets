@@ -54,7 +54,7 @@ class QCustomSparklesText(QWidget):
                                 "default": "#f59e0b,#a855f7,#2563eb"},
                   "textColor": {"type": "color", "default": "#0f172a"}},
         "signals": ["clicked"],
-        "tokens_used": ["on-surface", "accent"],
+        "tokens_used": ["on-surface"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

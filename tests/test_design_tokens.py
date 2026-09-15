@@ -222,3 +222,144 @@ class TestScssImportDiagnostics:
         from Custom_Widgets.JSonStyles.tokens import describe_scss_compile_error
         root = self._scss(tmp_path, "main.scss", "QWidget{ color: red; }")
         assert describe_scss_compile_error(root, [str(tmp_path)]) is None
+
+
+class TestTokensUsedIsTrue:
+    """`tokens_used` is consumed by the MCP server and the generated docs, so a
+    wrong entry actively misinforms. It drifted badly once: 43 widgets declared
+    roles while resolving none, and 10 named roles that do not exist at all
+    (`up`, `down`, `background`, `text`).
+
+    Checking it is subtler than it looks. Grepping the generator source for
+    `r("role")` misses dynamic lookups -- alert_qss resolves 7 roles it never
+    names literally and badge_qss 13, because both loop over variants as `r(v)`.
+    Matching a generator to a widget by name is worse: `textarea_qss` merely
+    MENTIONS QCustomInput in its docstring, which once pulled that generator's
+    whole role set onto a widget with no generator of its own.
+
+    So attribute per RULE: hand back a unique sentinel colour for every semantic
+    role, emit the QSS, and read the sentinels back out of each rule's
+    declarations. The selector says which class the rule targets.
+    """
+
+    @staticmethod
+    def _attribution():
+        import ast
+        import re
+        from Custom_Widgets.theming import tokens as T
+        from Custom_Widgets.theming.tokens import _SEMANTIC
+        from Custom_Widgets.mcp.catalog import discover_widgets
+
+        roles = sorted(_SEMANTIC["light"])
+        sentinel = {r: "#%06x" % (0xE70000 + i) for i, r in enumerate(roles)}
+        back = {v: k for k, v in sentinel.items()}
+        catalog = set(discover_widgets())
+
+        src = open(T.__file__, encoding="utf-8").read()
+        generators = {}
+        for node in ast.parse(src).body:
+            if isinstance(node, ast.FunctionDef) and node.name.endswith("_qss"):
+                body = ast.get_source_segment(src, node) or ""
+                generators[node.name] = {m for m in re.findall(r"\b(\w+_qss)\s*\(", body)
+                                         if m != node.name}
+        # build_component_qss and friends re-emit their children's rules
+        aggregates = {g for g, calls in generators.items() if calls}
+
+        rule = re.compile(r"([^{}]+)\{([^{}]*)\}", re.S)
+        hexes = re.compile(r"#[0-9a-fA-F]{6}")
+        klass = re.compile(r"\b(QCustom[A-Za-z0-9_]+|QTagEdit)\b")
+        objname = re.compile(r"#([A-Za-z][A-Za-z0-9_]*)")
+
+        # Many rules select by objectName alone (#colorHex, #comboPopup) and
+        # name no class. Resolve those through the class that actually calls
+        # setObjectName with that string -- #customCalendar belongs to
+        # QCustomDateEdit, which is the only class that creates it.
+        import pathlib
+        owner_of = {}
+        for path in pathlib.Path("Custom_Widgets/widgets").rglob("*.py"):
+            try:
+                tree = ast.parse(path.read_text(encoding="utf-8", errors="ignore"))
+            except SyntaxError:
+                continue
+            for cls in [c for c in ast.walk(tree) if isinstance(c, ast.ClassDef)]:
+                if cls.name not in catalog:
+                    continue
+                for call in ast.walk(cls):
+                    if (isinstance(call, ast.Call)
+                            and isinstance(call.func, ast.Attribute)
+                            and call.func.attr == "setObjectName"
+                            and call.args
+                            and isinstance(call.args[0], ast.Constant)
+                            and isinstance(call.args[0].value, str)):
+                        owner_of.setdefault(call.args[0].value, set()).add(cls.name)
+
+        original = T.DesignTokens.role
+        T.DesignTokens.role = lambda self, name: sentinel.get(name) or original(self, name)
+        try:
+            found = {}
+            for name in generators:
+                if name in aggregates:
+                    continue
+                rules = []
+                for theme in ("light", "dark"):
+                    css = getattr(T, name)(T.DesignTokens(theme))
+                    if isinstance(css, list):
+                        css = "".join(css)
+                    rules += rule.findall(css)
+                owners = {c for selector, _ in rules
+                          for c in klass.findall(selector) if c in catalog}
+                for selector, decls in rules:
+                    used = {back[h.lower()] for h in hexes.findall(decls)
+                            if h.lower() in back}
+                    if not used:
+                        continue
+                    classes = {c for c in klass.findall(selector) if c in catalog}
+                    if not classes:
+                        for obj in objname.findall(selector):
+                            classes |= owner_of.get(obj, set())
+                    if not classes and len(owners) == 1:
+                        classes = set(owners)
+                    for cls in classes:
+                        found.setdefault(cls, set()).update(used)
+        finally:
+            T.DesignTokens.role = original
+        return found
+
+    def test_every_declared_role_exists(self, qapp):
+        """Catches the `up` / `down` / `background` / `text` class of bug."""
+        from Custom_Widgets.theming.tokens import _SEMANTIC
+        from Custom_Widgets.mcp.catalog import discover_widgets, find_widget
+        roles = set(_SEMANTIC["light"])
+        bogus = [(name, role) for name in discover_widgets()
+                 for role in (find_widget(name) or {}).get("tokens_used") or []
+                 if role not in roles]
+        assert not bogus, "tokens_used names roles that do not exist: %r" % (bogus,)
+
+    def test_declarations_match_the_rules_that_target_them(self, qapp):
+        """For widgets styled ONLY by QSS, the declaration must be exact.
+
+        Restricted to widgets whose source never touches the token API: anything
+        that resolves a role in paintEvent (the loaders, QCustomMessageStatus,
+        the charts via their theme manager) would need a rendered widget to
+        observe, which is out of scope for a unit test.
+        """
+        import pathlib
+        import re
+        from Custom_Widgets.mcp.catalog import find_widget
+        touches = re.compile(r"activeDesignTokens|_tokenColor|_defaultColor|\.role\(")
+        attributed = self._attribution()
+        wrong = []
+        for cls, used in attributed.items():
+            entry = find_widget(cls)
+            if not entry:
+                continue
+            path = pathlib.Path(entry["module"].replace(".", "/") + ".py")
+            candidates = list(pathlib.Path("Custom_Widgets/widgets").rglob(path.name))
+            if candidates and touches.search(
+                    candidates[0].read_text(encoding="utf-8", errors="ignore")):
+                continue                      # resolves roles in its paint path
+            declared = set(entry.get("tokens_used") or [])
+            if declared != used:
+                wrong.append((cls, sorted(declared - used), sorted(used - declared)))
+        assert not wrong, ("tokens_used disagrees with the rules targeting the "
+                           "widget (class, over-claimed, under-claimed): %r" % (wrong,))

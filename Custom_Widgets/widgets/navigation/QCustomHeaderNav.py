@@ -67,7 +67,8 @@ class QCustomHeaderNav(QWidget):
                   "surfaceColor": {"type": "color", "default": "#ffffff"},
                   "dividerColor": {"type": "color", "default": "#e2e8f0"}},
         "signals": ["itemSelected", "brandClicked", "overflowClicked"],
-        "tokens_used": ["surface", "on-surface", "outline", "accent"],
+        "tokens_used": ["accent", "on-surface", "outline", "surface",
+                        "surface-muted"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

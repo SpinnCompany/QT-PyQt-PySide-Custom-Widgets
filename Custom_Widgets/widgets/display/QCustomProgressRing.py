@@ -38,7 +38,7 @@ class QCustomProgressRing(QWidget):
                   "maximum": {"type": "int", "default": 100},
                   "showText": {"type": "bool", "default": True}},
         "signals": ["valueChanged"],
-        "tokens_used": ["accent", "on-surface"],
+        "tokens_used": ["accent", "on-surface", "surface-muted"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

@@ -37,7 +37,8 @@ class QCustomNumberInput(QWidget):
                   "singleStep": {"type": "double", "default": 1},
                   "decimals": {"type": "int", "default": 0}},
         "signals": ["valueChanged"],
-        "tokens_used": ["surface", "on-surface", "outline", "accent", "on-primary"],
+        "tokens_used": ["accent", "on-primary", "on-surface", "outline",
+                        "surface", "surface-muted"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

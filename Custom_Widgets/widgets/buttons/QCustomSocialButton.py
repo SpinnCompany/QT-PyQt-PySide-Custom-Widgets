@@ -57,7 +57,7 @@ class QCustomSocialButton(QWidget):
                   "brandColor": {"type": "color", "default": "#24292f"},
                   "surfaceColor": {"type": "color", "default": "#ffffff"}},
         "signals": ["clicked"],
-        "tokens_used": ["surface", "on-surface"],
+        "tokens_used": ["surface"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

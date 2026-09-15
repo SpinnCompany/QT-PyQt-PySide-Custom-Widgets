@@ -147,7 +147,7 @@ class QCustomDateRangeEdit(QWidget):
         "name": "QCustomDateRangeEdit",
         "props": {},
         "signals": ["rangeChanged"],
-        "tokens_used": ["surface", "on-surface", "outline", "accent"],
+        "tokens_used": ["on-surface"],
     }
 
     # No Designer-editable properties of its own: the range is set in code via

@@ -63,8 +63,8 @@ class QCustomTextArea(QPlainTextEdit):
             "maxRows": {"type": "int", "default": 8},
         },
         "signals": ["textChanged", "lengthChanged", "limitReached"],
-        "tokens_used": ["surface", "on-surface", "outline", "focus-ring",
-                        "destructive"],
+        "tokens_used": ["destructive", "focus-ring", "on-surface", "outline",
+                        "surface", "surface-muted"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

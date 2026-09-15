@@ -1153,8 +1153,8 @@ class QCustomDataTable(QWidget):
         },
         "signals": ["rowSelected", "cellClicked", "sortChanged", "pageChanged",
                     "rowActionTriggered", "selectionCheckedChanged"],
-        "tokens_used": ["surface", "on-surface", "surface-muted", "outline",
-                        "accent"],
+        "tokens_used": ["accent", "on-primary", "on-surface", "outline",
+                        "surface", "surface-muted"],
     }
 
     class SelectionMode(IntEnum):

@@ -75,7 +75,8 @@ class QCustomChatThread(QFrame):
                   "spacing": {"type": "int", "default": 10},
                   "showReactionAdd": {"type": "bool", "default": True}},
         "signals": ["reactionAddRequested", "reactionClicked"],
-        "tokens_used": ["accent"],
+        "tokens_used": ["accent", "on-primary", "on-secondary", "on-surface",
+                        "outline", "primary", "secondary", "surface-muted"],
     }
 
     def __init__(self, parent=None):

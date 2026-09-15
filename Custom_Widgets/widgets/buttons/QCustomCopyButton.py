@@ -54,7 +54,7 @@ class QCustomCopyButton(QWidget):
                   "textColor": {"type": "color", "default": "#0f172a"},
                   "surfaceColor": {"type": "color", "default": "#ffffff"}},
         "signals": ["copied"],
-        "tokens_used": ["accent", "success", "on-surface", "surface", "outline"],
+        "tokens_used": ["accent", "on-surface", "success", "surface"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see
