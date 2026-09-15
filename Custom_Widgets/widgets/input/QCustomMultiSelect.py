@@ -56,8 +56,9 @@ class QCustomMultiSelect(QWidget):
                   "state": {"type": "enum", "values": ["default", "error"],
                             "default": "default"}},
         "signals": ["selectionChanged", "optionToggled"],
-        "tokens_used": ["destructive", "focus-ring", "on-surface", "outline",
-                        "surface", "surface-muted"],
+        "tokens_used": ["destructive", "focus-ring", "on-surface",
+                        "on-surface-muted", "outline", "surface",
+                        "surface-muted"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see
@@ -106,7 +107,12 @@ class QCustomMultiSelect(QWidget):
         self._chipBg = QColor("#e2e8f0")
         self._chipText = QColor("#0f172a")
         self._textColor = QColor("#0f172a")
-        self._placeholderColor = QColor("#94a3b8")
+        # The pre-QSS defaults above are an explicitly LIGHT set (#ffffff field,
+        # #0f172a text), so measure the placeholder against THIS widget's own
+        # white field, not against a hypothetical theme: #94a3b8 was 2.56:1,
+        # under the 4.5:1 needed for text. This is light-theme on-surface-muted,
+        # which is also what the token QSS sets once it polishes the widget.
+        self._placeholderColor = QColor("#64748b")
 
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.setFocusPolicy(Qt.StrongFocus)

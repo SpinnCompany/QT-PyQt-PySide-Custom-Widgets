@@ -965,9 +965,14 @@ def multiselect_qss(tokens):
             "}\n"
             "QListWidget#QCustomMultiSelectList {\n"
             "    background-color: %s; color: %s; border: none;\n"
+            # placeholderColor is real TEXT: QCustomMultiSelect does p.drawText
+            # with it whenever nothing is selected. It was "outline" -- a border
+            # value, 1.48:1 against this widget's own white field -- so the hint
+            # that says what the control is for could not be read. The two
+            # "outline"s left below are genuine borders (field, popup) and stay.
             "}\n" % (r("surface"), r("outline"), r("focus-ring"),
                      r("destructive"), r("surface-muted"), r("on-surface"),
-                     r("on-surface"), r("outline"),
+                     r("on-surface"), r("on-surface-muted"),
                      r("surface"), r("outline"), px("radius.md"),
                      r("surface"), r("on-surface")))
 

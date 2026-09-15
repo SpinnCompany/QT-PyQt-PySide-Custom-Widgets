@@ -247,3 +247,66 @@ class TestMultiSelectDesigner:
         assert m.fieldBackgroundColor.name().lower() == "#ffffff"     # surface
         assert m.fieldBorderErrorColor.name().lower() == "#dc2626"    # destructive
         qapp.setStyleSheet("")
+
+
+class TestPlaceholderIsReadable:
+    """The placeholder is painted text, not a border.
+
+    QCustomMultiSelect does `p.setPen(self._placeholderColor)` then `p.drawText`
+    when nothing is selected, so it carries the only hint about what the control
+    is for. It was driven from "outline" -- a BORDER role at 1.48:1 against the
+    widget's own white field -- and the pre-QSS default was #94a3b8 at 2.56:1.
+    Both under the 4.5:1 that text needs.
+
+    Set as `qproperty-placeholderColor`, which is why the sweep that fixed the
+    `color:` sites never saw it.
+    """
+
+    @staticmethod
+    def _contrast(fg, bg):
+        def lum(value):
+            value = value.lstrip("#")
+            parts = []
+            for pair in (value[0:2], value[2:4], value[4:6]):
+                c = int(pair, 16) / 255.0
+                parts.append(c / 12.92 if c <= 0.03928
+                             else ((c + 0.055) / 1.055) ** 2.4)
+            return 0.2126 * parts[0] + 0.7152 * parts[1] + 0.0722 * parts[2]
+        high, low = sorted((lum(fg), lum(bg)), reverse=True)
+        return (high + 0.05) / (low + 0.05)
+
+    def test_untokenised_default_reads_on_the_default_field(self, qapp):
+        """The widget's own defaults are a light set, so judge against those."""
+        from Custom_Widgets.QCustomMultiSelect import QCustomMultiSelect
+        widget = QCustomMultiSelect()
+        assert self._contrast(widget.placeholderColor.name(),
+                              widget.fieldBackgroundColor.name()) >= 4.5
+
+    def test_placeholder_stays_dimmer_than_the_selected_text(self, qapp):
+        """It must read as a hint, not as a value -- otherwise an empty field
+        looks filled in."""
+        from Custom_Widgets.QCustomMultiSelect import QCustomMultiSelect
+        widget = QCustomMultiSelect()
+        field = widget.fieldBackgroundColor.name()
+        assert (self._contrast(widget.placeholderColor.name(), field)
+                < self._contrast(widget.textColor.name(), field))
+
+    def test_tokenised_placeholder_clears_the_text_minimum(self, qapp):
+        from Custom_Widgets.theming.tokens import DesignTokens, multiselect_qss
+        for theme in ("light", "dark"):
+            tokens = DesignTokens(theme)
+            css = multiselect_qss(tokens)
+            value = [line.split(":")[1].strip().rstrip(";")
+                     for line in css.splitlines()
+                     if "qproperty-placeholderColor" in line][0]
+            assert self._contrast(value, tokens.role("surface")) >= 4.5, theme
+
+    def test_field_and_popup_borders_remain_outline(self, qapp):
+        """Only the TEXT moved. `outline` is right for an actual border, and
+        rewriting those too would have been the opposite mistake."""
+        from Custom_Widgets.theming.tokens import DesignTokens, multiselect_qss
+        tokens = DesignTokens("light")
+        css = multiselect_qss(tokens)
+        border = [line for line in css.splitlines()
+                  if "qproperty-fieldBorderColor" in line][0]
+        assert tokens.role("outline") in border
