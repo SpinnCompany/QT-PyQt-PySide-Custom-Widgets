@@ -56,7 +56,7 @@ class QCustomCoverCard(QAbstractButton):
                   "titleScale": {"type": "float", "default": 1.0},
                   "textAlign": {"type": "enum", "values": ["left", "center"], "default": "left"}},
         "signals": ["clicked", "playClicked"],
-        "tokens_used": ["accent", "on-surface"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

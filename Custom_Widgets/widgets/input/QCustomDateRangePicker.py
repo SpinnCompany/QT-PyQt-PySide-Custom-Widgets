@@ -56,7 +56,7 @@ class QCustomDateRangePicker(QWidget):
             "selectedTextColor": {"type": "color", "default": "#ffffff"},
         },
         "signals": ["rangeChanged"],
-        "tokens_used": ["accent"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

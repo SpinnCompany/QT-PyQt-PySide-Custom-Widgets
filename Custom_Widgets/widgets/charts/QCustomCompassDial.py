@@ -65,7 +65,7 @@ class QCustomCompassDial(QWidget):
             "readoutColor": {"type": "color", "default": "#f4f6fb"},
         },
         "signals": ["headingChanged"],
-        "tokens_used": ["accent", "down"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

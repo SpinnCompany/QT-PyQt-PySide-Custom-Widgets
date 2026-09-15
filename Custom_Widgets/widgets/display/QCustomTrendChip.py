@@ -44,7 +44,7 @@ class QCustomTrendChip(QWidget):
                   "tintOpacity": {"type": "float", "default": 0.14},
                   "cornerRadius": {"type": "int", "default": 15}},
         "signals": [],
-        "tokens_used": ["up", "down"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

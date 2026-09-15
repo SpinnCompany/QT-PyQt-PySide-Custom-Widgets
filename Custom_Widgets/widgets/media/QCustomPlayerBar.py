@@ -64,7 +64,7 @@ class QCustomPlayerBar(QWidget):
         "signals": ["playToggled", "nextClicked", "prevClicked", "seeked",
                     "favoriteToggled", "shuffleToggled", "repeatToggled",
                     "volumeClicked"],
-        "tokens_used": ["accent", "surface", "on-surface"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

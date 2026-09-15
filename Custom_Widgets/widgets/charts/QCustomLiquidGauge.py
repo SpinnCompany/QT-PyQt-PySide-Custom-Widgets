@@ -65,7 +65,7 @@ class QCustomLiquidGauge(QWidget):
             "badgeColor": {"type": "color", "default": ""},
         },
         "signals": ["valueChanged"],
-        "tokens_used": ["accent"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

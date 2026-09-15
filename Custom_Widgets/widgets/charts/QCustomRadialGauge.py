@@ -94,7 +94,7 @@ class QCustomRadialGauge(QWidget):
             "glowRadius": {"type": "int", "default": 0},
         },
         "signals": ["valueChanged", "finished"],
-        "tokens_used": ["accent", "up", "down"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

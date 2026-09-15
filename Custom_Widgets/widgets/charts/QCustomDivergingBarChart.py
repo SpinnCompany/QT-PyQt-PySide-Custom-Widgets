@@ -53,7 +53,7 @@ class QCustomDivergingBarChart(QWidget):
                   "gridColor": {"type": "color", "default": "#e6e9ec"},
                   "axisTextColor": {"type": "color", "default": "#8b93a1"}},
         "signals": [],
-        "tokens_used": ["accent"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

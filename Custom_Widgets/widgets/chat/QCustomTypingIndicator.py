@@ -39,7 +39,7 @@ class QCustomTypingIndicator(QWidget):
                   "bubble": {"type": "bool", "default": True},
                   "bubbleColor": {"type": "color", "default": "#eef1f5"}},
         "signals": [],
-        "tokens_used": ["accent"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     def __init__(self, parent=None):

@@ -52,7 +52,7 @@ class QCustomAvatar(QWidget):
                   "cornerRadius": {"type": "int", "default": -1},
                   "imageSource": {"type": "string", "default": ""}},
         "signals": ["clicked"],
-        "tokens_used": ["accent"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

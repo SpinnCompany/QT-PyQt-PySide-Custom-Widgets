@@ -46,7 +46,7 @@ class QCustomQLabel(QLabel):
                   "imageSource": {"type": "string", "default": ""},
                   "imageCornerRadius": {"type": "int", "default": 0}},
         "signals": [],
-        "tokens_used": ["on-surface"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
     DESIGNER_CUSTOM_PROPS = [
         {"name": "iconColor", "kind": "color", "group": "Icon"},

@@ -55,7 +55,7 @@ class QCustomTileButton(QAbstractButton):
                   "cornerRadius": {"type": "int", "default": 16},
                   "iconSize": {"type": "int", "default": 34}},
         "signals": ["clicked", "toggled"],
-        "tokens_used": ["accent"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

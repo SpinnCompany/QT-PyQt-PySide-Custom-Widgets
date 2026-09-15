@@ -44,7 +44,7 @@ class QCustomButtonGroup(QWidget):
                             "default": "vertical"},
         },
         "signals": ["selectionChanged"],
-        "tokens_used": ["surface", "on-surface", "accent", "primary", "outline"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

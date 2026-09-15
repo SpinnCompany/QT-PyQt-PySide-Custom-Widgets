@@ -71,7 +71,7 @@ class QCustomModal(QWidget):
                   "scrimAlpha": {"type": "int", "default": 120},
                   "closeOnScrim": {"type": "bool", "default": True}},
         "signals": ["triggered(QString)", "closed()"],
-        "tokens_used": ["accent", "background", "text"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

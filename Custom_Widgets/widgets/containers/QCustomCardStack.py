@@ -48,7 +48,7 @@ class QCustomCardStack(QWidget):
                   "currentIndex": {"type": "int", "default": 0},
                   "animationDuration": {"type": "int", "default": 300}},
         "signals": ["currentChanged(int)"],
-        "tokens_used": ["accent"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

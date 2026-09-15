@@ -76,7 +76,7 @@ class QCustomListRow(QFrame):
                   "showDragHandle": {"type": "bool", "default": False},
                   "dragHandleColor": {"type": "color", "default": "#969baa"}},
         "signals": [],
-        "tokens_used": ["accent"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

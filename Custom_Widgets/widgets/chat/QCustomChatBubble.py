@@ -119,7 +119,7 @@ class QCustomChatBubble(QFrame):
             "maxBubbleWidth": {"type": "int", "default": 420},
         },
         "signals": [],
-        "tokens_used": ["accent"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

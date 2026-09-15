@@ -253,8 +253,10 @@ class QCustomTableToolbar(QWidget):
         },
         "signals": ["searchChanged", "filtersClicked", "filterChipRemoved",
                     "clearFiltersClicked", "statusSelected", "showStatusesToggled"],
-        "tokens_used": ["surface", "surface-muted", "on-surface", "outline",
-                        "primary", "accent"],
+        # Intentionally no tokens_used. This widget never resolves a role
+        # itself -- colours arrive through setThemeColors(), which the APP has
+        # to call after applyDesignTokens(). Nothing in the library calls it,
+        # so the roles are whatever the caller passes, not a fixed set.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

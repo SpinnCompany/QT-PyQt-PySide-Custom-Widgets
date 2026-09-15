@@ -75,7 +75,7 @@ class QCustomMediaTimeline(QWidget):
                   "loop": {"type": "bool", "default": True},
                   "animated": {"type": "bool", "default": True}},
         "signals": ["positionChanged", "clipMoved", "clipTrimmed", "clipClicked"],
-        "tokens_used": ["accent", "background"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
     # Every configurable property is exposed to Qt Designer.
     DESIGNER_CUSTOM_PROPS = [

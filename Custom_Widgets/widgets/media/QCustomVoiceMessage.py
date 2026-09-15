@@ -168,7 +168,7 @@ class QCustomVoiceMessage(QWidget):
             "buttonDiameter": {"type": "int", "default": 34},
         },
         "signals": ["playToggled", "seeked"],
-        "tokens_used": ["accent"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

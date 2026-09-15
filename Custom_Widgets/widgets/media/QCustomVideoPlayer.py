@@ -50,7 +50,7 @@ class QCustomVideoPlayer(QWidget):
             "textColor": {"type": "color", "default": "#ffffff"},
         },
         "signals": ["playToggled", "seeked"],
-        "tokens_used": ["accent"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     def __init__(self, parent=None):

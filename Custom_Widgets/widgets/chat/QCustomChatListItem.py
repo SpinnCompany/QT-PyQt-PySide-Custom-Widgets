@@ -97,7 +97,7 @@ class QCustomChatListItem(QFrame):
             "avatarSize": {"type": "int", "default": 44},
         },
         "signals": ["clicked"],
-        "tokens_used": ["accent"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

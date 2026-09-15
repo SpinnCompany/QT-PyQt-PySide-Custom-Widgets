@@ -43,7 +43,7 @@ class QCustomPageDots(QWidget):
                   "orientation": {"type": "enum", "values": ["horizontal", "vertical"], "default": "horizontal"},
                   "clickable": {"type": "bool", "default": True}},
         "signals": ["pageChanged"],
-        "tokens_used": ["accent"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

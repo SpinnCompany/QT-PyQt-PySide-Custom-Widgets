@@ -67,7 +67,7 @@ class QCustomWaveform(QWidget):
             "animated": {"type": "bool", "default": False},
         },
         "signals": ["valuePushed"],
-        "tokens_used": ["accent"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

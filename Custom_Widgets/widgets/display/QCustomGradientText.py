@@ -52,7 +52,7 @@ class QCustomGradientText(QWidget):
                                 "default": "center"},
                   "wordWrap": {"type": "bool", "default": False}},
         "signals": ["clicked"],
-        "tokens_used": ["accent"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

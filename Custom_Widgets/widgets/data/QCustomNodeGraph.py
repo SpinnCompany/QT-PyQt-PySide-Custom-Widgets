@@ -100,7 +100,7 @@ class QCustomNodeGraph(QWidget):
                   "animated": {"type": "bool", "default": True}},
         "signals": ["nodeMoved", "nodeSelected", "nodeClicked",
                     "connectionMade", "canvasClicked", "rowClicked"],
-        "tokens_used": ["accent", "background"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
     # Every configurable property is exposed to Qt Designer (the @Property below
     # auto-appears in the property editor; these give the Custom-Properties dock

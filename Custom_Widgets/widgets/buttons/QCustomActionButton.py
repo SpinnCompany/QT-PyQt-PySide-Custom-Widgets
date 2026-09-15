@@ -42,7 +42,7 @@ class QCustomActionButton(QFrame):
                   "hoverColor": {"type": "color", "default": "#1b74e4"},
                   "captionColor": {"type": "color", "default": "#8a93a6"}},
         "signals": ["clicked"],
-        "tokens_used": ["accent"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     def __init__(self, parent=None, caption="", icon=None):

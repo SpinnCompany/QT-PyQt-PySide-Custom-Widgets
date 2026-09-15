@@ -63,7 +63,7 @@ class QCustomRulerPicker(QWidget):
             "valueColor": {"type": "color", "default": "#f4f6fb"},
         },
         "signals": ["valueChanged"],
-        "tokens_used": ["accent"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

@@ -61,7 +61,7 @@ class QCustomCoverFlow(QWidget):
                   "artistColor": {"type": "color", "default": "#c8c8d4"},
                   "playColor": {"type": "color", "default": "#ffffff"}},
         "signals": ["currentChanged", "itemClicked", "playClicked"],
-        "tokens_used": ["accent", "on-surface"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

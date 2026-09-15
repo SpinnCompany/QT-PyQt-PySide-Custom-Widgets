@@ -56,7 +56,7 @@ class QCustomDonut(QWidget):
                                    "values": ["bdiag", "fdiag", "cross", "horizontal", "vertical", "dense"],
                                    "default": "bdiag"}},
         "signals": [],
-        "tokens_used": ["accent"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

@@ -61,7 +61,7 @@ class QCustomChatDivider(QFrame):
                   "lineColor": {"type": "color", "default": "#e6e9ef"},
                   "accentColor": {"type": "color", "default": "#1b74e4"}},
         "signals": [],
-        "tokens_used": ["accent"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     def __init__(self, parent=None, text="", variant="pill"):

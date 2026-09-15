@@ -46,7 +46,7 @@ class QCustomChatInput(QFrame):
                   "showEmoji": {"type": "bool", "default": True},
                   "iconSize": {"type": "int", "default": 19}},
         "signals": ["sendMessage", "attachClicked", "micClicked", "emojiClicked", "textChanged"],
-        "tokens_used": ["accent"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     def __init__(self, parent=None):

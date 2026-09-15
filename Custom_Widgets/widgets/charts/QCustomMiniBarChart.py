@@ -56,7 +56,7 @@ class QCustomMiniBarChart(QWidget):
                   "hoverSuffix": {"type": "string", "default": ""},
                   "selectOnClick": {"type": "bool", "default": False}},
         "signals": ["barHovered", "barClicked"],
-        "tokens_used": ["accent"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

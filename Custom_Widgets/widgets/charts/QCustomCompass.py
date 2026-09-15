@@ -64,7 +64,7 @@ class QCustomCompass(QWidget):
             "hubColor": {"type": "color", "default": "#141826"},
         },
         "signals": ["headingChanged"],
-        "tokens_used": ["accent", "down"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

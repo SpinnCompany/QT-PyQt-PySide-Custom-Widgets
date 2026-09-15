@@ -55,7 +55,7 @@ class QCustomAgendaList(QWidget):
             "showRail": {"type": "bool", "default": True},
         },
         "signals": ["itemClicked"],
-        "tokens_used": ["accent", "up"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

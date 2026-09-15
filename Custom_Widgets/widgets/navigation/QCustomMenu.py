@@ -38,7 +38,7 @@ class QCustomMenu(QWidget):
                   "cornerRadius": {"type": "int", "default": 14},
                   "minWidth": {"type": "int", "default": 200}},
         "signals": ["triggered(QString)"],
-        "tokens_used": ["accent", "background", "text"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

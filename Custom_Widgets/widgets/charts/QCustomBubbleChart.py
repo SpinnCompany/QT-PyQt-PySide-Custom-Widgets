@@ -71,7 +71,7 @@ class QCustomBubbleChart(QWidget):
             "controlColor": {"type": "color", "default": "#f4f6fb"},
         },
         "signals": ["bubbleClicked", "searchRequested", "zoomChanged"],
-        "tokens_used": ["accent", "up", "down"],
+        # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see
