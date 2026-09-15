@@ -22,6 +22,16 @@ resource) BEFORE any task, and drive the whole build/run/observe loop through th
 MCP tools — never ad-hoc shell.
 """
 from Custom_Widgets.mcp.guide import AGENT_GUIDE, RULE1
-from Custom_Widgets.mcp.server import main, mcp
 
 __all__ = ["main", "mcp", "AGENT_GUIDE", "RULE1"]
+
+
+def __getattr__(name: str):
+    # PEP 562: only the server needs the optional 'mcp' SDK (the [mcp]
+    # extra); catalog, stubgen and guide are stdlib-only. Importing the
+    # server here eagerly would make `from Custom_Widgets.mcp import
+    # catalog` fail in any environment without the extra.
+    if name in ("main", "mcp"):
+        from Custom_Widgets.mcp import server
+        return getattr(server, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

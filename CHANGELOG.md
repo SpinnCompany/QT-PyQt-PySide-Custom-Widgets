@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- `Custom_Widgets.mcp.catalog` (and the other stdlib-only `mcp` submodules)
+  now import without the `[mcp]` extra. The package `__init__` was eagerly
+  importing the server, which needs the optional `mcp` SDK; the server is
+  now imported lazily (PEP 562), only when `main`/`mcp` are actually asked
+  for. `python -m Custom_Widgets.mcp` and the `Custom_Widgets-mcp` script
+  behave as before, including the friendly missing-extra message.
+
 ## 2.5.0 — 2026-09-15
 
 **Legibility.** A sweep of the design-token palette found colours that could
