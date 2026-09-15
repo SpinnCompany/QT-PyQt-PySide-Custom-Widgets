@@ -59,8 +59,7 @@ class QCustomImagePicker(QWidget):
                   "state": {"type": "enum", "values": ["default", "error"],
                             "default": "default"}},
         "signals": ["imageSelected", "imageCleared", "selectionRejected"],
-        "tokens_used": ["surface", "on-surface", "outline", "accent",
-                        "destructive"],
+        "tokens_used": ["on-surface", "outline", "accent", "destructive"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

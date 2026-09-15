@@ -36,7 +36,7 @@ class QCustomInput(QLineEdit):
                             "default": "md"},
         },
         "signals": ["textChanged", "returnPressed"],
-        "tokens_used": ["surface", "on-surface", "outline", "focus-ring", "accent"],
+        "tokens_used": ["surface", "on-surface", "outline", "focus-ring"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

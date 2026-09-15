@@ -56,7 +56,7 @@ class QCustomRadioGroup(QWidget):
                   "sizeVariant": {"type": "enum", "values": ["sm", "md", "lg"],
                                   "default": "md"}},
         "signals": ["valueChanged", "currentIndexChanged"],
-        "tokens_used": ["accent", "outline", "on-surface"],
+        "tokens_used": ["on-surface"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

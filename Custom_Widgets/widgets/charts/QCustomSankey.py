@@ -58,7 +58,7 @@ class QCustomSankey(QWidget):
                   "showValues": {"type": "bool", "default": False},
                   "labelColor": {"type": "color", "default": "#0f172a"}},
         "signals": ["linkHovered", "nodeHovered", "nodeClicked"],
-        "tokens_used": ["accent", "on-surface", "outline"],
+        "tokens_used": ["on-surface"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

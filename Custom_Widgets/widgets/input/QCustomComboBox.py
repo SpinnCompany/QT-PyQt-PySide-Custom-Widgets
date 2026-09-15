@@ -52,8 +52,8 @@ class QCustomComboBox(QComboBox):
                             "default": "md"},
         },
         "signals": ["currentIndexChanged", "currentTextChanged", "activated"],
-        "tokens_used": ["surface", "on-surface", "surface-muted", "outline",
-                        "accent", "on-primary", "focus-ring"],
+        "tokens_used": ["surface", "on-surface", "outline", "accent",
+                        "on-primary", "focus-ring"],
     }
 
     def __init__(self, parent=None, editable=True):

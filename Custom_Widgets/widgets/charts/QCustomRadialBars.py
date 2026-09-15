@@ -60,7 +60,7 @@ class QCustomRadialBars(QWidget):
                   "trackColor": {"type": "color", "default": "#e2e8f0"},
                   "labelColor": {"type": "color", "default": "#0f172a"}},
         "signals": ["barHovered", "barClicked"],
-        "tokens_used": ["accent", "surface-muted", "on-surface"],
+        "tokens_used": ["surface-muted", "on-surface"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

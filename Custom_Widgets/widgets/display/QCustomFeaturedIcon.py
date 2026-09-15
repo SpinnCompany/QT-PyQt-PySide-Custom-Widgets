@@ -51,7 +51,7 @@ class QCustomFeaturedIcon(QWidget):
                   "iconColor": {"type": "color", "default": "#2563eb"},
                   "surfaceColor": {"type": "color", "default": "#ffffff"}},
         "signals": ["clicked"],
-        "tokens_used": ["accent", "surface", "on-primary"],
+        "tokens_used": ["accent", "surface"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

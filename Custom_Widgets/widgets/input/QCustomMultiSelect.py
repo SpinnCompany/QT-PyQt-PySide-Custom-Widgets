@@ -57,7 +57,7 @@ class QCustomMultiSelect(QWidget):
                             "default": "default"}},
         "signals": ["selectionChanged", "optionToggled"],
         "tokens_used": ["surface", "on-surface", "outline", "focus-ring",
-                        "accent", "destructive"],
+                        "destructive"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

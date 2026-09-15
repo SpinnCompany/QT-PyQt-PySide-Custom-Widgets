@@ -32,8 +32,8 @@ class QCustomStepper(QWidget):
         "name": "QCustomStepper",
         "props": {"currentStep": {"type": "int", "default": 0}},
         "signals": ["currentStepChanged"],
-        "tokens_used": ["surface", "on-surface", "surface-muted", "outline",
-                        "accent", "on-primary"],
+        "tokens_used": ["surface", "on-surface", "outline", "accent",
+                        "on-primary"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

@@ -34,7 +34,7 @@ class QCustomSplitter(QSplitter):
                                   "values": ["horizontal", "vertical"],
                                   "default": "horizontal"}},
         "signals": ["splitterMoved"],
-        "tokens_used": ["outline", "accent", "surface"],
+        "tokens_used": ["accent"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

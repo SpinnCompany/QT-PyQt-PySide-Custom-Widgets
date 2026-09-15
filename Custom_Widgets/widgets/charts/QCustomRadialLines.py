@@ -71,7 +71,7 @@ class QCustomRadialLines(QWidget):
                   "gridColor": {"type": "color", "default": "#e2e8f0"},
                   "labelColor": {"type": "color", "default": "#64748b"}},
         "signals": ["seriesHovered", "pointClicked"],
-        "tokens_used": ["accent", "surface-muted", "on-surface"],
+        "tokens_used": ["surface-muted", "on-surface"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

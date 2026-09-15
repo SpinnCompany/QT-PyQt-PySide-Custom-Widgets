@@ -62,7 +62,7 @@ class QCustomRangeBarChart(QWidget):
                   "labelColor": {"type": "color", "default": "#64748b"},
                   "boundsColor": {"type": "color", "default": "#0f172a"}},
         "signals": ["barHovered", "barClicked"],
-        "tokens_used": ["accent", "outline", "on-surface", "surface-muted"],
+        "tokens_used": ["accent", "on-surface", "surface-muted"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

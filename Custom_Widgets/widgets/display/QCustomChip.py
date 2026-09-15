@@ -125,7 +125,10 @@ class QCustomChipGroup(QWidget):
         "props": {"selectable": {"type": "bool", "default": False},
                   "exclusive": {"type": "bool", "default": False}},
         "signals": ["chipRemoved", "selectionChanged"],
-        "tokens_used": ["surface-muted", "on-surface", "accent", "on-primary", "outline"],
+        # Intentionally no tokens_used. The GROUP is a bare container -- no
+        # generator in tokens.py names it and it resolves no role itself. The
+        # roles listed here were QCustomChip's, inherited by proximity: the
+        # child chips get styled, not the box holding them.
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

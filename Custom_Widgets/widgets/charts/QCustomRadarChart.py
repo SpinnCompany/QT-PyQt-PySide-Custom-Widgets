@@ -68,7 +68,7 @@ class QCustomRadarChart(QWidget):
                   "axisColor": {"type": "color", "default": "#cbd5e1"},
                   "labelColor": {"type": "color", "default": "#0f172a"}},
         "signals": ["seriesHovered", "axisClicked"],
-        "tokens_used": ["accent", "outline", "on-surface", "surface-muted"],
+        "tokens_used": ["outline", "on-surface", "surface-muted"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

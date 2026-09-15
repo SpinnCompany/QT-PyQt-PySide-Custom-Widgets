@@ -70,7 +70,7 @@ class QCustomScatterChart(QWidget):
                   "axisColor": {"type": "color", "default": "#cbd5e1"},
                   "labelColor": {"type": "color", "default": "#64748b"}},
         "signals": ["pointHovered", "pointClicked"],
-        "tokens_used": ["accent", "outline", "on-surface", "surface-muted"],
+        "tokens_used": ["outline", "on-surface", "surface-muted"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

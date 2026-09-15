@@ -44,8 +44,8 @@ class QCustomTabWidget(QTabWidget):
             "showAddButton": {"type": "bool", "default": False},
         },
         "signals": ["currentChanged", "tabCloseRequested", "addTabRequested"],
-        "tokens_used": ["surface", "on-surface", "surface-muted", "outline",
-                        "accent", "on-primary"],
+        "tokens_used": ["surface", "on-surface", "outline", "accent",
+                        "on-primary"],
     }
 
     # Emitted when the opt-in "+" corner button is clicked (build the new tab

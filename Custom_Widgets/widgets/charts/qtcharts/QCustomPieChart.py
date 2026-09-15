@@ -78,7 +78,7 @@ class QCustomPieChart(QCustomChartBase, ChartCommonProps, ChartDataProps):
             "tooltipsEnabled": {"type": "bool", "default": True},
         },
         "signals": ["chartExportComplete", "legendPositionChanged", "seriesAdded", "seriesRemoved", "sliceClicked", "sliceExploded", "sliceHovered"],
-        "tokens_used": ["surface", "on-surface", "outline", "accent"],
+        "tokens_used": ["surface", "on-surface", "accent"],
     }
     # Per-class, not the package: all four sharing one module string made
     # Designer write a coarse header and collapsed every generated stub
