@@ -82,6 +82,10 @@ class QCustomForm(QWidget):
     </ui>
     """
 
+    # No Designer-editable properties: fields are added in code via
+    # addField(). Nothing to list in the Custom Properties dock.
+    DESIGNER_CUSTOM_PROPS = []
+
     submitted = Signal(dict)
 
     def __init__(self, parent=None):

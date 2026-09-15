@@ -40,6 +40,14 @@ class QCustomSegmentedControl(QWidget):
                         "accent", "on-primary"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "currentIndex", "kind": "int", "group": "General"},
+        {"name": "segments", "kind": "str", "group": "General"},
+        {"name": "currentSegment", "kind": "int", "group": "General"},
+    ]
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("QCustomSegmentedControl")

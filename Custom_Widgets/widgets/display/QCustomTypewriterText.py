@@ -58,6 +58,22 @@ class QCustomTypewriterText(QWidget):
         "tokens_used": ["on-surface", "accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "phrasesCsv", "kind": "str", "group": "General"},
+        {"name": "typeSpeed", "kind": "int", "group": "Animation"},
+        {"name": "eraseSpeed", "kind": "int", "group": "Animation"},
+        {"name": "holdDelay", "kind": "int", "group": "Animation"},
+        {"name": "loop", "kind": "bool", "group": "General"},
+        {"name": "erase", "kind": "bool", "group": "General"},
+        {"name": "showCaret", "kind": "bool", "group": "General"},
+        {"name": "caretBlinkRate", "kind": "int", "group": "Animation"},
+        {"name": "alignment", "kind": "choice", "group": "General"},
+        {"name": "textColor", "kind": "color", "group": "Colors"},
+        {"name": "caretColor", "kind": "color", "group": "Colors"},
+    ]
+
     def __init__(self, parent=None, phrases=None, autoStart=True):
         super().__init__(parent)
         self.setObjectName("QCustomTypewriterText")

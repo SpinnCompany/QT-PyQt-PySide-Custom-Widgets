@@ -38,6 +38,21 @@ class QCustomRoundProgressBar(QWidget):
     """
     WIDGET_MODULE = "Custom_Widgets.QCustomProgressBars"
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "value", "kind": "int", "group": "General"},
+        {"name": "minimum", "kind": "int", "group": "General"},
+        {"name": "maximum", "kind": "int", "group": "General"},
+        {"name": "textVisible", "kind": "bool", "group": "General"},
+        {"name": "clockwise", "kind": "bool", "group": "General"},
+        {"name": "animationDuration", "kind": "int", "group": "Animation"},
+        {"name": "progressBarWidth", "kind": "int", "group": "General"},
+        {"name": "progressColor", "kind": "color", "group": "Colors"},
+        {"name": "progressBaseColor", "kind": "color", "group": "Colors"},
+        {"name": "textColor", "kind": "color", "group": "Colors"},
+    ]
+
     def __init__(self, parent=None, progressColor=None, textColor=None, progressBarWidth=5):
         super().__init__(parent)
 

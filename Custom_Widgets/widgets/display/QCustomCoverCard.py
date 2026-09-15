@@ -59,6 +59,24 @@ class QCustomCoverCard(QAbstractButton):
         "tokens_used": ["accent", "on-surface"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "title", "kind": "str", "group": "General"},
+        {"name": "artist", "kind": "str", "group": "General"},
+        {"name": "coverPath", "kind": "str", "group": "General"},
+        {"name": "accentColor", "kind": "color", "group": "Colors"},
+        {"name": "titleColor", "kind": "color", "group": "Colors"},
+        {"name": "artistColor", "kind": "color", "group": "Colors"},
+        {"name": "cornerRadius", "kind": "int", "group": "General"},
+        {"name": "scrimStrength", "kind": "float", "group": "General"},
+        {"name": "scrimColor", "kind": "color", "group": "Colors"},
+        {"name": "showPlay", "kind": "bool", "group": "General"},
+        {"name": "playOnHover", "kind": "bool", "group": "General"},
+        {"name": "titleScale", "kind": "float", "group": "General"},
+        {"name": "textAlign", "kind": "choice", "group": "General"},
+    ]
+
     playClicked = Signal()
 
     def __init__(self, parent=None, title="Golden Days", artist="Felix Carter",

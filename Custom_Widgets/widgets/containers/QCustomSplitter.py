@@ -37,6 +37,13 @@ class QCustomSplitter(QSplitter):
         "tokens_used": ["outline", "accent", "surface"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "orientation", "kind": "choice", "group": "General"},
+        {"name": "orientationName", "kind": "str", "group": "General"},
+    ]
+
     def __init__(self, orientation=Qt.Horizontal, parent=None):
         super().__init__(orientation, parent)
         self.setObjectName("QCustomSplitter")

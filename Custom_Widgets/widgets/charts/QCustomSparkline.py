@@ -43,6 +43,20 @@ class QCustomSparkline(QWidget):
         "tokens_used": ["accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "valuesCsv", "kind": "str", "group": "General"},
+        {"name": "seriesCsv", "kind": "str", "group": "General"},
+        {"name": "seriesColorsCsv", "kind": "str", "group": "Colors"},
+        {"name": "lineWidth", "kind": "float", "group": "General"},
+        {"name": "smooth", "kind": "bool", "group": "General"},
+        {"name": "fillEnabled", "kind": "bool", "group": "General"},
+        {"name": "fillOpacity", "kind": "float", "group": "General"},
+        {"name": "lineColor", "kind": "color", "group": "Colors"},
+        {"name": "fillColor", "kind": "color", "group": "Colors"},
+    ]
+
     def __init__(self, parent=None, values=None, lineColor="#7c6cf6"):
         super().__init__(parent)
         self.setObjectName("QCustomSparkline")

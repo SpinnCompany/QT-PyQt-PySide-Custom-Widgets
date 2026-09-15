@@ -60,6 +60,13 @@ class QCustomPagination(QWidget):
                         "accent", "on-primary"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "pageCount", "kind": "int", "group": "General"},
+        {"name": "currentPage", "kind": "int", "group": "General"},
+    ]
+
     def __init__(self, parent=None, pageCount=1):
         super().__init__(parent)
         self.setObjectName("QCustomPagination")

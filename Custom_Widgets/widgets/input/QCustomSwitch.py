@@ -42,6 +42,17 @@ class QCustomSwitch(QWidget):
         "tokens_used": ["accent", "outline", "surface"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "checked", "kind": "bool", "group": "General"},
+        {"name": "sizeVariant", "kind": "choice", "group": "General"},
+        {"name": "thumbPosition", "kind": "float", "group": "General"},
+        {"name": "trackOnColor", "kind": "color", "group": "Colors"},
+        {"name": "trackOffColor", "kind": "color", "group": "Colors"},
+        {"name": "thumbColor", "kind": "color", "group": "Colors"},
+    ]
+
     # (track width, track height, thumb margin) per size
     _SIZES = {"sm": (34, 20, 2), "md": (44, 26, 3), "lg": (56, 32, 4)}
 

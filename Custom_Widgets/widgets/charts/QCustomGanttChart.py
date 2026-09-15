@@ -57,6 +57,22 @@ class QCustomGanttChart(QWidget):
         "tokens_used": ["accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "dataCsv", "kind": "str", "group": "General"},
+        {"name": "colorsCsv", "kind": "str", "group": "Colors"},
+        {"name": "textColorsCsv", "kind": "str", "group": "Colors"},
+        {"name": "xMax", "kind": "float", "group": "General"},
+        {"name": "gridStep", "kind": "float", "group": "General"},
+        {"name": "barHeight", "kind": "int", "group": "General"},
+        {"name": "labelColor", "kind": "color", "group": "Colors"},
+        {"name": "axisTextColor", "kind": "color", "group": "Colors"},
+        {"name": "gridColor", "kind": "color", "group": "Colors"},
+        {"name": "showGrid", "kind": "bool", "group": "General"},
+        {"name": "showMarkers", "kind": "bool", "group": "General"},
+    ]
+
     # deterministic demo rows (label, start, length, category, value)
     _DEMO = [
         {"label": "30.09", "start": 2,  "length": 8,  "category": 0, "value": 16},

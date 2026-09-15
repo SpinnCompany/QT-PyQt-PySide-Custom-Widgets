@@ -52,6 +52,20 @@ class QCustomDotMatrix(QWidget):
         "tokens_used": ["accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "dataCsv", "kind": "str", "group": "General"},
+        {"name": "rows", "kind": "int", "group": "General"},
+        {"name": "cols", "kind": "int", "group": "General"},
+        {"name": "colorsCsv", "kind": "str", "group": "Colors"},
+        {"name": "emptyColor", "kind": "color", "group": "Colors"},
+        {"name": "dotDiameter", "kind": "int", "group": "General"},
+        {"name": "gapRatio", "kind": "float", "group": "General"},
+        {"name": "emptyOpacity", "kind": "float", "group": "General"},
+        {"name": "square", "kind": "bool", "group": "General"},
+    ]
+
     # a deterministic demo pattern (density thickens toward the bottom-right)
     _DEMO = [
         [0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 1, 2, 1, 2],

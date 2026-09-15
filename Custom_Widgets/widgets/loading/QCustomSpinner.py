@@ -5,7 +5,7 @@
 
 import time
 from math import sin, cos, radians
-from qtpy.QtCore import Qt, QRectF
+from qtpy.QtCore import Qt, QRectF, Property
 from qtpy.QtWidgets import QWidget
 from qtpy.QtGui import QPainter, QPen, QPalette, QColor
 
@@ -22,6 +22,80 @@ class QCustomSpinner(QWidget):
         </widget>
     </ui>
     """
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "lineWidth", "kind": "int", "group": "Style"},
+        {"name": "color", "kind": "color", "group": "Style"},
+        {"name": "borderRadius", "kind": "int", "group": "Style"},
+        {"name": "direction", "kind": "choice",
+         "choices": ["Clockwise", "Counterclockwise"], "group": "Style"},
+        {"name": "animationType", "kind": "choice",
+         "choices": ["Bounce", "Smooth"], "group": "Animation"},
+        {"name": "speed", "kind": "float", "group": "Animation"},
+        {"name": "play", "kind": "bool", "group": "Animation"},
+    ]
+
+    @Property(int)
+    def lineWidth(self):
+        return self.w
+
+    @lineWidth.setter
+    def lineWidth(self, value):
+        self.w = int(value)
+        self.update()
+
+    @Property(QColor)
+    def color(self):
+        return self._color
+
+    @color.setter
+    def color(self, value):
+        self._color = QColor(value)
+        self.update()
+
+    @Property(int)
+    def borderRadius(self):
+        return self._borderRadius
+
+    @borderRadius.setter
+    def borderRadius(self, value):
+        self._borderRadius = int(value)
+        self.update()
+
+    @Property(str)
+    def direction(self):
+        return self._direction
+
+    @direction.setter
+    def direction(self, value):
+        self._direction = str(value)
+        self.update()
+
+    @Property(str)
+    def animationType(self):
+        return self.animType
+
+    @animationType.setter
+    def animationType(self, value):
+        self.animType = str(value)
+        self.update()
+
+    @Property(float)
+    def speed(self):
+        return self._speed
+
+    @speed.setter
+    def speed(self, value):
+        self._speed = float(value)
+
+    @Property(bool)
+    def play(self):
+        return self._play
+
+    @play.setter
+    def play(self, value):
+        self._play = bool(value)
+        self.update()
+
     def __init__(self, lineWidth = 2, lineColor = None, direction = "Clockwise", borderRadius = 3, animationType = "Bounce"):
         super().__init__()
 

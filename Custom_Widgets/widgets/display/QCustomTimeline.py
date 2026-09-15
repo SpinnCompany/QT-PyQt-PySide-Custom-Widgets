@@ -61,6 +61,13 @@ class QCustomTimeline(QWidget):
         "tokens_used": ["on-surface", "surface-muted", "outline", "accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "lineColor", "kind": "color", "group": "Colors"},
+        {"name": "dotColor", "kind": "color", "group": "Colors"},
+    ]
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("QCustomTimeline")

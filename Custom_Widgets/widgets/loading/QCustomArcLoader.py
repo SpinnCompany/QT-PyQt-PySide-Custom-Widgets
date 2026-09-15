@@ -107,6 +107,36 @@ class QCustomArcLoader(QFrame):
         </widget>
     </ui>
     """
+
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "color", "kind": "color", "group": "Colors"},
+        {"name": "penWidth", "kind": "int", "group": "General"},
+    ]
+
+    @Property(QColor)
+    def color(self):
+        return self._color
+
+    @color.setter
+    def color(self, value):
+        self._color = QColor(value)
+        if hasattr(self, "pen"):
+            self.pen.setColor(self._color)
+            self.update()
+
+    @Property(int)
+    def penWidth(self):
+        return self._penWidth
+
+    @penWidth.setter
+    def penWidth(self, value):
+        self._penWidth = int(value)
+        if hasattr(self, "pen"):
+            self.pen.setWidth(self._penWidth)
+            self.update()
+
     def __init__(
             self, 
             parent=None,
@@ -142,6 +172,7 @@ class QCustomArcLoader(QFrame):
         self.painter.drawArc(x, x, r, r, -(arc.spacer+arc.startAngle)*16, (360-spanAngle)*16) 
 
     def initPen(self, penWidth):
+        self._penWidth = int(penWidth)
         self.pen = QPen()
         self.pen.setColor(self.color)
         self.pen.setWidth(penWidth)

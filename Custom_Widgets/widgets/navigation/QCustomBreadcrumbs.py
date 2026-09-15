@@ -10,7 +10,7 @@
 ## Home / Section / Page ... - all but the last segment are clickable
 ## links; the last is the current location. Tokenized.
 ########################################################################
-from qtpy.QtCore import Qt, Signal
+from qtpy.QtCore import Qt, Signal, Property
 from qtpy.QtWidgets import QWidget, QHBoxLayout, QPushButton, QLabel
 
 
@@ -36,6 +36,21 @@ class QCustomBreadcrumbs(QWidget):
         "signals": ["itemClicked"],
         "tokens_used": ["on-surface", "surface-muted", "accent"],
     }
+
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "separator", "kind": "str", "group": "General"},
+    ]
+
+    # -- designer-facing property (editable in the Custom Properties dock) ---
+    @Property(str)
+    def separator(self):
+        return self._separator
+
+    @separator.setter
+    def separator(self, value):
+        self._separator = str(value)
 
     def __init__(self, parent=None, separator="/"):
         super().__init__(parent)

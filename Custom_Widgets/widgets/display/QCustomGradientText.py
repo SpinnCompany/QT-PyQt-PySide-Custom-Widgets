@@ -55,6 +55,20 @@ class QCustomGradientText(QWidget):
         "tokens_used": ["accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "text", "kind": "str", "group": "General"},
+        {"name": "stopsCsv", "kind": "str", "group": "General"},
+        {"name": "angle", "kind": "int", "group": "General"},
+        {"name": "animated", "kind": "bool", "group": "Animation"},
+        {"name": "animationSpeed", "kind": "int", "group": "Animation"},
+        {"name": "fontScale", "kind": "float", "group": "General"},
+        {"name": "bold", "kind": "bool", "group": "General"},
+        {"name": "alignment", "kind": "choice", "group": "General"},
+        {"name": "wordWrap", "kind": "bool", "group": "General"},
+    ]
+
     def __init__(self, parent=None, text="", stops=None):
         super().__init__(parent)
         self.setObjectName("QCustomGradientText")

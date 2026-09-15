@@ -60,6 +60,27 @@ class QCustomMultiSelect(QWidget):
                         "accent", "destructive"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "optionsCsv", "kind": "str", "group": "General"},
+        {"name": "selectedCsv", "kind": "str", "group": "General"},
+        {"name": "placeholderText", "kind": "str", "group": "General"},
+        {"name": "maxChips", "kind": "int", "group": "General"},
+        {"name": "searchable", "kind": "bool", "group": "General"},
+        {"name": "maxSelection", "kind": "int", "group": "General"},
+        {"name": "sizeVariant", "kind": "choice", "group": "General"},
+        {"name": "state", "kind": "choice", "group": "General"},
+        {"name": "fieldBackgroundColor", "kind": "color", "group": "Colors"},
+        {"name": "fieldBorderColor", "kind": "color", "group": "Colors"},
+        {"name": "fieldBorderActiveColor", "kind": "color", "group": "Colors"},
+        {"name": "fieldBorderErrorColor", "kind": "color", "group": "Colors"},
+        {"name": "chipBackgroundColor", "kind": "color", "group": "Colors"},
+        {"name": "chipTextColor", "kind": "color", "group": "Colors"},
+        {"name": "textColor", "kind": "color", "group": "Colors"},
+        {"name": "placeholderColor", "kind": "color", "group": "Colors"},
+    ]
+
     _HEIGHTS = {"sm": 32, "md": 40, "lg": 48}
 
     def __init__(self, parent=None, options=None, selected=None,

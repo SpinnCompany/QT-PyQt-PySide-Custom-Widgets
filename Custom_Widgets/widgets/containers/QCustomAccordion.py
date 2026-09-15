@@ -10,7 +10,7 @@
 ## Each section is a header button + an animated collapsible content area.
 ## Optional exclusive mode (only one section open at a time). Tokenized.
 ########################################################################
-from qtpy.QtCore import Qt, Signal, QPropertyAnimation
+from qtpy.QtCore import Qt, Signal, QPropertyAnimation, Property
 from qtpy.QtWidgets import QWidget, QVBoxLayout, QPushButton, QFrame
 
 
@@ -102,6 +102,21 @@ class QCustomAccordion(QWidget):
         "signals": ["sectionToggled"],
         "tokens_used": ["surface", "on-surface", "surface-muted", "outline", "accent"],
     }
+
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "exclusive", "kind": "bool", "group": "General"},
+    ]
+
+    # -- designer-facing property (editable in the Custom Properties dock) ---
+    @Property(bool)
+    def exclusive(self):
+        return self._exclusive
+
+    @exclusive.setter
+    def exclusive(self, value):
+        self._exclusive = bool(value)
 
     def __init__(self, parent=None, exclusive=False):
         super().__init__(parent)

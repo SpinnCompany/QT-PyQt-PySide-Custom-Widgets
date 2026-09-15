@@ -54,6 +54,19 @@ class QCustomFeaturedIcon(QWidget):
         "tokens_used": ["accent", "surface", "on-primary"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "iconPath", "kind": "str", "group": "General"},
+        {"name": "shape", "kind": "choice", "group": "General"},
+        {"name": "variant", "kind": "choice", "group": "General"},
+        {"name": "sizeVariant", "kind": "choice", "group": "General"},
+        {"name": "cornerRadius", "kind": "int", "group": "General"},
+        {"name": "accentColor", "kind": "color", "group": "Colors"},
+        {"name": "iconColor", "kind": "color", "group": "Colors"},
+        {"name": "surfaceColor", "kind": "color", "group": "Colors"},
+    ]
+
     _SIZES = {"sm": 36, "md": 48, "lg": 56, "xl": 72}
     _ICON_RATIO = 0.5
 

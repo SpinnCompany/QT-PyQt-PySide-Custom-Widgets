@@ -59,6 +59,18 @@ class QCustomRadioGroup(QWidget):
         "tokens_used": ["accent", "outline", "on-surface"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "optionsCsv", "kind": "str", "group": "General"},
+        {"name": "selectedValue", "kind": "str", "group": "General"},
+        {"name": "title", "kind": "str", "group": "General"},
+        {"name": "orientation", "kind": "choice", "group": "General"},
+        {"name": "spacingPx", "kind": "int", "group": "General"},
+        {"name": "sizeVariant", "kind": "choice", "group": "General"},
+        {"name": "titleColor", "kind": "color", "group": "Colors"},
+    ]
+
     def __init__(self, parent=None, options=None, value=None,
                  orientation="vertical", title=""):
         super().__init__(parent)

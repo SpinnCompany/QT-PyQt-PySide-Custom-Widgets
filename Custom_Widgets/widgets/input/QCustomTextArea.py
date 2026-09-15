@@ -67,6 +67,22 @@ class QCustomTextArea(QPlainTextEdit):
                         "destructive"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "variant", "kind": "choice", "group": "General"},
+        {"name": "sizeVariant", "kind": "choice", "group": "General"},
+        {"name": "state", "kind": "choice", "group": "General"},
+        {"name": "placeholderText", "kind": "str", "group": "General"},
+        {"name": "maxLength", "kind": "int", "group": "General"},
+        {"name": "showCounter", "kind": "bool", "group": "General"},
+        {"name": "autoGrow", "kind": "bool", "group": "General"},
+        {"name": "minRows", "kind": "int", "group": "General"},
+        {"name": "maxRows", "kind": "int", "group": "General"},
+        {"name": "counterColor", "kind": "color", "group": "Colors"},
+        {"name": "counterOverColor", "kind": "color", "group": "Colors"},
+    ]
+
     # padding per size variant, matching QCustomInput's 28 / 36 / 44 heights
     _PADDING = {"sm": 4, "md": 7, "lg": 10}
 

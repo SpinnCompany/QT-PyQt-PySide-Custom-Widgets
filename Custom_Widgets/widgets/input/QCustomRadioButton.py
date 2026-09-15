@@ -56,6 +56,21 @@ class QCustomRadioButton(QWidget):
         "tokens_used": ["accent", "outline", "on-surface"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "checked", "kind": "bool", "group": "General"},
+        {"name": "text", "kind": "str", "group": "General"},
+        {"name": "value", "kind": "str", "group": "General"},
+        {"name": "autoExclusive", "kind": "bool", "group": "General"},
+        {"name": "sizeVariant", "kind": "choice", "group": "General"},
+        {"name": "dotScale", "kind": "float", "group": "General"},
+        {"name": "ringColor", "kind": "color", "group": "Colors"},
+        {"name": "ringCheckedColor", "kind": "color", "group": "Colors"},
+        {"name": "dotColor", "kind": "color", "group": "Colors"},
+        {"name": "textColor", "kind": "color", "group": "Colors"},
+    ]
+
     # (ring diameter, gap between ring and label, font point size) per size
     _SIZES = {"sm": (14, 6, 9), "md": (18, 8, 10), "lg": (22, 10, 12)}
 

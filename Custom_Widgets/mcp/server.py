@@ -1120,6 +1120,18 @@ def designer_set_widget_property(widget: str, property_name: str, value,
                                project=project, owner=agent))
 
 
+@_tool(annotations={"title": "Show a widget's Custom Properties in the dock"})
+def designer_show_custom_properties(widget: str, project: str = "",
+                                    agent: str = "") -> str:
+    """Raise the Custom Properties dock focused on a widget of ANY open
+    form (matched by objectName) and report the property rows the dock is
+    showing. Use it to verify a custom widget's properties (rule #11:
+    every registered widget declares DESIGNER_CUSTOM_PROPS) are actually
+    listed in Designer, e.g. designer_show_custom_properties(widget='statCard')."""
+    return json.dumps(_request({"method": "showCustomProperties", "widget": widget},
+                               project=project, owner=agent))
+
+
 ########################################################################
 ## PROJECT WORKFLOW
 ########################################################################

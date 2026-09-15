@@ -18,7 +18,7 @@
 ##   m.addAction("Cancel", "cancel"); m.addAction("Send", "send", primary=True)
 ##   m.triggered.connect(handler); m.showModal()
 ########################################################################
-from qtpy.QtCore import Qt, Signal, QEvent, QPropertyAnimation, QEasingCurve, QRect
+from qtpy.QtCore import Qt, Signal, QEvent, QPropertyAnimation, QEasingCurve, QRect, Property
 from qtpy.QtGui import QColor, QPainter, QBrush, QPen
 from qtpy.QtWidgets import (QWidget, QFrame, QVBoxLayout, QHBoxLayout, QLabel,
                             QPushButton, QGraphicsDropShadowEffect, QSizePolicy)
@@ -74,8 +74,79 @@ class QCustomModal(QWidget):
         "tokens_used": ["accent", "background", "text"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "title", "kind": "str", "group": "General"},
+        {"name": "subtitle", "kind": "str", "group": "General"},
+        {"name": "cornerRadius", "kind": "int", "group": "General"},
+        {"name": "panelWidth", "kind": "int", "group": "General"},
+        {"name": "scrimAlpha", "kind": "int", "group": "General"},
+        {"name": "closeOnScrim", "kind": "bool", "group": "General"},
+        {"name": "xColor", "kind": "color", "group": "Colors"},
+    ]
+
     triggered = Signal(str)
     closed = Signal()
+
+    # -- designer-facing properties (editable in the Custom Properties dock) --
+    @Property(str)
+    def title(self):
+        return self._title.text() if hasattr(self, "_title") else ""
+
+    @title.setter
+    def title(self, value):
+        if hasattr(self, "_title"):
+            self.setTitle(value)
+
+    @Property(str)
+    def subtitle(self):
+        return self._subtitle.text() if hasattr(self, "_subtitle") else ""
+
+    @subtitle.setter
+    def subtitle(self, value):
+        if hasattr(self, "_subtitle"):
+            self.setSubtitle(value)
+
+    @Property(int)
+    def cornerRadius(self):
+        return self._corner_radius
+
+    @cornerRadius.setter
+    def cornerRadius(self, value):
+        self._corner_radius = int(value)
+
+    @Property(int)
+    def panelWidth(self):
+        return self._panel_width
+
+    @panelWidth.setter
+    def panelWidth(self, value):
+        self._panel_width = int(value)
+
+    @Property(int)
+    def scrimAlpha(self):
+        return self._scrim_alpha
+
+    @scrimAlpha.setter
+    def scrimAlpha(self, value):
+        self._scrim_alpha = int(value)
+
+    @Property(bool)
+    def closeOnScrim(self):
+        return self._close_on_scrim
+
+    @closeOnScrim.setter
+    def closeOnScrim(self, value):
+        self._close_on_scrim = bool(value)
+
+    @Property(QColor)
+    def xColor(self):
+        return QColor(self._x_color)
+
+    @xColor.setter
+    def xColor(self, value):
+        self.setXColor(value)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -94,6 +165,7 @@ class QCustomModal(QWidget):
         self._c_accent = "#16a34a"
         self._c_accent_text = "#ffffff"
         self._c_hover = "#f1f3f5"
+        self._x_color = QColor("#8b93a1")
 
         # centered card
         self._panel = QFrame(self)

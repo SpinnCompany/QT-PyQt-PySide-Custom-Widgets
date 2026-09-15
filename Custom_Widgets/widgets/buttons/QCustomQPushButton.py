@@ -45,6 +45,15 @@ class QCustomQPushButton(QPushButton):
     </ui>
     """
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "variant", "kind": "choice", "group": "General"},
+        {"name": "sizeVariant", "kind": "choice", "group": "General"},
+        {"name": "iconColor", "kind": "color", "group": "Colors"},
+        {"name": "iconColorActive", "kind": "color", "group": "Colors"},
+    ]
+
     def __init__(self, parent=None):
         super().__init__(parent)
         ########################################################################

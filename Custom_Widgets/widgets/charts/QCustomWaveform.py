@@ -70,6 +70,28 @@ class QCustomWaveform(QWidget):
         "tokens_used": ["accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "mode", "kind": "choice", "group": "General"},
+        {"name": "valuesCsv", "kind": "str", "group": "General"},
+        {"name": "capacity", "kind": "int", "group": "General"},
+        {"name": "barColor", "kind": "color", "group": "Colors"},
+        {"name": "barColor2", "kind": "color", "group": "Colors"},
+        {"name": "barWidth", "kind": "float", "group": "General"},
+        {"name": "barGap", "kind": "float", "group": "General"},
+        {"name": "cornerRadius", "kind": "int", "group": "General"},
+        {"name": "mirror", "kind": "bool", "group": "General"},
+        {"name": "lineColor", "kind": "color", "group": "Colors"},
+        {"name": "lineWidth", "kind": "float", "group": "General"},
+        {"name": "showGrid", "kind": "bool", "group": "General"},
+        {"name": "gridColor", "kind": "color", "group": "Colors"},
+        {"name": "fillArea", "kind": "bool", "group": "General"},
+        {"name": "glow", "kind": "bool", "group": "General"},
+        {"name": "glowStrength", "kind": "float", "group": "General"},
+        {"name": "animated", "kind": "bool", "group": "Animation"},
+    ]
+
     def __init__(self, parent=None, values=None, mode="bars"):
         super().__init__(parent)
         self.setObjectName("QCustomWaveform")

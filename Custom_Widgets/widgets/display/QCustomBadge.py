@@ -52,6 +52,15 @@ class QCustomBadge(QLabel):
                         "info", "on-info", "outline"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "text", "kind": "str", "group": "General"},
+        {"name": "variant", "kind": "choice", "group": "General"},
+        {"name": "sizeVariant", "kind": "choice", "group": "General"},
+        {"name": "dot", "kind": "bool", "group": "General"},
+    ]
+
     _VARIANTS = ("default", "primary", "secondary", "success", "warning",
                  "destructive", "info", "outline")
     _DOT_SIZE = {"sm": 8, "md": 10, "lg": 12}

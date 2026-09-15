@@ -88,6 +88,32 @@ class TestLegacyImports:
         mod = importlib.import_module("Custom_Widgets._resources")
         assert mod.__name__ == "Custom_Widgets._resources"
 
+    def test_alias_loader_supplies_get_code(self, qapp):
+        """runpy (`python -m Custom_Widgets.CMD`) needs a code object from the
+        alias loader; a plain import only needs exec_module. Without get_code
+        every `-m` under the package died with 'AttributeError: _AliasLoader
+        object has no attribute get_code'."""
+        from Custom_Widgets import _legacy_paths
+        import importlib.util
+        spec = importlib.util.find_spec("Custom_Widgets.CMD")
+        assert spec is not None and spec.loader is not None
+        assert callable(getattr(spec.loader, "get_code", None))
+        code = spec.loader.get_code("Custom_Widgets.CMD")
+        assert code is not None
+        filename = spec.loader.get_filename("Custom_Widgets.CMD")
+        assert filename.endswith("tools/CMD.py")
+
+    def test_python_m_cmd_entrypoint_runs(self, qapp):
+        """`python -m Custom_Widgets.CMD` is how RunController launches the
+        dev server; it must survive the meta-path alias for the module."""
+        import subprocess
+        env = dict(os.environ, PYTHONPATH=REPO)
+        proc = subprocess.run(
+            [sys.executable, "-m", "Custom_Widgets.CMD", "--help"],
+            cwd=REPO, env=env, capture_output=True, text=True, timeout=180)
+        assert proc.returncode == 0, proc.stderr[-2000:]
+        assert "usage:" in proc.stdout.lower()
+
 
 class TestAliasedPackages:
     """Whole packages moved under widgets/ keep their old prefix working."""

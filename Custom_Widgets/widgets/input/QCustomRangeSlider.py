@@ -44,6 +44,19 @@ class QCustomRangeSlider(QWidget):
         "tokens_used": ["outline", "accent", "surface"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "minimum", "kind": "int", "group": "General"},
+        {"name": "maximum", "kind": "int", "group": "General"},
+        {"name": "lowerValue", "kind": "int", "group": "General"},
+        {"name": "upperValue", "kind": "int", "group": "General"},
+        {"name": "trackColor", "kind": "color", "group": "Colors"},
+        {"name": "fillColor", "kind": "color", "group": "Colors"},
+        {"name": "handleColor", "kind": "color", "group": "Colors"},
+        {"name": "handleBorderColor", "kind": "color", "group": "Colors"},
+    ]
+
     def __init__(self, parent=None, minimum=0, maximum=100):
         super().__init__(parent)
         self.setObjectName("QCustomRangeSlider")

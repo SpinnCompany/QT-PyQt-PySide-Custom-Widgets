@@ -62,6 +62,26 @@ class QCustomVerificationCode(QWidget):
                         "destructive"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "digits", "kind": "int", "group": "General"},
+        {"name": "inputMode", "kind": "choice", "group": "General"},
+        {"name": "code", "kind": "str", "group": "General"},
+        {"name": "masked", "kind": "bool", "group": "General"},
+        {"name": "uppercase", "kind": "bool", "group": "General"},
+        {"name": "separatorAfter", "kind": "int", "group": "General"},
+        {"name": "boxWidth", "kind": "int", "group": "General"},
+        {"name": "boxHeight", "kind": "int", "group": "General"},
+        {"name": "boxSpacing", "kind": "int", "group": "General"},
+        {"name": "state", "kind": "choice", "group": "General"},
+        {"name": "boxBackgroundColor", "kind": "color", "group": "Colors"},
+        {"name": "boxBorderColor", "kind": "color", "group": "Colors"},
+        {"name": "boxBorderActiveColor", "kind": "color", "group": "Colors"},
+        {"name": "boxBorderErrorColor", "kind": "color", "group": "Colors"},
+        {"name": "textColor", "kind": "color", "group": "Colors"},
+    ]
+
     _ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
     _NUMERIC = "0123456789"
 

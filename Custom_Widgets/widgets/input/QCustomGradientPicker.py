@@ -60,6 +60,23 @@ class QCustomGradientPicker(QWidget):
                         "destructive"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "stopsCsv", "kind": "str", "group": "General"},
+        {"name": "gradientType", "kind": "choice", "group": "General"},
+        {"name": "angle", "kind": "int", "group": "General"},
+        {"name": "barHeight", "kind": "int", "group": "General"},
+        {"name": "handleRadius", "kind": "int", "group": "General"},
+        {"name": "readOnly", "kind": "bool", "group": "General"},
+        {"name": "state", "kind": "choice", "group": "General"},
+        {"name": "borderColor", "kind": "color", "group": "Colors"},
+        {"name": "borderActiveColor", "kind": "color", "group": "Colors"},
+        {"name": "borderErrorColor", "kind": "color", "group": "Colors"},
+        {"name": "handleColor", "kind": "color", "group": "Colors"},
+        {"name": "handleBorderColor", "kind": "color", "group": "Colors"},
+    ]
+
     MIN_STOPS = 2
     _CHECKER = 6            # checkerboard square size, px
 

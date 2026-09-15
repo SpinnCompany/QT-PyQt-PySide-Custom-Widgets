@@ -59,6 +59,26 @@ class QCustomDonut(QWidget):
         "tokens_used": ["accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "valuesCsv", "kind": "str", "group": "General"},
+        {"name": "colorsCsv", "kind": "str", "group": "Colors"},
+        {"name": "mode", "kind": "choice", "group": "General"},
+        {"name": "holeRatio", "kind": "float", "group": "General"},
+        {"name": "maxSweep", "kind": "float", "group": "General"},
+        {"name": "gapDegrees", "kind": "float", "group": "General"},
+        {"name": "showPercentLabels", "kind": "bool", "group": "General"},
+        {"name": "percentLabelColor", "kind": "color", "group": "Colors"},
+        {"name": "percentPill", "kind": "bool", "group": "General"},
+        {"name": "percentPillColor", "kind": "color", "group": "Colors"},
+        {"name": "minLabelPercent", "kind": "float", "group": "General"},
+        {"name": "hatchCsv", "kind": "str", "group": "General"},
+        {"name": "hatchPattern", "kind": "choice", "group": "General"},
+        {"name": "trackColor", "kind": "color", "group": "Colors"},
+        {"name": "gapColor", "kind": "color", "group": "Colors"},
+    ]
+
     _DEFAULT_COLORS = ["#7c6cf6", "#f2794b", "#f4c44e", "#3ddc97", "#f5678a"]
 
     def __init__(self, parent=None, values=None, colors=None):

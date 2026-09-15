@@ -30,6 +30,10 @@ class QCustomQSlider(QSlider):
         </widget>
     </ui>
     """
+    # No custom properties: this is a plain QSlider whose native properties
+    # (value/min/max/orientation) show in the standard property editor.
+    DESIGNER_CUSTOM_PROPS = []
+
     def __init__(self, parent=None):
         super().__init__(parent)
 

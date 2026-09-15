@@ -47,6 +47,15 @@ class QCustomButtonGroup(QWidget):
         "tokens_used": ["surface", "on-surface", "accent", "primary", "outline"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "variant", "kind": "choice", "group": "General"},
+        {"name": "sizeVariant", "kind": "choice", "group": "General"},
+        {"name": "exclusive", "kind": "bool", "group": "General"},
+        {"name": "orientation", "kind": "choice", "group": "General"},
+    ]
+
     def __init__(self, parent=None, exclusive=True, orientation="vertical"):
         super().__init__(parent)
         self.setObjectName("QCustomButtonGroup")

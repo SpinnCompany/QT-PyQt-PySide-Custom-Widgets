@@ -36,6 +36,12 @@ class QCustomStepper(QWidget):
                         "accent", "on-primary"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "currentStep", "kind": "int", "group": "General"},
+    ]
+
     def __init__(self, parent=None, orientation=Qt.Horizontal):
         super().__init__(parent)
         self.setObjectName("QCustomStepper")

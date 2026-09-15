@@ -38,6 +38,10 @@ class QCustomFileDropZone(QWidget):
         "tokens_used": ["surface", "surface-muted", "on-surface", "outline", "accent"],
     }
 
+    # No Designer-editable properties: behaviour is configured in code via
+    # setAcceptedExtensions()/setMultiple(). Nothing to list in the dock.
+    DESIGNER_CUSTOM_PROPS = []
+
     def __init__(self, parent=None, multiple=True, extensions=None):
         super().__init__(parent)
         self.setObjectName("QCustomFileDropZone")

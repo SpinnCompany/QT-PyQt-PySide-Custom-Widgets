@@ -40,6 +40,15 @@ class QCustomNumberInput(QWidget):
         "tokens_used": ["surface", "on-surface", "outline", "accent", "on-primary"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "minimum", "kind": "str", "group": "General"},
+        {"name": "maximum", "kind": "str", "group": "General"},
+        {"name": "singleStep", "kind": "str", "group": "General"},
+        {"name": "decimals", "kind": "int", "group": "General"},
+    ]
+
     def __init__(self, parent=None, minimum=0, maximum=100, value=0, step=1,
                  decimals=0):
         super().__init__(parent)

@@ -95,6 +95,9 @@ class QCustomCommandPalette(QWidget):
         </widget>
     </ui>
     """
+    # No Designer-editable properties: commands are loaded via
+    # setCommands(). Nothing to list in the Custom Properties dock.
+    DESIGNER_CUSTOM_PROPS = []
     commandTriggered = Signal(str)     # command id
     FADE_MS = 120
 

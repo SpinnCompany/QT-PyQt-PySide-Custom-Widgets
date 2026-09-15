@@ -44,6 +44,15 @@ class QCustomAlert(QWidget):
                         "destructive", "outline"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "variant", "kind": "choice", "group": "General"},
+        {"name": "title", "kind": "str", "group": "General"},
+        {"name": "text", "kind": "str", "group": "General"},
+        {"name": "dismissible", "kind": "bool", "group": "General"},
+    ]
+
     _GLYPHS = {"info": "ℹ", "success": "✓", "warning": "⚠", "destructive": "✕"}
 
     def __init__(self, parent=None, title="", text="", variant="info",

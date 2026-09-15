@@ -120,6 +120,13 @@ class QCustomChipGroup(QWidget):
         "tokens_used": ["surface-muted", "on-surface", "accent", "on-primary", "outline"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "selectable", "kind": "bool", "group": "General"},
+        {"name": "exclusive", "kind": "bool", "group": "General"},
+    ]
+
     def __init__(self, parent=None, selectable=False, exclusive=False, closable=False):
         super().__init__(parent)
         self.setObjectName("QCustomChipGroup")

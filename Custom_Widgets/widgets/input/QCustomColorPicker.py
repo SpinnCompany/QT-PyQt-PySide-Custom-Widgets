@@ -10,7 +10,7 @@
 ## A colour swatch + hex field. Clicking the swatch opens a popup of preset
 ## swatches with a "Custom..." button (QColorDialog). Emits colorChanged.
 ########################################################################
-from qtpy.QtCore import Qt, Signal, QPoint
+from qtpy.QtCore import Qt, Signal, QPoint, Property
 from qtpy.QtGui import QColor
 from qtpy.QtWidgets import (QWidget, QHBoxLayout, QGridLayout, QVBoxLayout,
                             QPushButton, QLineEdit, QFrame, QColorDialog)
@@ -43,6 +43,12 @@ class QCustomColorPicker(QWidget):
         "signals": ["colorChanged"],
         "tokens_used": ["surface", "on-surface", "surface-muted", "outline", "accent"],
     }
+
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "currentColor", "kind": "color", "group": "Colors"},
+    ]
 
     def __init__(self, parent=None, color="#3b82f6"):
         super().__init__(parent)
@@ -121,6 +127,14 @@ class QCustomColorPicker(QWidget):
     # ------------------------------------------------------------------ #
     ## API
     # ------------------------------------------------------------------ #
+    @Property(QColor)
+    def currentColor(self):
+        return QColor(self._color)
+
+    @currentColor.setter
+    def currentColor(self, value):
+        self.setColor(value)
+
     def color(self):
         return QColor(self._color)
 

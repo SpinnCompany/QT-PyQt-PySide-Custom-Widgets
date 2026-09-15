@@ -58,6 +58,20 @@ class QCustomTileButton(QAbstractButton):
         "tokens_used": ["accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "caption", "kind": "str", "group": "General"},
+        {"name": "iconPath", "kind": "str", "group": "General"},
+        {"name": "gradientStart", "kind": "color", "group": "General"},
+        {"name": "gradientEnd", "kind": "color", "group": "General"},
+        {"name": "bgColor", "kind": "color", "group": "Colors"},
+        {"name": "iconColor", "kind": "color", "group": "Colors"},
+        {"name": "activeColor", "kind": "color", "group": "Colors"},
+        {"name": "cornerRadius", "kind": "int", "group": "General"},
+        {"name": "iconSize", "kind": "int", "group": "General"},
+    ]
+
     def __init__(self, parent=None, caption="Lights", iconPath=""):
         super().__init__(parent)
         self.setObjectName("QCustomTileButton")

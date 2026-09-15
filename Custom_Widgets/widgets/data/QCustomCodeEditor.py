@@ -11,7 +11,7 @@
 import json
 import pathlib
 
-from qtpy.QtCore import QRegularExpression, Qt
+from qtpy.QtCore import QRegularExpression, Qt, Property
 from qtpy.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel, QPlainTextEdit
 from qtpy.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QPainter, QPen, QBrush 
 from Custom_Widgets._resources import packageDir
@@ -43,6 +43,36 @@ class QCustomCodeEditor(QWidget):
             "tsx"        : "TypeScript",
             "typescript" : "TypeScript"
         }
+
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "lang", "kind": "str", "group": "General"},
+        {"name": "theme", "kind": "str", "group": "General"},
+    ]
+
+    # -- designer-facing properties (editable in the Custom Properties dock) --
+    @Property(str)
+    def lang(self):
+        return getattr(self, "_lang", "python")
+
+    @lang.setter
+    def lang(self, value):
+        self._lang = str(value)
+        if value in QCustomCodeEditor.LANG_DISPLAY:
+            self.setLang(value)
+
+    @Property(str)
+    def theme(self):
+        return getattr(self, "_theme", "default")
+
+    @theme.setter
+    def theme(self, value):
+        self._theme = str(value)
+        try:
+            self.setTheme(value)
+        except Exception:
+            pass
 
     def __init__(self, parent=None):
         super().__init__(parent)

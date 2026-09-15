@@ -57,6 +57,21 @@ class QCustomSparklesText(QWidget):
         "tokens_used": ["on-surface", "accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "text", "kind": "str", "group": "General"},
+        {"name": "sparkleCount", "kind": "int", "group": "General"},
+        {"name": "sparkleSize", "kind": "float", "group": "General"},
+        {"name": "speed", "kind": "int", "group": "Animation"},
+        {"name": "animated", "kind": "bool", "group": "Animation"},
+        {"name": "seed", "kind": "int", "group": "General"},
+        {"name": "fontScale", "kind": "float", "group": "General"},
+        {"name": "bold", "kind": "bool", "group": "General"},
+        {"name": "colorsCsv", "kind": "str", "group": "Colors"},
+        {"name": "textColor", "kind": "color", "group": "Colors"},
+    ]
+
     _DEFAULT_COLORS = ["#f59e0b", "#a855f7", "#2563eb"]
 
     def __init__(self, parent=None, text="", sparkleCount=14):

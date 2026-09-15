@@ -55,6 +55,22 @@ class QCustomAvatar(QWidget):
         "tokens_used": ["accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "text", "kind": "str", "group": "General"},
+        {"name": "bgColor", "kind": "color", "group": "Colors"},
+        {"name": "textColor", "kind": "color", "group": "Colors"},
+        {"name": "showStatus", "kind": "bool", "group": "General"},
+        {"name": "statusColor", "kind": "color", "group": "Colors"},
+        {"name": "statusPosition", "kind": "choice", "group": "General"},
+        {"name": "statusBorderColor", "kind": "color", "group": "Colors"},
+        {"name": "ringColor", "kind": "color", "group": "Colors"},
+        {"name": "ringWidth", "kind": "int", "group": "General"},
+        {"name": "cornerRadius", "kind": "int", "group": "General"},
+        {"name": "imageSource", "kind": "str", "group": "General"},
+    ]
+
     def __init__(self, parent=None, text="M", image=None):
         super().__init__(parent)
         self.setObjectName("QCustomAvatar")

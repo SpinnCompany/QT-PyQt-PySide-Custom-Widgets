@@ -74,6 +74,28 @@ class QCustomRadialLines(QWidget):
         "tokens_used": ["accent", "surface-muted", "on-surface"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "seriesCsv", "kind": "str", "group": "General"},
+        {"name": "labelsCsv", "kind": "str", "group": "General"},
+        {"name": "colorsCsv", "kind": "str", "group": "Colors"},
+        {"name": "maxValue", "kind": "float", "group": "General"},
+        {"name": "startAngle", "kind": "int", "group": "General"},
+        {"name": "clockwise", "kind": "bool", "group": "General"},
+        {"name": "rings", "kind": "int", "group": "General"},
+        {"name": "lineWidth", "kind": "float", "group": "General"},
+        {"name": "fillOpacity", "kind": "float", "group": "General"},
+        {"name": "closed", "kind": "bool", "group": "General"},
+        {"name": "smooth", "kind": "bool", "group": "General"},
+        {"name": "showGrid", "kind": "bool", "group": "General"},
+        {"name": "showMarkers", "kind": "bool", "group": "General"},
+        {"name": "showLabels", "kind": "bool", "group": "General"},
+        {"name": "showLegend", "kind": "bool", "group": "General"},
+        {"name": "gridColor", "kind": "color", "group": "Colors"},
+        {"name": "labelColor", "kind": "color", "group": "Colors"},
+    ]
+
     _DEFAULT_COLORS = ["#2563eb", "#16a34a", "#f59e0b", "#dc2626", "#7c3aed",
                        "#0891b2"]
 

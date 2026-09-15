@@ -47,6 +47,19 @@ class QCustomTrendChip(QWidget):
         "tokens_used": ["up", "down"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "text", "kind": "str", "group": "General"},
+        {"name": "direction", "kind": "choice", "group": "General"},
+        {"name": "variant", "kind": "choice", "group": "General"},
+        {"name": "upColor", "kind": "color", "group": "Colors"},
+        {"name": "downColor", "kind": "color", "group": "Colors"},
+        {"name": "flatColor", "kind": "color", "group": "Colors"},
+        {"name": "tintOpacity", "kind": "float", "group": "General"},
+        {"name": "cornerRadius", "kind": "int", "group": "General"},
+    ]
+
     def __init__(self, parent=None, direction="up", text="", variant="circle"):
         super().__init__(parent)
         self.setObjectName("QCustomTrendChip")

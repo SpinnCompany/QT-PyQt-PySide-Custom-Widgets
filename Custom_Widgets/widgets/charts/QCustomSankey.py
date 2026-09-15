@@ -61,6 +61,20 @@ class QCustomSankey(QWidget):
         "tokens_used": ["accent", "on-surface", "outline"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "linksCsv", "kind": "str", "group": "General"},
+        {"name": "nodeColorsCsv", "kind": "str", "group": "Colors"},
+        {"name": "nodeWidth", "kind": "int", "group": "General"},
+        {"name": "nodePadding", "kind": "int", "group": "General"},
+        {"name": "linkOpacity", "kind": "float", "group": "General"},
+        {"name": "curvature", "kind": "float", "group": "General"},
+        {"name": "showLabels", "kind": "bool", "group": "General"},
+        {"name": "showValues", "kind": "bool", "group": "General"},
+        {"name": "labelColor", "kind": "color", "group": "Colors"},
+    ]
+
     _DEFAULT_COLORS = ["#2563eb", "#16a34a", "#f59e0b", "#dc2626", "#7c3aed",
                        "#0891b2", "#db2777", "#65a30d"]
     _PAD = 8.0

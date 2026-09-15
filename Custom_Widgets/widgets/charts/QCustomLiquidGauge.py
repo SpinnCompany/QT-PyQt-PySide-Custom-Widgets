@@ -68,6 +68,30 @@ class QCustomLiquidGauge(QWidget):
         "tokens_used": ["accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "value", "kind": "float", "group": "General"},
+        {"name": "minimum", "kind": "float", "group": "General"},
+        {"name": "maximum", "kind": "float", "group": "General"},
+        {"name": "shape", "kind": "choice", "group": "General"},
+        {"name": "cornerRadius", "kind": "int", "group": "General"},
+        {"name": "fillColor", "kind": "color", "group": "Colors"},
+        {"name": "fillColor2", "kind": "color", "group": "Colors"},
+        {"name": "backgroundColor", "kind": "color", "group": "Colors"},
+        {"name": "ringColor", "kind": "color", "group": "Colors"},
+        {"name": "ringWidth", "kind": "int", "group": "General"},
+        {"name": "waveAmplitude", "kind": "float", "group": "General"},
+        {"name": "waveLength", "kind": "float", "group": "General"},
+        {"name": "waveSpeed", "kind": "float", "group": "Animation"},
+        {"name": "animated", "kind": "bool", "group": "Animation"},
+        {"name": "centerText", "kind": "str", "group": "General"},
+        {"name": "centerSuffix", "kind": "str", "group": "General"},
+        {"name": "centerTextColor", "kind": "color", "group": "Colors"},
+        {"name": "badgeText", "kind": "str", "group": "General"},
+        {"name": "badgeColor", "kind": "color", "group": "Colors"},
+    ]
+
     def __init__(self, parent=None, value=68.0, minimum=0.0, maximum=100.0):
         super().__init__(parent)
         self.setObjectName("QCustomLiquidGauge")

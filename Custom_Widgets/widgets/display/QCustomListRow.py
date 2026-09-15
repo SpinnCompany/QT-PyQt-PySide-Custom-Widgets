@@ -79,6 +79,24 @@ class QCustomListRow(QFrame):
         "tokens_used": ["accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "title", "kind": "str", "group": "General"},
+        {"name": "subtitle", "kind": "str", "group": "General"},
+        {"name": "value", "kind": "str", "group": "General"},
+        {"name": "meta", "kind": "str", "group": "General"},
+        {"name": "iconText", "kind": "str", "group": "General"},
+        {"name": "chipColor", "kind": "color", "group": "Colors"},
+        {"name": "chipTextColor", "kind": "color", "group": "Colors"},
+        {"name": "valueColor", "kind": "color", "group": "Colors"},
+        {"name": "subtitleColor", "kind": "color", "group": "Colors"},
+        {"name": "chipSize", "kind": "int", "group": "General"},
+        {"name": "chipRadius", "kind": "int", "group": "General"},
+        {"name": "showDragHandle", "kind": "bool", "group": "General"},
+        {"name": "dragHandleColor", "kind": "color", "group": "Colors"},
+    ]
+
     def __init__(self, parent=None, title="", subtitle="", value="", meta="", icon=None):
         super().__init__(parent)
         self.setObjectName("QCustomListRow")

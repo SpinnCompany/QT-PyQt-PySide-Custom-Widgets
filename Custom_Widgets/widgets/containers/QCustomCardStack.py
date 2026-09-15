@@ -51,6 +51,18 @@ class QCustomCardStack(QWidget):
         "tokens_used": ["accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "cardsJson", "kind": "str", "group": "General"},
+        {"name": "cardHeight", "kind": "int", "group": "General"},
+        {"name": "cardPeek", "kind": "int", "group": "General"},
+        {"name": "xInset", "kind": "int", "group": "General"},
+        {"name": "maxVisible", "kind": "int", "group": "General"},
+        {"name": "currentIndex", "kind": "int", "group": "General"},
+        {"name": "animationDuration", "kind": "int", "group": "Animation"},
+    ]
+
     currentChanged = Signal(int)
 
     def __init__(self, parent=None):

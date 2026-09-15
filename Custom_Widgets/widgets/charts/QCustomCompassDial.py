@@ -68,6 +68,26 @@ class QCustomCompassDial(QWidget):
         "tokens_used": ["accent", "down"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "heading", "kind": "float", "group": "General"},
+        {"name": "rotateBezel", "kind": "bool", "group": "General"},
+        {"name": "showIntercardinals", "kind": "bool", "group": "General"},
+        {"name": "showReadout", "kind": "bool", "group": "General"},
+        {"name": "animated", "kind": "bool", "group": "Animation"},
+        {"name": "interactive", "kind": "bool", "group": "General"},
+        {"name": "bezelColor", "kind": "color", "group": "Colors"},
+        {"name": "faceColor", "kind": "color", "group": "Colors"},
+        {"name": "accentColor", "kind": "color", "group": "Colors"},
+        {"name": "tickColor", "kind": "color", "group": "Colors"},
+        {"name": "cardinalColor", "kind": "color", "group": "Colors"},
+        {"name": "northColor", "kind": "color", "group": "Colors"},
+        {"name": "southColor", "kind": "color", "group": "Colors"},
+        {"name": "capColor", "kind": "color", "group": "Colors"},
+        {"name": "readoutColor", "kind": "color", "group": "Colors"},
+    ]
+
     def __init__(self, parent=None, heading=315.0):
         super().__init__(parent)
         self.setObjectName("QCustomCompassDial")

@@ -52,6 +52,16 @@ class QCustomAvatarGroup(QWidget):
         "tokens_used": ["surface", "surface-muted", "on-surface"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "maxVisible", "kind": "int", "group": "General"},
+        {"name": "avatarSize", "kind": "int", "group": "General"},
+        {"name": "ringColor", "kind": "color", "group": "Colors"},
+        {"name": "overflowBg", "kind": "color", "group": "General"},
+        {"name": "overflowText", "kind": "color", "group": "General"},
+    ]
+
     def __init__(self, parent=None, maxVisible=4, size=34):
         super().__init__(parent)
         self.setObjectName("QCustomAvatarGroup")

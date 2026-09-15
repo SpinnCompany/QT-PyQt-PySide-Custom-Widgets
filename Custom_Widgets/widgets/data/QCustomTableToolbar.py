@@ -22,7 +22,7 @@
 ## Colours track the active theme through setThemeColors(...) (call it after
 ## applyDesignTokens); each status keeps its own semantic hue for its pill.
 ########################################################################
-from qtpy.QtCore import Qt, Signal, QSize, QRectF, QPointF
+from qtpy.QtCore import Qt, Signal, QSize, QRectF, QPointF, Property
 from qtpy.QtGui import QColor, QPainter, QPen, QPixmap, QIcon, QFont
 from qtpy.QtWidgets import (
     QWidget, QFrame, QLabel, QLineEdit, QPushButton, QToolButton,
@@ -257,6 +257,13 @@ class QCustomTableToolbar(QWidget):
                         "primary", "accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "searchPlaceholder", "kind": "str", "group": "General"},
+        {"name": "showStatuses", "kind": "bool", "group": "General"},
+    ]
+
     ALL_KEY = ""     # the built-in "All" status pill
 
     searchChanged = Signal(str)
@@ -265,6 +272,23 @@ class QCustomTableToolbar(QWidget):
     clearFiltersClicked = Signal()
     statusSelected = Signal(str)
     showStatusesToggled = Signal(bool)
+
+    # -- designer-facing properties (editable in the Custom Properties dock) --
+    @Property(str)
+    def searchPlaceholder(self):
+        return self._input.placeholderText() if hasattr(self, "_input") else ""
+
+    @searchPlaceholder.setter
+    def searchPlaceholder(self, value):
+        self.setSearchPlaceholder(value)
+
+    @Property(bool)
+    def showStatuses(self):
+        return self._switch.isChecked() if hasattr(self, "_switch") else False
+
+    @showStatuses.setter
+    def showStatuses(self, value):
+        self.setShowStatuses(value)
 
     def __init__(self, parent=None):
         super().__init__(parent)

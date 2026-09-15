@@ -76,6 +76,13 @@ class QCustomEmptyState(QWidget):
         "tokens_used": ["on-surface", "outline", "surface-muted", "accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "markSize", "kind": "int", "group": "General"},
+        {"name": "markColor", "kind": "color", "group": "Colors"},
+    ]
+
     def __init__(self, parent=None, icon=None, title="Nothing here yet",
                  description=""):
         super().__init__(parent)

@@ -12,7 +12,7 @@ import os
 ########################################################################
 ## MODULE UPDATED TO USE QT.PY
 ########################################################################
-from qtpy.QtCore import QVariantAnimation, QEasingCurve, QSize, QRect, Qt
+from qtpy.QtCore import QVariantAnimation, QEasingCurve, QSize, QRect, Qt, Property
 from qtpy.QtGui import QPaintEvent
 from qtpy.QtWidgets import QWidget, QVBoxLayout, QLabel, QFrame, QSizePolicy, QGridLayout
 # from qtpy import  QtCore
@@ -37,6 +37,86 @@ class QCustomProgressIndicator(QWidget):
         </widget>
     </ui>
     """
+
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "color", "kind": "str", "group": "Colors"},
+        {"name": "fillColor", "kind": "str", "group": "Colors"},
+        {"name": "successFillColor", "kind": "str", "group": "Colors"},
+        {"name": "warningFillColor", "kind": "str", "group": "Colors"},
+        {"name": "errorFillColor", "kind": "str", "group": "Colors"},
+        {"name": "formProgressCount", "kind": "int", "group": "General"},
+        {"name": "formProgressHeight", "kind": "int", "group": "General"},
+        {"name": "formProgressAnimationDuration", "kind": "int", "group": "Animation"},
+    ]
+    # ------------------------------------------------------------------ #
+    ## Designer-facing properties (editable in the Custom Properties dock)
+    # ------------------------------------------------------------------ #
+    @Property(str)
+    def color(self):
+        return self._color
+
+    @color.setter
+    def color(self, value):
+        self._color = str(value)
+
+    @Property(str)
+    def fillColor(self):
+        return self._fillColor
+
+    @fillColor.setter
+    def fillColor(self, value):
+        self._fillColor = str(value)
+
+    @Property(str)
+    def successFillColor(self):
+        return self._successFillColor
+
+    @successFillColor.setter
+    def successFillColor(self, value):
+        self._successFillColor = str(value)
+
+    @Property(str)
+    def warningFillColor(self):
+        return self._warningFillColor
+
+    @warningFillColor.setter
+    def warningFillColor(self, value):
+        self._warningFillColor = str(value)
+
+    @Property(str)
+    def errorFillColor(self):
+        return self._errorFillColor
+
+    @errorFillColor.setter
+    def errorFillColor(self, value):
+        self._errorFillColor = str(value)
+
+    @Property(int)
+    def formProgressCount(self):
+        return self._formProgressCount
+
+    @formProgressCount.setter
+    def formProgressCount(self, value):
+        self._formProgressCount = int(value)
+
+    @Property(int)
+    def formProgressHeight(self):
+        return self._formProgressHeight
+
+    @formProgressHeight.setter
+    def formProgressHeight(self, value):
+        self._formProgressHeight = int(value)
+
+    @Property(int)
+    def formProgressAnimationDuration(self):
+        return self.formProgressAnimation.duration()
+
+    @formProgressAnimationDuration.setter
+    def formProgressAnimationDuration(self, value):
+        self.formProgressAnimation.setDuration(int(value))
+
     def __init__(self, parent=None):
         super(QCustomProgressIndicator, self).__init__(parent)
         # Try to add layout if does not exist
@@ -48,23 +128,23 @@ class QCustomProgressIndicator(QWidget):
             pass 
         # DEFAULT VALUES
         # Black font color
-        self.color = "#000"
+        self._color = "#000"
         # Blue fill color
-        self.fillColor = "#00a4bd"
+        self._fillColor = "#00a4bd"
         # Success color
-        self.successFillColor = "#00a4bd"
+        self._successFillColor = "#00a4bd"
         # Warning color
-        self.warningFillColor = "#ffa500"
+        self._warningFillColor = "#ffa500"
         # Error color
-        self.errorFillColor = "#ff0000"
+        self._errorFillColor = "#ff0000"
         # Progress steps
-        self.formProgressCount = 5
+        self._formProgressCount = 5
         # Progress width
         self.formProgressWidth = 500
         # Progress width
         self.formProgressDefaultWidth = self.formProgressWidth
         # Progress height
-        self.formProgressHeight = 30
+        self._formProgressHeight = 30
         # Animation
         self.formProgressAnimation = QVariantAnimation()
         self.formProgressAnimation.valueChanged.connect(self.updateFormProgress)
@@ -88,19 +168,19 @@ class QCustomProgressIndicator(QWidget):
             errorFillColor = "qlineargradient(spread:pad, x1:0, y1:0.5, x2:1, y2:0.5, stop:0 rgba(255, 0, 0, 255), stop:1 rgba(85, 255, 255, 255))"
             successFillColor = fillColor
         elif themeNumber == 3:
-            self.color = "#fff"
+            self._color = "#fff"
             fillColor = "qlineargradient(spread:pad, x1:0, y1:0.5, x2:1, y2:0.5, stop:0 rgba(38, 59, 99, 255), stop:1 rgba(25, 28, 30, 255))"
             warningFillColor = "qlineargradient(spread:pad, x1:0, y1:0.5, x2:1, y2:0.5, stop:0 rgba(255, 150, 3, 255), stop:1 rgba(25, 28, 30, 255))"
             errorFillColor = "qlineargradient(spread:pad, x1:0, y1:0.5, x2:1, y2:0.5, stop:0 rgba(255, 0, 0, 255), stop:1 rgba(25, 28, 30, 255))"
             successFillColor = fillColor
         elif themeNumber == 4:
-            self.color = "#fff"
+            self._color = "#fff"
             fillColor = "qlineargradient(spread:pad, x1:0, y1:0.5, x2:1, y2:0.5, stop:0 rgba(38, 59, 99, 255), stop:1 rgba(0, 164, 189, 255))"
             warningFillColor = "qlineargradient(spread:pad, x1:0, y1:0.5, x2:1, y2:0.5, stop:0 rgba(255, 143, 30, 255), stop:1 rgba(0, 164, 189, 255))"
             errorFillColor = "qlineargradient(spread:pad, x1:0, y1:0.5, x2:1, y2:0.5, stop:0 rgba(255, 0, 0, 255), stop:1 rgba(0, 164, 189, 255))"
             successFillColor = fillColor
         elif themeNumber == 5:
-            self.color = "#000"
+            self._color = "#000"
             fillColor = "qlineargradient(spread:pad, x1:0, y1:0.5, x2:1, y2:0.5, stop:0 rgba(255, 255, 255, 255), stop:1 rgba(0, 164, 189, 255))"
             warningFillColor = "qlineargradient(spread:pad, x1:0, y1:0.5, x2:1, y2:0.5, stop:0 rgba(255, 255, 255, 255), stop:1 rgba(255, 85, 0, 255))"
             errorFillColor = "qlineargradient(spread:pad, x1:0, y1:0.5, x2:1, y2:0.5, stop:0 rgba(255, 255, 255, 255), stop:1 rgba(255, 42, 42, 255))"
@@ -111,10 +191,10 @@ class QCustomProgressIndicator(QWidget):
 
 
 
-        self.fillColor = fillColor
-        self.warningFillColor = warningFillColor
-        self.errorFillColor = errorFillColor
-        self.successFillColor = successFillColor
+        self._fillColor = fillColor
+        self._warningFillColor = warningFillColor
+        self._errorFillColor = errorFillColor
+        self._successFillColor = successFillColor
 
 
     def setStepStatus(self, **stepStatus):
@@ -136,39 +216,39 @@ class QCustomProgressIndicator(QWidget):
 
     def updateFormProgressIndicator(self, **values):
         if "color" in values and len(str(values['color'])) > 0:
-            self.color = values['color']
+            self._color = values['color']
 
         if "fillColor" in values and len(str(values['fillColor'])) > 0:
-            self.fillColor = values['fillColor']
+            self._fillColor = values['fillColor']
 
         if "warningFillColor" in values and len(str(values['warningFillColor'])) > 0:
-            self.warningFillColor = values['warningFillColor']
+            self._warningFillColor = values['warningFillColor']
 
         if "errorFillColor" in values and len(str(values['errorFillColor'])) > 0:
-            self.errorFillColor = values['errorFillColor']
+            self._errorFillColor = values['errorFillColor']
 
         if "successFillColor" in values and len(str(values['successFillColor'])) > 0:
-            self.successFillColor = values['successFillColor']
+            self._successFillColor = values['successFillColor']
 
         if "formProgressCount" in values and int(values['formProgressCount']) > 0:
-            if values['formProgressCount'] != self.formProgressCount:
-                self.formProgressCount = values['formProgressCount']
+            if values['formProgressCount'] != self._formProgressCount:
+                self._formProgressCount = values['formProgressCount']
 
                 for x in self.progressIndicatorFront.findChildren(QLabel):
                     x.setParent(None)
                     self.progressIndicatorFrontGridLayout.removeWidget(x)
 
-                for x in range(1, self.formProgressCount + 1):
+                for x in range(1, self._formProgressCount + 1):
                     newLabel = QLabel(self.progressIndicatorFront)
                     newLabel.setObjectName(u"_"+str(x))
-                    newLabel.setMinimumSize(QSize((self.formProgressHeight / 3) * 2, (self.formProgressHeight / 3) * 2))
-                    newLabel.setMaximumSize(QSize((self.formProgressHeight / 3) * 2, (self.formProgressHeight / 3) * 2))
+                    newLabel.setMinimumSize(QSize((self._formProgressHeight / 3) * 2, (self._formProgressHeight / 3) * 2))
+                    newLabel.setMaximumSize(QSize((self._formProgressHeight / 3) * 2, (self._formProgressHeight / 3) * 2))
                     newLabel.setAlignment(Qt.AlignCenter)
                     newLabel.setText(str(x))
                     newLabel.setStyleSheet("""
-                            background-color: """+self.fillColor+""";
-                            color: """+self.color+""";
-                            border-radius: """+str(self.formProgressHeight / 3)+""";
+                            background-color: """+self._fillColor+""";
+                            color: """+self._color+""";
+                            border-radius: """+str(self._formProgressHeight / 3)+""";
 
                         """)
 
@@ -187,15 +267,15 @@ class QCustomProgressIndicator(QWidget):
             self.formProgressAnimation.setEasingCurve(returnAnimationEasingCurve(str(values['formProgressAnimationEasingCurve'])))
 
         if "height" in values and int(values['height']) > 0:
-            self.formProgressHeight = int(values['height'])
-            self.setMaximumSize(QSize(self.formProgressDefaultWidth, self.formProgressHeight))
-            self.setMinimumSize(QSize(self.formProgressDefaultWidth, self.formProgressHeight))
+            self._formProgressHeight = int(values['height'])
+            self.setMaximumSize(QSize(self.formProgressDefaultWidth, self._formProgressHeight))
+            self.setMinimumSize(QSize(self.formProgressDefaultWidth, self._formProgressHeight))
 
         if "width" in values and int(values['width']) > 0:
             self.formProgressWidth = int(values['width'])
             self.formProgressDefaultWidth = int(values['width'])
-            self.setMaximumSize(QSize(self.formProgressDefaultWidth, self.formProgressHeight))
-            self.setMinimumSize(QSize(self.formProgressDefaultWidth, self.formProgressHeight))
+            self.setMaximumSize(QSize(self.formProgressDefaultWidth, self._formProgressHeight))
+            self.setMinimumSize(QSize(self.formProgressDefaultWidth, self._formProgressHeight))
 
         if "startPercentage" in values:
             if int(values['startPercentage']) <= 100 and int(values['startPercentage']) >= 0:
@@ -220,9 +300,9 @@ class QCustomProgressIndicator(QWidget):
     def updateFormProgress(self, value):
 
         self.formProgressWidth = value
-        self.progressIndicatorBg.setMinimumSize(QSize(value, (self.formProgressHeight / 3)))
-        self.progressIndicatorBg.setMaximumSize(QSize(value, (self.formProgressHeight / 3)))
-        self.progressIndicatorBg.setStyleSheet(u"#progressIndicatorBg{background-color: "+self.fillColor+"; border-radius: "+str(int(self.formProgressHeight / 6))+";}")
+        self.progressIndicatorBg.setMinimumSize(QSize(value, (self._formProgressHeight / 3)))
+        self.progressIndicatorBg.setMaximumSize(QSize(value, (self._formProgressHeight / 3)))
+        self.progressIndicatorBg.setStyleSheet(u"#progressIndicatorBg{background-color: "+self._fillColor+"; border-radius: "+str(int(self._formProgressHeight / 6))+";}")
 
 
         #
@@ -230,16 +310,16 @@ class QCustomProgressIndicator(QWidget):
            self.formProgressDefaultWidth = self.width()
 
         percentageValue = (value/self.formProgressDefaultWidth ) * 100
-        stepsPercentage = 100/self.formProgressCount
+        stepsPercentage = 100/self._formProgressCount
         fillEl = int(percentageValue / stepsPercentage)
 
         for x in range(1, fillEl + 1):
             if hasattr(self, 'step_'+str(x)+"_error") and getattr(self, 'step_'+str(x)+"_error"):
                 if hasattr(self, '_'+str(x)):
                     getattr(self, '_'+str(x)).setStyleSheet("""
-                        color: """+self.color+""";
-                        background-color: """+self.errorFillColor+""";
-                        border-radius: """+str(int(self.formProgressHeight / 3))+""";
+                        color: """+self._color+""";
+                        background-color: """+self._errorFillColor+""";
+                        border-radius: """+str(int(self._formProgressHeight / 3))+""";
 
                     """)
                     getattr(self, '_'+str(x)).setText(u"<html><head/><body><p align=\"center\"><span style=\" font-weight:600;\">  </span><span style=\" font-weight:600; vertical-align:super;\"> "+str(x)+" </span></p></body></html>")
@@ -248,9 +328,9 @@ class QCustomProgressIndicator(QWidget):
             elif hasattr(self, 'step_'+str(x)+"_warning") and getattr(self, 'step_'+str(x)+"_warning"):
                 if hasattr(self, '_'+str(x)):
                     getattr(self, '_'+str(x)).setStyleSheet("""
-                        color: """+self.color+""";
-                        background-color: """+self.warningFillColor+""";
-                        border-radius: """+str(int(self.formProgressHeight / 3))+""";
+                        color: """+self._color+""";
+                        background-color: """+self._warningFillColor+""";
+                        border-radius: """+str(int(self._formProgressHeight / 3))+""";
 
                     """)
                     getattr(self, '_'+str(x)).setText(u"<html><head/><body><p align=\"center\"><span style=\" font-weight:600;\"> ! </span><span style=\" font-weight:600; vertical-align:super;\"> "+str(x)+" </span></p></body></html>")
@@ -259,9 +339,9 @@ class QCustomProgressIndicator(QWidget):
             elif hasattr(self, 'step_'+str(x)+"_success") and getattr(self, 'step_'+str(x)+"_success"):
                 if hasattr(self, '_'+str(x)):
                     getattr(self, '_'+str(x)).setStyleSheet("""
-                        color: """+self.color+""";
-                        background-color: """+self.successFillColor+""";
-                        border-radius: """+str(int(self.formProgressHeight / 3))+""";
+                        color: """+self._color+""";
+                        background-color: """+self._successFillColor+""";
+                        border-radius: """+str(int(self._formProgressHeight / 3))+""";
 
                     """)
                     getattr(self, '_'+str(x)).setText(u"<html><head/><body><p align=\"center\"><span style=\" font-weight:600;\">  </span><span style=\" font-weight:600; vertical-align:super;\"> "+str(x)+" </span></p></body></html>")
@@ -271,24 +351,24 @@ class QCustomProgressIndicator(QWidget):
             else:
                 if hasattr(self, '_'+str(x)):
                     getattr(self, '_'+str(x)).setStyleSheet("""
-                        color: """+self.color+""";
-                        background-color: """+self.fillColor+""";
-                        border-radius: """+str(int(self.formProgressHeight / 3))+""";
+                        color: """+self._color+""";
+                        background-color: """+self._fillColor+""";
+                        border-radius: """+str(int(self._formProgressHeight / 3))+""";
 
                     """)
                     getattr(self, '_'+str(x)).setText(str(x))
                     getattr(self, '_'+str(x)).setToolTip(u"Step "+str(x))
 
-        remainingEl = self.formProgressCount - fillEl
+        remainingEl = self._formProgressCount - fillEl
 
         if remainingEl > 0:
-            for x in range(fillEl+1, self.formProgressCount + 1):
+            for x in range(fillEl+1, self._formProgressCount + 1):
                 if hasattr(self, 'step_'+str(x)+"_error") and not getattr(self, 'step_'+str(x)+"_error") and hasattr(self, 'step_'+str(x)+"_warning") and not getattr(self, 'step_'+str(x)+"_warning"):
                     if hasattr(self, '_'+str(x)):
                         getattr(self, '_'+str(x)).setStyleSheet("""
-                            color: """+self.color+""";
+                            color: """+self._color+""";
                             background-color: transparent;
-                            border-radius: """+str(int(self.formProgressHeight / 3))+""";
+                            border-radius: """+str(int(self._formProgressHeight / 3))+""";
 
                         """)
 
@@ -314,17 +394,17 @@ class QCustomProgressIndicator(QWidget):
         self.progressIndicatorFrontGridLayout.setSpacing(0)
         self.progressIndicatorFrontGridLayout.setContentsMargins(0, 0, 0, 0)
 
-        for x in range(1, self.formProgressCount + 1):
+        for x in range(1, self._formProgressCount + 1):
             newLabel = QLabel(self.progressIndicatorFront)
             newLabel.setObjectName(u"_"+str(x))
-            newLabel.setMinimumSize(QSize(int(self.formProgressHeight / 3) * 2, int(self.formProgressHeight / 3) * 2))
-            newLabel.setMaximumSize(QSize(int(self.formProgressHeight / 3) * 2, int(self.formProgressHeight / 3) * 2))
+            newLabel.setMinimumSize(QSize(int(self._formProgressHeight / 3) * 2, int(self._formProgressHeight / 3) * 2))
+            newLabel.setMaximumSize(QSize(int(self._formProgressHeight / 3) * 2, int(self._formProgressHeight / 3) * 2))
             newLabel.setAlignment(Qt.AlignCenter)
             newLabel.setText(str(x))
             newLabel.setStyleSheet("""
-                    color: """+self.color+""";
+                    color: """+self._color+""";
                     background-color: transparent;
-                    border-radius: """+str(int(self.formProgressHeight / 3))+""";
+                    border-radius: """+str(int(self._formProgressHeight / 3))+""";
 
                 """)
 
@@ -350,27 +430,27 @@ class QCustomProgressIndicator(QWidget):
 
 
     def paintEvent(self, event: QPaintEvent):
-        self.progressIndicatorBg.setMinimumSize(QSize(self.formProgressWidth, int(self.formProgressHeight / 3)))
-        self.progressIndicatorBg.setMaximumSize(QSize(self.formProgressWidth, int(self.formProgressHeight / 3)))
+        self.progressIndicatorBg.setMinimumSize(QSize(self.formProgressWidth, int(self._formProgressHeight / 3)))
+        self.progressIndicatorBg.setMaximumSize(QSize(self.formProgressWidth, int(self._formProgressHeight / 3)))
         if self.formProgressDefaultWidth < 1:
             self.formProgressDefaultWidth = self.width()
 
-        self.progressIndicatorFront.setMinimumSize(QSize(self.formProgressDefaultWidth, self.formProgressHeight))
+        self.progressIndicatorFront.setMinimumSize(QSize(self.formProgressDefaultWidth, self._formProgressHeight))
 
 
-        self.progressIndicatorBg.setGeometry(QRect(0, int(self.formProgressHeight / 3), self.formProgressWidth, int(self.formProgressHeight / 3)))
+        self.progressIndicatorBg.setGeometry(QRect(0, int(self._formProgressHeight / 3), self.formProgressWidth, int(self._formProgressHeight / 3)))
 
-        self.progressIndicatorFront.setGeometry(QRect(0, 0, self.formProgressWidth, int(self.formProgressHeight / 3)))
+        self.progressIndicatorFront.setGeometry(QRect(0, 0, self.formProgressWidth, int(self._formProgressHeight / 3)))
 
         for x in self.progressIndicatorFront.findChildren(QLabel):
-            x.setMinimumSize(QSize(int(self.formProgressHeight / 3) * 2, int(self.formProgressHeight / 3) * 2))
-            x.setMaximumSize(QSize(int(self.formProgressHeight / 3) * 2, int(self.formProgressHeight / 3) * 2))
+            x.setMinimumSize(QSize(int(self._formProgressHeight / 3) * 2, int(self._formProgressHeight / 3) * 2))
+            x.setMaximumSize(QSize(int(self._formProgressHeight / 3) * 2, int(self._formProgressHeight / 3) * 2))
 
-        self.progressIndicator.setMinimumSize(QSize(self.formProgressDefaultWidth, self.formProgressHeight))
-        # self.progressIndicator.setMaximumSize(QSize(self.width(), self.formProgressHeight))
+        self.progressIndicator.setMinimumSize(QSize(self.formProgressDefaultWidth, self._formProgressHeight))
+        # self.progressIndicator.setMaximumSize(QSize(self.width(), self._formProgressHeight))
         self.progressIndicator.setStyleSheet(u"background-color: transparent; padding: 0;")
 
-        self.progressIndicatorBg.setStyleSheet(u"background-color: "+self.fillColor+"; border-radius: "+str(int(self.formProgressHeight / 6)))
+        self.progressIndicatorBg.setStyleSheet(u"background-color: "+self._fillColor+"; border-radius: "+str(int(self._formProgressHeight / 6)))
 
 class Test:
     def main(self):

@@ -70,6 +70,26 @@ class QCustomHeaderNav(QWidget):
         "tokens_used": ["surface", "on-surface", "outline", "accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "itemsCsv", "kind": "str", "group": "General"},
+        {"name": "brandText", "kind": "str", "group": "General"},
+        {"name": "currentKey", "kind": "str", "group": "General"},
+        {"name": "indicator", "kind": "choice", "group": "General"},
+        {"name": "alignment", "kind": "choice", "group": "General"},
+        {"name": "itemSpacing", "kind": "int", "group": "General"},
+        {"name": "barHeight", "kind": "int", "group": "General"},
+        {"name": "animated", "kind": "bool", "group": "Animation"},
+        {"name": "showDivider", "kind": "bool", "group": "General"},
+        {"name": "accentColor", "kind": "color", "group": "Colors"},
+        {"name": "textColor", "kind": "color", "group": "Colors"},
+        {"name": "activeTextColor", "kind": "color", "group": "Colors"},
+        {"name": "surfaceColor", "kind": "color", "group": "Colors"},
+        {"name": "dividerColor", "kind": "color", "group": "Colors"},
+        {"name": "indicatorPos", "kind": "float", "group": "General"},
+    ]
+
     _PAD = 16.0
     _ITEM_PAD = 14.0
     _OVERFLOW_W = 34.0

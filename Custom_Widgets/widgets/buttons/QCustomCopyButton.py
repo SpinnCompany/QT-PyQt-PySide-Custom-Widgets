@@ -57,6 +57,21 @@ class QCustomCopyButton(QWidget):
         "tokens_used": ["accent", "success", "on-surface", "surface", "outline"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "payload", "kind": "str", "group": "General"},
+        {"name": "text", "kind": "str", "group": "General"},
+        {"name": "copiedText", "kind": "str", "group": "General"},
+        {"name": "resetDelay", "kind": "int", "group": "Animation"},
+        {"name": "variant", "kind": "choice", "group": "General"},
+        {"name": "iconOnly", "kind": "bool", "group": "General"},
+        {"name": "accentColor", "kind": "color", "group": "Colors"},
+        {"name": "successColor", "kind": "color", "group": "Colors"},
+        {"name": "textColor", "kind": "color", "group": "Colors"},
+        {"name": "surfaceColor", "kind": "color", "group": "Colors"},
+    ]
+
     def __init__(self, parent=None, payload="", text="Copy"):
         super().__init__(parent)
         self.setObjectName("QCustomCopyButton")

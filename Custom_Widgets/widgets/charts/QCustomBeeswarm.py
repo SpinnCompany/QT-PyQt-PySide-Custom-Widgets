@@ -55,6 +55,21 @@ class QCustomBeeswarm(QWidget):
         "tokens_used": ["accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "dataCsv", "kind": "str", "group": "General"},
+        {"name": "colorsCsv", "kind": "str", "group": "Colors"},
+        {"name": "textColorsCsv", "kind": "str", "group": "Colors"},
+        {"name": "lineColor", "kind": "color", "group": "Colors"},
+        {"name": "minSize", "kind": "int", "group": "General"},
+        {"name": "maxSize", "kind": "int", "group": "General"},
+        {"name": "bubbleWidth", "kind": "int", "group": "General"},
+        {"name": "gap", "kind": "int", "group": "General"},
+        {"name": "showValues", "kind": "bool", "group": "General"},
+        {"name": "jitter", "kind": "int", "group": "General"},
+    ]
+
     # deterministic demo columns: list of (value, category) per column
     _DEMO = [
         [(52, 0), (81, 2)],

@@ -63,6 +63,25 @@ class QCustomImagePicker(QWidget):
                         "destructive"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "imagePath", "kind": "str", "group": "General"},
+        {"name": "placeholderText", "kind": "str", "group": "General"},
+        {"name": "shape", "kind": "choice", "group": "General"},
+        {"name": "fitMode", "kind": "choice", "group": "General"},
+        {"name": "maxBytes", "kind": "int", "group": "General"},
+        {"name": "maxPixels", "kind": "int", "group": "General"},
+        {"name": "allowClear", "kind": "bool", "group": "General"},
+        {"name": "cornerRadius", "kind": "int", "group": "General"},
+        {"name": "state", "kind": "choice", "group": "General"},
+        {"name": "borderColor", "kind": "color", "group": "Colors"},
+        {"name": "borderActiveColor", "kind": "color", "group": "Colors"},
+        {"name": "borderErrorColor", "kind": "color", "group": "Colors"},
+        {"name": "backgroundColor", "kind": "color", "group": "Colors"},
+        {"name": "textColor", "kind": "color", "group": "Colors"},
+    ]
+
     # Matches UploadService on the billing site: trust the decoder, not the name.
     ALLOWED_FORMATS = ("png", "jpg", "jpeg", "webp", "gif", "bmp")
 

@@ -64,6 +64,24 @@ class QCustomCoverFlow(QWidget):
         "tokens_used": ["accent", "on-surface"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "itemsJson", "kind": "str", "group": "General"},
+        {"name": "currentIndex", "kind": "int", "group": "General"},
+        {"name": "activeRatio", "kind": "float", "group": "General"},
+        {"name": "aspect", "kind": "float", "group": "General"},
+        {"name": "sideScale", "kind": "float", "group": "General"},
+        {"name": "sideOpacity", "kind": "float", "group": "General"},
+        {"name": "sideSpacing", "kind": "float", "group": "General"},
+        {"name": "cornerRadius", "kind": "int", "group": "General"},
+        {"name": "showText", "kind": "bool", "group": "General"},
+        {"name": "showPlay", "kind": "bool", "group": "General"},
+        {"name": "titleColor", "kind": "color", "group": "Colors"},
+        {"name": "artistColor", "kind": "color", "group": "Colors"},
+        {"name": "playColor", "kind": "color", "group": "Colors"},
+    ]
+
     currentChanged = Signal(int)
     itemClicked = Signal(int)
     playClicked = Signal(int)

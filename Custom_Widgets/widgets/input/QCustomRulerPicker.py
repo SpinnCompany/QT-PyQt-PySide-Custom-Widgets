@@ -66,6 +66,27 @@ class QCustomRulerPicker(QWidget):
         "tokens_used": ["accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "orientation", "kind": "choice", "group": "General"},
+        {"name": "minimum", "kind": "float", "group": "General"},
+        {"name": "maximum", "kind": "float", "group": "General"},
+        {"name": "value", "kind": "float", "group": "General"},
+        {"name": "step", "kind": "float", "group": "General"},
+        {"name": "majorEvery", "kind": "int", "group": "General"},
+        {"name": "centered", "kind": "bool", "group": "General"},
+        {"name": "tickSpacing", "kind": "float", "group": "General"},
+        {"name": "snap", "kind": "bool", "group": "General"},
+        {"name": "unit", "kind": "str", "group": "General"},
+        {"name": "showValue", "kind": "bool", "group": "General"},
+        {"name": "tickColor", "kind": "color", "group": "Colors"},
+        {"name": "majorTickColor", "kind": "color", "group": "Colors"},
+        {"name": "indicatorColor", "kind": "color", "group": "Colors"},
+        {"name": "labelColor", "kind": "color", "group": "Colors"},
+        {"name": "valueColor", "kind": "color", "group": "Colors"},
+    ]
+
     def __init__(self, parent=None, value=65.0, minimum=40.0, maximum=120.0,
                  step=1.0, orientation="horizontal"):
         super().__init__(parent)

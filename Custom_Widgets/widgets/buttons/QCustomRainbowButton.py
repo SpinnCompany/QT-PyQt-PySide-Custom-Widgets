@@ -61,6 +61,22 @@ class QCustomRainbowButton(QWidget):
         "tokens_used": ["surface", "on-surface"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "text", "kind": "str", "group": "General"},
+        {"name": "colorsCsv", "kind": "str", "group": "Colors"},
+        {"name": "borderWidth", "kind": "int", "group": "General"},
+        {"name": "cornerRadius", "kind": "int", "group": "General"},
+        {"name": "speed", "kind": "int", "group": "Animation"},
+        {"name": "animated", "kind": "bool", "group": "Animation"},
+        {"name": "glow", "kind": "bool", "group": "General"},
+        {"name": "filled", "kind": "bool", "group": "General"},
+        {"name": "sizeVariant", "kind": "choice", "group": "General"},
+        {"name": "textColor", "kind": "color", "group": "Colors"},
+        {"name": "surfaceColor", "kind": "color", "group": "Colors"},
+    ]
+
     _DEFAULT_COLORS = ["#2563eb", "#a855f7", "#ec4899", "#f59e0b", "#16a34a",
                        "#2563eb"]
     _HEIGHTS = {"sm": 34, "md": 44, "lg": 54}

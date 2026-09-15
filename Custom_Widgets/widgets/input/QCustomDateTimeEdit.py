@@ -71,6 +71,13 @@ class QCustomDateEdit(_VariantMixin, QDateEdit):
                         "accent", "on-primary", "focus-ring"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "variant", "kind": "choice", "group": "General"},
+        {"name": "sizeVariant", "kind": "choice", "group": "General"},
+    ]
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self._initVariant()
@@ -106,6 +113,13 @@ class QCustomTimeEdit(_VariantMixin, QTimeEdit):
         "tokens_used": ["surface", "on-surface", "outline", "accent", "focus-ring"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "variant", "kind": "choice", "group": "General"},
+        {"name": "sizeVariant", "kind": "choice", "group": "General"},
+    ]
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self._initVariant()
@@ -135,6 +149,10 @@ class QCustomDateRangeEdit(QWidget):
         "signals": ["rangeChanged"],
         "tokens_used": ["surface", "on-surface", "outline", "accent"],
     }
+
+    # No Designer-editable properties of its own: the range is set in code via
+    # setDateRange(). Nothing to list in the Custom Properties dock.
+    DESIGNER_CUSTOM_PROPS = []
 
     def __init__(self, parent=None):
         super().__init__(parent)

@@ -60,6 +60,20 @@ class QCustomSocialButton(QWidget):
         "tokens_used": ["surface", "on-surface"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "brand", "kind": "str", "group": "General"},
+        {"name": "text", "kind": "str", "group": "General"},
+        {"name": "iconPath", "kind": "str", "group": "General"},
+        {"name": "variant", "kind": "choice", "group": "General"},
+        {"name": "shape", "kind": "choice", "group": "General"},
+        {"name": "sizeVariant", "kind": "choice", "group": "General"},
+        {"name": "iconOnly", "kind": "bool", "group": "General"},
+        {"name": "brandColor", "kind": "color", "group": "Colors"},
+        {"name": "surfaceColor", "kind": "color", "group": "Colors"},
+    ]
+
     #: Brand -> (colour, default caption). Colours only; no marks are drawn.
     BRANDS = {
         "github": ("#24292f", "Continue with GitHub"),

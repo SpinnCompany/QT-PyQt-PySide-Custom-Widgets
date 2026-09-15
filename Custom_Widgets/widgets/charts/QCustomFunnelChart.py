@@ -64,6 +64,23 @@ class QCustomFunnelChart(QWidget):
         "tokens_used": ["accent", "on-surface", "surface"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "stagesCsv", "kind": "str", "group": "General"},
+        {"name": "colorsCsv", "kind": "str", "group": "Colors"},
+        {"name": "shape", "kind": "choice", "group": "General"},
+        {"name": "orientation", "kind": "choice", "group": "General"},
+        {"name": "gapPx", "kind": "int", "group": "General"},
+        {"name": "neckRatio", "kind": "float", "group": "General"},
+        {"name": "showLabels", "kind": "bool", "group": "General"},
+        {"name": "showValues", "kind": "bool", "group": "General"},
+        {"name": "showPercent", "kind": "bool", "group": "General"},
+        {"name": "percentOf", "kind": "choice", "group": "General"},
+        {"name": "labelColor", "kind": "color", "group": "Colors"},
+        {"name": "outsideLabelColor", "kind": "color", "group": "Colors"},
+    ]
+
     _DEFAULT_COLORS = ["#2563eb", "#3b82f6", "#60a5fa", "#93c5fd", "#bfdbfe",
                        "#dbeafe"]
 

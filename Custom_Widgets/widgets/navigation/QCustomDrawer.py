@@ -14,7 +14,7 @@
 ##     drawer.contentLayout().addWidget(nav)
 ##     drawer.open()
 ########################################################################
-from qtpy.QtCore import Qt, Signal, QPoint, QPropertyAnimation, QEasingCurve
+from qtpy.QtCore import Qt, Signal, QPoint, QPropertyAnimation, QEasingCurve, Property
 from qtpy.QtWidgets import QWidget, QFrame, QVBoxLayout, QGraphicsOpacityEffect
 
 
@@ -46,6 +46,28 @@ class QCustomDrawer(QWidget):
         "signals": ["opened", "closed"],
         "tokens_used": ["surface", "on-surface", "outline"],
     }
+
+    # -- designer-facing properties (editable in the Custom Properties dock) --
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "side", "kind": "choice", "values": ["left", "right", "top", "bottom"]},
+    ]
+
+    @Property(str)
+    def side(self):
+        return self._side
+
+    @side.setter
+    def side(self, value):
+        value = str(value)
+        self._side = value if value in _SIDES else "left"
+
+    @Property(int)
+    def drawerSize(self):
+        return self._size
+
+    @drawerSize.setter
+    def drawerSize(self, value):
+        self._size = int(value)
 
     def __init__(self, parent, side="left", size=300):
         super().__init__(parent)

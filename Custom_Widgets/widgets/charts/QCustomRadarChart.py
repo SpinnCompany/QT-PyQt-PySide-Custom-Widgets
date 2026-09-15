@@ -71,6 +71,27 @@ class QCustomRadarChart(QWidget):
         "tokens_used": ["accent", "outline", "on-surface", "surface-muted"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "axesCsv", "kind": "str", "group": "General"},
+        {"name": "seriesCsv", "kind": "str", "group": "General"},
+        {"name": "seriesColorsCsv", "kind": "str", "group": "Colors"},
+        {"name": "maxValue", "kind": "float", "group": "General"},
+        {"name": "rings", "kind": "int", "group": "General"},
+        {"name": "gridStyle", "kind": "choice", "group": "General"},
+        {"name": "startAngle", "kind": "int", "group": "General"},
+        {"name": "fillOpacity", "kind": "float", "group": "General"},
+        {"name": "lineWidth", "kind": "float", "group": "General"},
+        {"name": "showAxisLabels", "kind": "bool", "group": "General"},
+        {"name": "showRingLabels", "kind": "bool", "group": "General"},
+        {"name": "showMarkers", "kind": "bool", "group": "General"},
+        {"name": "showLegend", "kind": "bool", "group": "General"},
+        {"name": "gridColor", "kind": "color", "group": "Colors"},
+        {"name": "axisColor", "kind": "color", "group": "Colors"},
+        {"name": "labelColor", "kind": "color", "group": "Colors"},
+    ]
+
     _DEFAULT_COLORS = ["#2563eb", "#16a34a", "#f59e0b", "#dc2626", "#7c3aed",
                        "#0891b2"]
     _LEGEND_SWATCH = 10

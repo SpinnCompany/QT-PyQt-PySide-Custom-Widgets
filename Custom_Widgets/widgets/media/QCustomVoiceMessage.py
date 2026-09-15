@@ -171,6 +171,21 @@ class QCustomVoiceMessage(QWidget):
         "tokens_used": ["accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "valuesCsv", "kind": "str", "group": "General"},
+        {"name": "duration", "kind": "str", "group": "Animation"},
+        {"name": "progress", "kind": "float", "group": "General"},
+        {"name": "playing", "kind": "bool", "group": "General"},
+        {"name": "playedColor", "kind": "color", "group": "Colors"},
+        {"name": "unplayedColor", "kind": "color", "group": "Colors"},
+        {"name": "buttonColor", "kind": "color", "group": "Colors"},
+        {"name": "buttonIconColor", "kind": "color", "group": "Colors"},
+        {"name": "durationColor", "kind": "color", "group": "Colors"},
+        {"name": "buttonDiameter", "kind": "int", "group": "General"},
+    ]
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("QCustomVoiceMessage")

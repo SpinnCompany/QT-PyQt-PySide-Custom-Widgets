@@ -14,7 +14,7 @@
 ## applyColors(...) so it flips with the app theme (it is a top-level popup, so
 ## the app stylesheet does not cascade in automatically).
 ########################################################################
-from qtpy.QtCore import Qt, Signal, QPoint
+from qtpy.QtCore import Qt, Signal, QPoint, Property
 from qtpy.QtGui import QColor
 from qtpy.QtWidgets import (QWidget, QFrame, QVBoxLayout, QHBoxLayout, QLabel,
                             QPushButton, QGraphicsDropShadowEffect, QSizePolicy)
@@ -41,7 +41,40 @@ class QCustomMenu(QWidget):
         "tokens_used": ["accent", "background", "text"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "itemHeight", "kind": "int", "group": "General"},
+        {"name": "cornerRadius", "kind": "int", "group": "General"},
+        {"name": "minWidth", "kind": "int", "group": "General"},
+    ]
+
     triggered = Signal(str)
+
+    # -- designer-facing properties (editable in the Custom Properties dock) --
+    @Property(int)
+    def itemHeight(self):
+        return self._item_height
+
+    @itemHeight.setter
+    def itemHeight(self, value):
+        self._item_height = int(value)
+
+    @Property(int)
+    def cornerRadius(self):
+        return self._corner_radius
+
+    @cornerRadius.setter
+    def cornerRadius(self, value):
+        self._corner_radius = int(value)
+
+    @Property(int)
+    def minWidth(self):
+        return self._min_width
+
+    @minWidth.setter
+    def minWidth(self, value):
+        self._min_width = int(value)
 
     def __init__(self, parent=None):
         super().__init__(parent, Qt.Popup | Qt.FramelessWindowHint | Qt.NoDropShadowWindowHint)

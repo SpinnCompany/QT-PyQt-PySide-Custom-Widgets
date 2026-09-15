@@ -65,6 +65,25 @@ class QCustomRangeBarChart(QWidget):
         "tokens_used": ["accent", "outline", "on-surface", "surface-muted"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "rangesCsv", "kind": "str", "group": "General"},
+        {"name": "categoriesCsv", "kind": "str", "group": "General"},
+        {"name": "orientation", "kind": "choice", "group": "General"},
+        {"name": "barWidthRatio", "kind": "float", "group": "General"},
+        {"name": "cornerRadius", "kind": "int", "group": "General"},
+        {"name": "tickCount", "kind": "int", "group": "General"},
+        {"name": "showGrid", "kind": "bool", "group": "General"},
+        {"name": "showAxis", "kind": "bool", "group": "General"},
+        {"name": "showLabels", "kind": "bool", "group": "General"},
+        {"name": "showBounds", "kind": "bool", "group": "General"},
+        {"name": "barColor", "kind": "color", "group": "Colors"},
+        {"name": "gridColor", "kind": "color", "group": "Colors"},
+        {"name": "labelColor", "kind": "color", "group": "Colors"},
+        {"name": "boundsColor", "kind": "color", "group": "Colors"},
+    ]
+
     _PAD = 10.0
 
     def __init__(self, parent=None, ranges=None):

@@ -40,6 +40,15 @@ class QCustomStatCard(QWidget):
                         "success", "destructive"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "label", "kind": "str", "group": "General"},
+        {"name": "value", "kind": "str", "group": "General"},
+        {"name": "caption", "kind": "str", "group": "General"},
+        {"name": "trend", "kind": "choice", "group": "General"},
+    ]
+
     _ARROWS = {"up": "▲", "down": "▼", "flat": ""}
 
     def __init__(self, parent=None, label="", value="", delta="", trend="flat",

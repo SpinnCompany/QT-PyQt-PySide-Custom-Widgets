@@ -26,6 +26,11 @@ class QCustomSlideMenu(QWidget):
         </widget>
     </ui>
     """
+    # No Designer-editable properties: collapse/expand are driven via methods
+    # (collapse()/expand()) and the json-styles section. Nothing to list in
+    # the Custom Properties dock.
+    DESIGNER_CUSTOM_PROPS = []
+
     # Define new signals for collapse and expand events
     onCollapsed = Signal()
     onExpanded = Signal()

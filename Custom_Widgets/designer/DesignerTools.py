@@ -15,6 +15,7 @@
 ##
 ## Everything is best-effort and must never break Designer startup.
 ########################################################################
+import importlib
 import logging
 import os
 import re
@@ -83,11 +84,24 @@ class _LogEmitter2(QObject):
 
 class LogViewDock(QDockWidget):
     """Log view with a footer: level filter, search, clear, and live
-    warning/error counts."""
+    warning/error counts. Rendered IDE-style: errors red, warnings amber,
+    success green, debug grey (colours chosen to stay readable on both
+    light and dark Designer palettes)."""
 
     _instance = None
     _LEVELS = [("All", 0), ("Info", logging.INFO),
                ("Warnings", logging.WARNING), ("Errors", logging.ERROR)]
+
+    # levelno -> text colour (None = default palette text colour).
+    _LEVEL_COLORS = {
+        logging.DEBUG: QColor("#8b949e"),
+        logging.INFO: None,
+        logging.WARNING: QColor("#d19a00"),
+        logging.ERROR: QColor("#e5484d"),
+        logging.CRITICAL: QColor("#ff3b30"),
+    }
+    _SUCCESS_COLOR = QColor("#2ea043")
+    _MUTED_COLOR = QColor("#8b949e")
 
     def __init__(self, parent=None):
         super().__init__("Custom Widgets - Logs", parent)
@@ -123,6 +137,8 @@ class LogViewDock(QDockWidget):
         footer.addWidget(self._search, 1)
 
         self._counts = QLabel()
+        self._counts.setTextFormat(Qt.TextFormat.RichText)
+        self._counts.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         footer.addWidget(self._counts)
 
         copy = QToolButton()
@@ -173,7 +189,7 @@ class LogViewDock(QDockWidget):
             self._warnings += 1
         self._updateCounts()
         if self._passesFilter(levelno, text):
-            self._view.appendPlainText(text)
+            self._appendText(levelno, text)
 
     def _passesFilter(self, levelno, text):
         min_level = self._LEVELS[self._levelBox.currentIndex()][1]
@@ -184,12 +200,56 @@ class LogViewDock(QDockWidget):
 
     def _rerender(self):
         self._view.clear()
-        self._view.appendPlainText("\n".join(
-            text for levelno, text in self._records
-            if self._passesFilter(levelno, text)))
+        for levelno, text in self._records:
+            if self._passesFilter(levelno, text):
+                self._appendText(levelno, text)
+
+    def _appendText(self, levelno, text):
+        """Append one log line coloured by its level (IDE-style)."""
+        fmt = QTextCharFormat()
+        if "SUCCESS:" in text:  # logSuccess() prefixes its message
+            fmt.setForeground(self._SUCCESS_COLOR)
+        else:
+            color = self._LEVEL_COLORS.get(levelno)
+            if color is not None:
+                fmt.setForeground(color)
+            if levelno >= logging.CRITICAL:
+                fmt.setFontWeight(QFont.Weight.Bold)
+
+        at_bottom = self._atBottom()
+        cursor = self._view.textCursor()
+        cursor.movePosition(QTextCursor.MoveOperation.End)
+        if not self._view.document().isEmpty():
+            cursor.insertBlock()
+        cursor.insertText(text, fmt)
+        self._view.setTextCursor(cursor)
+        if at_bottom:
+            self._view.ensureCursorVisible()
+
+    def _atBottom(self):
+        """True when the view is scrolled to the bottom (follow output)."""
+        sb = self._view.verticalScrollBar()
+        return sb.value() >= sb.maximum() - 8
 
     def _updateCounts(self):
-        self._counts.setText(f"⚠ {self._warnings}  ✕ {self._errors}")
+        warn_color = self._LEVEL_COLORS[logging.WARNING].name()
+        err_color = self._LEVEL_COLORS[logging.ERROR].name()
+        parts = []
+        if self._warnings:
+            count = self._warnings
+            parts.append(
+                f'<span style="color:{warn_color}"><b>{count} warning'
+                f'{"s" if count != 1 else ""}</b></span>')
+        if self._errors:
+            count = self._errors
+            parts.append(
+                f'<span style="color:{err_color}"><b>{count} error'
+                f'{"s" if count != 1 else ""}</b></span>')
+        if not parts:
+            parts.append(
+                f'<span style="color:{self._MUTED_COLOR.name()}">no issues'
+                f"</span>")
+        self._counts.setText("   ".join(parts))
 
     @classmethod
     def raiseAndFilterErrors(cls):
@@ -1374,6 +1434,208 @@ def _matchingWidgetNames(container, type_names):
     return sorted(names)
 
 
+# Standard Qt/QWidget meta properties that would otherwise slip through the
+# custom-property filter (read-only getters like pos()/size() report writable
+# to the meta-object on some bindings).
+_STANDARD_WRITABLE_FALSE_POSITIVES = frozenset({"pos", "size", "geometry"})
+
+
+def _kindFromCatalogType(ptype):
+    """Map a __catalog__ prop type to a dock editor kind."""
+    return _normalizeKind(
+        {"string": "str", "bool": "bool", "int": "int",
+         "float": "float", "color": "color", "enum": "choice",
+         "easing": "easing"}.get(ptype, "str"))
+
+
+def _normalizeKind(kind):
+    """Canonicalise an authored editor kind (tolerates historical typos like
+    ``"string"`` for the str editor)."""
+    return {"string": "str"}.get(kind, kind)
+
+
+def _kindFromMetaType(type_name):
+    """Map a meta-object property typeName to a dock editor kind."""
+    return {"bool": "bool", "int": "int", "double": "float",
+            "QString": "str", "QColor": "color"}.get(type_name, "str")
+
+
+def _widgetCustomProps(widget):
+    """Every designer-facing custom property of `widget`, in definition order.
+
+    Ground truth is the live Qt meta-object - every @Property the widget or
+    its base classes register, whether or not the class authors a curated spec
+    - enriched with richer editor kinds (easing/file/theme/widget-ref and enum
+    choices) from DESIGNER_CUSTOM_PROPS and the class __catalog__ props when
+    those are authored. Falling back to the meta-object guarantees the dock
+    lists the full custom-property surface of EVERY custom widget, present and
+    future, instead of only the subset some class remembers to declare.
+    """
+    cls = type(widget)
+    specs = {}
+    order = []
+
+    def add_spec(spec):
+        name = spec["name"]
+        if name not in specs:
+            order.append(name)
+        specs[name] = spec
+
+    # Enrichment layer 1: the authored rich spec (wins on editor kind/group).
+    for spec in getattr(cls, "DESIGNER_CUSTOM_PROPS", None) or []:
+        if spec.get("name"):
+            spec = dict(spec)
+            spec["kind"] = _normalizeKind(spec.get("kind", "str"))
+            add_spec(spec)
+
+    # Enrichment layer 2: __catalog__ props (typed enum choices).
+    catalog = getattr(cls, "__catalog__", None)
+    cat_props = catalog.get("props") if isinstance(catalog, dict) else None
+    if cat_props:
+        for name, meta in cat_props.items():
+            spec = specs.get(name, {"name": name})
+            spec.setdefault("kind", _kindFromCatalogType(meta.get("type")))
+            if spec["kind"] == "choice" and not spec.get("choices"):
+                spec["choices"] = list(meta.get("values") or [])
+            add_spec(spec)
+
+    # Ground truth: the live meta-object's custom (non-stdset) writable props.
+    # `hasattr` separates real @Property definitions from runtime dynamic
+    # properties (theme/QSS state like "muted"), which are set with
+    # setProperty() and must not clutter the dock.
+    mo = widget.metaObject()
+    for i in range(mo.propertyCount()):
+        p = mo.property(i)
+        if not (p.isWritable() and p.isReadable()) or p.hasStdCppSet():
+            continue
+        name = p.name()
+        if name in _STANDARD_WRITABLE_FALSE_POSITIVES or not hasattr(cls, name):
+            continue
+        spec = specs.get(name, {"name": name})
+        spec.setdefault("kind", _kindFromMetaType(p.typeName()))
+        add_spec(spec)
+
+    return [specs[name] for name in order]
+
+
+def _findFormWindow(widget):
+    """The form window owning `widget`, or None."""
+    from qtpy.QtDesigner import QDesignerFormWindowInterface
+    try:
+        return QDesignerFormWindowInterface.findFormWindow(widget)
+    except Exception:
+        return None
+
+
+def _formPromotionMap(fw):
+    """{objectName: promoted class name} for every `<widget class=... name=...>`
+    in the form's .ui whose class is declared in <customwidgets>. Promoted
+    widgets are only base-class placeholders in design mode, so the dock reads
+    the real class from the form definition."""
+    import xml.etree.ElementTree as ET
+    path = getattr(fw, "fileName", lambda: "")()
+    if not path or not os.path.isfile(path):
+        return {}
+    try:
+        root = ET.parse(path).getroot()
+    except Exception:
+        return {}
+    promoted = set()
+    for cw in root.iter("customwidget"):
+        cls_el = cw.find("class")
+        if cls_el is not None and cls_el.text and cls_el.text.strip():
+            promoted.add(cls_el.text.strip())
+    result = {}
+    for w in root.iter("widget"):
+        name = w.get("name")
+        cls = w.get("class")
+        if name and cls and cls in promoted:
+            result[name] = cls
+    return result
+
+
+def _promotionModule(fw, cls_name):
+    """The header/module import for a promoted class, e.g.
+    "Custom_Widgets.QCustomStatCard"."""
+    import xml.etree.ElementTree as ET
+    path = getattr(fw, "fileName", lambda: "")()
+    if not path or not os.path.isfile(path):
+        return None
+    try:
+        root = ET.parse(path).getroot()
+    except Exception:
+        return None
+    for cw in root.iter("customwidget"):
+        cls_el = cw.find("class")
+        if cls_el is not None and cls_el.text and cls_el.text.strip() == cls_name:
+            hdr = cw.find("header")
+            if hdr is not None and hdr.text and hdr.text.strip():
+                return hdr.text.strip()
+    return None
+
+
+def _classCustomProps(cls):
+    """Dock rows for a widget class WITHOUT a live instance (the placeholder in
+    design mode): DESIGNER_CUSTOM_PROPS + __catalog__ enum choices, plus a
+    best-effort live meta-object via a throwaway instantiation."""
+    specs = {}
+    order = []
+
+    def add_spec(spec):
+        name = spec["name"]
+        if name not in specs:
+            order.append(name)
+        specs[name] = spec
+
+    for spec in getattr(cls, "DESIGNER_CUSTOM_PROPS", None) or []:
+        if spec.get("name"):
+            spec = dict(spec)
+            spec["kind"] = _normalizeKind(spec.get("kind", "str"))
+            add_spec(spec)
+    catalog = getattr(cls, "__catalog__", None)
+    cat_props = catalog.get("props") if isinstance(catalog, dict) else None
+    if cat_props:
+        for name, meta in cat_props.items():
+            spec = specs.get(name, {"name": name})
+            spec.setdefault("kind", _kindFromCatalogType(meta.get("type")))
+            if spec["kind"] == "choice" and not spec.get("choices"):
+                spec["choices"] = list(meta.get("values") or [])
+            add_spec(spec)
+    try:
+        inst = cls(QWidget())
+    except Exception:
+        inst = None
+    if inst is not None:
+        try:
+            rows = _widgetCustomProps(inst)
+            inst.deleteLater()
+            return rows
+        except Exception:
+            pass
+    return [specs[name] for name in order]
+
+
+def _promotedCustomProps(fw, widget):
+    """Dock rows for a promoted custom widget whose on-form instance is only a
+    base-class placeholder (Qt Designer design mode). Resolves the promoted
+    class from the form's .ui and returns its property specs. [] when the
+    widget is not a declared promotion."""
+    cls_name = _formPromotionMap(fw).get(widget.objectName())
+    if not cls_name:
+        return []
+    mod = _promotionModule(fw, cls_name)
+    if not mod:
+        return []
+    try:
+        module = importlib.import_module(mod)
+        cls = getattr(module, cls_name, None)
+    except Exception:
+        return []
+    if cls is None:
+        return []
+    return _classCustomProps(cls)
+
+
 class CustomPropertiesDock(QDockWidget):
     """'Custom Properties' pane - one place to edit every custom property
     of the selected Custom_Widgets widget."""
@@ -1456,13 +1718,13 @@ class CustomPropertiesDock(QDockWidget):
             target = None
             for i in range(cursor.selectedWidgetCount()):
                 candidate = cursor.selectedWidget(i)
-                if hasattr(type(candidate), "DESIGNER_CUSTOM_PROPS"):
+                if _widgetCustomProps(candidate) or _promotedCustomProps(fw, candidate):
                     target = candidate
                     break
             if target is None:
                 container = fw.mainContainer()
                 if container is not None and \
-                        hasattr(type(container), "DESIGNER_CUSTOM_PROPS") and \
+                        _widgetCustomProps(container) and \
                         cursor.selectedWidgetCount() == 0:
                     target = container
             self.setTargetWidget(target)
@@ -1486,6 +1748,25 @@ class CustomPropertiesDock(QDockWidget):
         self._widget = widget
         self._rebuild()
 
+    def _resolveSpecs(self):
+        """Rows for the current widget. Real Custom_Widgets instances are read
+        live; a base-class placeholder is resolved to its promoted class from
+        the form's .ui (design mode) so the dock still lists its properties.
+        Returns (widget, specs, header_label)."""
+        widget = self._widget
+        if widget is None:
+            return None, [], ""
+        specs = _widgetCustomProps(widget)
+        if specs:
+            return widget, specs, type(widget).__name__
+        fw = _findFormWindow(widget)
+        if fw is not None:
+            specs = _promotedCustomProps(fw, widget)
+            if specs:
+                cls_name = _formPromotionMap(fw).get(widget.objectName())
+                return widget, specs, cls_name or type(widget).__name__
+        return None, [], ""
+
     def _clearLayout(self):
         while self._layout.count():
             item = self._layout.takeAt(0)
@@ -1497,19 +1778,19 @@ class CustomPropertiesDock(QDockWidget):
 
     def _rebuild(self):
         self._clearLayout()
-        widget = self._widget
-        if widget is None or not hasattr(type(widget), "DESIGNER_CUSTOM_PROPS"):
+        widget, specs, cls_label = self._resolveSpecs()
+        if widget is None or not specs:
             self._layout.addWidget(self._placeholder)
             self._placeholder.show()
             self._layout.addStretch(1)
             return
         name = widget.objectName() or "(unnamed)"
-        self._header.setText(f"{type(widget).__name__}  —  {name}")
+        self._header.setText(f"{cls_label}  —  {name}")
         self._layout.addWidget(self._header)
         self._header.show()
 
         groups = {}
-        for spec in type(widget).DESIGNER_CUSTOM_PROPS:
+        for spec in specs:
             groups.setdefault(spec.get("group", "General"), []).append(spec)
         for group, specs in groups.items():
             label = QLabel(group)
@@ -1525,7 +1806,16 @@ class CustomPropertiesDock(QDockWidget):
         try:
             name = spec["name"]
             kind = spec.get("kind", "str")
-            current = widget.property(name)
+            # Read through the Python @Property (not QObject::property): the
+            # meta-object's registered type can disagree with the getter's
+            # return value (e.g. QCustomSidebar redeclares an inherited
+            # QString property as int), and property() then crashes converting
+            # the value. getattr reads the same getter safely. On a promoted
+            # placeholder the getter doesn't exist - fall back to the .ui-set
+            # dynamic property (property() returns None when unset).
+            current = getattr(widget, name, None)
+            if current is None:
+                current = widget.property(name)
             row = QWidget()
             hbox = QHBoxLayout(row)
             hbox.setContentsMargins(0, 0, 0, 0)

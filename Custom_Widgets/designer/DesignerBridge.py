@@ -320,6 +320,8 @@ class DesignerBridgeServer(QObject):
             return self._setWidgetProperty(str(message.get("widget", "")),
                                            str(message.get("property", "")),
                                            message.get("value"))
+        if method == "showCustomProperties":
+            return self._showCustomProperties(str(message.get("widget", "")))
         if method == "openWorkspace":
             try:
                 from Custom_Widgets.DesignerTools import switchWorkspace
@@ -1294,6 +1296,45 @@ class DesignerBridgeServer(QObject):
             return {"result": "ok", "widget": widget_name, "property": prop}
         except Exception as e:
             return {"error": f"setWidgetProperty failed: {e}"}
+
+    def _showCustomProperties(self, widget_name):
+        """Raise the Custom Properties dock focused on a named widget of any
+        open form, and report the property list the dock will show. Returns
+        the same _widgetCustomProps() rows so callers can assert the dock
+        populated (the docstring contract of rule #11)."""
+        if not widget_name:
+            return {"error": "no widget name given"}
+        forms = self._formWindows()
+        if not forms:
+            return {"error": "no open forms"}
+        target = None
+        for fw in forms:
+            container = fw.mainContainer()
+            if container is None:
+                continue
+            if container.objectName() == widget_name:
+                target = container
+                break
+            if target is None:
+                for child in container.findChildren(QWidget):
+                    if child.objectName() == widget_name:
+                        target = child
+                        break
+            if target is not None:
+                break
+        if target is None:
+            return {"error": f"no widget named '{widget_name}' in any open "
+                             f"form (see getObjectInfos)"}
+        try:
+            from Custom_Widgets.DesignerTools import raiseCustomProperties
+            from Custom_Widgets.DesignerTools import _widgetCustomProps
+        except Exception as e:
+            return {"error": f"dock unavailable: {e}"}
+        if not raiseCustomProperties(target):
+            return {"error": "Custom Properties dock not installed"}
+        return {"result": "ok", "widget": widget_name,
+                "class": type(target).__name__,
+                "properties": _widgetCustomProps(target)}
 
 
 class DesignerBridgeClient:

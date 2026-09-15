@@ -100,6 +100,27 @@ class QCustomChatListItem(QFrame):
         "tokens_used": ["accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "name", "kind": "str", "group": "General"},
+        {"name": "preview", "kind": "str", "group": "General"},
+        {"name": "time", "kind": "str", "group": "General"},
+        {"name": "unread", "kind": "int", "group": "General"},
+        {"name": "online", "kind": "bool", "group": "General"},
+        {"name": "active", "kind": "bool", "group": "General"},
+        {"name": "muted", "kind": "bool", "group": "General"},
+        {"name": "activeColor", "kind": "color", "group": "Colors"},
+        {"name": "nameColor", "kind": "color", "group": "Colors"},
+        {"name": "previewColor", "kind": "color", "group": "Colors"},
+        {"name": "timeColor", "kind": "color", "group": "Colors"},
+        {"name": "activeNameColor", "kind": "color", "group": "Colors"},
+        {"name": "activeTimeColor", "kind": "color", "group": "Colors"},
+        {"name": "accentColor", "kind": "color", "group": "Colors"},
+        {"name": "radius", "kind": "int", "group": "General"},
+        {"name": "avatarSize", "kind": "int", "group": "General"},
+    ]
+
     def __init__(self, parent=None, name="", preview="", time=""):
         super().__init__(parent)
         self.setObjectName("QCustomChatListItem")

@@ -59,6 +59,19 @@ class QCustomDateRangePicker(QWidget):
         "tokens_used": ["accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "monthsVisible", "kind": "int", "group": "General"},
+        {"name": "accentColor", "kind": "color", "group": "Colors"},
+        {"name": "rangeBandColor", "kind": "color", "group": "Colors"},
+        {"name": "todayColor", "kind": "color", "group": "Colors"},
+        {"name": "textColor", "kind": "color", "group": "Colors"},
+        {"name": "mutedColor", "kind": "color", "group": "Colors"},
+        {"name": "headerColor", "kind": "color", "group": "Colors"},
+        {"name": "selectedTextColor", "kind": "color", "group": "Colors"},
+    ]
+
     def __init__(self, parent=None, start=None, end=None, monthsVisible=2):
         super().__init__(parent)
         self.setObjectName("QCustomDateRangePicker")

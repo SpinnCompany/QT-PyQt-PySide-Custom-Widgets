@@ -111,6 +111,42 @@ class _AliasLoader(importlib.abc.Loader):
         real = importlib.import_module(self._real_name)
         sys.modules[module.__name__] = real
 
+    def _real_spec(self):
+        """The spec of the module we alias to (never executes it)."""
+        try:
+            return importlib.util.find_spec(self._real_name)
+        except (ImportError, AttributeError, TypeError, ValueError):
+            return None
+
+    def get_code(self, fullname):  # allow-snake-case: importlib Loader protocol
+        """Code for the real module, so `python -m Custom_Widgets.<Module>`
+        (runpy) can execute an aliased module. _AliasLoader.exec_module is
+        enough for plain imports; runpy asks the loader for a code object
+        instead, and without this every `-m` under the package died with
+        'AttributeError: _AliasLoader has no attribute get_code'."""
+        spec = self._real_spec()
+        loader = spec.loader if spec is not None else None
+        get_code = getattr(loader, "get_code", None)
+        if get_code is None:
+            return None
+        return get_code(spec.name)
+
+    def get_source(self, fullname):  # allow-snake-case: importlib Loader protocol
+        spec = self._real_spec()
+        loader = spec.loader if spec is not None else None
+        get_source = getattr(loader, "get_source", None)
+        if get_source is None:
+            return None
+        return get_source(spec.name)
+
+    def get_filename(self, fullname):  # allow-snake-case: importlib Loader protocol
+        spec = self._real_spec()
+        loader = spec.loader if spec is not None else None
+        get_filename = getattr(loader, "get_filename", None)
+        if get_filename is None:
+            return None
+        return get_filename(spec.name)
+
 
 class LegacyPathFinder(importlib.abc.MetaPathFinder):
     """Resolves `Custom_Widgets.<Module>` to its new home."""

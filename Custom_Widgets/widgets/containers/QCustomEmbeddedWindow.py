@@ -9,7 +9,7 @@
 #   https://github.com/kadir014/pyqt5-custom-widgets  #
 
 import random
-from qtpy.QtCore import Qt, QRect, Signal, QEasingCurve, QPropertyAnimation, QSize
+from qtpy.QtCore import Qt, QRect, Signal, QEasingCurve, QPropertyAnimation, QSize, Property
 from qtpy.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel, QGraphicsDropShadowEffect, QPushButton, QStyleOption, QStyle, QGraphicsOpacityEffect
 from qtpy.QtGui import QColor, QPainter, QPen, QBrush, QPaintEvent
 
@@ -62,6 +62,48 @@ class QCustomEmbeddedWindow(QWidget):
 
     closed = Signal()
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "borderRadius", "kind": "int", "group": "General"},
+        {"name": "headerHeight", "kind": "int", "group": "General"},
+        {"name": "animationDuration", "kind": "int", "group": "Animation"},
+        {"name": "titleText", "kind": "str", "group": "General"},
+    ]
+
+    # -- designer-facing properties (editable in the Custom Properties dock) --
+    @Property(int)
+    def borderRadius(self):
+        return getattr(self, "_borderRadius", 10)
+
+    @borderRadius.setter
+    def borderRadius(self, value):
+        self._borderRadius = int(value)
+
+    @Property(int)
+    def headerHeight(self):
+        return getattr(self, "_headerHeight", 25)
+
+    @headerHeight.setter
+    def headerHeight(self, value):
+        self._headerHeight = int(value)
+
+    @Property(int)
+    def animationDuration(self):
+        return getattr(self, "_animationDuration", 500)
+
+    @animationDuration.setter
+    def animationDuration(self, value):
+        self._animationDuration = int(value)
+
+    @Property(str)
+    def titleText(self):
+        return getattr(self, "titleTxt", "")
+
+    @titleText.setter
+    def titleText(self, value):
+        self.setTitle(value)
+
     def __init__(self, parent, pos=None, title="New window", icon=None, borderRadius = 10, headerHeight = 25, animationDuration = 500, showForm = None, addWidget = None):
         super().__init__(parent)
 
@@ -73,8 +115,11 @@ class QCustomEmbeddedWindow(QWidget):
         self.customTheme = QCustomTheme()
 
         if pos is None:
-            pos = (random.randint(0, max(0, self.parent().width()-285)),
-                   random.randint(0, max(0, self.parent().height()-190)))
+            par = self.parent()
+            pw = par.width() if par is not None else 800
+            ph = par.height() if par is not None else 600
+            pos = (random.randint(0, max(0, pw-285)),
+                   random.randint(0, max(0, ph-190)))
         self.setMinimumSize(285, 100)
         self.setGeometry(pos[0], pos[1], 285, 190)
 

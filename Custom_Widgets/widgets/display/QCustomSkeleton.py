@@ -35,6 +35,14 @@ class QCustomSkeleton(QWidget):
         "tokens_used": ["surface-muted", "surface"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "shape", "kind": "choice", "group": "General"},
+        {"name": "baseColor", "kind": "color", "group": "Colors"},
+        {"name": "highlightColor", "kind": "color", "group": "Colors"},
+    ]
+
     def __init__(self, parent=None, shape="line"):
         super().__init__(parent)
         self.setObjectName("QCustomSkeleton")

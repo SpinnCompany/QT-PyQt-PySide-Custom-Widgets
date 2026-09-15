@@ -63,6 +63,25 @@ class QCustomRadialBars(QWidget):
         "tokens_used": ["accent", "surface-muted", "on-surface"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "barsCsv", "kind": "str", "group": "General"},
+        {"name": "colorsCsv", "kind": "str", "group": "Colors"},
+        {"name": "maxValue", "kind": "float", "group": "General"},
+        {"name": "startAngle", "kind": "int", "group": "General"},
+        {"name": "clockwise", "kind": "bool", "group": "General"},
+        {"name": "thickness", "kind": "int", "group": "General"},
+        {"name": "spacing", "kind": "int", "group": "General"},
+        {"name": "holeRatio", "kind": "float", "group": "General"},
+        {"name": "rounded", "kind": "bool", "group": "General"},
+        {"name": "showTrack", "kind": "bool", "group": "General"},
+        {"name": "showLabels", "kind": "bool", "group": "General"},
+        {"name": "showValues", "kind": "bool", "group": "General"},
+        {"name": "trackColor", "kind": "color", "group": "Colors"},
+        {"name": "labelColor", "kind": "color", "group": "Colors"},
+    ]
+
     _DEFAULT_COLORS = ["#2563eb", "#16a34a", "#f59e0b", "#dc2626", "#7c3aed",
                        "#0891b2"]
 

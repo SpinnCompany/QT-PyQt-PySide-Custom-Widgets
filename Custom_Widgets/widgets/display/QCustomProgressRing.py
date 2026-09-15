@@ -41,6 +41,19 @@ class QCustomProgressRing(QWidget):
         "tokens_used": ["accent", "outline", "on-surface"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "value", "kind": "int", "group": "General"},
+        {"name": "minimum", "kind": "int", "group": "General"},
+        {"name": "maximum", "kind": "int", "group": "General"},
+        {"name": "showText", "kind": "bool", "group": "General"},
+        {"name": "ringColor", "kind": "color", "group": "Colors"},
+        {"name": "trackColor", "kind": "color", "group": "Colors"},
+        {"name": "textColor", "kind": "color", "group": "Colors"},
+        {"name": "thickness", "kind": "int", "group": "General"},
+    ]
+
     def __init__(self, parent=None, minimum=0, maximum=100, value=0):
         super().__init__(parent)
         self.setObjectName("QCustomProgressRing")

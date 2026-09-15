@@ -57,6 +57,22 @@ class QCustomNumberCounter(QWidget):
         "tokens_used": ["on-surface"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "value", "kind": "float", "group": "General"},
+        {"name": "prefix", "kind": "str", "group": "General"},
+        {"name": "suffix", "kind": "str", "group": "General"},
+        {"name": "decimals", "kind": "int", "group": "General"},
+        {"name": "separator", "kind": "str", "group": "General"},
+        {"name": "duration", "kind": "int", "group": "Animation"},
+        {"name": "fontScale", "kind": "float", "group": "General"},
+        {"name": "bold", "kind": "bool", "group": "General"},
+        {"name": "alignment", "kind": "choice", "group": "General"},
+        {"name": "textColor", "kind": "color", "group": "Colors"},
+        {"name": "displayValue", "kind": "float", "group": "General"},
+    ]
+
     def __init__(self, parent=None, value=0.0, prefix="", suffix=""):
         super().__init__(parent)
         self.setObjectName("QCustomNumberCounter")

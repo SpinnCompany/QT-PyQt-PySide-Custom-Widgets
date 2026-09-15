@@ -63,6 +63,28 @@ class QCustomCandlestickChart(QWidget):
         "tokens_used": ["success", "destructive", "outline", "on-surface"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "ohlcCsv", "kind": "str", "group": "General"},
+        {"name": "labelsCsv", "kind": "str", "group": "General"},
+        {"name": "upColor", "kind": "color", "group": "Colors"},
+        {"name": "downColor", "kind": "color", "group": "Colors"},
+        {"name": "wickColor", "kind": "color", "group": "Colors"},
+        {"name": "gridColor", "kind": "color", "group": "Colors"},
+        {"name": "axisTextColor", "kind": "color", "group": "Colors"},
+        {"name": "showGrid", "kind": "bool", "group": "General"},
+        {"name": "showPriceAxis", "kind": "bool", "group": "General"},
+        {"name": "showLabels", "kind": "bool", "group": "General"},
+        {"name": "showTooltip", "kind": "bool", "group": "General"},
+        {"name": "hollowUpCandles", "kind": "bool", "group": "General"},
+        {"name": "candleWidthRatio", "kind": "float", "group": "General"},
+        {"name": "gridLines", "kind": "int", "group": "General"},
+        {"name": "pricePrecision", "kind": "int", "group": "General"},
+        {"name": "tooltipBackgroundColor", "kind": "color", "group": "Colors"},
+        {"name": "tooltipTextColor", "kind": "color", "group": "Colors"},
+    ]
+
     _PAD_L_NO_AXIS = 8
     _PAD_R = 8
     _PAD_T = 10

@@ -67,6 +67,32 @@ class QCustomPlayerBar(QWidget):
         "tokens_used": ["accent", "surface", "on-surface"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "title", "kind": "str", "group": "General"},
+        {"name": "artist", "kind": "str", "group": "General"},
+        {"name": "coverPath", "kind": "str", "group": "General"},
+        {"name": "position", "kind": "float", "group": "General"},
+        {"name": "elapsedText", "kind": "str", "group": "General"},
+        {"name": "totalText", "kind": "str", "group": "General"},
+        {"name": "playing", "kind": "bool", "group": "General"},
+        {"name": "favorite", "kind": "bool", "group": "General"},
+        {"name": "shuffle", "kind": "bool", "group": "General"},
+        {"name": "repeat", "kind": "bool", "group": "General"},
+        {"name": "barColor", "kind": "color", "group": "Colors"},
+        {"name": "accentColor", "kind": "color", "group": "Colors"},
+        {"name": "trackColor", "kind": "color", "group": "Colors"},
+        {"name": "textColor", "kind": "color", "group": "Colors"},
+        {"name": "subTextColor", "kind": "color", "group": "Colors"},
+        {"name": "iconColor", "kind": "color", "group": "Colors"},
+        {"name": "playBtnColor", "kind": "color", "group": "Colors"},
+        {"name": "cornerRadius", "kind": "int", "group": "General"},
+        {"name": "compactMode", "kind": "bool", "group": "General"},
+        {"name": "durationSeconds", "kind": "float", "group": "General"},
+        {"name": "elapsedSeconds", "kind": "float", "group": "General"},
+    ]
+
     playToggled = Signal(bool)
     nextClicked = Signal()
     prevClicked = Signal()

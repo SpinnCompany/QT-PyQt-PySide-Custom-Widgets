@@ -58,6 +58,22 @@ class QCustomAgendaList(QWidget):
         "tokens_used": ["accent", "up"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "itemsJson", "kind": "str", "group": "General"},
+        {"name": "rowHeight", "kind": "int", "group": "General"},
+        {"name": "railColor", "kind": "color", "group": "Colors"},
+        {"name": "doneColor", "kind": "color", "group": "Colors"},
+        {"name": "activeColor", "kind": "color", "group": "Colors"},
+        {"name": "pendingColor", "kind": "color", "group": "Colors"},
+        {"name": "titleColor", "kind": "color", "group": "Colors"},
+        {"name": "subtitleColor", "kind": "color", "group": "Colors"},
+        {"name": "timeColor", "kind": "color", "group": "Colors"},
+        {"name": "activeBgColor", "kind": "color", "group": "Colors"},
+        {"name": "showRail", "kind": "bool", "group": "General"},
+    ]
+
     def __init__(self, parent=None, items=None):
         super().__init__(parent)
         self.setObjectName("QCustomAgendaList")

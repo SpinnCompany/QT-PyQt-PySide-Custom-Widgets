@@ -39,6 +39,10 @@ class QCustomRichTextEditor(QWidget):
                         "accent", "on-primary"],
     }
 
+    # No Designer-editable properties: content is set in code via
+    # setHtml()/setPlainText(). Nothing to list in the Custom Properties dock.
+    DESIGNER_CUSTOM_PROPS = []
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("QCustomRichTextEditor")

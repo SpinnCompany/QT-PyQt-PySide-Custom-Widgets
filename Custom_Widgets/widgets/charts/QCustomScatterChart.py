@@ -73,6 +73,26 @@ class QCustomScatterChart(QWidget):
         "tokens_used": ["accent", "outline", "on-surface", "surface-muted"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "pointsCsv", "kind": "str", "group": "General"},
+        {"name": "seriesColorsCsv", "kind": "str", "group": "Colors"},
+        {"name": "xAxisTitle", "kind": "str", "group": "General"},
+        {"name": "yAxisTitle", "kind": "str", "group": "General"},
+        {"name": "markerSize", "kind": "float", "group": "General"},
+        {"name": "markerShape", "kind": "choice", "group": "General"},
+        {"name": "markerOpacity", "kind": "float", "group": "General"},
+        {"name": "tickCount", "kind": "int", "group": "General"},
+        {"name": "showGrid", "kind": "bool", "group": "General"},
+        {"name": "showAxes", "kind": "bool", "group": "General"},
+        {"name": "showLegend", "kind": "bool", "group": "General"},
+        {"name": "showTooltip", "kind": "bool", "group": "General"},
+        {"name": "gridColor", "kind": "color", "group": "Colors"},
+        {"name": "axisColor", "kind": "color", "group": "Colors"},
+        {"name": "labelColor", "kind": "color", "group": "Colors"},
+    ]
+
     _DEFAULT_COLORS = ["#2563eb", "#16a34a", "#f59e0b", "#dc2626", "#7c3aed",
                        "#0891b2"]
     _PAD = 10.0

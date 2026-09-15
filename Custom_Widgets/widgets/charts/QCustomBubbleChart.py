@@ -74,6 +74,28 @@ class QCustomBubbleChart(QWidget):
         "tokens_used": ["accent", "up", "down"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "itemsJson", "kind": "str", "group": "General"},
+        {"name": "categoriesJson", "kind": "str", "group": "General"},
+        {"name": "padding", "kind": "float", "group": "General"},
+        {"name": "showLabels", "kind": "bool", "group": "General"},
+        {"name": "minLabelRadius", "kind": "float", "group": "General"},
+        {"name": "labelColor", "kind": "color", "group": "Colors"},
+        {"name": "defaultColor", "kind": "color", "group": "Colors"},
+        {"name": "shadeVariation", "kind": "float", "group": "General"},
+        {"name": "hoverGlow", "kind": "bool", "group": "General"},
+        {"name": "hoverScale", "kind": "float", "group": "General"},
+        {"name": "groupByCategory", "kind": "bool", "group": "General"},
+        {"name": "zoomable", "kind": "bool", "group": "General"},
+        {"name": "showControls", "kind": "bool", "group": "General"},
+        {"name": "searchQuery", "kind": "str", "group": "General"},
+        {"name": "tooltips", "kind": "bool", "group": "General"},
+        {"name": "tooltipBgColor", "kind": "color", "group": "Colors"},
+        {"name": "controlColor", "kind": "color", "group": "Colors"},
+    ]
+
     _DEFAULT_CATS = {
         "positive": "#3fb27f", "negative": "#e0607e", "neutral": "#8b9cff",
         "up": "#3fb27f", "down": "#e0607e", "default": "#8b90a0",

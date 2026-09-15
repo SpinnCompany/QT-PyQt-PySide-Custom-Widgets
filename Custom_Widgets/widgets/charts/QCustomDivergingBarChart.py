@@ -56,6 +56,25 @@ class QCustomDivergingBarChart(QWidget):
         "tokens_used": ["accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "upCsv", "kind": "str", "group": "General"},
+        {"name": "downCsv", "kind": "str", "group": "General"},
+        {"name": "labelsCsv", "kind": "str", "group": "General"},
+        {"name": "upColor", "kind": "color", "group": "Colors"},
+        {"name": "downColor", "kind": "color", "group": "Colors"},
+        {"name": "barWidth", "kind": "int", "group": "General"},
+        {"name": "cornerRadius", "kind": "int", "group": "General"},
+        {"name": "zeroGap", "kind": "int", "group": "General"},
+        {"name": "showAxis", "kind": "bool", "group": "General"},
+        {"name": "showLabels", "kind": "bool", "group": "General"},
+        {"name": "axisPrefix", "kind": "str", "group": "General"},
+        {"name": "axisSuffix", "kind": "str", "group": "General"},
+        {"name": "gridColor", "kind": "color", "group": "Colors"},
+        {"name": "axisTextColor", "kind": "color", "group": "Colors"},
+    ]
+
     def __init__(self, parent=None, up=None, down=None, labels=None):
         super().__init__(parent)
         self.setObjectName("QCustomDivergingBarChart")

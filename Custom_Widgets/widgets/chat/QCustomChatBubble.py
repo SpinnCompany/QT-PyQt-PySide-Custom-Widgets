@@ -122,6 +122,21 @@ class QCustomChatBubble(QFrame):
         "tokens_used": ["accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "text", "kind": "str", "group": "General"},
+        {"name": "side", "kind": "choice", "group": "General"},
+        {"name": "sender", "kind": "str", "group": "General"},
+        {"name": "time", "kind": "str", "group": "General"},
+        {"name": "foot", "kind": "str", "group": "General"},
+        {"name": "bubbleColor", "kind": "color", "group": "Colors"},
+        {"name": "textColor", "kind": "color", "group": "Colors"},
+        {"name": "metaColor", "kind": "color", "group": "Colors"},
+        {"name": "radius", "kind": "int", "group": "General"},
+        {"name": "maxBubbleWidth", "kind": "int", "group": "General"},
+    ]
+
     def __init__(self, parent=None, text="", side="incoming"):
         super().__init__(parent)
         self.setObjectName("QCustomChatBubble")

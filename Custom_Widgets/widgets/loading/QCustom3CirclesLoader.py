@@ -31,6 +31,41 @@ class QCustom3CirclesLoader(QFrame):
         </widget>
     </ui>
     """
+
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "color", "kind": "color", "group": "Colors"},
+        {"name": "penWidth", "kind": "int", "group": "General"},
+        {"name": "animationDuration", "kind": "int", "group": "Animation"},
+    ]
+
+    @Property(QColor)
+    def color(self):
+        return self._color
+
+    @color.setter
+    def color(self, value):
+        self._color = QColor(value)
+        self.update()
+
+    @Property(int)
+    def penWidth(self):
+        return self._penWidth
+
+    @penWidth.setter
+    def penWidth(self, value):
+        self._penWidth = int(value)
+        self.update()
+
+    @Property(int)
+    def animationDuration(self):
+        return self._animationDuration
+
+    @animationDuration.setter
+    def animationDuration(self, value):
+        self._animationDuration = int(value)
+
     def __init__(
             self, 
             parent=None,

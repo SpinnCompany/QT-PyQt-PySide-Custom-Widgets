@@ -29,6 +29,10 @@ class QCustomQPushButtonGroup(QPushButton):
         </widget>
     </ui>
     """
+    # No Designer-editable properties: active/inactive styles are set via
+    # setButtonGroupActiveStyle()/setButtonGroupNotActiveStyle().
+    DESIGNER_CUSTOM_PROPS = []
+
     def __init__(self, parent=None):
         super().__init__(parent)
 

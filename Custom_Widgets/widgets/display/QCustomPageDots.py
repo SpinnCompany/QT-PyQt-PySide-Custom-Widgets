@@ -46,6 +46,20 @@ class QCustomPageDots(QWidget):
         "tokens_used": ["accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "count", "kind": "int", "group": "General"},
+        {"name": "activeIndex", "kind": "int", "group": "General"},
+        {"name": "dotColor", "kind": "color", "group": "Colors"},
+        {"name": "activeColor", "kind": "color", "group": "Colors"},
+        {"name": "dotDiameter", "kind": "int", "group": "General"},
+        {"name": "activePillLength", "kind": "int", "group": "General"},
+        {"name": "spacing", "kind": "int", "group": "General"},
+        {"name": "orientation", "kind": "choice", "group": "General"},
+        {"name": "clickable", "kind": "bool", "group": "General"},
+    ]
+
     def __init__(self, parent=None, count=3, active=0):
         super().__init__(parent)
         self.setObjectName("QCustomPageDots")

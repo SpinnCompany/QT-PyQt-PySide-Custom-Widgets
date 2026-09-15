@@ -39,6 +39,14 @@ class QCustomRating(QWidget):
         "tokens_used": ["warning", "outline"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "maximum", "kind": "int", "group": "General"},
+        {"name": "value", "kind": "int", "group": "General"},
+        {"name": "readOnly", "kind": "bool", "group": "General"},
+    ]
+
     def __init__(self, parent=None, maximum=5):
         super().__init__(parent)
         self.setObjectName("QCustomRating")

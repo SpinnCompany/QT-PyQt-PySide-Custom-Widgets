@@ -39,6 +39,14 @@ class QCustomInput(QLineEdit):
         "tokens_used": ["surface", "on-surface", "outline", "focus-ring", "accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "variant", "kind": "choice", "group": "General"},
+        {"name": "sizeVariant", "kind": "choice", "group": "General"},
+        {"name": "state", "kind": "str", "group": "General"},
+    ]
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("QCustomInput")

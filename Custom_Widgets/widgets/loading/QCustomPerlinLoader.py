@@ -17,7 +17,7 @@ except ImportError:
     Noise = None
 from typing import Optional
 
-from qtpy.QtCore import QVariantAnimation, QPointF, QRect, QSize
+from qtpy.QtCore import QVariantAnimation, QPointF, QRect, QSize, Property
 from qtpy.QtGui import (QPainter, Qt, QPaintEvent, QColor, QBrush,
                            QPainterPath, QFont)
 from qtpy.QtWidgets import QFrame, QWidget
@@ -36,6 +36,111 @@ class QCustomPerlinLoader(QFrame):
         </widget>
     </ui>
     """
+
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "message", "kind": "str", "group": "General"},
+        {"name": "color", "kind": "color", "group": "Colors"},
+        {"name": "fontFamily", "kind": "str", "group": "General"},
+        {"name": "fontSize", "kind": "int", "group": "General"},
+        {"name": "rayon", "kind": "int", "group": "General"},
+        {"name": "duration", "kind": "int", "group": "Animation"},
+        {"name": "backgroundColor", "kind": "color", "group": "Colors"},
+        {"name": "circleColor1", "kind": "color", "group": "Colors"},
+        {"name": "circleColor2", "kind": "color", "group": "Colors"},
+        {"name": "circleColor3", "kind": "color", "group": "Colors"},
+    ]
+
+    @Property(str)
+    def message(self):
+        return self._message
+
+    @message.setter
+    def message(self, value):
+        self._message = str(value)
+        self.update()
+
+    @Property(QColor)
+    def color(self):
+        return self._color
+
+    @color.setter
+    def color(self, value):
+        self._color = QColor(value)
+        self.update()
+
+    @Property(str)
+    def fontFamily(self):
+        return self._fontFamily
+
+    @fontFamily.setter
+    def fontFamily(self, value):
+        self._fontFamily = str(value)
+        self.update()
+
+    @Property(int)
+    def fontSize(self):
+        return self._fontSize
+
+    @fontSize.setter
+    def fontSize(self, value):
+        self._fontSize = int(value)
+        self.update()
+
+    @Property(int)
+    def rayon(self):
+        return self._rayon
+
+    @rayon.setter
+    def rayon(self, value):
+        self._rayon = int(value)
+        self.update()
+
+    @Property(int)
+    def duration(self):
+        return self._duration
+
+    @duration.setter
+    def duration(self, value):
+        self._duration = int(value)
+
+    @Property(QColor)
+    def backgroundColor(self):
+        return self._backgroundColor
+
+    @backgroundColor.setter
+    def backgroundColor(self, value):
+        self._backgroundColor = QColor(value)
+        self.update()
+
+    @Property(QColor)
+    def circleColor1(self):
+        return self._circleColor1
+
+    @circleColor1.setter
+    def circleColor1(self, value):
+        self._circleColor1 = QColor(value)
+        self.update()
+
+    @Property(QColor)
+    def circleColor2(self):
+        return self._circleColor2
+
+    @circleColor2.setter
+    def circleColor2(self, value):
+        self._circleColor2 = QColor(value)
+        self.update()
+
+    @Property(QColor)
+    def circleColor3(self):
+        return self._circleColor3
+
+    @circleColor3.setter
+    def circleColor3(self, value):
+        self._circleColor3 = QColor(value)
+        self.update()
+
     def __init__(self, parent: Optional[QWidget] = None,
                 size: QSize = QSize(600, 600),
                 message: str = "LOADING...",

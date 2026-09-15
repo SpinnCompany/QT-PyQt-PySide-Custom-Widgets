@@ -27,6 +27,17 @@ class QCustomQProgressBar(QProgressBar):
     """
     WIDGET_MODULE = "Custom_Widgets.QCustomLoadingIndicators"
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "shortPos", "kind": "float", "group": "General"},
+        {"name": "longPos", "kind": "float", "group": "General"},
+        {"name": "paused", "kind": "bool", "group": "General"},
+        {"name": "customBarColor", "kind": "color", "group": "Colors"},
+        {"name": "errorColor", "kind": "color", "group": "Colors"},
+        {"name": "pausedColor", "kind": "color", "group": "Colors"},
+    ]
+
     def __init__(self, parent=None, start=True):
         super().__init__(parent=parent)
 

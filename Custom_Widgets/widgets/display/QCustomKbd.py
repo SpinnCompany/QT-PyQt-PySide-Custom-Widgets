@@ -36,6 +36,13 @@ class QCustomKbd(QWidget):
         "tokens_used": ["surface-muted", "on-surface", "outline"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "keys", "kind": "str", "group": "General"},
+        {"name": "separator", "kind": "str", "group": "General"},
+    ]
+
     def __init__(self, keys="Ctrl+K", parent=None, separator="+"):
         # Qt Designer / uic instantiate custom widgets as ``Widget(parent)``.
         # ``keys`` is the first positional arg, so a parent passed positionally

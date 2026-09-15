@@ -67,6 +67,27 @@ class QCustomHeatmap(QWidget):
         "tokens_used": ["accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "mode", "kind": "choice", "group": "General"},
+        {"name": "valuesCsv", "kind": "str", "group": "General"},
+        {"name": "lowColor", "kind": "color", "group": "Colors"},
+        {"name": "highColor", "kind": "color", "group": "Colors"},
+        {"name": "emptyColor", "kind": "color", "group": "Colors"},
+        {"name": "rowLabelsCsv", "kind": "str", "group": "General"},
+        {"name": "colLabelsCsv", "kind": "str", "group": "General"},
+        {"name": "cellSize", "kind": "int", "group": "General"},
+        {"name": "cellGap", "kind": "int", "group": "General"},
+        {"name": "cornerRadius", "kind": "int", "group": "General"},
+        {"name": "showLabels", "kind": "bool", "group": "General"},
+        {"name": "showLegend", "kind": "bool", "group": "General"},
+        {"name": "labelColor", "kind": "color", "group": "Colors"},
+        {"name": "autoNormalize", "kind": "bool", "group": "General"},
+        {"name": "minValue", "kind": "float", "group": "General"},
+        {"name": "maxValue", "kind": "float", "group": "General"},
+    ]
+
     def __init__(self, parent=None, values=None, mode="grid"):
         super().__init__(parent)
         self.setObjectName("QCustomHeatmap")

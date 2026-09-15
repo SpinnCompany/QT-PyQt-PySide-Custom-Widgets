@@ -62,6 +62,17 @@ except Exception:
     # import the helper degrades to no icons rather than no widgets.
     _PKG_DIR = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))
 
+# PySide6's Designer plugin loader executes this file as a bare script with
+# SEPARATE globals and locals dicts (PyRun_String(Py_file_input)), so every
+# module-level binding - `import os as _os`, the `from Custom_Widgets.Log
+# import *` names, `_PKG_DIR` - lands in the LOCALS dict, while function
+# bodies (e.g. `_iconFor`) resolve names against GLOBALS only. Without the
+# merge below, every registration fails with `NameError: name '_os' is not
+# defined` and Designer's palette silently misses nearly all widgets. Merging
+# the locals into globals makes the module self-consistent under ANY exec
+# semantics (normal import, exec(globals), or the loader's split dicts).
+globals().update(locals())
+
 logInfo("Registering Custom Widgets")
 
 # Capture the form editor core (needed to open forms into this Designer

@@ -59,6 +59,31 @@ class QCustomMiniBarChart(QWidget):
         "tokens_used": ["accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "valuesCsv", "kind": "str", "group": "General"},
+        {"name": "colorsCsv", "kind": "str", "group": "Colors"},
+        {"name": "labelsCsv", "kind": "str", "group": "General"},
+        {"name": "barColor", "kind": "color", "group": "Colors"},
+        {"name": "idleColor", "kind": "color", "group": "Colors"},
+        {"name": "highlightColor", "kind": "color", "group": "Colors"},
+        {"name": "highlightIndex", "kind": "int", "group": "General"},
+        {"name": "barWidth", "kind": "int", "group": "General"},
+        {"name": "cornerRadius", "kind": "int", "group": "General"},
+        {"name": "showLabels", "kind": "bool", "group": "General"},
+        {"name": "calloutText", "kind": "str", "group": "General"},
+        {"name": "calloutBg", "kind": "color", "group": "General"},
+        {"name": "calloutTextColor", "kind": "color", "group": "Colors"},
+        {"name": "yLabelsCsv", "kind": "str", "group": "General"},
+        {"name": "yLabelColor", "kind": "color", "group": "Colors"},
+        {"name": "hoverEnabled", "kind": "bool", "group": "General"},
+        {"name": "hoverSuffix", "kind": "str", "group": "General"},
+        {"name": "selectOnClick", "kind": "bool", "group": "General"},
+        {"name": "highlightIndexProp", "kind": "int", "group": "General"},
+        {"name": "labelColor", "kind": "color", "group": "Colors"},
+    ]
+
     def __init__(self, parent=None, values=None, colors=None, labels=None):
         super().__init__(parent)
         self.setObjectName("QCustomMiniBarChart")

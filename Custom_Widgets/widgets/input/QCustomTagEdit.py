@@ -19,6 +19,13 @@ class QTagEdit(QtWidgets.QScrollArea):
     </ui>
     """
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "tagColor", "kind": "color", "group": "Colors"},
+        {"name": "tagTextColor", "kind": "color", "group": "Colors"},
+    ]
+
     def __init__(self, parent: QtWidgets = None, tag_suggestions: typing.List[str] = []):
         super().__init__(parent)
 

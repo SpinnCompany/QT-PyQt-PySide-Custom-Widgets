@@ -97,6 +97,50 @@ class QCustomRadialGauge(QWidget):
         "tokens_used": ["accent", "up", "down"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "value", "kind": "float", "group": "General"},
+        {"name": "minimum", "kind": "float", "group": "General"},
+        {"name": "maximum", "kind": "float", "group": "General"},
+        {"name": "gaugeStyle", "kind": "choice", "group": "General"},
+        {"name": "startAngle", "kind": "float", "group": "General"},
+        {"name": "spanAngle", "kind": "float", "group": "General"},
+        {"name": "tickCount", "kind": "int", "group": "General"},
+        {"name": "arcWidth", "kind": "int", "group": "General"},
+        {"name": "zonesCsv", "kind": "str", "group": "General"},
+        {"name": "gradientStart", "kind": "color", "group": "General"},
+        {"name": "gradientEnd", "kind": "color", "group": "General"},
+        {"name": "trackColor", "kind": "color", "group": "Colors"},
+        {"name": "needleColor", "kind": "color", "group": "Colors"},
+        {"name": "centerText", "kind": "str", "group": "General"},
+        {"name": "centerSuffix", "kind": "str", "group": "General"},
+        {"name": "statusText", "kind": "str", "group": "General"},
+        {"name": "statusColor", "kind": "color", "group": "Colors"},
+        {"name": "centerTextColor", "kind": "color", "group": "Colors"},
+        {"name": "scaleColor", "kind": "color", "group": "Colors"},
+        {"name": "showNeedle", "kind": "bool", "group": "General"},
+        {"name": "showTicks", "kind": "bool", "group": "General"},
+        {"name": "showHandle", "kind": "bool", "group": "General"},
+        {"name": "handleColor", "kind": "color", "group": "Colors"},
+        {"name": "centerIcon", "kind": "str", "group": "General"},
+        {"name": "iconColor", "kind": "color", "group": "Colors"},
+        {"name": "innerColor", "kind": "color", "group": "Colors"},
+        {"name": "showScaleLabels", "kind": "bool", "group": "General"},
+        {"name": "showGuide", "kind": "bool", "group": "General"},
+        {"name": "scaleLabelEvery", "kind": "float", "group": "General"},
+        {"name": "scaleLabelRadius", "kind": "float", "group": "General"},
+        {"name": "emphasizeActiveTick", "kind": "bool", "group": "General"},
+        {"name": "activeTickExtend", "kind": "choice", "group": "General"},
+        {"name": "roundedCaps", "kind": "bool", "group": "General"},
+        {"name": "animated", "kind": "bool", "group": "Animation"},
+        {"name": "animationDuration", "kind": "int", "group": "Animation"},
+        {"name": "glow", "kind": "bool", "group": "General"},
+        {"name": "glowStrength", "kind": "float", "group": "General"},
+        {"name": "glowRadius", "kind": "int", "group": "General"},
+        {"name": "singleStep", "kind": "float", "group": "General"},
+    ]
+
     def __init__(self, parent=None, value=55.0, minimum=0.0, maximum=100.0,
                  gaugeStyle="needle"):
         super().__init__(parent)

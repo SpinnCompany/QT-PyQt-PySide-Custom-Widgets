@@ -40,6 +40,13 @@ class QCustomCarousel(QWidget):
                         "accent"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "currentIndex", "kind": "int", "group": "General"},
+        {"name": "wrap", "kind": "bool", "group": "General"},
+    ]
+
     def __init__(self, parent=None, wrap=True):
         super().__init__(parent)
         self.setObjectName("QCustomCarousel")

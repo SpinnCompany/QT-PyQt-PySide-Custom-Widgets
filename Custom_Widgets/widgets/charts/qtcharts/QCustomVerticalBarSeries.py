@@ -37,6 +37,51 @@ class QCustomVerticalBarSeries(QCustomBarChartBase):
     </ui>
     """
     WIDGET_MODULE = "Custom_Widgets.QCustomCharts"
+
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "chartTitle", "kind": "str", "group": "General"},
+        {"name": "xAxisTitle", "kind": "str", "group": "General"},
+        {"name": "yAxisTitle", "kind": "str", "group": "General"},
+        {"name": "autoScale", "kind": "bool", "group": "General"},
+        {"name": "animationEnabled", "kind": "bool", "group": "Animation"},
+        {"name": "animationDuration", "kind": "int", "group": "Animation"},
+        {"name": "animationEasingCurve", "kind": "str", "group": "Animation"},
+        {"name": "antialiasing", "kind": "bool", "group": "General"},
+        {"name": "customCategorySpacing", "kind": "float", "group": "General"},
+        {"name": "barWidth", "kind": "float", "group": "General"},
+        {"name": "barSpacing", "kind": "float", "group": "General"},
+        {"name": "barPattern", "kind": "int", "group": "General"},
+        {"name": "barSelectionMode", "kind": "int", "group": "General"},
+        {"name": "showLegend", "kind": "bool", "group": "General"},
+        {"name": "showValueLabels", "kind": "bool", "group": "General"},
+        {"name": "valueLabelsPosition", "kind": "int", "group": "General"},
+        {"name": "valueLabelsFormat", "kind": "str", "group": "General"},
+        {"name": "customValueLabelsFontSize", "kind": "float", "group": "General"},
+        {"name": "customValueLabelsColor", "kind": "color", "group": "Colors"},
+        {"name": "labelsPosition", "kind": "int", "group": "General"},
+        {"name": "customBarBorderWidth", "kind": "float", "group": "General"},
+        {"name": "customBarBorderColor", "kind": "color", "group": "Colors"},
+        {"name": "customTooltipFormat", "kind": "str", "group": "General"},
+        {"name": "lazyLoading", "kind": "bool", "group": "General"},
+        {"name": "virtualization", "kind": "bool", "group": "General"},
+        {"name": "batchSize", "kind": "int", "group": "General"},
+        {"name": "crosshairColor", "kind": "color", "group": "Colors"},
+        {"name": "crosshairWidth", "kind": "float", "group": "General"},
+        {"name": "showToolbar", "kind": "bool", "group": "General"},
+        {"name": "showCrosshair", "kind": "bool", "group": "General"},
+        {"name": "tooltipsEnabled", "kind": "bool", "group": "General"},
+        {"name": "tooltipDelay", "kind": "int", "group": "Animation"},
+        {"name": "tooltipDuration", "kind": "int", "group": "Animation"},
+        {"name": "theme", "kind": "int", "group": "General"},
+        {"name": "legendPosition", "kind": "int", "group": "General"},
+        {"name": "legendFontSize", "kind": "int", "group": "General"},
+        {"name": "legendBackgroundVisible", "kind": "bool", "group": "General"},
+        {"name": "compactMode", "kind": "bool", "group": "General"},
+        {"name": "showGrid", "kind": "bool", "group": "General"},
+        {"name": "customGridColor", "kind": "color", "group": "Colors"},
+    ]
     
     def __init__(self, parent=None):
         """Initialize vertical bar chart widget"""
