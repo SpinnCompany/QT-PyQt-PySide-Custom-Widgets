@@ -71,9 +71,11 @@ all = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets"
+Homepage = "https://customwidgets.org/"
 Documentation = "https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/"
+Source = "https://github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets"
 Issues = "https://github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets/issues"
+Changelog = "https://github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets/blob/main/CHANGELOG.md"
 
 [project.scripts]
 Custom_Widgets = "Custom_Widgets.CMD:run_command"
