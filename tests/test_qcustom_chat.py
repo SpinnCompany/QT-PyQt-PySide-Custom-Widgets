@@ -1,6 +1,7 @@
 """Chat-widget family: bubble, divider, list, list-item, thread, input, typing
 indicator and voice message. Headless behavioural coverage (part of the widget
 hardening pass toward the tiering gate)."""
+import pytest
 
 
 def _painted(w, size=(120, 40)):
@@ -168,3 +169,73 @@ class TestVoiceMessage:
         vm.playing = True
         assert vm.progress == 0.5 and vm.playing is True
         assert _painted(vm, (220, 56)) > 1
+
+
+def _contrast(fg, bg):
+    def lum(value):
+        value = value.lstrip("#")
+        out = []
+        for pair in (value[0:2], value[2:4], value[4:6]):
+            c = int(pair, 16) / 255.0
+            out.append(c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4)
+        return 0.2126 * out[0] + 0.7152 * out[1] + 0.0722 * out[2]
+    high, low = sorted((lum(fg), lum(bg)), reverse=True)
+    return (high + 0.05) / (low + 0.05)
+
+
+class TestChatForegroundsAreLegible:
+    """The chat foregrounds are set as `qproperty-*`, not `color:`.
+
+    That is why they survived the sweep that fixed the other `outline`-as-text
+    sites: those were found by grepping for `color: %s` next to `r("outline")`,
+    and a qproperty assignment does not match. All four sat at 1.48:1 on light.
+    """
+
+    @staticmethod
+    def _value(css, prop):
+        for line in css.splitlines():
+            if prop in line:
+                return line.split(":")[1].strip().rstrip(";").lower()
+        raise AssertionError("%s not emitted" % prop)
+
+    @pytest.mark.parametrize("theme", ["light", "dark"])
+    def test_text_foregrounds_clear_the_body_minimum(self, qapp, theme):
+        """preview, time and meta are secondary text ON THE PAGE surface.
+
+        meta in particular is NOT on a bubble: QCustomChatBubble puts _metaRow in
+        its root layout above _bodyRow, and only the body paints the bubble path.
+        """
+        from Custom_Widgets.theming.tokens import DesignTokens, chat_qss
+        tokens = DesignTokens(theme)
+        css = chat_qss(tokens)
+        surface = tokens.role("surface")
+        for prop in ("qproperty-previewColor", "qproperty-timeColor",
+                     "qproperty-metaColor"):
+            assert _contrast(self._value(css, prop), surface) >= 4.5, prop
+
+    @pytest.mark.parametrize("theme", ["light", "dark"])
+    def test_wave_unplayed_clears_the_graphical_minimum(self, qapp, theme):
+        """The unplayed waveform IS the content, so it needs 3:1.
+
+        It only ever renders on an INCOMING bubble, which is "secondary" -- the
+        outgoing branch in QCustomChatThread substitutes a translucent white.
+        That distinction matters: on an outgoing "primary" bubble this colour
+        would be 1.09:1.
+        """
+        from Custom_Widgets.theming.tokens import DesignTokens, chat_qss
+        tokens = DesignTokens(theme)
+        value = self._value(chat_qss(tokens), "qproperty-waveUnplayedColor")
+        assert _contrast(value, tokens.role("secondary")) >= 3.0
+
+    @pytest.mark.parametrize("theme", ["light", "dark"])
+    def test_meta_matches_the_message_status_tick(self, qapp, theme):
+        """QCustomChatThread does `st.tickColor = self._meta`.
+
+        So metaColor overrides QCustomMessageStatus's own default. While it was
+        "outline" the thread silently reverted the tick to 1.48:1 and undid the
+        widget's own fix. Whatever role the tick resolves, meta must agree.
+        """
+        from Custom_Widgets.theming.tokens import DesignTokens, chat_qss
+        tokens = DesignTokens(theme)
+        meta = self._value(chat_qss(tokens), "qproperty-metaColor")
+        assert meta == tokens.role("on-surface-muted").lower()

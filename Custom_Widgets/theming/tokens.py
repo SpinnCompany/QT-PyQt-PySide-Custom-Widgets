@@ -819,7 +819,11 @@ def chat_qss(tokens):
                "    qproperty-activeTimeColor: %s;\n"
                "    qproperty-accentColor: %s;\n"
                "    qproperty-onlineColor: %s;\n"
-               "}\n" % (r("surface"), r("on-surface"), r("outline"), r("outline"),
+               # preview + time are secondary TEXT on the list surface. They were
+               # "outline" -- a border value at 1.48:1 on light, i.e. the message
+               # preview and the timestamp were both unreadable.
+               "}\n" % (r("surface"), r("on-surface"),
+                        r("on-surface-muted"), r("on-surface-muted"),
                         r("primary"), r("on-primary"), r("on-primary"),
                         r("accent"), r("success")))
     css.append("QCustomChatThread {\n"
@@ -832,9 +836,25 @@ def chat_qss(tokens):
                "    qproperty-dateTextColor: %s;\n"
                "    qproperty-accentColor: %s;\n"
                "    qproperty-waveUnplayedColor: %s;\n"
+               # metaColor lands on the PAGE, not on a bubble: QCustomChatBubble
+               # puts _metaRow in its root layout above _bodyRow, and only the
+               # body paints the bubble path. So measure it against "surface"
+               # (4.76:1 light / 6.96:1 dark), not against the bubble.
+               #
+               # It also reaches QCustomMessageStatus via `st.tickColor = _meta`.
+               # While this was "outline" the thread was overriding the tick back
+               # to 1.48:1 and quietly undoing the fix in cb4bf607c.
+               #
+               # waveUnplayedColor is the unplayed part of a voice waveform --
+               # the shape IS the content, so it needs the 3:1 graphical minimum.
+               # It only ever renders on an INCOMING bubble ("secondary"): the
+               # outgoing branch uses a translucent white instead. On secondary
+               # this is 3.86:1 light / 4.04:1 dark. Note it must NOT follow the
+               # outgoing path -- on a "primary" bubble this role is 1.09:1.
                "}\n" % (r("secondary"), r("on-secondary"), r("primary"),
-                        r("on-primary"), r("outline"), r("surface-muted"),
-                        r("on-surface"), r("accent"), r("outline")))
+                        r("on-primary"), r("on-surface-muted"),
+                        r("surface-muted"), r("on-surface"), r("accent"),
+                        r("on-surface-muted")))
     return "".join(css)
 
 
