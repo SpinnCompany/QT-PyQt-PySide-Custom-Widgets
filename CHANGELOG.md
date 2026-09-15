@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+- **Legibility, part two — the inverse contrast sweep.** 2.5.0 fixed text that
+  was painted with a *border* value (`outline`) but only where the sweep looked
+  at foregrounds. A follow-up sweep measured every token-driven background and
+  every remaining foreground in both themes and found six more `outline`-as-text
+  sites, all at 1.48:1 on a light surface — invisible: the stat-card label and
+  caption, the card subtitle, the keyboard-shortcut `+` separator, the alert
+  close button, and the header-nav inactive tab labels (whose painted default
+  was actually *better* than the theme override). All now use `on-surface-muted`
+  (4.76:1 light / 6.96:1 dark). One background misuse: a *selected* chip's close
+  button turned its glyph white and then, on hover, drew it on the light
+  `outline` wash (1.48:1) — selected chips now hover to `primary-hover` instead.
+  A regression test proves `outline` is never a text colour again outside the
+  WCAG-exempt disabled/pending states. No change to widgets that don't apply
+  design tokens.
+
 - `Custom_Widgets.mcp.catalog` (and the other stdlib-only `mcp` submodules)
   now import without the `[mcp]` extra. The package `__init__` was eagerly
   importing the server, which needs the optional `mcp` SDK; the server is

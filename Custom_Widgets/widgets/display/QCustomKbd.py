@@ -33,7 +33,7 @@ class QCustomKbd(QWidget):
         "props": {"keys": {"type": "string", "default": "Ctrl+K"},
                   "separator": {"type": "string", "default": "+"}},
         "signals": [],
-        "tokens_used": ["surface-muted", "on-surface", "outline"],
+        "tokens_used": ["surface-muted", "on-surface", "on-surface-muted", "outline"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

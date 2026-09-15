@@ -363,3 +363,45 @@ class TestTokensUsedIsTrue:
                 wrong.append((cls, sorted(declared - used), sorted(used - declared)))
         assert not wrong, ("tokens_used disagrees with the rules targeting the "
                            "widget (class, over-claimed, under-claimed): %r" % (wrong,))
+
+
+class TestOutlineIsNeverText:
+    """Regression guard for the recurring bug: `outline` is a BORDER value
+    (slate.300 = 1.48:1 on a light surface). Used as a text `color:` it makes
+    the text invisible. 2.5.0 fixed six such sites; the inverse-contrast sweep
+    found six more (statLabel, statCaption, cardSubtitle, kbdPlus, alertClose,
+    HeaderNav's painted textColor). This proves none come back.
+
+    Disabled controls and a stepper's not-yet-reached "pending" step are the
+    only legitimate places outline may dim text -- both are WCAG-exempt
+    inactive states.
+    """
+
+    def _outline_foregrounds(self, theme):
+        import re
+        from Custom_Widgets.theming import tokens as T
+        tok = T.DesignTokens(theme=theme)
+        outline = tok.role("outline")
+        qss = T.build_component_qss(tok)
+        # `(?<!-)color:` excludes background-color / border-color / selection-color.
+        colour_re = re.compile(r"(?<!-)\bcolor:\s*(#[0-9a-fA-F]{6})")
+        exempt = (":disabled", 'state="pending"')
+        selector, hits = "", []
+        for line in qss.splitlines():
+            if "{" in line:
+                selector = line.split("{", 1)[0]
+            for hexval in colour_re.findall(line):
+                if hexval.lower() == outline.lower() \
+                        and not any(e in selector for e in exempt):
+                    hits.append(selector.strip())
+        return hits
+
+    def test_outline_not_used_as_text_light(self, qapp):
+        assert not self._outline_foregrounds("light"), \
+            "outline (a border value) used as text colour: %r" \
+            % self._outline_foregrounds("light")
+
+    def test_outline_not_used_as_text_dark(self, qapp):
+        assert not self._outline_foregrounds("dark"), \
+            "outline (a border value) used as text colour: %r" \
+            % self._outline_foregrounds("dark")

@@ -40,8 +40,8 @@ class QCustomAlert(QWidget):
                   "text": {"type": "string", "default": ""},
                   "dismissible": {"type": "bool", "default": False}},
         "signals": ["closed"],
-        "tokens_used": ["surface", "on-surface", "info", "success", "warning",
-                        "destructive", "outline"],
+        "tokens_used": ["surface", "on-surface", "on-surface-muted", "info",
+                        "success", "warning", "destructive", "outline"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

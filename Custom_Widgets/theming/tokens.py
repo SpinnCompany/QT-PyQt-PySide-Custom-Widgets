@@ -683,8 +683,15 @@ def chip_qss(tokens):
     css.append("QCustomChip #chipClose {\n"
                "    background-color: transparent; border: none; color: %s; border-radius: %s;\n"
                "}\n" % (r("on-surface"), px("radius.full")))
+    # Unselected chip: dark glyph (on-surface) over an "outline" hover wash,
+    # 12:1 light / 6.9:1 dark -- fine. But a SELECTED chip's glyph is white
+    # (on-primary), and white over outline is 1.48:1 on light -- the close X
+    # vanished on hover. outline was never meant to back text. Selected chips
+    # hover to the darker primary-hover instead so the white glyph survives.
     css.append("QCustomChip #chipClose:hover { background-color: %s; }\n" % r("outline"))
     css.append('QCustomChip[selected="true"] #chipClose { color: %s; }\n' % r("on-primary"))
+    css.append('QCustomChip[selected="true"] #chipClose:hover { background-color: %s; }\n'
+               % r("primary-hover"))
     return "".join(css)
 
 
@@ -1052,13 +1059,18 @@ def chrome_qss(tokens):
             "    qproperty-surfaceColor: %s;\n"
             "}\n"
             "QCustomHeaderNav {\n"
+            # textColor paints the INACTIVE nav item labels (_paintItems draws
+            # each label with _textColor unless it is the active one). It is a
+            # foreground, not a border -- while it was "outline" the inactive
+            # tabs rendered at 1.48:1 on light, dimmer even than the widget's own
+            # #64748b default. on-surface-muted is the muted-but-readable role.
             "    qproperty-accentColor: %s; qproperty-textColor: %s;\n"
             "    qproperty-activeTextColor: %s; qproperty-surfaceColor: %s;\n"
             "    qproperty-dividerColor: %s;\n"
             "}\n" % (r("accent"), r("accent"), r("surface"),
                      r("accent"), r("success"), r("on-surface"), r("surface"),
                      r("surface"),
-                     r("accent"), r("outline"), r("on-surface"), r("surface"),
+                     r("accent"), r("on-surface-muted"), r("on-surface"), r("surface"),
                      r("surface-muted")))
 
 
@@ -1202,7 +1214,7 @@ def alert_qss(tokens):
     css.append("QCustomAlert #alertIcon { font-size: %s; background: transparent; }\n"
                % px("font.size.lg"))
     css.append("QCustomAlert #alertClose { background: transparent; border: none; color: %s; }\n"
-               % r("outline"))
+               % r("on-surface-muted"))
     css.append("QCustomAlert #alertClose:hover { color: %s; }\n" % r("on-surface"))
     for name in ("info", "success", "warning", "destructive"):
         css.append('QCustomAlert[variant="%s"] {'
@@ -1224,12 +1236,12 @@ def statcard_qss(tokens):
                "    background-color: %s; border: 1px solid %s; border-radius: %s;\n"
                "}\n" % (r("surface"), r("outline"), px("radius.md")))
     css.append("QCustomStatCard #statLabel { color: %s; font-size: %s;"
-               " background: transparent; }\n" % (r("outline"), px("font.size.sm")))
+               " background: transparent; }\n" % (r("on-surface-muted"), px("font.size.sm")))
     css.append("QCustomStatCard #statValue { color: %s; font-size: %s;"
                " font-weight: %d; background: transparent; }\n"
                % (r("on-surface"), px("font.size.2xl"), int(r("font.weight.bold"))))
     css.append("QCustomStatCard #statCaption { color: %s; font-size: %s;"
-               " background: transparent; }\n" % (r("outline"), px("font.size.sm")))
+               " background: transparent; }\n" % (r("on-surface-muted"), px("font.size.sm")))
     css.append("QCustomStatCard #statDelta { font-size: %s; font-weight: %d;"
                " background: transparent; }\n"
                % (px("font.size.sm"), int(r("font.weight.medium"))))
@@ -1261,7 +1273,7 @@ def card_qss(tokens):
                " background: transparent; }\n"
                % (r("on-surface"), px("font.size.lg"), int(r("font.weight.semibold"))))
     css.append("QCustomCard #cardSubtitle { color: %s; font-size: %s;"
-               " background: transparent; }\n" % (r("outline"), px("font.size.sm")))
+               " background: transparent; }\n" % (r("on-surface-muted"), px("font.size.sm")))
     css.append("QCustomCard #cardBody { background: transparent; }\n")
     return "".join(css)
 
@@ -1313,7 +1325,7 @@ def kbd_qss(tokens):
                         px("radius.sm"), px("space.2"), px("space.3"),
                         px("font.size.sm"), int(r("font.weight.medium"))))
     css.append("QCustomKbd #kbdPlus { color: %s; background: transparent;"
-               " font-size: %s; }\n" % (r("outline"), px("font.size.sm")))
+               " font-size: %s; }\n" % (r("on-surface-muted"), px("font.size.sm")))
     return "".join(css)
 
 

@@ -32,7 +32,7 @@ class QCustomCard(QWidget):
         "props": {"title": {"type": "string", "default": ""},
                   "subtitle": {"type": "string", "default": ""}},
         "signals": [],
-        "tokens_used": ["surface", "on-surface", "outline"],
+        "tokens_used": ["surface", "on-surface", "on-surface-muted", "outline"],
     }
 
     # Rich editors for the Designer "Custom Properties" dock (see

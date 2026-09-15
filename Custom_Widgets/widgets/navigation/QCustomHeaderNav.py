@@ -67,7 +67,7 @@ class QCustomHeaderNav(QWidget):
                   "surfaceColor": {"type": "color", "default": "#ffffff"},
                   "dividerColor": {"type": "color", "default": "#e2e8f0"}},
         "signals": ["itemSelected", "brandClicked", "overflowClicked"],
-        "tokens_used": ["accent", "on-surface", "outline", "surface",
+        "tokens_used": ["accent", "on-surface", "on-surface-muted", "surface",
                         "surface-muted"],
     }
 
