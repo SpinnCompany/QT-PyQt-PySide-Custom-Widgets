@@ -1654,6 +1654,17 @@ if _perlin_available:
 # parent to that slot and leaves the widget unparented and misconfigured. They
 # are waived in the tiering manifest for the same reason as the anchored popups.
 
+from Custom_Widgets.QCustomSpinner import QCustomSpinner
+
+try:
+    logInfo("Registering QCustomSpinner")
+    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+        QCustomSpinner, module=QCustomSpinner.WIDGET_MODULE,
+        tool_tip=QCustomSpinner.WIDGET_TOOLTIP, xml=QCustomSpinner.WIDGET_DOM_XML,
+        group="Progressbars")
+except Exception as e:
+    logException(e, message="Error registering QCustomSpinner")
+
 from Custom_Widgets.QCustomProgressIndicator import QCustomProgressIndicator
 
 try:

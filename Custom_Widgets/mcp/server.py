@@ -19,6 +19,7 @@
 ## Requires the optional dependency:  pip install QT-PyQt-PySide-Custom-Widgets[mcp]
 ########################################################################
 import argparse
+import ast
 import base64
 import functools
 import glob

@@ -7,6 +7,7 @@ from Custom_Widgets.QCustomTheme import QCustomTheme
 from Custom_Widgets.FileMonitor import QSsFileMonitor
 from Custom_Widgets.Utils import is_in_designer, SharedData
 from Custom_Widgets.Log import *
+from Custom_Widgets import *
 
 import os
 from Custom_Widgets._resources import packageDir

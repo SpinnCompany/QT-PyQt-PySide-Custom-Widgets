@@ -14,6 +14,7 @@
 ## call, so an agent never sees a stale signature).
 ########################################################################
 import argparse
+import glob
 import importlib
 import inspect
 import os

@@ -96,8 +96,14 @@ class QCustomSpinner(QWidget):
         self._play = bool(value)
         self.update()
 
-    def __init__(self, lineWidth = 2, lineColor = None, direction = "Clockwise", borderRadius = 3, animationType = "Bounce"):
-        super().__init__()
+    # `parent` must come first and reach QWidget: Designer builds every widget
+    # as Class(parent), so without it the QWidget was bound to `lineWidth` and
+    # the spinner came out unparented — placeable but broken, which is why this
+    # widget sat in the tiering manifest's waived list instead of being
+    # registered. Every existing caller passes keywords (lineWidth=...,
+    # lineColor=...), so taking the first positional slot breaks nothing.
+    def __init__(self, parent = None, lineWidth = 2, lineColor = None, direction = "Clockwise", borderRadius = 3, animationType = "Bounce"):
+        super().__init__(parent)
 
         self.w = lineWidth
         if lineColor is None:
