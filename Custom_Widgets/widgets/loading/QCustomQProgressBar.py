@@ -27,6 +27,10 @@ class QCustomQProgressBar(QProgressBar):
             "errorColor": {},
             "pausedColor": {},
         },
+        # Only the two state colours resolve through tokens. customBarColor
+        # still comes from QPalette.Highlight, which is the platform accent
+        # rather than a design token, so it is not listed here.
+        "tokens_used": ["destructive", "warning"],
     }
     script_dir = packageDir()
     WIDGET_ICON = os.path.join(script_dir, "components/icons/linear_scale.png")
@@ -72,8 +76,27 @@ class QCustomQProgressBar(QProgressBar):
         # Customizable colors – defaults come from theme and palette:
         # For the normal state, we use the widget's highlight color.
         self._customBarColor = self.palette().color(QPalette.Highlight)
-        # For error and paused, we pick different defaults based on theme.
-        if self.customTheme.isAppDarkThemed():
+        # Error and paused are semantic states, so they come from the
+        # "destructive" and "warning" roles when the app is token-themed.
+        #
+        # Unlike the loaders, this widget was never theme-broken: it already
+        # picked per-theme defaults through customTheme.isAppDarkThemed(). That
+        # path is kept verbatim as the fallback, because QCustomTheme and the
+        # design tokens are separate systems — QCustomTheme reports dark
+        # whenever no theme JSON has been loaded, so an app using one must not
+        # be forced onto the other's idea of the theme. This only changes
+        # behaviour for apps that have actually applied tokens.
+        tokens = None
+        try:
+            from Custom_Widgets.theming.tokens import activeDesignTokens
+            tokens = activeDesignTokens()
+        except Exception:
+            tokens = None
+
+        if tokens is not None:
+            self._errorColor = QColor(tokens.role("destructive"))
+            self._pausedColor = QColor(tokens.role("warning"))
+        elif self.customTheme.isAppDarkThemed():
             self._errorColor = QColor(255, 153, 164)
             self._pausedColor = QColor(252, 225, 0)
         else:
