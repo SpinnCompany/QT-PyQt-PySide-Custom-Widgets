@@ -36,12 +36,50 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 from Custom_Widgets.mcp import catalog  # noqa: E402
 
 
+def uncatalogued():
+    """Widget classes that ship but never declared `__catalog__`.
+
+    The catalog is the right definition but it is not currently COMPLETE. This
+    returns every class under QCustom*.py without `__catalog__`, which includes
+    internal helpers as well as real widgets — treat it as an upper bound on the
+    gap, not a widget count.
+
+    Cross-referenced against the docs on 2026-09-15, **37 of them are real,
+    documented, shipping widgets** (QCustomCheckBox, QCustomChip,
+    QCustomCodeEditor, QCustomArcLoader …) and **33 of those declare
+    WIDGET_DOM_XML**, so they are droppable in Qt Designer. They are missing
+    from the MCP catalog, the generated type stubs and the launch-gate manifest,
+    silently.
+
+    Reporting the gap rather than hiding it is the point: publishing the
+    catalogued figure alone understates the product, which is exactly how 118
+    briefly reached a pricing page that should have said 155.
+    """
+    import glob
+    import re
+
+    catalogued = set(catalog.discover_widgets())
+    root = catalog.widgets_package_dir()
+    found = set()
+    for path in glob.glob(os.path.join(root, "**", "QCustom*.py"), recursive=True):
+        if "__pycache__" in path:
+            continue
+        with open(path, encoding="utf-8", errors="ignore") as fh:
+            src = fh.read()
+        for m in re.finditer(r"^class (Q[A-Za-z0-9_]+)\s*\(", src, re.M):
+            found.add(m.group(1))
+    return sorted(found - catalogued)
+
+
 def counts():
     widgets = catalog.discover_widgets()
+    missing = uncatalogued()
     return {
         "widgets": len(widgets),
         # Droppable = declares WIDGET_DOM_XML, i.e. can be placed in Qt Designer.
         "droppable": sum(1 for w in widgets.values() if w["droppable"]),
+        # Classes that ship without __catalog__ — the catalog's blind spot.
+        "uncatalogued": len(missing),
     }
 
 
