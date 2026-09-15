@@ -21,6 +21,10 @@ class QCustomChip(QWidget):
     __catalog__ = {
         "name": "QCustomChip",
         "signals": ["removed", "clicked", "toggled"],
+        # Read off the QCustomChip QSS block in theming/tokens.py (chip_qss),
+        # which is where this widget's colours actually come from — not guessed.
+        "tokens_used": ["accent", "on-primary", "on-surface", "outline",
+                        "surface-muted"],
     }
     removed = Signal()          # close button clicked
     clicked = Signal()          # chip body clicked
