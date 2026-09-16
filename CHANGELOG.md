@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.6.0 — 2026-09-16
 
 - **The Pro tier now has something to sell.** 23 widgets were badged Pro in the
   documentation while shipping, ungated, inside this GPLv3 wheel — so Pro's
@@ -29,8 +29,6 @@
 
   Already-released versions are unaffected: 2.3.0-2.5.1 shipped these widgets
   under the GPLv3 and that grant is not revocable.
-
-## 2.5.1 — 2026-09-16
 
 - **Legibility, part two — the inverse contrast sweep.** 2.5.0 fixed text that
   was painted with a *border* value (`outline`) but only where the sweep looked
