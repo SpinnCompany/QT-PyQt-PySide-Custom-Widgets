@@ -5,6 +5,22 @@ picker and modals. Headless construction + behaviour + paint smoke (part of the
 widget hardening pass toward the tiering gate)."""
 
 
+def _pro(module, name):
+    """Return a Pro class, or skip — these widgets moved to the Pro wheel.
+
+    The free package keeps an importable stub so Designer .ui files still
+    resolve, which means the absence surfaces on attribute access rather than
+    on import.
+    """
+    import importlib
+
+    import pytest
+    try:
+        return getattr(importlib.import_module(module), name)
+    except ImportError:
+        pytest.skip(name + " ships in Custom Widgets Pro")
+
+
 def _colors(w, size):
     w.resize(*size)
     w.ensurePolished()
@@ -63,7 +79,7 @@ class TestPaymentCard:
 
 class TestMediaGrid:
     def test_construct_images_signal(self, qapp):
-        from Custom_Widgets.QCustomMediaGrid import QCustomMediaGrid
+        QCustomMediaGrid = _pro('Custom_Widgets.QCustomMediaGrid', 'QCustomMediaGrid')
         g = QCustomMediaGrid()
         assert hasattr(g, "tileClicked")
         g.setImages([])                          # empty safe
@@ -104,7 +120,7 @@ class TestTagEdit:
 
 class TestCodeEditor:
     def test_lang_theme_and_text(self, qapp):
-        from Custom_Widgets.QCustomCodeEditor import QCustomCodeEditor
+        QCustomCodeEditor = _pro('Custom_Widgets.QCustomCodeEditor', 'QCustomCodeEditor')
         ce = QCustomCodeEditor()
         ce.setLang("python")
         ce.setTheme("monokai")

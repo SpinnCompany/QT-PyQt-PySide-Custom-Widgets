@@ -30,10 +30,24 @@ from Custom_Widgets.QCustomChatDivider import QCustomChatDivider
 from Custom_Widgets.QCustomTypingIndicator import QCustomTypingIndicator
 from Custom_Widgets.QCustomMessageStatus import QCustomMessageStatus
 from Custom_Widgets.QCustomReactionBar import QCustomReactionBar
-from Custom_Widgets.QCustomMediaGrid import QCustomMediaGrid
 from Custom_Widgets.QCustomLinkPreview import QCustomLinkPreview
 from Custom_Widgets.QCustomFileCard import QCustomFileCard
-from Custom_Widgets.QCustomVideoPlayer import QCustomVideoPlayer
+
+
+def _proWidget(name):
+    """Return a Pro widget class, or None when only the free package is here.
+
+    QCustomMediaGrid and QCustomVideoPlayer ship in Custom Widgets Pro, but the
+    chat thread is free and has to keep working without them — so they are
+    resolved where they are used rather than imported at module level, and an
+    image or video message degrades to its caption instead of taking the whole
+    widget down with an ImportError.
+    """
+    import importlib
+    try:
+        return getattr(importlib.import_module("Custom_Widgets." + name), name)
+    except (ImportError, AttributeError):
+        return None
 
 
 class QCustomChatThread(QFrame):
@@ -250,23 +264,31 @@ class QCustomChatThread(QFrame):
             w.setMinimumWidth(240)
             b.setBodyWidget(w)
         elif kind == "video":
-            w = QCustomVideoPlayer()
-            w.duration = m.get("duration", "0:30")
-            w.setMinimumSize(300, 176)
-            b.setBodyWidget(w)
-            self.inlineMediaCreated.emit(w, m)
+            QCustomVideoPlayer = _proWidget("QCustomVideoPlayer")
+            if QCustomVideoPlayer is None:
+                b.setText(m.get("text") or "Video")
+            else:
+                w = QCustomVideoPlayer()
+                w.duration = m.get("duration", "0:30")
+                w.setMinimumSize(300, 176)
+                b.setBodyWidget(w)
+                self.inlineMediaCreated.emit(w, m)
         else:   # image / album
-            imgs = m.get("images") or [None]
-            n = max(1, len(imgs))
-            grid = QCustomMediaGrid()
-            grid.columns = 1 if n == 1 else (2 if n <= 4 else 3)
-            grid.tileRadius = 14
-            grid.tileHeight = 168 if n == 1 else 96
-            grid.setMinimumWidth(300 if n == 1 else 264)
-            grid.setPlaceholders([("#2b3450", "#1b2138")] * n)
-            grid.tileClicked.connect(lambda i, g=grid: self.mediaOpenRequested.emit(g, i))
-            b.setBodyWidget(grid)
-            self.inlineMediaCreated.emit(grid, m)
+            QCustomMediaGrid = _proWidget("QCustomMediaGrid")
+            if QCustomMediaGrid is None:
+                b.setText(m.get("text") or "Photo")
+            else:
+                imgs = m.get("images") or [None]
+                n = max(1, len(imgs))
+                grid = QCustomMediaGrid()
+                grid.columns = 1 if n == 1 else (2 if n <= 4 else 3)
+                grid.tileRadius = 14
+                grid.tileHeight = 168 if n == 1 else 96
+                grid.setMinimumWidth(300 if n == 1 else 264)
+                grid.setPlaceholders([("#2b3450", "#1b2138")] * n)
+                grid.tileClicked.connect(lambda i, g=grid: self.mediaOpenRequested.emit(g, i))
+                b.setBodyWidget(grid)
+                self.inlineMediaCreated.emit(grid, m)
 
         if m.get("foot"):
             b.setFoot(m["foot"])

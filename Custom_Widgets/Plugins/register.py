@@ -177,7 +177,10 @@ except Exception as e:
     logException(e, message="Error registering QCustomDataTable")
 
 
-from Custom_Widgets.QCustomTableToolbar import QCustomTableToolbar
+try:                                    # Pro widget: not in the free wheel
+    from Custom_Widgets.QCustomTableToolbar import QCustomTableToolbar
+except ImportError:                     # registration below is already guarded
+    QCustomTableToolbar = None
 
 # Registering QCustomTableToolbar with error handling
 try:
@@ -249,7 +252,10 @@ for _w, _grp in ((QCustomTreeWidget, "Item Views"), (QCustomStepper, "Display Wi
         logException(e, message="Error registering %s" % _w.__name__)
 
 
-from Custom_Widgets.QCustomRichTextEditor import QCustomRichTextEditor
+try:                                    # Pro widget: not in the free wheel
+    from Custom_Widgets.QCustomRichTextEditor import QCustomRichTextEditor
+except ImportError:                     # registration below is already guarded
+    QCustomRichTextEditor = None
 from Custom_Widgets.QCustomColorPicker import QCustomColorPicker
 
 for _iw in (QCustomRichTextEditor, QCustomColorPicker):
@@ -813,7 +819,10 @@ except Exception as e:
     logException(e, message="Error registering QCustomMiniBarChart")
 
 
-from Custom_Widgets.QCustomDivergingBarChart import QCustomDivergingBarChart
+try:                                    # Pro widget: not in the free wheel
+    from Custom_Widgets.QCustomDivergingBarChart import QCustomDivergingBarChart
+except ImportError:                     # registration below is already guarded
+    QCustomDivergingBarChart = None
 
 # Registering QCustomDivergingBarChart with error handling
 try:
@@ -826,7 +835,10 @@ except Exception as e:
     logException(e, message="Error registering QCustomDivergingBarChart")
 
 
-from Custom_Widgets.QCustomDotMatrix import QCustomDotMatrix
+try:                                    # Pro widget: not in the free wheel
+    from Custom_Widgets.QCustomDotMatrix import QCustomDotMatrix
+except ImportError:                     # registration below is already guarded
+    QCustomDotMatrix = None
 
 # Registering QCustomDotMatrix with error handling
 try:
@@ -839,7 +851,10 @@ except Exception as e:
     logException(e, message="Error registering QCustomDotMatrix")
 
 
-from Custom_Widgets.QCustomBeeswarm import QCustomBeeswarm
+try:                                    # Pro widget: not in the free wheel
+    from Custom_Widgets.QCustomBeeswarm import QCustomBeeswarm
+except ImportError:                     # registration below is already guarded
+    QCustomBeeswarm = None
 
 # Registering QCustomBeeswarm with error handling
 try:
@@ -852,7 +867,10 @@ except Exception as e:
     logException(e, message="Error registering QCustomBeeswarm")
 
 
-from Custom_Widgets.QCustomGanttChart import QCustomGanttChart
+try:                                    # Pro widget: not in the free wheel
+    from Custom_Widgets.QCustomGanttChart import QCustomGanttChart
+except ImportError:                     # registration below is already guarded
+    QCustomGanttChart = None
 
 # Registering QCustomGanttChart with error handling
 try:
@@ -943,7 +961,10 @@ except Exception as e:
     logException(e, message="Error registering QCustomCompass")
 
 
-from Custom_Widgets.QCustomBubbleChart import QCustomBubbleChart
+try:                                    # Pro widget: not in the free wheel
+    from Custom_Widgets.QCustomBubbleChart import QCustomBubbleChart
+except ImportError:                     # registration below is already guarded
+    QCustomBubbleChart = None
 
 # Registering QCustomBubbleChart with error handling
 try:
@@ -956,14 +977,38 @@ except Exception as e:
     logException(e, message="Error registering QCustomBubbleChart")
 
 
-from Custom_Widgets.QCustomCandlestickChart import QCustomCandlestickChart
-from Custom_Widgets.QCustomRadarChart import QCustomRadarChart
-from Custom_Widgets.QCustomScatterChart import QCustomScatterChart
-from Custom_Widgets.QCustomFunnelChart import QCustomFunnelChart
-from Custom_Widgets.QCustomRangeBarChart import QCustomRangeBarChart
-from Custom_Widgets.QCustomRadialBars import QCustomRadialBars
-from Custom_Widgets.QCustomRadialLines import QCustomRadialLines
-from Custom_Widgets.QCustomSankey import QCustomSankey
+try:                                    # Pro widget: not in the free wheel
+    from Custom_Widgets.QCustomCandlestickChart import QCustomCandlestickChart
+except ImportError:                     # registration below is already guarded
+    QCustomCandlestickChart = None
+try:                                    # Pro widget: not in the free wheel
+    from Custom_Widgets.QCustomRadarChart import QCustomRadarChart
+except ImportError:                     # registration below is already guarded
+    QCustomRadarChart = None
+try:                                    # Pro widget: not in the free wheel
+    from Custom_Widgets.QCustomScatterChart import QCustomScatterChart
+except ImportError:                     # registration below is already guarded
+    QCustomScatterChart = None
+try:                                    # Pro widget: not in the free wheel
+    from Custom_Widgets.QCustomFunnelChart import QCustomFunnelChart
+except ImportError:                     # registration below is already guarded
+    QCustomFunnelChart = None
+try:                                    # Pro widget: not in the free wheel
+    from Custom_Widgets.QCustomRangeBarChart import QCustomRangeBarChart
+except ImportError:                     # registration below is already guarded
+    QCustomRangeBarChart = None
+try:                                    # Pro widget: not in the free wheel
+    from Custom_Widgets.QCustomRadialBars import QCustomRadialBars
+except ImportError:                     # registration below is already guarded
+    QCustomRadialBars = None
+try:                                    # Pro widget: not in the free wheel
+    from Custom_Widgets.QCustomRadialLines import QCustomRadialLines
+except ImportError:                     # registration below is already guarded
+    QCustomRadialLines = None
+try:                                    # Pro widget: not in the free wheel
+    from Custom_Widgets.QCustomSankey import QCustomSankey
+except ImportError:                     # registration below is already guarded
+    QCustomSankey = None
 from Custom_Widgets.QCustomFeaturedIcon import QCustomFeaturedIcon
 from Custom_Widgets.QCustomCopyButton import QCustomCopyButton
 from Custom_Widgets.QCustomSocialButton import QCustomSocialButton
@@ -1227,7 +1272,10 @@ except Exception as e:
     logException(e, message="Error registering QCustomLiquidGauge")
 
 
-from Custom_Widgets.QCustomHeatmap import QCustomHeatmap
+try:                                    # Pro widget: not in the free wheel
+    from Custom_Widgets.QCustomHeatmap import QCustomHeatmap
+except ImportError:                     # registration below is already guarded
+    QCustomHeatmap = None
 
 # Registering QCustomHeatmap with error handling
 try:
@@ -1437,7 +1485,10 @@ except Exception as e:
     logException(e, message="Error registering QCustomPlayerBar")
 
 
-from Custom_Widgets.QCustomNodeGraph import QCustomNodeGraph
+try:                                    # Pro widget: not in the free wheel
+    from Custom_Widgets.QCustomNodeGraph import QCustomNodeGraph
+except ImportError:                     # registration below is already guarded
+    QCustomNodeGraph = None
 
 # Registering QCustomNodeGraph with error handling
 try:
@@ -1450,7 +1501,10 @@ except Exception as e:
     logException(e, message="Error registering QCustomNodeGraph")
 
 
-from Custom_Widgets.QCustomMediaTimeline import QCustomMediaTimeline
+try:                                    # Pro widget: not in the free wheel
+    from Custom_Widgets.QCustomMediaTimeline import QCustomMediaTimeline
+except ImportError:                     # registration below is already guarded
+    QCustomMediaTimeline = None
 
 # Registering QCustomMediaTimeline with error handling
 try:
@@ -1765,7 +1819,10 @@ try:
 except Exception as e:
     logException(e, message="Error registering QCustomEmbeddedWindow")
 
-from Custom_Widgets.QCustomCodeEditor import QCustomCodeEditor
+try:                                    # Pro widget: not in the free wheel
+    from Custom_Widgets.QCustomCodeEditor import QCustomCodeEditor
+except ImportError:                     # registration below is already guarded
+    QCustomCodeEditor = None
 
 try:
     logInfo("Registering QCustomCodeEditor")

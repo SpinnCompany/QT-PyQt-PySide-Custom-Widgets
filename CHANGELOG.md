@@ -1,5 +1,35 @@
 # Changelog
 
+## Unreleased
+
+- **The Pro tier now has something to sell.** 23 widgets were badged Pro in the
+  documentation while shipping, ungated, inside this GPLv3 wheel — so Pro's
+  only exclusive code was the DataTable engine. Twenty-two of those widgets now
+  ship in `QT-PyQt-PySide-Custom-Widgets-Pro` instead: the advanced charts
+  (scatter, funnel, range bar, radial bars/lines, Sankey, candlestick,
+  beeswarm, diverging bar, bubble, dot matrix, radar, Gantt, heatmap), the code
+  and rich-text editors, the node graph, the table toolbar, and the media set
+  (image viewer, media grid, media timeline, video player). This package now
+  carries **133 widgets**.
+
+  `QCustomDataTable` stays here — `QCustomDataTablePro` extends it, so the base
+  belongs with the free edition.
+
+  **Nothing silently disappears.** Each moved widget keeps an importable stub at
+  its original path, because `Custom_Widgets.<Widget>` is baked into every Qt
+  Designer `.ui` file that uses it. Importing the module still works; asking for
+  the class without Pro installed raises an explanation and an install command
+  rather than `ModuleNotFoundError` pointing at your form. With Pro installed the
+  real class — and every helper the module exports — is re-exported
+  transparently, so existing code is unchanged.
+
+  `QCustomChatThread` is free and used two of the moved widgets; image and video
+  messages now fall back to their caption instead of failing, and the Designer
+  plugin registers what it can rather than aborting when a Pro widget is absent.
+
+  Already-released versions are unaffected: 2.3.0-2.5.1 shipped these widgets
+  under the GPLv3 and that grant is not revocable.
+
 ## 2.5.1 — 2026-09-16
 
 - **Legibility, part two — the inverse contrast sweep.** 2.5.0 fixed text that

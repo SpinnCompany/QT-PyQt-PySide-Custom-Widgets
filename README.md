@@ -5,11 +5,16 @@
 [![License](https://img.shields.io/github/license/SpinnCompany/QT-PyQt-PySide-Custom-Widgets?logo=github)](https://github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets/blob/main/LICENSE)
 [![Docs](https://img.shields.io/badge/docs-customwidgets-blue)](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/)
 
-**167 documented widgets for PySide6** — charts, data tables, gauges,
-animated menus, window chrome, loaders and more. Every widget is
+**133 widgets for PySide6, free and open source** — charts, data tables,
+gauges, animated menus, window chrome, loaders and more. Every widget is
 authorable in **Qt Designer**, themed through **design tokens** with
 light/dark palettes, and documented with live screenshots generated
 straight from the code.
+
+A further 23 widgets — including the advanced charts, the code and rich-text
+editors, the media widgets and DataTable Pro — ship in
+[Custom Widgets Pro](https://customwidgets.org/pricing/), which also licenses
+the whole catalog for closed-source use.
 
 ![Custom Widgets Art](https://github.com/SpinnCompany/Docs-QT-PyQt-PySide-Custom-Widgets/blob/main/images/custom_widgets_art.png?raw=true)
 
@@ -42,9 +47,11 @@ pip install "QT-PyQt-PySide-Custom-Widgets[all]"      # everything above
 
 ## Highlights
 
-- **Painted chart family** — scatter, funnel, range bar, radial gauges,
-  Sankey, candlestick, beeswarm, diverging bar, bubble, dot matrix,
-  sparklines, donut and more; QPainter-native, crisp at any size.
+- **Painted chart family** — line, bar, area, pie, donut, sparkline,
+  radial and liquid gauges, compass, mini bar and waveform; QPainter-native,
+  crisp at any size. (Scatter, funnel, range bar, Sankey, candlestick,
+  beeswarm, diverging bar, bubble, dot matrix, radar, Gantt and heatmap are
+  [Pro](https://customwidgets.org/pricing/).)
 - **`QCustomDataTable`** — rich cell renderers (two-line, status,
   currency, link), synthetic select/actions columns, sortable headers.
 - **Chrome & motion** — custom title bars, hamburger and slide menus,
@@ -66,14 +73,14 @@ Read the required
 [project structure](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/)
 before starting — apps use a `ui/` + compiled `src/` + `Qss/` layout that
 keeps Designer files, generated code and themes separate. The
-[`examples/`](examples/) folder contains 82 complete apps built that way.
+[`examples/`](examples/) folder contains 69 complete apps built that way.
 
 ![QCustomArcLoader GIF](https://github.com/SpinnCompany/Docs-QT-PyQt-PySide-Custom-Widgets/raw/main/images/24-modern-ui.gif)
 
 ## Documentation
 
 - **Docs & widget reference**: [spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/)
-- **Widget gallery**: [167 widgets with screenshots](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/Widgets/QCustomQMainWindow)
+- **Widget gallery**: [156 widgets with screenshots](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/Widgets/QCustomQMainWindow)
 - **App showcase**: [92 real apps](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/gallery)
 - **Video tutorials**: [YouTube — SpinnTV](https://www.youtube.com/@SpinnTV)
 
@@ -82,9 +89,11 @@ keeps Designer files, generated code and themes separate. The
 The free library is complete on its own and licensed **GPLv3**. For
 commercial teams there is
 [**Custom Widgets Pro**](https://pypi.org/project/QT-PyQt-PySide-Custom-Widgets-Pro/)
-— starting with DataTable Pro (virtualization, server-side sort/filter,
-grouping with aggregates, pivot, frozen columns, inline editing,
-CSV/XLSX export) — plus twelve premium example applications. Plans at
+— 23 widgets that are not in this package (the advanced charts, the code and
+rich-text editors, the media widgets, the node graph) plus DataTable Pro
+(virtualization, server-side sort/filter, grouping with aggregates, pivot,
+frozen columns, inline editing, CSV/XLSX export), and 14 example
+applications. Plans at
 [customwidgets.org/pricing](https://customwidgets.org/pricing/); active
 [Patreon supporters](https://www.patreon.com/c/spinntv) get the same
 entitlements. The Pro licence includes a written GPL additional

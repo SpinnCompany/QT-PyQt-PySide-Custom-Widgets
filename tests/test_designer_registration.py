@@ -147,6 +147,24 @@ def _class_source_declares(module, name, attr):
     return False
 
 
+def _is_pro_stub(name):
+    """True when the free package only carries a Pro placeholder for `name`.
+
+    register.py still names the Pro widgets — the registration is guarded and
+    lights up once the Pro wheel is installed — so the parse-based
+    REGISTRATIONS list includes them either way. Their source here is a stub
+    with no Designer metadata, which is correct rather than a rule violation.
+    """
+    import os
+    for base, _dirs, files in os.walk(os.path.join(REPO, "Custom_Widgets")):
+        if "__pycache__" in base:
+            continue
+        if name + ".py" in files:
+            with open(os.path.join(base, name + ".py"), encoding="utf-8") as fh:
+                return "_PRO_MODULE" in fh.read()
+    return False
+
+
 @pytest.mark.parametrize("module,name", REGISTRATIONS)
 def test_every_registered_widget_declares_designer_custom_props(module, name):
     """Rule #11: every widget Designer registers declares DESIGNER_CUSTOM_PROPS
@@ -155,6 +173,9 @@ def test_every_registered_widget_declares_designer_custom_props(module, name):
     list when its config is delivered via methods / Qt-native properties, but
     the attribute must exist — otherwise the dock (and the right-click task
     menu) silently degrades for that widget."""
+    if _is_pro_stub(name):
+        pytest.skip("%s ships in Custom Widgets Pro; the free package keeps a "
+                    "stub so Designer .ui files still resolve" % name)
     assert _class_source_declares(module, name, "DESIGNER_CUSTOM_PROPS"), (
         "%s is registered in Designer but does not declare "
         "DESIGNER_CUSTOM_PROPS (Custom Properties dock contract, rule #11)" % name)
