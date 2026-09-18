@@ -80,7 +80,7 @@ keeps Designer files, generated code and themes separate. The
 ## Documentation
 
 - **Docs & widget reference**: [spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/)
-- **Widget gallery**: [156 widgets with screenshots](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/Widgets/QCustomQMainWindow)
+- **Widget gallery**: [167 widgets with screenshots](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/Widgets/QCustomQMainWindow)
 - **App showcase**: [92 real apps](https://spinncompany.github.io/Docs-QT-PyQt-PySide-Custom-Widgets/gallery)
 - **Video tutorials**: [YouTube — SpinnTV](https://www.youtube.com/@SpinnTV)
 
