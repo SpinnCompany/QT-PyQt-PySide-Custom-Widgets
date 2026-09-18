@@ -20,8 +20,11 @@ _PRO_MODULE = "custom_widgets_pro.widgets.data.QCustomTableToolbar"
 _MESSAGE = (
     "QCustomTableToolbar is part of Custom Widgets Pro and is not included in the free "
     "GPLv3 package.\n"
-    "    pip install QT-PyQt-PySide-Custom-Widgets-Pro\n"
-    "Pricing and licence: https://customwidgets.org/pricing/"
+    "Pro is licensed software and is NOT installable from PyPI - the name\n"
+    "there is only a pointer. Licence holders download the wheel:\n"
+    "    https://portal.customwidgets.org/downloads\n"
+    "    pip install <the downloaded .whl>\n"
+    "Plans and licence: https://customwidgets.org/pricing/"
 )
 
 

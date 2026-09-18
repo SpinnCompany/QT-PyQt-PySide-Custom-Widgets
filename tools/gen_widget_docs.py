@@ -31,6 +31,14 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # every widget as missing.
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
+# The Pro checkout, if it sits beside this one. Without it on the path the free
+# package's Pro stubs raise ImportError ("download the wheel from your account")
+# and documenting a Pro widget is impossible — the generator would abort partway
+# through, having written some pages and not others.
+_PRO_CHECKOUT = os.path.join(os.path.dirname(ROOT),
+                             "QT-PyQt-PySide-Custom-Widgets-Pro")
+if os.path.isdir(_PRO_CHECKOUT) and _PRO_CHECKOUT not in sys.path:
+    sys.path.insert(0, _PRO_CHECKOUT)
 DOCS_REPO = os.path.join(os.path.dirname(ROOT), "Docs-QT-PyQt-PySide-Custom-Widgets")
 WIDGET_DOCS = os.path.join(DOCS_REPO, "docs", "01-Widgets")
 SHOTS = os.path.join(DOCS_REPO, "static", "img", "showcase")
@@ -84,12 +92,61 @@ def manifestRows():
     """
     from Custom_Widgets.mcp import catalog
 
-    return [
+    rows = [
         {"widget": entry["class"], "module": entry["module"], "name": entry["name"]}
         for entry in sorted(catalog.discover_widgets().values(),
                             key=lambda e: e["class"])
         if entry["class"] not in SKIP
     ]
+    rows.extend(_proRows({r["widget"] for r in rows}))
+    rows.sort(key=lambda r: r["widget"])
+    return rows
+
+
+#: The Pro repo, checked out beside this one. Absent on a clean public clone,
+#: which is fine — Pro pages then simply are not regenerated.
+PRO_REPO = os.path.join(os.path.dirname(ROOT),
+                        "QT-PyQt-PySide-Custom-Widgets-Pro")
+
+
+def _proRows(seen):
+    """Rows for the Pro widgets, so their pages stay generatable.
+
+    2.6.0 moved 22 widgets into the Pro package, which took them out of
+    `catalog.discover_widgets()` — the free catalog only scans the free
+    package. Two things broke quietly as a result: the 22 Pro pages became
+    orphaned (the generator never visits them, so a wording fix in _tierBadge
+    cannot reach them), and every Pro widget vanished from the `## Related`
+    lists of the free pages, deleting exactly the cross-links that lead a
+    reader from a free chart to a paid one.
+
+    Reading the sibling Pro checkout puts them back in both places, and gives
+    `tier` a real source instead of inferring it from the published page.
+    """
+    root = os.path.join(PRO_REPO, "custom_widgets_pro", "widgets")
+    if not os.path.isdir(root):
+        return []
+    out = []
+    for base, _dirs, files in os.walk(root):
+        if "__pycache__" in base:
+            continue
+        for fn in sorted(files):
+            if not fn.endswith(".py") or fn.startswith("_"):
+                continue
+            cls = fn[:-3]
+            if cls in seen or cls in SKIP:
+                continue
+            group = os.path.basename(base)
+            out.append({
+                "widget": cls,
+                # The public import path stays Custom_Widgets.<Widget>: the free
+                # package keeps a stub there, so that is what users write.
+                "module": "Custom_Widgets." + cls,
+                "name": cls,
+                "tier": "pro-ext",
+                "proGroup": group,
+            })
+    return out
 
 
 def _publishedTier(name):
@@ -1847,8 +1904,12 @@ def _tierBadge(row):
                 "keeps the import path so Qt Designer forms still load, and "
                 "installing Pro activates the widget with no code change. "
                 "Releases up to 2.5.0 included it under the GPLv3.\n\n"
+                "Pro is licensed software and is **not installable from PyPI** — "
+                "the name there is a pointer package with no widgets in it. "
+                "Licence holders download the wheel from their account:\n\n"
                 "```bash\n"
-                "pip install QT-PyQt-PySide-Custom-Widgets-Pro\n"
+                "# https://portal.customwidgets.org/downloads\n"
+                "pip install <the downloaded .whl>\n"
                 "```\n\n"
                 "[See plans](https://customwidgets.org/pricing/)\n\n"
                 ":::")
