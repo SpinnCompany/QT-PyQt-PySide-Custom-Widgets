@@ -1,0 +1,73 @@
+name: Build Pro wheels (free runners)
+
+# WHY THIS LIVES IN THE PUBLIC REPO
+#
+# The Pro repo is private, and GitHub bills Actions minutes for private repos —
+# its wheel matrix now fails in ~5 seconds with "recent account payments have
+# failed or your spending limit needs to be increased", so no wheels get built
+# and Pro cannot be released at all.
+#
+# Actions is free and unlimited on PUBLIC repositories. This workflow therefore
+# runs here and checks the private Pro source out onto the runner at build time.
+# The source is never committed to this repo and never appears in an artifact —
+# only the compiled .so/.pyd wheels do, and those are what ships to public PyPI
+# anyway (custom-widgets-pro is a public package gated by a runtime licence
+# check, not by download secrecy).
+#
+# SAFETY
+#   * workflow_dispatch ONLY. Never add pull_request: secrets are not exposed to
+#     fork PRs, and keeping the trigger manual means they never can be.
+#   * PRO_REPO_TOKEN must be a fine-grained PAT limited to the Pro repo with
+#     Contents: read. Nothing here ever echoes it.
+#   * build-verbosity is forced to 0. At the default the compiler echoes source
+#     context on an error, and these logs are public.
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Tag or branch of the Pro repo to build (e.g. v1.1.0)"
+        required: true
+        default: "v1.1.0"
+
+jobs:
+  build_wheels:
+    name: pro wheels ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      # macos-13 stays absent: retired 2025-12-04, the job would queue forever.
+      # [tool.cibuildwheel.macos] builds x86_64 + arm64, so macos-latest covers
+      # Intel and Apple Silicon from one runner.
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - name: Check out the private Pro source
+        uses: actions/checkout@v4
+        with:
+          repository: SpinnCompany/QT-PyQt-PySide-Custom-Widgets-Pro
+          ref: ${{ inputs.ref }}
+          token: ${{ secrets.PRO_REPO_TOKEN }}
+          path: pro
+          persist-credentials: false
+
+      # Cross-compile the aarch64 Linux wheels under QEMU.
+      - name: Set up QEMU (linux aarch64)
+        if: runner.os == 'Linux'
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v4.2
+        with:
+          package-dir: pro
+          output-dir: wheelhouse
+        env:
+          # Public logs — keep the compiler quiet about proprietary source.
+          CIBW_BUILD_VERBOSITY: "0"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pro-wheels-${{ matrix.os }}
+          path: ./wheelhouse/*.whl
+          if-no-files-found: error
