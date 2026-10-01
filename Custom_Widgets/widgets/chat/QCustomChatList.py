@@ -56,6 +56,21 @@ class QCustomChatList(QFrame):
                         "on-surface-muted", "primary", "success", "surface"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "accentColor", "kind": "color", "group": "Colors"},
+        {"name": "activeColor", "kind": "color", "group": "Colors"},
+        {"name": "nameColor", "kind": "color", "group": "Colors"},
+        {"name": "previewColor", "kind": "color", "group": "Colors"},
+        {"name": "timeColor", "kind": "color", "group": "Colors"},
+        {"name": "activeNameColor", "kind": "color", "group": "Colors"},
+        {"name": "activeTimeColor", "kind": "color", "group": "Colors"},
+        {"name": "onlineColor", "kind": "color", "group": "Colors"},
+        {"name": "surfaceColor", "kind": "color", "group": "Colors"},
+        {"name": "rowSpacing", "kind": "int", "group": "General"},
+    ]
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("QCustomChatList")

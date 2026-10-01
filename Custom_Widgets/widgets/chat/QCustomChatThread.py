@@ -94,6 +94,23 @@ class QCustomChatThread(QFrame):
                         "surface-muted"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "incomingBubbleColor", "kind": "color", "group": "Colors"},
+        {"name": "incomingTextColor", "kind": "color", "group": "Colors"},
+        {"name": "outgoingBubbleColor", "kind": "color", "group": "Colors"},
+        {"name": "outgoingTextColor", "kind": "color", "group": "Colors"},
+        {"name": "metaColor", "kind": "color", "group": "Colors"},
+        {"name": "dateBgColor", "kind": "color", "group": "Colors"},
+        {"name": "dateTextColor", "kind": "color", "group": "Colors"},
+        {"name": "accentColor", "kind": "color", "group": "Colors"},
+        {"name": "waveUnplayedColor", "kind": "color", "group": "Colors"},
+        {"name": "maxBubbleWidth", "kind": "int", "group": "General"},
+        {"name": "spacing", "kind": "int", "group": "General"},
+        {"name": "showReactionAdd", "kind": "bool", "group": "General"},
+    ]
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("QCustomChatThread")

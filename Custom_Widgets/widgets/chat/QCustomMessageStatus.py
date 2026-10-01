@@ -59,6 +59,15 @@ class QCustomMessageStatus(QWidget):
         "tokens_used": ["accent", "on-surface-muted"],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "status", "kind": "choice", "group": "General"},
+        {"name": "tickColor", "kind": "color", "group": "Colors"},
+        {"name": "readColor", "kind": "color", "group": "Colors"},
+        {"name": "tickSize", "kind": "int", "group": "General"},
+    ]
+
     @staticmethod
     def _tokenColor(role, fallback):
         """A semantic role when the app is token-themed, else the old literal.

@@ -64,6 +64,17 @@ class QCustomChatDivider(QFrame):
         # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "text", "kind": "str", "group": "General"},
+        {"name": "variant", "kind": "choice", "group": "General"},
+        {"name": "pillColor", "kind": "color", "group": "Colors"},
+        {"name": "textColor", "kind": "color", "group": "Colors"},
+        {"name": "lineColor", "kind": "color", "group": "Colors"},
+        {"name": "accentColor", "kind": "color", "group": "Colors"},
+    ]
+
     def __init__(self, parent=None, text="", variant="pill"):
         super().__init__(parent)
         self.setObjectName("QCustomChatDivider")

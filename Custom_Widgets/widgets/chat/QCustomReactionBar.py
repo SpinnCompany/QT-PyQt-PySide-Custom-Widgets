@@ -112,6 +112,14 @@ class QCustomReactionBar(QWidget):
         "tokens_used": [],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "reactions", "kind": "str", "group": "General"},
+        {"name": "showAdd", "kind": "bool", "group": "General"},
+        {"name": "addColor", "kind": "color", "group": "Colors"},
+    ]
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("QCustomReactionBar")

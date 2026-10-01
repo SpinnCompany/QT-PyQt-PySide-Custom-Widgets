@@ -110,6 +110,14 @@ class QCustomLinkPreview(QWidget):
         "tokens_used": [],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "title", "kind": "str", "group": "General"},
+        {"name": "url", "kind": "str", "group": "General"},
+        {"name": "description", "kind": "str", "group": "General"},
+    ]
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("QCustomLinkPreview")

@@ -45,6 +45,17 @@ class QCustomActionButton(QFrame):
         # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "caption", "kind": "str", "group": "General"},
+        {"name": "buttonSize", "kind": "int", "group": "General"},
+        {"name": "iconSize", "kind": "int", "group": "General"},
+        {"name": "bgColor", "kind": "color", "group": "Colors"},
+        {"name": "hoverColor", "kind": "color", "group": "Colors"},
+        {"name": "captionColor", "kind": "color", "group": "Colors"},
+    ]
+
     def __init__(self, parent=None, caption="", icon=None):
         super().__init__(parent)
         self.setObjectName("QCustomActionButton")

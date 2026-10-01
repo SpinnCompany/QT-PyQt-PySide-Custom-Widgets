@@ -42,6 +42,16 @@ class QCustomTypingIndicator(QWidget):
         # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "running", "kind": "bool", "group": "General"},
+        {"name": "dotColor", "kind": "color", "group": "Colors"},
+        {"name": "dotSize", "kind": "int", "group": "General"},
+        {"name": "bubble", "kind": "bool", "group": "General"},
+        {"name": "bubbleColor", "kind": "color", "group": "Colors"},
+    ]
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("QCustomTypingIndicator")

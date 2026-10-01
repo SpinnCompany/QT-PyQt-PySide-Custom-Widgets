@@ -27,10 +27,32 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REGISTER = os.path.join(REPO, "Custom_Widgets", "Plugins", "register.py")
 
 
+def _registration_call(node):
+    """The first-argument name of a Designer registration call, or None.
+
+    register.py registers a widget in two ways: a direct
+    `QPyDesignerCustomWidgetCollection.registerCustomWidget(<Class>, ...)`,
+    and its own `_register_widget(<Class>, "<group>")` helper, which always
+    passes `icon=_iconFor(<Class>)`. Missing the helper hid every widget it
+    registers from the contract tests below.
+    """
+    import ast
+    if not (isinstance(node, ast.Call) and node.args
+            and isinstance(node.args[0], ast.Name)):
+        return None
+    f = node.func
+    if isinstance(f, ast.Attribute) and f.attr == "registerCustomWidget":
+        return node.args[0].id
+    if isinstance(f, ast.Name) and f.id == "_register_widget":
+        return node.args[0].id
+    return None
+
+
 def _registrations():
-    """(module, class) pairs for every `registerCustomWidget(<Class>, ...)` in
-    register.py, resolved through the same-file `from Custom_Widgets... import`
-    statements AND the loop-variable batches (e.g. `for _ctr, _cont in
+    """(module, class) pairs for every widget register.py registers, through
+    either call in _registration_call, resolved through the same-file
+    `from Custom_Widgets... import` statements, the `X = _proWidget("X")`
+    Pro imports, AND the loop-variable batches (e.g. `for _ctr, _cont in
     ((QCustomTabWidget, True), (QCustomAccordion, False))` registers the class
     under the loop variable, and `for _pw in (QCustomPagination,
     QCustomSegmentedControl):` under `_pw`)."""
@@ -43,6 +65,12 @@ def _registrations():
                 and node.module.startswith("Custom_Widgets"):
             for alias in node.names:
                 module_of[alias.asname or alias.name] = node.module
+        elif isinstance(node, ast.Assign) and isinstance(node.value, ast.Call) \
+                and getattr(node.value.func, "id", None) == "_proWidget" \
+                and node.value.args and isinstance(node.value.args[0], ast.Constant):
+            for target in node.targets:
+                if isinstance(target, ast.Name):
+                    module_of[target.id] = "Custom_Widgets." + node.value.args[0].value
     loop_bindings = {}
     for node in ast.walk(tree):
         if not isinstance(node, ast.For) or not isinstance(node.iter, ast.Tuple):
@@ -58,13 +86,9 @@ def _registrations():
                     loop_bindings.setdefault(v, set()).add(elt.id)
     seen = []
     for node in ast.walk(tree):
-        if not isinstance(node, ast.Call):
+        name = _registration_call(node)
+        if name is None:
             continue
-        f = node.func
-        if not (isinstance(f, ast.Attribute) and f.attr == "registerCustomWidget"
-                and node.args and isinstance(node.args[0], ast.Name)):
-            continue
-        name = node.args[0].id
         for cls in loop_bindings.get(name, {name}):
             if cls in module_of and (module_of[cls], cls) not in seen:
                 seen.append((module_of[cls], cls))
@@ -97,19 +121,16 @@ def _registration_icon_args():
                     loop_bindings.setdefault(v, set()).add(elt.id)
     out = {}
     for node in ast.walk(tree):
-        if not isinstance(node, ast.Call):
+        name = _registration_call(node)
+        if name is None:
             continue
-        f = node.func
-        if not (isinstance(f, ast.Attribute) and f.attr == "registerCustomWidget"
-                and node.args and isinstance(node.args[0], ast.Name)):
-            continue
+        helper = isinstance(node.func, ast.Name)
         icon = None
         for kw in node.keywords:
             if kw.arg == "icon":
                 icon = ast.get_source_segment(src, kw.value)
-        names = loop_bindings.get(node.args[0].id, {node.args[0].id})
-        for n in names:
-            out.setdefault(n, []).append(icon)
+        for n in loop_bindings.get(name, {name}):
+            out.setdefault(n, []).append("_iconFor(%s)" % n if helper else icon)
     return out
 
 

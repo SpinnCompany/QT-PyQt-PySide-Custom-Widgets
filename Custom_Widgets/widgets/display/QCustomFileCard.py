@@ -136,6 +136,17 @@ class QCustomFileCard(QWidget):
         "tokens_used": [],
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "fileName", "kind": "str", "group": "General"},
+        {"name": "fileSize", "kind": "str", "group": "General"},
+        {"name": "fileExt", "kind": "str", "group": "General"},
+        {"name": "fileDate", "kind": "str", "group": "General"},
+        {"name": "badgeColor", "kind": "color", "group": "Colors"},
+        {"name": "iconColor", "kind": "color", "group": "Colors"},
+    ]
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("QCustomFileCard")

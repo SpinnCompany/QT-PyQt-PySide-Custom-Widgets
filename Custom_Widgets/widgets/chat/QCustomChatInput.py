@@ -49,6 +49,17 @@ class QCustomChatInput(QFrame):
         # Intentionally no tokens_used: this widget resolves no token roles.
     }
 
+    # Rich editors for the Designer "Custom Properties" dock (see
+    # DesignerTools.CustomPropertiesDock).
+    DESIGNER_CUSTOM_PROPS = [
+        {"name": "placeholder", "kind": "str", "group": "General"},
+        {"name": "clearOnSend", "kind": "bool", "group": "General"},
+        {"name": "showAttach", "kind": "bool", "group": "General"},
+        {"name": "showMic", "kind": "bool", "group": "General"},
+        {"name": "showEmoji", "kind": "bool", "group": "General"},
+        {"name": "iconSize", "kind": "int", "group": "General"},
+    ]
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("QCustomChatInput")
