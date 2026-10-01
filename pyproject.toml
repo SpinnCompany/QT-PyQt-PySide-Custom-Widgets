@@ -90,9 +90,11 @@ include-package-data = true
 
 # include-package-data sweeps the whole package, which otherwise drags stale
 # __pycache__/*.pyc from the working tree into the wheel — bytecode built for
-# whichever interpreter last ran here, shipped to users on other versions.
+# whichever interpreter last ran here, shipped to users on other versions —
+# and the logs the library writes when an app or Designer runs from inside the
+# package (Custom_Widgets/logs/, components/uis/logs/), rotations included.
 [tool.setuptools.exclude-package-data]
-"*" = ["__pycache__/*", "*.py[cod]"]
+"*" = ["__pycache__/*", "*.py[cod]", "*.log", "*.log.*"]
 
 [tool.custom_widgets_lint]
 # Design-rule linter (Custom_Widgets.lint) — enforces the *visual* rules a type
