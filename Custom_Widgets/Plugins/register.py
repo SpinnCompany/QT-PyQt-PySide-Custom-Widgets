@@ -62,6 +62,46 @@ except Exception:
     # import the helper degrades to no icons rather than no widgets.
     _PKG_DIR = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))
 
+# Pro widgets are not in the free wheel. Their names stay importable through
+# stub modules whose attribute access raises ImportError until Pro is
+# installed, so on a free install each of them resolves to None.
+_PRO_SKIPPED = []
+
+
+def _proWidget(name):
+    """The Pro widget class `name`, or None when Custom Widgets Pro is absent.
+
+    None is the normal free-install outcome, not an error: _register_widget
+    skips it, and the end of this file reports every skipped name in one line.
+    """
+    import importlib
+    try:
+        return getattr(importlib.import_module("Custom_Widgets." + name), name)
+    except ImportError:
+        _PRO_SKIPPED.append(name)
+    except Exception as e:
+        logException(e, message="Error importing Pro widget %s" % name)
+    return None
+
+
+def _register_widget(cls, group):
+    """Register one widget class with Designer, skipping None. Never raises.
+
+    An exception escaping this script drops every registration after it, so
+    even the error path must not be able to raise.
+    """
+    if cls is None:
+        return
+    name = getattr(cls, "__name__", repr(cls))
+    try:
+        logInfo("Registering %s" % name)
+        QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+            cls, module=cls.WIDGET_MODULE, tool_tip=cls.WIDGET_TOOLTIP,
+            xml=cls.WIDGET_DOM_XML, icon=_iconFor(cls), group=group)
+    except Exception as e:
+        logException(e, message="Error registering %s" % name)
+
+
 # PySide6's Designer plugin loader executes this file as a bare script with
 # SEPARATE globals and locals dicts (PyRun_String(Py_file_input)), so every
 # module-level binding - `import os as _os`, the `from Custom_Widgets.Log
@@ -177,22 +217,9 @@ except Exception as e:
     logException(e, message="Error registering QCustomDataTable")
 
 
-try:                                    # Pro widget: not in the free wheel
-    from Custom_Widgets.QCustomTableToolbar import QCustomTableToolbar
-except ImportError:                     # registration below is already guarded
-    QCustomTableToolbar = None
+QCustomTableToolbar = _proWidget("QCustomTableToolbar")
 
-# Registering QCustomTableToolbar with error handling
-try:
-    logInfo("Registering QCustomTableToolbar")
-    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QCustomTableToolbar, module=QCustomTableToolbar.WIDGET_MODULE,
-        tool_tip=QCustomTableToolbar.WIDGET_TOOLTIP,
-        xml=QCustomTableToolbar.WIDGET_DOM_XML,
-        icon=_iconFor(QCustomTableToolbar), group="Item Views"
-    )
-except Exception as e:
-    logException(e, message="Error registering QCustomTableToolbar")
+_register_widget(QCustomTableToolbar, "Item Views")
 
 
 from Custom_Widgets.QCustomComboBox import QCustomComboBox
@@ -252,13 +279,12 @@ for _w, _grp in ((QCustomTreeWidget, "Item Views"), (QCustomStepper, "Display Wi
         logException(e, message="Error registering %s" % _w.__name__)
 
 
-try:                                    # Pro widget: not in the free wheel
-    from Custom_Widgets.QCustomRichTextEditor import QCustomRichTextEditor
-except ImportError:                     # registration below is already guarded
-    QCustomRichTextEditor = None
+QCustomRichTextEditor = _proWidget("QCustomRichTextEditor")
 from Custom_Widgets.QCustomColorPicker import QCustomColorPicker
 
 for _iw in (QCustomRichTextEditor, QCustomColorPicker):
+    if _iw is None:
+        continue
     try:
         logInfo("Registering %s" % _iw.__name__)
         QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
@@ -819,68 +845,24 @@ except Exception as e:
     logException(e, message="Error registering QCustomMiniBarChart")
 
 
-try:                                    # Pro widget: not in the free wheel
-    from Custom_Widgets.QCustomDivergingBarChart import QCustomDivergingBarChart
-except ImportError:                     # registration below is already guarded
-    QCustomDivergingBarChart = None
+QCustomDivergingBarChart = _proWidget("QCustomDivergingBarChart")
 
-# Registering QCustomDivergingBarChart with error handling
-try:
-    logInfo("Registering QCustomDivergingBarChart")
-    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QCustomDivergingBarChart, module=QCustomDivergingBarChart.WIDGET_MODULE,
-        tool_tip=QCustomDivergingBarChart.WIDGET_TOOLTIP, xml=QCustomDivergingBarChart.WIDGET_DOM_XML,
-        icon=_iconFor(QCustomDivergingBarChart), group="Charts")
-except Exception as e:
-    logException(e, message="Error registering QCustomDivergingBarChart")
+_register_widget(QCustomDivergingBarChart, "Charts")
 
 
-try:                                    # Pro widget: not in the free wheel
-    from Custom_Widgets.QCustomDotMatrix import QCustomDotMatrix
-except ImportError:                     # registration below is already guarded
-    QCustomDotMatrix = None
+QCustomDotMatrix = _proWidget("QCustomDotMatrix")
 
-# Registering QCustomDotMatrix with error handling
-try:
-    logInfo("Registering QCustomDotMatrix")
-    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QCustomDotMatrix, module=QCustomDotMatrix.WIDGET_MODULE,
-        tool_tip=QCustomDotMatrix.WIDGET_TOOLTIP, xml=QCustomDotMatrix.WIDGET_DOM_XML,
-        icon=_iconFor(QCustomDotMatrix), group="Charts")
-except Exception as e:
-    logException(e, message="Error registering QCustomDotMatrix")
+_register_widget(QCustomDotMatrix, "Charts")
 
 
-try:                                    # Pro widget: not in the free wheel
-    from Custom_Widgets.QCustomBeeswarm import QCustomBeeswarm
-except ImportError:                     # registration below is already guarded
-    QCustomBeeswarm = None
+QCustomBeeswarm = _proWidget("QCustomBeeswarm")
 
-# Registering QCustomBeeswarm with error handling
-try:
-    logInfo("Registering QCustomBeeswarm")
-    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QCustomBeeswarm, module=QCustomBeeswarm.WIDGET_MODULE,
-        tool_tip=QCustomBeeswarm.WIDGET_TOOLTIP, xml=QCustomBeeswarm.WIDGET_DOM_XML,
-        icon=_iconFor(QCustomBeeswarm), group="Charts")
-except Exception as e:
-    logException(e, message="Error registering QCustomBeeswarm")
+_register_widget(QCustomBeeswarm, "Charts")
 
 
-try:                                    # Pro widget: not in the free wheel
-    from Custom_Widgets.QCustomGanttChart import QCustomGanttChart
-except ImportError:                     # registration below is already guarded
-    QCustomGanttChart = None
+QCustomGanttChart = _proWidget("QCustomGanttChart")
 
-# Registering QCustomGanttChart with error handling
-try:
-    logInfo("Registering QCustomGanttChart")
-    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QCustomGanttChart, module=QCustomGanttChart.WIDGET_MODULE,
-        tool_tip=QCustomGanttChart.WIDGET_TOOLTIP, xml=QCustomGanttChart.WIDGET_DOM_XML,
-        icon=_iconFor(QCustomGanttChart), group="Charts")
-except Exception as e:
-    logException(e, message="Error registering QCustomGanttChart")
+_register_widget(QCustomGanttChart, "Charts")
 
 
 from Custom_Widgets.QCustomTileButton import QCustomTileButton
@@ -961,54 +943,19 @@ except Exception as e:
     logException(e, message="Error registering QCustomCompass")
 
 
-try:                                    # Pro widget: not in the free wheel
-    from Custom_Widgets.QCustomBubbleChart import QCustomBubbleChart
-except ImportError:                     # registration below is already guarded
-    QCustomBubbleChart = None
+QCustomBubbleChart = _proWidget("QCustomBubbleChart")
 
-# Registering QCustomBubbleChart with error handling
-try:
-    logInfo("Registering QCustomBubbleChart")
-    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QCustomBubbleChart, module=QCustomBubbleChart.WIDGET_MODULE,
-        tool_tip=QCustomBubbleChart.WIDGET_TOOLTIP, xml=QCustomBubbleChart.WIDGET_DOM_XML,
-        icon=_iconFor(QCustomBubbleChart), group="Charts")
-except Exception as e:
-    logException(e, message="Error registering QCustomBubbleChart")
+_register_widget(QCustomBubbleChart, "Charts")
 
 
-try:                                    # Pro widget: not in the free wheel
-    from Custom_Widgets.QCustomCandlestickChart import QCustomCandlestickChart
-except ImportError:                     # registration below is already guarded
-    QCustomCandlestickChart = None
-try:                                    # Pro widget: not in the free wheel
-    from Custom_Widgets.QCustomRadarChart import QCustomRadarChart
-except ImportError:                     # registration below is already guarded
-    QCustomRadarChart = None
-try:                                    # Pro widget: not in the free wheel
-    from Custom_Widgets.QCustomScatterChart import QCustomScatterChart
-except ImportError:                     # registration below is already guarded
-    QCustomScatterChart = None
-try:                                    # Pro widget: not in the free wheel
-    from Custom_Widgets.QCustomFunnelChart import QCustomFunnelChart
-except ImportError:                     # registration below is already guarded
-    QCustomFunnelChart = None
-try:                                    # Pro widget: not in the free wheel
-    from Custom_Widgets.QCustomRangeBarChart import QCustomRangeBarChart
-except ImportError:                     # registration below is already guarded
-    QCustomRangeBarChart = None
-try:                                    # Pro widget: not in the free wheel
-    from Custom_Widgets.QCustomRadialBars import QCustomRadialBars
-except ImportError:                     # registration below is already guarded
-    QCustomRadialBars = None
-try:                                    # Pro widget: not in the free wheel
-    from Custom_Widgets.QCustomRadialLines import QCustomRadialLines
-except ImportError:                     # registration below is already guarded
-    QCustomRadialLines = None
-try:                                    # Pro widget: not in the free wheel
-    from Custom_Widgets.QCustomSankey import QCustomSankey
-except ImportError:                     # registration below is already guarded
-    QCustomSankey = None
+QCustomCandlestickChart = _proWidget("QCustomCandlestickChart")
+QCustomRadarChart = _proWidget("QCustomRadarChart")
+QCustomScatterChart = _proWidget("QCustomScatterChart")
+QCustomFunnelChart = _proWidget("QCustomFunnelChart")
+QCustomRangeBarChart = _proWidget("QCustomRangeBarChart")
+QCustomRadialBars = _proWidget("QCustomRadialBars")
+QCustomRadialLines = _proWidget("QCustomRadialLines")
+QCustomSankey = _proWidget("QCustomSankey")
 from Custom_Widgets.QCustomFeaturedIcon import QCustomFeaturedIcon
 from Custom_Widgets.QCustomCopyButton import QCustomCopyButton
 from Custom_Widgets.QCustomSocialButton import QCustomSocialButton
@@ -1019,93 +966,21 @@ from Custom_Widgets.QCustomGradientText import QCustomGradientText
 from Custom_Widgets.QCustomRainbowButton import QCustomRainbowButton
 from Custom_Widgets.QCustomSparklesText import QCustomSparklesText
 
-# Registering QCustomCandlestickChart with error handling
-try:
-    logInfo("Registering QCustomCandlestickChart")
-    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QCustomCandlestickChart, module=QCustomCandlestickChart.WIDGET_MODULE,
-        tool_tip=QCustomCandlestickChart.WIDGET_TOOLTIP,
-        xml=QCustomCandlestickChart.WIDGET_DOM_XML,
-        icon=_iconFor(QCustomCandlestickChart), group="Charts")
-except Exception as e:
-    logException(e, message="Error registering QCustomCandlestickChart")
+_register_widget(QCustomCandlestickChart, "Charts")
 
-# Registering QCustomRadarChart with error handling
-try:
-    logInfo("Registering QCustomRadarChart")
-    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QCustomRadarChart, module=QCustomRadarChart.WIDGET_MODULE,
-        tool_tip=QCustomRadarChart.WIDGET_TOOLTIP,
-        xml=QCustomRadarChart.WIDGET_DOM_XML,
-        icon=_iconFor(QCustomRadarChart), group="Charts")
-except Exception as e:
-    logException(e, message="Error registering QCustomRadarChart")
+_register_widget(QCustomRadarChart, "Charts")
 
-# Registering QCustomScatterChart with error handling
-try:
-    logInfo("Registering QCustomScatterChart")
-    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QCustomScatterChart, module=QCustomScatterChart.WIDGET_MODULE,
-        tool_tip=QCustomScatterChart.WIDGET_TOOLTIP,
-        xml=QCustomScatterChart.WIDGET_DOM_XML,
-        icon=_iconFor(QCustomScatterChart), group="Charts")
-except Exception as e:
-    logException(e, message="Error registering QCustomScatterChart")
+_register_widget(QCustomScatterChart, "Charts")
 
-# Registering QCustomFunnelChart with error handling
-try:
-    logInfo("Registering QCustomFunnelChart")
-    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QCustomFunnelChart, module=QCustomFunnelChart.WIDGET_MODULE,
-        tool_tip=QCustomFunnelChart.WIDGET_TOOLTIP,
-        xml=QCustomFunnelChart.WIDGET_DOM_XML,
-        icon=_iconFor(QCustomFunnelChart), group="Charts")
-except Exception as e:
-    logException(e, message="Error registering QCustomFunnelChart")
+_register_widget(QCustomFunnelChart, "Charts")
 
-# Registering QCustomRangeBarChart with error handling
-try:
-    logInfo("Registering QCustomRangeBarChart")
-    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QCustomRangeBarChart, module=QCustomRangeBarChart.WIDGET_MODULE,
-        tool_tip=QCustomRangeBarChart.WIDGET_TOOLTIP,
-        xml=QCustomRangeBarChart.WIDGET_DOM_XML,
-        icon=_iconFor(QCustomRangeBarChart), group="Charts")
-except Exception as e:
-    logException(e, message="Error registering QCustomRangeBarChart")
+_register_widget(QCustomRangeBarChart, "Charts")
 
-# Registering QCustomRadialBars with error handling
-try:
-    logInfo("Registering QCustomRadialBars")
-    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QCustomRadialBars, module=QCustomRadialBars.WIDGET_MODULE,
-        tool_tip=QCustomRadialBars.WIDGET_TOOLTIP,
-        xml=QCustomRadialBars.WIDGET_DOM_XML,
-        icon=_iconFor(QCustomRadialBars), group="Charts")
-except Exception as e:
-    logException(e, message="Error registering QCustomRadialBars")
+_register_widget(QCustomRadialBars, "Charts")
 
-# Registering QCustomRadialLines with error handling
-try:
-    logInfo("Registering QCustomRadialLines")
-    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QCustomRadialLines, module=QCustomRadialLines.WIDGET_MODULE,
-        tool_tip=QCustomRadialLines.WIDGET_TOOLTIP,
-        xml=QCustomRadialLines.WIDGET_DOM_XML,
-        icon=_iconFor(QCustomRadialLines), group="Charts")
-except Exception as e:
-    logException(e, message="Error registering QCustomRadialLines")
+_register_widget(QCustomRadialLines, "Charts")
 
-# Registering QCustomSankey with error handling
-try:
-    logInfo("Registering QCustomSankey")
-    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QCustomSankey, module=QCustomSankey.WIDGET_MODULE,
-        tool_tip=QCustomSankey.WIDGET_TOOLTIP,
-        xml=QCustomSankey.WIDGET_DOM_XML,
-        icon=_iconFor(QCustomSankey), group="Charts")
-except Exception as e:
-    logException(e, message="Error registering QCustomSankey")
+_register_widget(QCustomSankey, "Charts")
 
 # Registering QCustomFeaturedIcon with error handling
 try:
@@ -1272,20 +1147,9 @@ except Exception as e:
     logException(e, message="Error registering QCustomLiquidGauge")
 
 
-try:                                    # Pro widget: not in the free wheel
-    from Custom_Widgets.QCustomHeatmap import QCustomHeatmap
-except ImportError:                     # registration below is already guarded
-    QCustomHeatmap = None
+QCustomHeatmap = _proWidget("QCustomHeatmap")
 
-# Registering QCustomHeatmap with error handling
-try:
-    logInfo("Registering QCustomHeatmap")
-    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QCustomHeatmap, module=QCustomHeatmap.WIDGET_MODULE,
-        tool_tip=QCustomHeatmap.WIDGET_TOOLTIP, xml=QCustomHeatmap.WIDGET_DOM_XML,
-        icon=_iconFor(QCustomHeatmap), group="Charts")
-except Exception as e:
-    logException(e, message="Error registering QCustomHeatmap")
+_register_widget(QCustomHeatmap, "Charts")
 
 
 from Custom_Widgets.QCustomRadialGauge import QCustomRadialGauge
@@ -1393,21 +1257,12 @@ except Exception as e:
 
 
 # ---- Chat / messaging component widgets (normalization batch) ------------- #
-def _register_widget(cls, group):
-    try:
-        logInfo("Registering %s" % cls.__name__)
-        QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-            cls, module=cls.WIDGET_MODULE, tool_tip=cls.WIDGET_TOOLTIP,
-            xml=cls.WIDGET_DOM_XML, icon=_iconFor(cls), group=group)
-    except Exception as e:
-        logException(e, message="Error registering %s" % cls.__name__)
-
+QCustomMediaGrid = _proWidget("QCustomMediaGrid")
 
 try:
     from Custom_Widgets.QCustomActionButton import QCustomActionButton
     from Custom_Widgets.QCustomChatDivider import QCustomChatDivider
     from Custom_Widgets.QCustomTypingIndicator import QCustomTypingIndicator
-    from Custom_Widgets.QCustomMediaGrid import QCustomMediaGrid
     from Custom_Widgets.QCustomChatList import QCustomChatList
     from Custom_Widgets.QCustomChatThread import QCustomChatThread
     from Custom_Widgets.QCustomChatInput import QCustomChatInput
@@ -1423,9 +1278,10 @@ except Exception as e:
 
 
 # ---- Media / attachment widgets (P2 batch) -------------------------------- #
+QCustomImageViewer = _proWidget("QCustomImageViewer")
+QCustomVideoPlayer = _proWidget("QCustomVideoPlayer")
+
 try:
-    from Custom_Widgets.QCustomImageViewer import QCustomImageViewer
-    from Custom_Widgets.QCustomVideoPlayer import QCustomVideoPlayer
     from Custom_Widgets.QCustomFileCard import QCustomFileCard
     from Custom_Widgets.QCustomLinkPreview import QCustomLinkPreview
     _register_widget(QCustomImageViewer, "Display Widgets")
@@ -1485,36 +1341,14 @@ except Exception as e:
     logException(e, message="Error registering QCustomPlayerBar")
 
 
-try:                                    # Pro widget: not in the free wheel
-    from Custom_Widgets.QCustomNodeGraph import QCustomNodeGraph
-except ImportError:                     # registration below is already guarded
-    QCustomNodeGraph = None
+QCustomNodeGraph = _proWidget("QCustomNodeGraph")
 
-# Registering QCustomNodeGraph with error handling
-try:
-    logInfo("Registering QCustomNodeGraph")
-    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QCustomNodeGraph, module=QCustomNodeGraph.WIDGET_MODULE,
-        tool_tip=QCustomNodeGraph.WIDGET_TOOLTIP, xml=QCustomNodeGraph.WIDGET_DOM_XML,
-        icon=_iconFor(QCustomNodeGraph), group="Containers")
-except Exception as e:
-    logException(e, message="Error registering QCustomNodeGraph")
+_register_widget(QCustomNodeGraph, "Containers")
 
 
-try:                                    # Pro widget: not in the free wheel
-    from Custom_Widgets.QCustomMediaTimeline import QCustomMediaTimeline
-except ImportError:                     # registration below is already guarded
-    QCustomMediaTimeline = None
+QCustomMediaTimeline = _proWidget("QCustomMediaTimeline")
 
-# Registering QCustomMediaTimeline with error handling
-try:
-    logInfo("Registering QCustomMediaTimeline")
-    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QCustomMediaTimeline, module=QCustomMediaTimeline.WIDGET_MODULE,
-        tool_tip=QCustomMediaTimeline.WIDGET_TOOLTIP, xml=QCustomMediaTimeline.WIDGET_DOM_XML,
-        icon=_iconFor(QCustomMediaTimeline), group="Media")
-except Exception as e:
-    logException(e, message="Error registering QCustomMediaTimeline")
+_register_widget(QCustomMediaTimeline, "Media")
 
 
 from Custom_Widgets.QCustomQLabel import QCustomQLabel
@@ -1819,16 +1653,20 @@ try:
 except Exception as e:
     logException(e, message="Error registering QCustomEmbeddedWindow")
 
-try:                                    # Pro widget: not in the free wheel
-    from Custom_Widgets.QCustomCodeEditor import QCustomCodeEditor
-except ImportError:                     # registration below is already guarded
-    QCustomCodeEditor = None
+QCustomCodeEditor = _proWidget("QCustomCodeEditor")
 
-try:
-    logInfo("Registering QCustomCodeEditor")
-    QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
-        QCustomCodeEditor, module=QCustomCodeEditor.WIDGET_MODULE,
-        tool_tip=QCustomCodeEditor.WIDGET_TOOLTIP, xml=QCustomCodeEditor.WIDGET_DOM_XML,
-        group="Input Widgets")
-except Exception as e:
-    logException(e, message="Error registering QCustomCodeEditor")
+if QCustomCodeEditor is not None:
+    try:
+        logInfo("Registering QCustomCodeEditor")
+        QtDesigner.QPyDesignerCustomWidgetCollection.registerCustomWidget(
+            QCustomCodeEditor, module=QCustomCodeEditor.WIDGET_MODULE,
+            tool_tip=QCustomCodeEditor.WIDGET_TOOLTIP, xml=QCustomCodeEditor.WIDGET_DOM_XML,
+            group="Input Widgets")
+    except Exception as e:
+        logException(e, message="Error registering QCustomCodeEditor")
+
+
+if _PRO_SKIPPED:
+    logInfo("Custom Widgets Pro is not installed, so %d Pro widgets are not in "
+            "the palette: %s. See https://customwidgets.org/pricing/"
+            % (len(_PRO_SKIPPED), ", ".join(_PRO_SKIPPED)))
