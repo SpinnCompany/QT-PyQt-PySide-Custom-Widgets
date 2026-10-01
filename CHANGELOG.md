@@ -1,5 +1,31 @@
 # Changelog
 
+## 2.6.1 — 2026-10-02
+
+- **Qt Designer shows the whole free palette again.** In 2.6.0 the Designer
+  plugin stopped after 14 widgets on every install without Pro: the first Pro
+  widget it skipped raised an error from inside its own error handler, which
+  ended the registration script, so nothing after it — every free chart
+  included — reached the palette. The 2.6.0 notes below say the plugin
+  "registers what it can rather than aborting when a Pro widget is absent"; it
+  did not. Free installs now register the full free palette (129 widgets), and
+  the absent Pro widgets are listed once in Designer's log instead of as one
+  traceback each. With Pro installed the palette is unchanged.
+  ([#2](https://github.com/SpinnCompany/QT-PyQt-PySide-Custom-Widgets/issues/2))
+
+- **Ten more widgets in the Custom Properties dock.** `QCustomActionButton`,
+  the chat widgets (`QCustomChatDivider`, `QCustomTypingIndicator`,
+  `QCustomChatList`, `QCustomChatThread`, `QCustomChatInput`,
+  `QCustomReactionBar`, `QCustomMessageStatus`), `QCustomFileCard` and
+  `QCustomLinkPreview` now declare their Designer properties, so the dock
+  groups them and offers dropdowns for `QCustomChatDivider.variant` and
+  `QCustomMessageStatus.status`.
+
+- **The Pro-widget message points at the real download.** Using a Pro widget
+  without Pro used to suggest `pip install QT-PyQt-PySide-Custom-Widgets-Pro`,
+  which installs only a pointer since Pro left PyPI. It now sends licence
+  holders to the wheel download in their account.
+
 ## 2.6.0 — 2026-09-16
 
 - **The Pro tier now has something to sell.** 23 widgets were badged Pro in the
