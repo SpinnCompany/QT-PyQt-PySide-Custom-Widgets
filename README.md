@@ -88,7 +88,7 @@ keeps Designer files, generated code and themes separate. The
 
 The free library is complete on its own and licensed **GPLv3**. For
 commercial teams there is
-[**Custom Widgets Pro**](https://pypi.org/project/QT-PyQt-PySide-Custom-Widgets-Pro/)
+[**Custom Widgets Pro**](https://customwidgets.org/pricing/)
 — 23 widgets that are not in this package (the advanced charts, the code and
 rich-text editors, the media widgets, the node graph) plus DataTable Pro
 (virtualization, server-side sort/filter, grouping with aggregates, pivot,
