@@ -93,8 +93,7 @@ commercial teams there is
 rich-text editors, the media widgets, the node graph) plus DataTable Pro
 (virtualization, server-side sort/filter, grouping with aggregates, pivot,
 frozen columns, inline editing, CSV/XLSX export), and 14 example
-applications. Plans at
-[customwidgets.org/pricing](https://customwidgets.org/pricing/); active
+applications. Active
 [Patreon supporters](https://www.patreon.com/c/spinntv) get the same
 entitlements. The Pro licence includes a written GPL additional
 permission, so combining the core with Pro and your application does not
