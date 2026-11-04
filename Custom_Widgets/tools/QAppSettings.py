@@ -45,18 +45,22 @@ class QAppSettings():
 
         settings = QSettings()
 
-        # if theme not set
-        init_theme_set = settings.value("INIT-THEME-SET")
-        if settings.value("THEME") is None or not init_theme_set:
+        try:
+            init_theme_set = settings.value("INIT-THEME-SET")
+            stored_theme = settings.value("THEME")
+        except RuntimeError as e:
+            logError(f"Failed to read saved theme settings: {e}")
+            init_theme_set = False
+            stored_theme = None
+
+        if stored_theme is None or not init_theme_set:
             for theme in themeEngine.themes:
                 if theme.defaultTheme:
-                    # update app theme
-                    if (init_theme_set is None or not init_theme_set):
-                        settings.setValue("THEME", theme.name)
-                        settings.setValue("INIT-THEME-SET", True)
-                        logInfo(f"Initial theme set... {theme.name}")
+                    settings.setValue("THEME", theme.name)
+                    settings.setValue("INIT-THEME-SET", True)
+                    logInfo(f"Initial theme set... {theme.name}")
 
-        settings.setValue("THEMES-LIST", themeEngine.themes)
+        settings.setValue("THEMES-LIST", [theme.name for theme in themeEngine.themes])
 
         #######################################################################
         # APPLY COMPILED STYLESHEET

@@ -28,8 +28,8 @@ from qtpy.QtGui import QPixmapCache
 from qtpy.QtNetwork import QLocalServer, QLocalSocket
 from qtpy.QtWidgets import QApplication, QWidget
 
-from Custom_Widgets.Project import projectRoot
-from Custom_Widgets.Log import *
+from Custom_Widgets.tools.Project import projectRoot
+from Custom_Widgets.tools.Log import *
 from Custom_Widgets.tools.socket_auth import (write_token, read_token,
                                               remove_token, auth_line,
                                               parse_auth_line)

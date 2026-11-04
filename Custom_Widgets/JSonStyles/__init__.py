@@ -167,7 +167,11 @@ def configure_settings(self, data, update: bool = False):
                 # A persisted THEME only outranks Default-Theme when it names
                 # a theme this file actually defines — a foreign or renamed
                 # value must not strip the default flag.
-                storedTheme = setngs.value("THEME")
+                try:
+                    storedTheme = setngs.value("THEME")
+                except RuntimeError as e:
+                    logError(f"Failed to read saved theme from QSettings: {e}")
+                    storedTheme = None
                 knownThemeNames = {str(t.get("Theme-name", ""))
                                    for t in customThemes if isinstance(t, dict)}
                 respectStoredTheme = bool(storedTheme) and str(storedTheme) in knownThemeNames

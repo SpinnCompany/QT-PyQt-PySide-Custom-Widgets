@@ -75,6 +75,13 @@ def test_server_name_is_per_project():
     assert a == bridgeServerName("/tmp/project-a")
 
 
+def test_designer_bridge_imports_canonical_tools_modules():
+    from Custom_Widgets.designer.DesignerBridge import logDebug, projectRoot
+
+    assert callable(logDebug)
+    assert callable(projectRoot)
+
+
 def test_ping_roundtrip(qapp, bridge):
     assert _request(qapp, bridge, {"method": "ping"}) == {"result": "pong"}
 

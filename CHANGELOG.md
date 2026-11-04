@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.6.2 — 2026-11-05
+
+- **Qt Designer bridge imports work from the reorganized package.** The bridge
+  now imports project-root and logging helpers from their canonical
+  `Custom_Widgets.tools` modules.
+- **Theme settings survive stale or unreadable values.** Startup logs and
+  recovers from invalid persisted theme settings, and stores the theme list as
+  plain theme names instead of serializing Python theme objects through
+  `QSettings`.
+
 ## 2.6.1 — 2026-10-02
 
 - **Qt Designer shows the whole free palette again.** In 2.6.0 the Designer
