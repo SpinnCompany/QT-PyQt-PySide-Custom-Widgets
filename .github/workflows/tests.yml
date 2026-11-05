@@ -39,7 +39,7 @@ jobs:
           QT_QPA_PLATFORM: offscreen
           QT_API: pyside6
           PYTHONFAULTHANDLER: "1"
-        run: pytest -q
+        run: pytest -q -vv
 
   design-lint:
     runs-on: ubuntu-latest
