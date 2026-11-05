@@ -26,7 +26,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             libgl1 libegl1 libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 \
             libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-shape0 \
-            libxcb-cursor0 libdbus-1-3
+            libxcb-cursor0 libdbus-1-3 gdb
 
       - name: Install package
         run: |
@@ -39,7 +39,14 @@ jobs:
           QT_QPA_PLATFORM: offscreen
           QT_API: pyside6
           PYTHONFAULTHANDLER: "1"
-        run: pytest -q -vv
+          CI_PYTHON_VERSION: ${{ matrix.python-version }}
+        run: |
+          if [ "$CI_PYTHON_VERSION" = "3.10" ]; then
+            gdb --batch --quiet -ex run -ex "thread apply all bt" \
+              --args python -m pytest -q -vv
+          else
+            pytest -q -vv
+          fi
 
   design-lint:
     runs-on: ubuntu-latest
