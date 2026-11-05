@@ -138,7 +138,7 @@ class AppControlServer(QObject):
                 else:
                     logWarning("App control: rejecting unauthenticated "
                                "connection")
-                    sock.abort()
+                    sock.close()
                     self._dropSocket(sock)
                     return
                 continue
