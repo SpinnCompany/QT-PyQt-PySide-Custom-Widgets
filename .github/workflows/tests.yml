@@ -42,8 +42,12 @@ jobs:
           CI_PYTHON_VERSION: ${{ matrix.python-version }}
         run: |
           if [ "$CI_PYTHON_VERSION" = "3.10" ]; then
-            gdb --batch --quiet -ex run -ex "thread apply all bt" \
-              --args python -m pytest -q -vv
+            pytest -q -vv || {
+              test_status=$?
+              gdb --batch --quiet -ex run -ex "thread apply all bt" \
+                --args python -m pytest -q -vv || true
+              exit "$test_status"
+            }
           else
             pytest -q -vv
           fi
