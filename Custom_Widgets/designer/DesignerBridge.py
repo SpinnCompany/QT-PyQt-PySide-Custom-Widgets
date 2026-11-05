@@ -210,8 +210,9 @@ class DesignerBridgeServer(QObject):
             self._sockets.append(sock)
 
     def _dropSocket(self, sock):
-        if sock in self._sockets:
-            self._sockets.remove(sock)
+        if sock not in self._sockets:
+            return
+        self._sockets.remove(sock)
         try:
             sock.deleteLater()
         except RuntimeError:

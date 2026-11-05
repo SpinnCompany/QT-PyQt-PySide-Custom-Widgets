@@ -337,6 +337,7 @@ def test_unauthenticated_connection_is_rejected(qapp, bridge):
             except BlockingIOError:
                 time.sleep(0.01)
         assert b"pong" not in buf
+        assert not bridge._sockets
     finally:
         sock.close()
 

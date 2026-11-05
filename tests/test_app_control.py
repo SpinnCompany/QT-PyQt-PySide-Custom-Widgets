@@ -161,6 +161,7 @@ def test_unauthenticated_connection_is_rejected(qapp, server):
             except BlockingIOError:
                 time.sleep(0.01)
         assert b"pong" not in buf
+        assert not server._sockets
     finally:
         sock.close()
 
