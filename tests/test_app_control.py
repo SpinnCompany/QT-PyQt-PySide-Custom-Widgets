@@ -102,20 +102,10 @@ def test_socket_roundtrip_ping(qapp, server):
     """Prove the newline-JSON transport over the real QLocalServer socket."""
     path = server._server.fullServerName()
     sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    sock.setblocking(False)
+    sock.settimeout(2)
     try:
-        try:
-            sock.connect(path)
-        except BlockingIOError:
-            pass
-        deadline = time.time() + 2
-        while time.time() < deadline:
-            qapp.processEvents(); time.sleep(0.01)
-            try:
-                sock.connect(path)
-                break
-            except (BlockingIOError, OSError):
-                pass
+        sock.connect(path)
+        sock.setblocking(False)
         sock.sendall(("CWTOKEN " + server.token + "\n").encode())
         sock.sendall(b'{"method": "ping"}\n')
         buf = b""
@@ -135,20 +125,10 @@ def test_unauthenticated_connection_is_rejected(qapp, server):
     """No token line -> server aborts the connection, no reply."""
     path = server._server.fullServerName()
     sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    sock.setblocking(False)
+    sock.settimeout(2)
     try:
-        try:
-            sock.connect(path)
-        except BlockingIOError:
-            pass
-        deadline = time.time() + 2
-        while time.time() < deadline:
-            qapp.processEvents(); time.sleep(0.01)
-            try:
-                sock.connect(path)
-                break
-            except (BlockingIOError, OSError):
-                pass
+        sock.connect(path)
+        sock.setblocking(False)
         sock.sendall(b'{"method": "ping"}\n')
         buf = b""
         deadline = time.time() + 2
