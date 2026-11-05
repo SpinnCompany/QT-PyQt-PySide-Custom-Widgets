@@ -205,9 +205,19 @@ class DesignerBridgeServer(QObject):
         while self._server.hasPendingConnections():
             sock = self._server.nextPendingConnection()
             sock._authorized = False
-            sock.readyRead.connect(lambda s=sock: self._onReadyRead(s))
-            sock.disconnected.connect(lambda s=sock: self._dropSocket(s))
+            sock.readyRead.connect(self._onSocketReadyRead)
+            sock.disconnected.connect(self._onSocketDisconnected)
             self._sockets.append(sock)
+
+    def _onSocketReadyRead(self):
+        sock = self.sender()
+        if sock is not None:
+            self._onReadyRead(sock)
+
+    def _onSocketDisconnected(self):
+        sock = self.sender()
+        if sock is not None:
+            self._dropSocket(sock)
 
     def _dropSocket(self, sock):
         if sock not in self._sockets:
