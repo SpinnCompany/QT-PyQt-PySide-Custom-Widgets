@@ -38,6 +38,7 @@ jobs:
         env:
           QT_QPA_PLATFORM: offscreen
           QT_API: pyside6
+          PYTHONFAULTHANDLER: "1"
         run: pytest -q
 
   design-lint:
